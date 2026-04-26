@@ -32,10 +32,6 @@ export default function HiddenStackPage() {
       <SmartGuardLock />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(hiddenStackJsonLd) }} />
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 py-2 md:py-3 lg:max-w-none lg:px-0 lg:py-3">
-        <GameIntroMiniSection
-          title="教材概要（かくれつみき）"
-          body="3D積み木の死角を推測し、見えない情報を数量として再構成する空間認識教材です。観察→仮説→検証の循環を短い問題で反復できます。"
-        />
         <Suspense
           fallback={
             <div className="flex min-h-[40dvh] flex-1 items-center justify-center bg-[var(--color-bg)] text-[var(--color-muted)]">
@@ -47,6 +43,10 @@ export default function HiddenStackPage() {
             <HiddenStackGame />
           </div>
         </Suspense>
+        <GameIntroMiniSection
+          title="教材概要（かくれつみき）"
+          body="3D積み木の死角を推測し、見えない情報を数量として再構成する空間認識教材です。観察→仮説→検証の循環を短い問題で反復できます。"
+        />
         <section className="mx-auto mt-6 w-full max-w-3xl">
           <GameQuickInfoNote
             goal="遮蔽を含む空間把握・数量推定・推理の言語化を促進"
