@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     template: "%s | Wispo",
   },
   description:
-    "ようこそWispo（ウィスポ）へ。幼児から大人まで、遊びながら学べる無料のデジタル知育教材をWebブラウザで公開しています。タップぬりえ・Pair-Link・Skyscraper・Reflec-Shot・Pres-Sure Judge など。",
+    "ようこそWispo（ウィスポ）へ。幼児から大人まで、遊びながら学べる無料のデジタル知育教材をWebブラウザで公開しています。かくれつみき（Hidden Stack）・タップぬりえ・Pair-Link・Skyscraper・Reflec-Shot・Pres-Sure Judge・はじけて！バブルなど。",
   keywords: ["知育", "パズル", "無料", "ロジックパズル", "ナンバーリンク", "スカイスクレイパー", "脳トレ"],
   openGraph: { type: "website", siteName: "Wispo" },
   manifest: "/manifest.json",

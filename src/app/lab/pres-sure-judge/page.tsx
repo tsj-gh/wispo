@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { PresSureEducationalI18n } from "@/components/educational/GameEducationalI18n";
 import { GameIntroMiniSection } from "@/components/lab/GameIntroMiniSection";
+import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSection";
 import { GameTroubleshootingSection } from "@/components/lab/GameTroubleshootingSection";
 import { OtherPuzzlesSection } from "@/components/lab/OtherPuzzlesSection";
 import { ParentGuideNote } from "@/components/lab/ParentGuideNote";
@@ -37,6 +38,10 @@ export default function PresSureJudgePage() {
         <GameIntroMiniSection
           title="教材概要（Pres-Sure Judge）"
           body="時間制約下で天秤の均衡を見極める判断教材です。数量感覚と抑制制御を同時に使い、短いラウンドで意思決定の精度を高めます。"
+        />
+        <GamePrimaryContextSection
+          title="想定する利用の目安"
+          body="1セッションは数分程度の短いラウンドが中心です。連続プレイでは視覚疲労と判断の粗さが出やすいので、小学生以下では2〜3ラウンドごとに目を休める間隔を挟むと、教材としての効果が安定しやすいです。"
         />
       </section>
       <PresSureEducationalI18n />

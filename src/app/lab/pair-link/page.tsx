@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { PairLinkEducationalI18n } from "@/components/educational/GameEducationalI18n";
 import { GameIntroMiniSection } from "@/components/lab/GameIntroMiniSection";
+import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSection";
 import { GameTroubleshootingSection } from "@/components/lab/GameTroubleshootingSection";
 import { OtherPuzzlesSection } from "@/components/lab/OtherPuzzlesSection";
 import { ParentGuideNote } from "@/components/lab/ParentGuideNote";
@@ -37,6 +38,10 @@ export default function PairLinkPage() {
         <GameIntroMiniSection
           title="教材概要（Pair-Link）"
           body="交差禁止と全マス充填の制約を同時に扱う論理教材です。先読みと自己修正を繰り返し、試行錯誤の質を高める設計になっています。"
+        />
+        <GamePrimaryContextSection
+          title="この教材でよくある誤解"
+          body="「同じ数字同士を最短距離でつなげばよい」と思いがちですが、線は交差できず、かつ盤面のすべてのマスを埋める必要があります。距離最優先ではなく、通路の確保と残りマスの整合が同時に成り立つかが判断の中心になります。"
         />
       </main>
       <PairLinkEducationalI18n />

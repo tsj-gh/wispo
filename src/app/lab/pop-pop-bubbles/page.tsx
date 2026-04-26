@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { PopPopBubblesEducationalSection } from "@/components/educational/PopPopBubblesEducationalSection";
 import { GameIntroMiniSection } from "@/components/lab/GameIntroMiniSection";
+import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSection";
 import { GameTroubleshootingSection } from "@/components/lab/GameTroubleshootingSection";
 import { OtherPuzzlesSection } from "@/components/lab/OtherPuzzlesSection";
 import { ParentGuideNote } from "@/components/lab/ParentGuideNote";
@@ -34,6 +35,10 @@ export default function PopPopBubblesPage() {
         <GameIntroMiniSection
           title="教材概要（はじけて！バブル）"
           body="手眼協調と注意切替を、軽快なタップ体験で育てる入門教材です。短いラウンドで達成感を得やすく、低年齢でも継続しやすい構成です。"
+        />
+        <GamePrimaryContextSection
+          title="この教材でよくある誤解"
+          body="「連打や反射神経だけのゲーム」と捉えられがちですが、狙いを定めてからタップする方が高得点につながる設計です。視線の移動とターゲット選びの質が、手眼協調の練習対象になっています。"
         />
       </main>
       <PopPopBubblesEducationalSection />

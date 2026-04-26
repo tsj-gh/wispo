@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ReflecLabEducationalI18n } from "@/components/educational/GameEducationalI18n";
 import { GameIntroMiniSection } from "@/components/lab/GameIntroMiniSection";
+import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSection";
 import { GameTroubleshootingSection } from "@/components/lab/GameTroubleshootingSection";
 import { OtherPuzzlesSection } from "@/components/lab/OtherPuzzlesSection";
 import { ParentGuideNote } from "@/components/lab/ParentGuideNote";
@@ -33,6 +34,10 @@ export default function ReflecShotLabPage() {
         <GameIntroMiniSection
           title="教材概要（Reflec-Shot）"
           body="反射規則と軌道予測を扱う空間推理教材です。短い試行で仮説を検証できるため、戦略更新と見通しの良い思考習慣を育てます。"
+        />
+        <GamePrimaryContextSection
+          title="想定する利用の目安"
+          body="1問あたりは短い試行で成立する設計のため、10〜20分で複数ステージを試す使い方が現実的です。反射の組み合わせが難しい日は、回転だけに絞った練習回を挟むと挫折感を抑えつつ空間推理を積み上げられます。"
         />
       </main>
       <ReflecLabEducationalI18n />

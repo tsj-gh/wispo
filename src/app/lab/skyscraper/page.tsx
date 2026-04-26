@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { SkyscraperEducationalI18n } from "@/components/educational/GameEducationalI18n";
 import { GameIntroMiniSection } from "@/components/lab/GameIntroMiniSection";
+import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSection";
 import { GameTroubleshootingSection } from "@/components/lab/GameTroubleshootingSection";
 import { OtherPuzzlesSection } from "@/components/lab/OtherPuzzlesSection";
 import { ParentGuideNote } from "@/components/lab/ParentGuideNote";
@@ -37,6 +38,10 @@ export default function SkyscraperPage() {
         <GameIntroMiniSection
           title="教材概要（Skyscraper）"
           body="外周ヒントを使って内部配置を推理する制約充足型の教材です。候補整理と演繹推論を段階的に育て、算数的な場合分けの基礎づくりに役立ちます。"
+        />
+        <GamePrimaryContextSection
+          title="この教材でよくある誤解"
+          body="ヒントの数字は「その方向から見たビルの本数」というパズル固有の意味であり、単純な足し算や教科書の「高さの問題」と同じ読み方にはなりません。視点の制約から逆算してマスごとの高さを決めていく点が本質です。"
         />
       </main>
       <SkyscraperEducationalI18n />

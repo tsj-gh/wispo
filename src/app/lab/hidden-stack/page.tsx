@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { HiddenStackEducationalI18n } from "@/components/educational/GameEducationalI18n";
 import { GameIntroMiniSection } from "@/components/lab/GameIntroMiniSection";
+import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSection";
 import { GameQuickInfoNote } from "@/components/lab/GameQuickInfoNote";
 import { GameTroubleshootingSection } from "@/components/lab/GameTroubleshootingSection";
 import { OtherPuzzlesSection } from "@/components/lab/OtherPuzzlesSection";
@@ -46,6 +47,10 @@ export default function HiddenStackPage() {
         <GameIntroMiniSection
           title="教材概要（かくれつみき）"
           body="3D積み木の死角を推測し、見えない情報を数量として再構成する空間認識教材です。観察→仮説→検証の循環を短い問題で反復できます。"
+        />
+        <GamePrimaryContextSection
+          title="この教材でよくある誤解"
+          body="「見えているブロックの数を数えれば答えが出る」と捉えがちですが、本題は遮蔽された列の個数を推定することです。正面の見え方だけでなく、奥行きと死角の関係を前提にした推論が求められます。"
         />
         <section className="mx-auto mt-6 w-full max-w-3xl">
           <GameQuickInfoNote

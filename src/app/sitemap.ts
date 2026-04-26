@@ -12,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/lab/pres-sure-judge`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${base}/lab/skyscraper`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${base}/lab/reflec-shot`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${base}/lab/hidden-stack`, lastModified: now, changeFrequency: "weekly", priority: 0.95 },
     { url: `${base}/columns/educational-value`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
     { url: `${base}/updates`, lastModified: now, changeFrequency: "weekly", priority: 0.75 },
     { url: `${base}/operator`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },

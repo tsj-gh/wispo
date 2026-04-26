@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { TapColoringEducationalI18n } from "@/components/educational/GameEducationalI18n";
 import { GameIntroMiniSection } from "@/components/lab/GameIntroMiniSection";
+import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSection";
 import { GameTroubleshootingSection } from "@/components/lab/GameTroubleshootingSection";
 import { OtherPuzzlesSection } from "@/components/lab/OtherPuzzlesSection";
 import { ParentGuideNote } from "@/components/lab/ParentGuideNote";
@@ -32,6 +33,10 @@ export default function TapColoringLabPage() {
         <GameIntroMiniSection
           title="教材概要（タップぬりえ）"
           body="色彩認知と原因理解を、短い操作と即時反応で学べる入門教材です。幼児でも始めやすいタップ中心の設計で、完成体験を積みながら集中の持続を育てます。"
+        />
+        <GamePrimaryContextSection
+          title="想定する利用の目安"
+          body="幼児では集中が5〜15分程度で切れやすいため、1枚を一度に仕上げるより「今日は下地まで」「次は枠だけ」など短い区切りで使うと続きやすく、色の因果も体験として残りやすいです。"
         />
       </main>
       <TapColoringEducationalI18n />
