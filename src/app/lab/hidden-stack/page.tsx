@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { HiddenStackEducationalI18n } from "@/components/educational/GameEducationalI18n";
+import { DevTjEditorialNote } from "@/components/DevTjEditorialNote";
 import { GameIntroMiniSection } from "@/components/lab/GameIntroMiniSection";
 import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSection";
 import { GameQuickInfoNote } from "@/components/lab/GameQuickInfoNote";
@@ -52,6 +53,9 @@ export default function HiddenStackPage() {
           title="この教材でよくある誤解"
           body="「見えているブロックの数を数えれば答えが出る」と捉えがちですが、本題は遮蔽された列の個数を推定することです。正面の見え方だけでなく、奥行きと死角の関係を前提にした推論が求められます。"
         />
+        <Suspense fallback={null}>
+          <DevTjEditorialNote text="※ここは運営者による手書きのコメントがより相応しい（実際に子どもがつまずいた場面や、声かけで改善した例を1〜2文で追記すると教材固有性が高まります）" />
+        </Suspense>
         <section className="mx-auto mt-6 w-full max-w-3xl">
           <GameQuickInfoNote
             goal="遮蔽を含む空間把握・数量推定・推理の言語化を促進"

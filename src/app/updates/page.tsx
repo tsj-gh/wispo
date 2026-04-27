@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import { DevTjEditorialNote } from "@/components/DevTjEditorialNote";
 
 export const metadata: Metadata = {
   title: "更新履歴 | Wispo",
@@ -36,6 +38,9 @@ export default function UpdatesPage() {
         <p className="mt-2 text-sm leading-relaxed text-[var(--color-muted)]">
           Wispo の教材改善・機能追加・不具合修正の履歴を公開しています。AdSense 審査や導入判断の参考としてご確認ください。
         </p>
+        <Suspense fallback={null}>
+          <DevTjEditorialNote text="※ここは運営者による手書きのコメントがより相応しい（更新の背景・観察結果・失敗談を短文で補足すると一次情報として強くなります）" />
+        </Suspense>
       </header>
       <section className="space-y-3" aria-label="更新一覧">
         {UPDATES.map((entry) => (
