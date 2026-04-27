@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { DevTjEditorialNote } from "@/components/DevTjEditorialNote";
 import { ReflecLabEducationalI18n } from "@/components/educational/GameEducationalI18n";
 import { GameIntroMiniSection } from "@/components/lab/GameIntroMiniSection";
 import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSection";
@@ -39,6 +40,9 @@ export default function ReflecShotLabPage() {
           title="想定する利用の目安"
           body="1問あたりは短い試行で成立する設計のため、10〜20分で複数ステージを試す使い方が現実的です。反射の組み合わせが難しい日は、回転だけに絞った練習回を挟むと挫折感を抑えつつ空間推理を積み上げられます。"
         />
+        <Suspense fallback={null}>
+          <DevTjEditorialNote text="※ここは運営者による手書きのコメントがより相応しい（つまずきやすい反射パターンと、1反射から教える手順を実例で補足すると効果的です）" />
+        </Suspense>
       </main>
       <ReflecLabEducationalI18n />
       <GameTroubleshootingSection

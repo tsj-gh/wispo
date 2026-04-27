@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { DevTjEditorialNote } from "@/components/DevTjEditorialNote";
 import { SkyscraperEducationalI18n } from "@/components/educational/GameEducationalI18n";
 import { GameIntroMiniSection } from "@/components/lab/GameIntroMiniSection";
 import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSection";
@@ -43,6 +44,9 @@ export default function SkyscraperPage() {
           title="この教材でよくある誤解"
           body="ヒントの数字は「その方向から見たビルの本数」というパズル固有の意味であり、単純な足し算や教科書の「高さの問題」と同じ読み方にはなりません。視点の制約から逆算してマスごとの高さを決めていく点が本質です。"
         />
+        <Suspense fallback={null}>
+          <DevTjEditorialNote text="※ここは運営者による手書きのコメントがより相応しい（どのヒントから着手すると進みやすいか、実際の指導順を補足すると有益です）" />
+        </Suspense>
       </main>
       <SkyscraperEducationalI18n />
       <GameTroubleshootingSection

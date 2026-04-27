@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { DevTjEditorialNote } from "@/components/DevTjEditorialNote";
 import { PresSureEducationalI18n } from "@/components/educational/GameEducationalI18n";
 import { GameIntroMiniSection } from "@/components/lab/GameIntroMiniSection";
 import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSection";
@@ -43,6 +44,9 @@ export default function PresSureJudgePage() {
           title="想定する利用の目安"
           body="1セッションは数分程度の短いラウンドが中心です。連続プレイでは視覚疲労と判断の粗さが出やすいので、小学生以下では2〜3ラウンドごとに目を休める間隔を挟むと、教材としての効果が安定しやすいです。"
         />
+        <Suspense fallback={null}>
+          <DevTjEditorialNote text="※ここは運営者による手書きのコメントがより相応しい（時間圧で判断が崩れた場面と、休憩で回復した実測を短文で残すと有用です）" />
+        </Suspense>
       </section>
       <PresSureEducationalI18n />
       <GameTroubleshootingSection

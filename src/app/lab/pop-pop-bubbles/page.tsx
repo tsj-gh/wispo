@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { DevTjEditorialNote } from "@/components/DevTjEditorialNote";
 import { PopPopBubblesEducationalSection } from "@/components/educational/PopPopBubblesEducationalSection";
 import { GameIntroMiniSection } from "@/components/lab/GameIntroMiniSection";
 import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSection";
@@ -40,6 +41,9 @@ export default function PopPopBubblesPage() {
           title="この教材でよくある誤解"
           body="「連打や反射神経だけのゲーム」と捉えられがちですが、狙いを定めてからタップする方が高得点につながる設計です。視線の移動とターゲット選びの質が、手眼協調の練習対象になっています。"
         />
+        <Suspense fallback={null}>
+          <DevTjEditorialNote text="※ここは運営者による手書きのコメントがより相応しい（連打と観察の違いが出た具体例を追記すると教材意図が伝わりやすくなります）" />
+        </Suspense>
       </main>
       <PopPopBubblesEducationalSection />
       <GameTroubleshootingSection

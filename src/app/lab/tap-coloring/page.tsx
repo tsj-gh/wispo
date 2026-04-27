@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { DevTjEditorialNote } from "@/components/DevTjEditorialNote";
 import { TapColoringEducationalI18n } from "@/components/educational/GameEducationalI18n";
 import { GameIntroMiniSection } from "@/components/lab/GameIntroMiniSection";
 import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSection";
@@ -38,6 +39,9 @@ export default function TapColoringLabPage() {
           title="想定する利用の目安"
           body="幼児では集中が5〜15分程度で切れやすいため、1枚を一度に仕上げるより「今日は下地まで」「次は枠だけ」など短い区切りで使うと続きやすく、色の因果も体験として残りやすいです。"
         />
+        <Suspense fallback={null}>
+          <DevTjEditorialNote text="※ここは運営者による手書きのコメントがより相応しい（年齢別の集中時間や、実際に効果があった声かけを短く追記すると一次情報になります）" />
+        </Suspense>
       </main>
       <TapColoringEducationalI18n />
       <GameTroubleshootingSection
