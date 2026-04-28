@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { HiddenStackEducationalI18n } from "@/components/educational/GameEducationalI18n";
 import { DevTjEditorialNote } from "@/components/DevTjEditorialNote";
 import { GameIntroMiniSection } from "@/components/lab/GameIntroMiniSection";
+import { GameOperatorMemoSection } from "@/components/lab/GameOperatorMemoSection";
 import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSection";
 import { GameQuickInfoNote } from "@/components/lab/GameQuickInfoNote";
 import { GameTroubleshootingSection } from "@/components/lab/GameTroubleshootingSection";
@@ -53,6 +54,7 @@ export default function HiddenStackPage() {
           title="この教材でよくある誤解"
           body="「見えているブロックの数を数えれば答えが出る」と捉えがちですが、本題は遮蔽された列の個数を推定することです。正面の見え方だけでなく、奥行きと死角の関係を前提にした推論が求められます。"
         />
+        <GameOperatorMemoSection labId="hidden-stack" />
         <Suspense fallback={null}>
           <DevTjEditorialNote text="※ここは運営者による手書きのコメントがより相応しい（実際に子どもがつまずいた場面や、声かけで改善した例を1〜2文で追記すると教材固有性が高まります）" />
         </Suspense>

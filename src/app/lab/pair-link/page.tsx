@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { DevTjEditorialNote } from "@/components/DevTjEditorialNote";
 import { PairLinkEducationalI18n } from "@/components/educational/GameEducationalI18n";
 import { GameIntroMiniSection } from "@/components/lab/GameIntroMiniSection";
+import { GameOperatorMemoSection } from "@/components/lab/GameOperatorMemoSection";
 import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSection";
 import { GameTroubleshootingSection } from "@/components/lab/GameTroubleshootingSection";
 import { OtherPuzzlesSection } from "@/components/lab/OtherPuzzlesSection";
@@ -44,6 +45,7 @@ export default function PairLinkPage() {
           title="この教材でよくある誤解"
           body="「同じ数字同士を最短距離でつなげばよい」と思いがちですが、線は交差できず、かつ盤面のすべてのマスを埋める必要があります。距離最優先ではなく、通路の確保と残りマスの整合が同時に成り立つかが判断の中心になります。"
         />
+        <GameOperatorMemoSection labId="pair-link" />
         <Suspense fallback={null}>
           <DevTjEditorialNote text="※ここは運営者による手書きのコメントがより相応しい（行き詰まりやすい盤面パターン、再開のコツを実例で1〜2文追記すると価値が上がります）" />
         </Suspense>
