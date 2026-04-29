@@ -13,7 +13,7 @@ import PresSureJudgeGame from "./PresSureJudgeGame";
 import { gameLabAlternates, gameLabPageSeo } from "@/lib/gameLabPageSeo";
 import { buildGameSoftwareApplicationJsonLd } from "@/lib/gameSoftwareApplicationJsonLd";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wit-spot.vercel.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wispo.pages.dev";
 const presSureJsonLd = buildGameSoftwareApplicationJsonLd("pres-sure-judge", SITE_URL);
 
 export const metadata: Metadata = {

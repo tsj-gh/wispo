@@ -13,7 +13,7 @@ import { TapColoringLabShell } from "@/components/lab/TapColoringLabShell";
 import { gameLabAlternates, gameLabPageSeo } from "@/lib/gameLabPageSeo";
 import { buildGameSoftwareApplicationJsonLd } from "@/lib/gameSoftwareApplicationJsonLd";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wit-spot.vercel.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wispo.pages.dev";
 const tapColoringJsonLd = buildGameSoftwareApplicationJsonLd("tap-coloring", SITE_URL);
 
 export const metadata: Metadata = {

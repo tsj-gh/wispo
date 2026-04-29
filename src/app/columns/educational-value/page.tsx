@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { EducationalColumnArticle } from "@/components/educational/EducationalColumnArticle";
 import { EducationalColumnWispoHeader } from "@/components/educational/EducationalColumnWispoHeader";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wit-spot.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wispo.pages.dev";
 
 export const metadata: Metadata = {
   title: "知育コラム：Pair-Link・Reflec-Shot・Skyscraper・Pres-Sure Judge の知育効果",

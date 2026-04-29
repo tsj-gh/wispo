@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wit-spot.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wispo.pages.dev";
 
 /** 各ラボ／ゲームページの title / description（知育目的を明示） */
 export const gameLabPageSeo = {

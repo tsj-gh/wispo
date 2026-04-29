@@ -67,7 +67,7 @@ export default function Footer() {
         <FooterNav />
       </Suspense>
       <p className="text-center text-sm text-[var(--color-muted)]">
-        &copy; 2026 Wispo (wit-spot.vercel.app). All rights reserved.
+        &copy; 2026 Wispo (wispo.pages.dev). All rights reserved.
       </p>
     </footer>
   );
