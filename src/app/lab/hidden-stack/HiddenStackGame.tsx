@@ -7,6 +7,7 @@ import { PairLinkAdSlot } from "@/components/PairLinkAdSlots";
 import { GamePageHeader } from "@/components/GamePageHeader";
 import { DevDebugUserStats } from "@/components/DevDebugUserStats";
 import {
+  GAME_AD_GAP_AFTER_SLOT_1_PX,
   GAME_AD_GAP_BEFORE_SLOT_2_PX,
   HIDDEN_STACK_INITIAL_SCROLL_TOP_FUDGE_PX,
   HIDDEN_STACK_PC_ANSWER_BAND_FALLBACK_PX,
@@ -1350,7 +1351,8 @@ export default function HiddenStackGame() {
 
       <div
         ref={topAdRef}
-        className="relative left-1/2 mb-6 w-screen max-w-[100vw] shrink-0 -translate-x-1/2 lg:mb-0 lg:left-0 lg:w-full lg:translate-x-0"
+        className="relative left-1/2 w-screen max-w-[100vw] shrink-0 -translate-x-1/2 lg:left-0 lg:w-full lg:translate-x-0"
+        style={{ marginBottom: GAME_AD_GAP_AFTER_SLOT_1_PX }}
       >
         <div
           className="mx-auto flex w-full max-w-[min(100%,1200px)] min-h-0 items-center justify-center px-2 sm:px-3 lg:min-h-[var(--hs-ad)] lg:max-h-[var(--hs-ad)] lg:px-4"
