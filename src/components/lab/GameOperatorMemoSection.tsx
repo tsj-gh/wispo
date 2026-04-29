@@ -14,7 +14,7 @@ export function GameOperatorMemoSection({ labId }: GameOperatorMemoSectionProps)
       aria-label="運営メモ"
     >
       <h2 className="m-0 text-sm font-bold text-[var(--color-text)]">運営メモ</h2>
-      <p className="mt-1 m-0 text-xs leading-relaxed text-[var(--color-muted)]">{body}</p>
+      <p className="mt-1 m-0 whitespace-pre-wrap text-xs leading-relaxed text-[var(--color-muted)]">{body}</p>
     </section>
   );
 }
