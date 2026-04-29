@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "wit-spot.vercel.app"
+        }
+      ],
+      "destination": "https://wispo.pages.dev/:path*",
+      "permanent": true
+    }
+  ]
+}
