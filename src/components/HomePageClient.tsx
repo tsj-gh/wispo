@@ -82,15 +82,10 @@ export function HomePageClient() {
 
         <h2 className="mb-3 mt-6 text-lg font-bold text-[var(--color-text)]">{t("home.sectionUpdatesTitle")}</h2>
         <p className="mb-1 leading-relaxed text-[var(--color-muted)]">{t("home.sectionUpdatesBody")}</p>
-        <p className="mb-1">
+        <p className="mb-2">
           <Link href="/updates" className="font-medium text-[var(--color-accent)] underline-offset-2 hover:text-[var(--color-muted)] hover:underline">
             {t("home.sectionUpdatesLink")}
           </Link>
-        </p>
-        <p className="mb-2">
-          <a href="https://github.com/tsj-gh/wispo/commits/main" target="_blank" rel="noopener noreferrer" className="text-xs text-[var(--color-muted)] underline-offset-2 hover:underline">
-            {t("home.sectionUpdatesLinkSub")}
-          </a>
         </p>
       </section>
     </>

@@ -68,8 +68,7 @@
     "sectionOperatorContactTail": "から受け付けています。",
     "sectionUpdatesTitle": "更新履歴",
     "sectionUpdatesBody": "機能改善・不具合修正・教材追加の履歴は公開しています。",
-    "sectionUpdatesLink": "更新履歴ページを見る",
-    "sectionUpdatesLinkSub": "GitHub の全コミット履歴を見る"
+    "sectionUpdatesLink": "更新履歴ページを見る"
   },
   "games": {
     "reflecShot": {
