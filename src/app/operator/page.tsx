@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { buildBreadcrumbJsonLd } from "@/lib/breadcrumbs";
 
 export const metadata: Metadata = {
   title: "運営者情報 | Wispo",
@@ -7,10 +8,27 @@ export const metadata: Metadata = {
     "Wispo の運営目的、運営方針（一次情報）、制作体制、更新方針、お問い合わせ方針を公開しています。",
 };
 
+const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+  { label: "ホーム", href: "/" },
+  { label: "運営者情報", href: "/operator" },
+]);
+
 export default function OperatorPage() {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-6 md:py-8">
       <header className="mb-5">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+        <nav aria-label="パンくずリスト" className="mb-2 text-xs text-[var(--color-muted)]">
+          <ol className="m-0 flex flex-wrap items-center gap-x-1.5 gap-y-1 p-0">
+            <li className="inline-flex items-center gap-1.5">
+              <Link href="/" className="text-[var(--color-muted)] no-underline hover:underline">
+                ホーム
+              </Link>
+              <span aria-hidden>{">"}</span>
+            </li>
+            <li className="text-[var(--color-text)]">運営者情報</li>
+          </ol>
+        </nav>
         <h1 className="text-2xl font-black text-[var(--color-text)]">運営者情報</h1>
         <p className="mt-2 text-sm leading-relaxed text-[var(--color-muted)]">
           Wispo は、家庭学習で継続しやすいデジタル知育教材を目指して運営している、個人開発ベースの教育コンテンツプロジェクトです。

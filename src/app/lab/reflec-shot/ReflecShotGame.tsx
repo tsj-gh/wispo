@@ -3354,7 +3354,15 @@ export default function ReflecShotGame() {
         </div>
       )}
 
-      <GamePageHeader titleEn="Reflec-Shot" titleJa="リフレクショット" />
+      <GamePageHeader
+        titleEn="Reflec-Shot"
+        titleJa="リフレクショット"
+        breadcrumbs={[
+          { label: "ホーム", href: "/" },
+          { label: "教材一覧", href: "/#lab-cards" },
+          { label: "Reflec-Shot", href: "/lab/reflec-shot" },
+        ]}
+      />
 
       <div className="flex min-h-0 w-full flex-1 flex-col">
         <div

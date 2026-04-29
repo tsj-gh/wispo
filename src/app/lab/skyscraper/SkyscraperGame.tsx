@@ -522,6 +522,11 @@ export default function SkyscraperGame() {
         <GamePageHeader
           titleEn="Skyscraper"
           titleJa="スカイスクレイパー"
+          breadcrumbs={[
+            { label: "ホーム", href: "/" },
+            { label: "教材一覧", href: "/#lab-cards" },
+            { label: "Skyscraper", href: "/lab/skyscraper" },
+          ]}
           trailing={
             <>
               <span className="tabular-nums">{formatTime(timeSeconds)}</span>

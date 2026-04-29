@@ -12,9 +12,15 @@ import { SmartGuardLock } from "@/components/lab/SmartGuardLock";
 import PresSureJudgeGame from "./PresSureJudgeGame";
 import { gameLabAlternates, gameLabPageSeo } from "@/lib/gameLabPageSeo";
 import { buildGameSoftwareApplicationJsonLd } from "@/lib/gameSoftwareApplicationJsonLd";
+import { buildBreadcrumbJsonLd } from "@/lib/breadcrumbs";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wispo.pages.dev";
 const presSureJsonLd = buildGameSoftwareApplicationJsonLd("pres-sure-judge", SITE_URL);
+const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+  { label: "ホーム", href: "/" },
+  { label: "教材一覧", href: "/#lab-cards" },
+  { label: "Pres-Sure Judge", href: "/lab/pres-sure-judge" },
+]);
 
 export const metadata: Metadata = {
   title: gameLabPageSeo.presSureJudge.title,
@@ -33,6 +39,7 @@ export default function PresSureJudgePage() {
     <>
       <SmartGuardLock />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(presSureJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <Suspense fallback={null}>
         <PresSureJudgeGame />
       </Suspense>

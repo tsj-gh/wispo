@@ -13,9 +13,15 @@ import { SmartGuardLock } from "@/components/lab/SmartGuardLock";
 import HiddenStackGame from "./HiddenStackGame";
 import { gameLabAlternates, gameLabPageSeo } from "@/lib/gameLabPageSeo";
 import { buildGameSoftwareApplicationJsonLd } from "@/lib/gameSoftwareApplicationJsonLd";
+import { buildBreadcrumbJsonLd } from "@/lib/breadcrumbs";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wispo.pages.dev";
 const hiddenStackJsonLd = buildGameSoftwareApplicationJsonLd("hidden-stack", SITE_URL);
+const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+  { label: "ホーム", href: "/" },
+  { label: "教材一覧", href: "/#lab-cards" },
+  { label: "Hidden Stack", href: "/lab/hidden-stack" },
+]);
 
 export const metadata: Metadata = {
   title: gameLabPageSeo.hiddenStack.title,
@@ -34,6 +40,7 @@ export default function HiddenStackPage() {
     <>
       <SmartGuardLock />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(hiddenStackJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 py-2 md:py-3 lg:max-w-none lg:px-0 lg:py-3">
         <Suspense
           fallback={

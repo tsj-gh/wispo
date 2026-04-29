@@ -1,8 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { DevLink } from "@/components/DevLink";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import type { BreadcrumbEntry } from "@/lib/breadcrumbs";
 import { useI18n } from "@/lib/i18n-context";
 
 export type GamePageHeaderProps = {
@@ -12,6 +14,7 @@ export type GamePageHeaderProps = {
   titleJa: string;
   homeHref?: string;
   trailing?: ReactNode;
+  breadcrumbs?: BreadcrumbEntry[];
   /** 既定: w-full（親の GAME_COLUMN_CLASS 等で幅を与える） */
   maxWidthClassName?: string;
   /** 追加クラス（例: px-4 border-b） */
@@ -23,6 +26,7 @@ export function GamePageHeader({
   titleJa,
   homeHref = "/",
   trailing,
+  breadcrumbs,
   maxWidthClassName = "w-full",
   className = "",
 }: GamePageHeaderProps) {
@@ -34,13 +38,16 @@ export function GamePageHeader({
     >
       {/* 1行目: ■Wispo と JP/EN（＋タイマー等）を同じベースライン付近・h-8 で揃える。ゲーム名より上。 */}
       <div className="grid w-full min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2">
-        <DevLink
-          href={homeHref}
-          className="flex min-h-8 min-w-0 shrink-0 items-center gap-2 self-center text-xl font-black leading-none tracking-wider text-[var(--color-text)] no-underline hover:opacity-90 sm:gap-3 sm:text-2xl"
-        >
-          <span className="block h-8 w-8 shrink-0 rounded-2xl bg-gradient-to-br from-[var(--color-primary)] to-[color-mix(in_srgb,var(--color-accent)_70%,var(--color-primary))]" />
-          <span className="truncate">Wispo</span>
-        </DevLink>
+        <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1.5">
+          <DevLink
+            href={homeHref}
+            className="flex min-h-8 min-w-0 shrink-0 items-center gap-2 self-center text-xl font-black leading-none tracking-wider text-[var(--color-text)] no-underline hover:opacity-90 sm:gap-3 sm:text-2xl"
+          >
+            <span className="block h-8 w-8 shrink-0 rounded-2xl bg-gradient-to-br from-[var(--color-primary)] to-[color-mix(in_srgb,var(--color-accent)_70%,var(--color-primary))]" />
+            <span className="truncate">Wispo</span>
+          </DevLink>
+          {breadcrumbs ? <BreadcrumbNav items={breadcrumbs} /> : null}
+        </div>
         <div className="flex min-w-0 shrink-0 flex-wrap items-center justify-end gap-2 self-center">
           <LanguageToggle />
           {trailing != null ? (

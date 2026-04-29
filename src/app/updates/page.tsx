@@ -2,11 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { DevTjEditorialNote } from "@/components/DevTjEditorialNote";
+import { buildBreadcrumbJsonLd } from "@/lib/breadcrumbs";
 
 export const metadata: Metadata = {
   title: "更新履歴 | Wispo",
   description: "Wispo の機能改善・教材追加・不具合修正の履歴です。",
 };
+
+const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+  { label: "ホーム", href: "/" },
+  { label: "更新履歴", href: "/updates" },
+]);
 
 const UPDATES = [
   {
@@ -246,6 +252,18 @@ export default function UpdatesPage() {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-6 md:py-8">
       <header className="mb-5">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+        <nav aria-label="パンくずリスト" className="mb-2 text-xs text-[var(--color-muted)]">
+          <ol className="m-0 flex flex-wrap items-center gap-x-1.5 gap-y-1 p-0">
+            <li className="inline-flex items-center gap-1.5">
+              <Link href="/" className="text-[var(--color-muted)] no-underline hover:underline">
+                ホーム
+              </Link>
+              <span aria-hidden>{">"}</span>
+            </li>
+            <li className="text-[var(--color-text)]">更新履歴</li>
+          </ol>
+        </nav>
         <h1 className="text-2xl font-black text-[var(--color-text)]">更新履歴</h1>
         <p className="mt-2 text-sm leading-relaxed text-[var(--color-muted)]">
           Wispo の教材改善・機能追加・不具合修正の履歴を公開しています。導入検討や継続利用の参考としてご確認ください。

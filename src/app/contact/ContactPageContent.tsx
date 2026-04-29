@@ -22,7 +22,12 @@ export function ContactPageContent() {
           </header>
         }
       >
-        <PageHeaderWithDevLinks />
+        <PageHeaderWithDevLinks
+          breadcrumbs={[
+            { label: "ホーム", href: "/" },
+            { label: "お問い合わせ", href: "/contact" },
+          ]}
+        />
       </Suspense>
 
       <main className="pb-20">

@@ -1336,7 +1336,16 @@ export default function HiddenStackGame() {
       )}
 
       <div ref={headerRef} className="mx-auto w-full max-w-[min(100%,1080px)] shrink-0 px-4 pt-0 md:pt-1 lg:px-6 lg:pt-0">
-        <GamePageHeader titleEn="Hidden Stack" titleJa={t("games.hiddenStack.titleJa")} className="mb-3 md:mb-4" />
+        <GamePageHeader
+          titleEn="Hidden Stack"
+          titleJa={t("games.hiddenStack.titleJa")}
+          breadcrumbs={[
+            { label: "ホーム", href: "/" },
+            { label: "教材一覧", href: "/#lab-cards" },
+            { label: "Hidden Stack", href: "/lab/hidden-stack" },
+          ]}
+          className="mb-3 md:mb-4"
+        />
       </div>
 
       <div

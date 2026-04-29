@@ -2183,6 +2183,11 @@ export default function PairLinkGame() {
           <GamePageHeader
             titleEn="Pair-Link"
             titleJa="ペアリンク"
+            breadcrumbs={[
+              { label: "ホーム", href: "/" },
+              { label: "教材一覧", href: "/#lab-cards" },
+              { label: "Pair-Link", href: "/lab/pair-link" },
+            ]}
             trailing={
               <>
                 <span className="tabular-nums">{formatTime(timeSeconds)}</span>

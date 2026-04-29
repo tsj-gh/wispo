@@ -12,9 +12,15 @@ import { SmartGuardLock } from "@/components/lab/SmartGuardLock";
 import SkyscraperGame from "./SkyscraperGame";
 import { gameLabAlternates, gameLabPageSeo } from "@/lib/gameLabPageSeo";
 import { buildGameSoftwareApplicationJsonLd } from "@/lib/gameSoftwareApplicationJsonLd";
+import { buildBreadcrumbJsonLd } from "@/lib/breadcrumbs";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wispo.pages.dev";
 const skyscraperJsonLd = buildGameSoftwareApplicationJsonLd("skyscraper", SITE_URL);
+const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+  { label: "ホーム", href: "/" },
+  { label: "教材一覧", href: "/#lab-cards" },
+  { label: "Skyscraper", href: "/lab/skyscraper" },
+]);
 
 export const metadata: Metadata = {
   title: gameLabPageSeo.skyscraper.title,
@@ -33,6 +39,7 @@ export default function SkyscraperPage() {
     <>
       <SmartGuardLock />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(skyscraperJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <main className="mx-auto flex min-h-[100dvh] w-full max-w-3xl flex-1 flex-col px-4 py-4 md:py-6 lg:max-w-[1400px] lg:px-6">
         <Suspense fallback={<div className="flex min-h-[40dvh] flex-1 items-center justify-center bg-[var(--color-bg)] text-[var(--color-muted)]">読み込み中…</div>}>
           <SkyscraperGame />

@@ -22,7 +22,12 @@ export function PrivacyPageContent() {
           </header>
         }
       >
-        <PageHeaderWithDevLinks />
+        <PageHeaderWithDevLinks
+          breadcrumbs={[
+            { label: "ホーム", href: "/" },
+            { label: "プライバシー", href: "/privacy" },
+          ]}
+        />
       </Suspense>
 
       <main className="pb-20">

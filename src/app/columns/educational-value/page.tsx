@@ -2,8 +2,13 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { EducationalColumnArticle } from "@/components/educational/EducationalColumnArticle";
 import { EducationalColumnWispoHeader } from "@/components/educational/EducationalColumnWispoHeader";
+import { buildBreadcrumbJsonLd } from "@/lib/breadcrumbs";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wispo.pages.dev";
+const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+  { label: "ホーム", href: "/" },
+  { label: "知育コラム", href: "/columns/educational-value" },
+]);
 
 export const metadata: Metadata = {
   title: "知育コラム：Pair-Link・Reflec-Shot・Skyscraper・Pres-Sure Judge の知育効果",
@@ -16,8 +21,14 @@ export const metadata: Metadata = {
 export default function EducationalValueColumnPage() {
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10 pb-16 md:py-14">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <Suspense fallback={<div className="mb-8 h-9 w-40 rounded-lg bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)]" aria-hidden />}>
-        <EducationalColumnWispoHeader />
+        <EducationalColumnWispoHeader
+          breadcrumbs={[
+            { label: "ホーム", href: "/" },
+            { label: "知育コラム", href: "/columns/educational-value" },
+          ]}
+        />
       </Suspense>
       <EducationalColumnArticle />
     </main>

@@ -87,7 +87,15 @@ export function TapColoringLabShell() {
           {tapToast}
         </div>
       )}
-      <GamePageHeader titleEn="Tap Coloring" titleJa="タップぬりえ" />
+      <GamePageHeader
+        titleEn="Tap Coloring"
+        titleJa="タップぬりえ"
+        breadcrumbs={[
+          { label: "ホーム", href: "/" },
+          { label: "教材一覧", href: "/#lab-cards" },
+          { label: "Tap Coloring", href: "/lab/tap-coloring" },
+        ]}
+      />
       {isDevTj && (
         <div
           className={`fixed right-3 top-14 z-[55] sm:right-4 sm:top-16 ${canvasDebugMode ? "pointer-events-none" : ""}`}

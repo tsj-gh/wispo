@@ -442,7 +442,15 @@ export function PopPopBubblesLabShell() {
           )}
         </div>
       )}
-      <GamePageHeader titleEn="Pop-Pop Bubbles" titleJa="はじけて！バブル" />
+      <GamePageHeader
+        titleEn="Pop-Pop Bubbles"
+        titleJa="はじけて！バブル"
+        breadcrumbs={[
+          { label: "ホーム", href: "/" },
+          { label: "教材一覧", href: "/#lab-cards" },
+          { label: "Pop-Pop Bubbles", href: "/lab/pop-pop-bubbles" },
+        ]}
+      />
       <div className="hidden" aria-hidden>
         <PairLinkAdSlot slotIndex={1} />
       </div>
