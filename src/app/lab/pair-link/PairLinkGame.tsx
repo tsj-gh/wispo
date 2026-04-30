@@ -2186,7 +2186,7 @@ export default function PairLinkGame() {
             breadcrumbs={[
               { label: "ホーム", href: "/" },
               { label: "教材一覧", href: "/#lab-cards" },
-              { label: "Pair-Link", href: "/lab/pair-link" },
+              { label: "ペアリンク", href: "/lab/pair-link" },
             ]}
             trailing={
               <>

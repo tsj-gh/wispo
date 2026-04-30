@@ -19,7 +19,7 @@ const tapColoringJsonLd = buildGameSoftwareApplicationJsonLd("tap-coloring", SIT
 const breadcrumbJsonLd = buildBreadcrumbJsonLd([
   { label: "ホーム", href: "/" },
   { label: "教材一覧", href: "/#lab-cards" },
-  { label: "Tap Coloring", href: "/lab/tap-coloring" },
+  { label: "タップぬりえ", href: "/lab/tap-coloring" },
 ]);
 
 export const metadata: Metadata = {
@@ -40,7 +40,7 @@ export default function TapColoringLabPage() {
           <TapColoringLabShell />
         </Suspense>
         <GameIntroMiniSection
-          title="教材概要（タップぬりえ）"
+          title="タップぬりえとは"
           body="色彩認知と原因理解を、短い操作と即時反応で学べる入門教材です。幼児でも始めやすいタップ中心の設計で、完成体験を積みながら集中の持続を育てます。"
         />
         <GamePrimaryContextSection

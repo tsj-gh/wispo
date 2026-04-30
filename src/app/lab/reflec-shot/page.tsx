@@ -19,7 +19,7 @@ const reflecShotJsonLd = buildGameSoftwareApplicationJsonLd("reflec-shot", SITE_
 const breadcrumbJsonLd = buildBreadcrumbJsonLd([
   { label: "ホーム", href: "/" },
   { label: "教材一覧", href: "/#lab-cards" },
-  { label: "Reflec-Shot", href: "/lab/reflec-shot" },
+  { label: "リフレクショット", href: "/lab/reflec-shot" },
 ]);
 
 export const metadata: Metadata = {
@@ -41,7 +41,7 @@ export default function ReflecShotLabPage() {
           <ReflecShotGame />
         </Suspense>
         <GameIntroMiniSection
-          title="教材概要（Reflec-Shot）"
+          title="リフレクショットとは"
           body="反射規則と軌道予測を扱う空間推理教材です。短い試行で仮説を検証できるため、戦略更新と見通しの良い思考習慣を育てます。"
         />
         <GamePrimaryContextSection
@@ -55,7 +55,7 @@ export default function ReflecShotLabPage() {
       </main>
       <ReflecLabEducationalI18n />
       <GameTroubleshootingSection
-        gameTitle="Reflec-Shot"
+        gameTitle="リフレクショット"
         items={[
           { issue: "反射方向が毎回逆になる", action: "1回目は「1反射先」だけを予測し、2反射以上は後から積み上げて考えます。" },
           { issue: "目標宝石数まで届かない", action: "ゴール直行より先に、宝石が密な経路を優先して射線を作ると達成しやすくなります。" },
@@ -63,7 +63,7 @@ export default function ReflecShotLabPage() {
         ]}
       />
       <ParentGuideNote
-        gameTitle="Reflec-Shot"
+        gameTitle="リフレクショット"
         text="反射が難しいときは、まず1回反射で届くかだけを確認し、複数反射は段階的に増やしてください。『次に向きが変わるのはどこ？』と位置予測を言葉にする声かけが有効です。失敗時はバンパー配置を1つだけ変えて再試行すると、仮説検証の感覚が育ちます。"
       />
       <OtherPuzzlesSection currentId="reflec-shot" />

@@ -8,9 +8,9 @@ import type { BreadcrumbEntry } from "@/lib/breadcrumbs";
 import { useI18n } from "@/lib/i18n-context";
 
 export type GamePageHeaderProps = {
-  /** 英語表記（例: Pair-Link） */
+  /** 英語ロケール時の見出し（例: Pair-Link） */
   titleEn: string;
-  /** 日本語表記（括弧内に表示） */
+  /** 日本語ロケール時の見出し（和名のみ。英語名は titleEn を使う） */
   titleJa: string;
   homeHref?: string;
   trailing?: ReactNode;
@@ -58,8 +58,11 @@ export function GamePageHeader({
 
       {/* 2行目: アプリ名（言語切替より下に回らないよう常にこの順） */}
       <h1 className="min-w-0 max-w-full break-words text-left text-xl font-black leading-tight tracking-tight text-[var(--color-text)] sm:text-2xl">
-        <span className="text-[var(--color-text)]">{titleEn}</span>
-        {locale === "ja" ? <span className="text-[var(--color-muted)]">（{titleJa}）</span> : null}
+        {locale === "ja" ? (
+          <span className="text-[var(--color-text)]">{titleJa}</span>
+        ) : (
+          <span className="text-[var(--color-text)]">{titleEn}</span>
+        )}
       </h1>
     </header>
   );

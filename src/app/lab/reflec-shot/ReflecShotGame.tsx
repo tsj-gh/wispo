@@ -3360,7 +3360,7 @@ export default function ReflecShotGame() {
         breadcrumbs={[
           { label: "ホーム", href: "/" },
           { label: "教材一覧", href: "/#lab-cards" },
-          { label: "Reflec-Shot", href: "/lab/reflec-shot" },
+          { label: "リフレクショット", href: "/lab/reflec-shot" },
         ]}
       />
 

@@ -448,7 +448,7 @@ export function PopPopBubblesLabShell() {
         breadcrumbs={[
           { label: "ホーム", href: "/" },
           { label: "教材一覧", href: "/#lab-cards" },
-          { label: "Pop-Pop Bubbles", href: "/lab/pop-pop-bubbles" },
+          { label: "はじけて！バブル", href: "/lab/pop-pop-bubbles" },
         ]}
       />
       <div className="hidden" aria-hidden>

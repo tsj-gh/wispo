@@ -7,6 +7,12 @@ export const GAME_COLUMN_CLASS = "mx-auto w-full max-w-[520px]";
 /** Pres-Sure Judge 用（640px 列） */
 export const GAME_COLUMN_CLASS_WIDE = "mx-auto w-full max-w-[640px]";
 
+/**
+ * 教材概要・ねらい・運営メモ等の周辺解説。PCでは `GameTroubleshootingSection`（max 1080px）と同じ列幅に揃える。
+ * Tailwind JIT 用に分割しない。
+ */
+export const LAB_SUPPLEMENT_BAND_CLASS = "mx-auto w-full max-w-3xl lg:max-w-[1080px]";
+
 /** 広告#1 の下〜盤面セクションまでの縦余白（誤タップ防止の最低 24px を満たす） */
 export const GAME_AD_GAP_AFTER_SLOT_1_PX = 24;
 

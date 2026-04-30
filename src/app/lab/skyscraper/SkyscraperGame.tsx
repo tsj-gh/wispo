@@ -525,7 +525,7 @@ export default function SkyscraperGame() {
           breadcrumbs={[
             { label: "ホーム", href: "/" },
             { label: "教材一覧", href: "/#lab-cards" },
-            { label: "Skyscraper", href: "/lab/skyscraper" },
+            { label: "スカイスクレイパー", href: "/lab/skyscraper" },
           ]}
           trailing={
             <>

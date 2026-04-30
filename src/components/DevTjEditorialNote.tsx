@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import { LAB_SUPPLEMENT_BAND_CLASS } from "@/lib/gameLayout";
 
 type DevTjEditorialNoteProps = {
   text?: string;
@@ -18,7 +19,7 @@ export function DevTjEditorialNote({ text = DEFAULT_TEXT, className }: DevTjEdit
     <p
       className={
         className ??
-        "mt-2 rounded-lg border border-[color-mix(in_srgb,var(--color-primary)_35%,transparent)] bg-[color-mix(in_srgb,var(--color-primary)_10%,transparent)] px-3 py-2 text-xs font-semibold leading-relaxed text-[var(--color-text)]"
+        `${LAB_SUPPLEMENT_BAND_CLASS} mt-2 rounded-lg border border-[color-mix(in_srgb,var(--color-primary)_35%,transparent)] bg-[color-mix(in_srgb,var(--color-primary)_10%,transparent)] px-3 py-2 text-xs font-semibold leading-relaxed text-[var(--color-text)]`
       }
     >
       {text}

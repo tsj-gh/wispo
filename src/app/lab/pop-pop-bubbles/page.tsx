@@ -19,7 +19,7 @@ const popPopBubblesJsonLd = buildGameSoftwareApplicationJsonLd("pop-pop-bubbles"
 const breadcrumbJsonLd = buildBreadcrumbJsonLd([
   { label: "ホーム", href: "/" },
   { label: "教材一覧", href: "/#lab-cards" },
-  { label: "Pop-Pop Bubbles", href: "/lab/pop-pop-bubbles" },
+  { label: "はじけて！バブル", href: "/lab/pop-pop-bubbles" },
 ]);
 
 export const metadata: Metadata = {
@@ -42,7 +42,7 @@ export default function PopPopBubblesPage() {
           <PopPopBubblesLabShell />
         </Suspense>
         <GameIntroMiniSection
-          title="教材概要（はじけて！バブル）"
+          title="はじけて！バブルとは"
           body="手眼協調と注意切替を、軽快なタップ体験で育てる入門教材です。短いラウンドで達成感を得やすく、低年齢でも継続しやすい構成です。"
         />
         <GamePrimaryContextSection

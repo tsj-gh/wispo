@@ -20,13 +20,13 @@ const hiddenStackJsonLd = buildGameSoftwareApplicationJsonLd("hidden-stack", SIT
 const breadcrumbJsonLd = buildBreadcrumbJsonLd([
   { label: "ホーム", href: "/" },
   { label: "教材一覧", href: "/#lab-cards" },
-  { label: "Hidden Stack", href: "/lab/hidden-stack" },
+  { label: "かくれつみき", href: "/lab/hidden-stack" },
 ]);
 
 export const metadata: Metadata = {
   title: gameLabPageSeo.hiddenStack.title,
   description: gameLabPageSeo.hiddenStack.description,
-  keywords: ["知育", "パズル", "3D", "空間認知", "Hidden Stack", "かくれつみき", "積み木"],
+  keywords: ["知育", "パズル", "3D", "空間認知", "かくれつみき", "積み木"],
   applicationName: "Wispo",
   alternates: gameLabAlternates("/lab/hidden-stack"),
   other: {
@@ -54,7 +54,7 @@ export default function HiddenStackPage() {
           </div>
         </Suspense>
         <GameIntroMiniSection
-          title="教材概要（かくれつみき）"
+          title="かくれつみきとは"
           body="3D積み木の死角を推測し、見えない情報を数量として再構成する空間認識教材です。観察→仮説→検証の循環を短い問題で反復できます。"
         />
         <GamePrimaryContextSection
@@ -65,13 +65,12 @@ export default function HiddenStackPage() {
         <Suspense fallback={null}>
           <DevTjEditorialNote text="※ここは運営者による手書きのコメントがより相応しい（実際に子どもがつまずいた場面や、声かけで改善した例を1〜2文で追記すると教材固有性が高まります）" />
         </Suspense>
-        <section className="mx-auto mt-6 w-full max-w-3xl">
-          <GameQuickInfoNote
-            goal="遮蔽を含む空間把握・数量推定・推理の言語化を促進"
-            target="小学校低学年〜大人"
-            operation="盤面を観察して死角の積み木数を選択し、ふりかえりで検証"
-          />
-        </section>
+        <GameQuickInfoNote
+          className="mt-6"
+          goal="遮蔽を含む空間把握・数量推定・推理の言語化を促進"
+          target="小学校低学年〜大人"
+          operation="盤面を観察して死角の積み木数を選択し、ふりかえりで検証"
+        />
       </main>
       <HiddenStackEducationalI18n />
       <GameTroubleshootingSection

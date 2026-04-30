@@ -93,7 +93,13 @@ export function SmartGuardLock() {
         aria-label={isLocked ? "誤操作防止ロック中。2回タップで解除" : "ロック解除中。2回タップで再ロック"}
         title={isLocked ? "誤操作防止ロック中（2回タップで解除）" : "ロック解除中（2回タップで再ロック）"}
       >
-        {isLocked ? "🔒" : "🔓"}
+        {isLocked ? (
+          <span aria-hidden>🔒</span>
+        ) : (
+          <span className="grayscale opacity-90" aria-hidden>
+            🔓
+          </span>
+        )}
       </button>
     </div>
   );

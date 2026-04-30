@@ -1343,7 +1343,7 @@ export default function HiddenStackGame() {
           breadcrumbs={[
             { label: "ホーム", href: "/" },
             { label: "教材一覧", href: "/#lab-cards" },
-            { label: "Hidden Stack", href: "/lab/hidden-stack" },
+            { label: "かくれつみき", href: "/lab/hidden-stack" },
           ]}
           className="mb-3 md:mb-4"
         />

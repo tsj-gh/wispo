@@ -19,7 +19,7 @@ const skyscraperJsonLd = buildGameSoftwareApplicationJsonLd("skyscraper", SITE_U
 const breadcrumbJsonLd = buildBreadcrumbJsonLd([
   { label: "ホーム", href: "/" },
   { label: "教材一覧", href: "/#lab-cards" },
-  { label: "Skyscraper", href: "/lab/skyscraper" },
+  { label: "スカイスクレイパー", href: "/lab/skyscraper" },
 ]);
 
 export const metadata: Metadata = {
@@ -45,7 +45,7 @@ export default function SkyscraperPage() {
           <SkyscraperGame />
         </Suspense>
         <GameIntroMiniSection
-          title="教材概要（Skyscraper）"
+          title="スカイスクレイパーとは"
           body="外周ヒントを使って内部配置を推理する制約充足型の教材です。候補整理と演繹推論を段階的に育て、算数的な場合分けの基礎づくりに役立ちます。"
         />
         <GamePrimaryContextSection
@@ -59,7 +59,7 @@ export default function SkyscraperPage() {
       </main>
       <SkyscraperEducationalI18n />
       <GameTroubleshootingSection
-        gameTitle="Skyscraper"
+        gameTitle="スカイスクレイパー"
         items={[
           { issue: "候補が多すぎて止まる", action: "まずヒント1やNが作る確定配置から埋め、候補を一気に減らします。" },
           { issue: "行列の重複管理が難しい", action: "行と列を交互に見るリズムに固定し、確定値を入れたら必ず反対軸を更新します。" },
@@ -67,7 +67,7 @@ export default function SkyscraperPage() {
         ]}
       />
       <ParentGuideNote
-        gameTitle="Skyscraper"
+        gameTitle="スカイスクレイパー"
         text="最初は『1』や最大値ヒントから確定するマスだけを一緒に探し、全体を一気に解こうとしない進め方がおすすめです。止まったら『この行でまだ置ける数字は何個？』と候補整理を促してください。答え合わせでは正誤より、どの根拠で置いたかを話せた点を評価すると継続しやすくなります。"
       />
       <OtherPuzzlesSection currentId="skyscraper" />

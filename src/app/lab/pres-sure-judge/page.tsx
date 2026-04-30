@@ -19,7 +19,7 @@ const presSureJsonLd = buildGameSoftwareApplicationJsonLd("pres-sure-judge", SIT
 const breadcrumbJsonLd = buildBreadcrumbJsonLd([
   { label: "ホーム", href: "/" },
   { label: "教材一覧", href: "/#lab-cards" },
-  { label: "Pres-Sure Judge", href: "/lab/pres-sure-judge" },
+  { label: "プレッシャージャッジ", href: "/lab/pres-sure-judge" },
 ]);
 
 export const metadata: Metadata = {
@@ -43,9 +43,9 @@ export default function PresSureJudgePage() {
       <Suspense fallback={null}>
         <PresSureJudgeGame />
       </Suspense>
-      <section className="mx-auto mt-6 w-full max-w-[1080px] px-4">
+      <div className="mx-auto mt-6 w-full space-y-3 px-4">
         <GameIntroMiniSection
-          title="教材概要（Pres-Sure Judge）"
+          title="プレッシャージャッジとは"
           body="時間制約下で天秤の均衡を見極める判断教材です。数量感覚と抑制制御を同時に使い、短いラウンドで意思決定の精度を高めます。"
         />
         <GamePrimaryContextSection
@@ -56,10 +56,10 @@ export default function PresSureJudgePage() {
         <Suspense fallback={null}>
           <DevTjEditorialNote text="※ここは運営者による手書きのコメントがより相応しい（時間圧で判断が崩れた場面と、休憩で回復した実測を短文で残すと有用です）" />
         </Suspense>
-      </section>
+      </div>
       <PresSureEducationalI18n />
       <GameTroubleshootingSection
-        gameTitle="Pres-Sure Judge"
+        gameTitle="プレッシャージャッジ"
         items={[
           { issue: "焦ってJudgeして失敗する", action: "残り時間が短くても、最後の1手前で左右差を声に出して確認してから確定します。" },
           { issue: "重りの配置意図を忘れる", action: "「左を+2」のように目的を短く決めてからドラッグすると判断が安定します。" },
@@ -67,7 +67,7 @@ export default function PresSureJudgePage() {
         ]}
       />
       <ParentGuideNote
-        gameTitle="Pres-Sure Judge"
+        gameTitle="プレッシャージャッジ"
         text="時間圧があるため、先に『今回は安全重視でいこう』など方針を決めてから始めると判断が安定します。失敗時は結果だけでなく『どの時点で急いだか』を一緒に振り返ると改善点が見えます。短い休憩を挟んで再挑戦する運用が、集中と自己調整の学習に効果的です。"
       />
       <OtherPuzzlesSection currentId="pres-sure-judge" />

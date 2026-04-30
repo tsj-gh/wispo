@@ -1649,7 +1649,7 @@ export default function PresSureJudgeGame() {
         breadcrumbs={[
           { label: "ホーム", href: "/" },
           { label: "教材一覧", href: "/#lab-cards" },
-          { label: "Pres-Sure Judge", href: "/lab/pres-sure-judge" },
+          { label: "プレッシャージャッジ", href: "/lab/pres-sure-judge" },
         ]}
         maxWidthClassName="w-full"
         className="relative z-20 shrink-0 border-b border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] px-4 py-4 md:px-6 md:py-4"

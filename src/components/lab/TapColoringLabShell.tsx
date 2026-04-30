@@ -93,7 +93,7 @@ export function TapColoringLabShell() {
         breadcrumbs={[
           { label: "ホーム", href: "/" },
           { label: "教材一覧", href: "/#lab-cards" },
-          { label: "Tap Coloring", href: "/lab/tap-coloring" },
+          { label: "タップぬりえ", href: "/lab/tap-coloring" },
         ]}
       />
       {isDevTj && (

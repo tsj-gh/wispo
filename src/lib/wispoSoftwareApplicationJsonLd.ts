@@ -41,7 +41,7 @@ export function buildWispoSoftwareApplicationJsonLd(siteUrl: string): Record<str
       },
       {
         "@type": "SoftwareApplication",
-        name: "はじけて！バブル（Pop-Pop Bubbles）",
+        name: "はじけて！バブル",
         url: `${base}/lab/pop-pop-bubbles`,
         applicationCategory: "EducationalApplication",
         operatingSystem: "Web Browser",
@@ -63,7 +63,7 @@ export function buildWispoSoftwareApplicationJsonLd(siteUrl: string): Record<str
       },
       {
         "@type": "SoftwareApplication",
-        name: "Pair-Link（ペアリンク）",
+        name: "ペアリンク",
         url: `${base}/lab/pair-link`,
         applicationCategory: "EducationalApplication",
         operatingSystem: "Web Browser",
@@ -74,7 +74,7 @@ export function buildWispoSoftwareApplicationJsonLd(siteUrl: string): Record<str
       },
       {
         "@type": "SoftwareApplication",
-        name: "Pres-Sure Judge（プレッシャージャッジ）",
+        name: "プレッシャージャッジ",
         url: `${base}/lab/pres-sure-judge`,
         applicationCategory: "EducationalApplication",
         operatingSystem: "Web Browser",
@@ -85,7 +85,7 @@ export function buildWispoSoftwareApplicationJsonLd(siteUrl: string): Record<str
       },
       {
         "@type": "SoftwareApplication",
-        name: "Skyscraper（スカイスクレイパー）",
+        name: "スカイスクレイパー",
         url: `${base}/lab/skyscraper`,
         applicationCategory: "EducationalApplication",
         operatingSystem: "Web Browser",
@@ -96,7 +96,7 @@ export function buildWispoSoftwareApplicationJsonLd(siteUrl: string): Record<str
       },
       {
         "@type": "SoftwareApplication",
-        name: "Reflec-Shot（リフレクショット）",
+        name: "リフレクショット",
         url: `${base}/lab/reflec-shot`,
         applicationCategory: "EducationalApplication",
         operatingSystem: "Web Browser",
