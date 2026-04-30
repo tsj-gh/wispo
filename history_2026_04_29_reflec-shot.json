@@ -1,0 +1,824 @@
+[
+  {
+    "date": "2026-03-25",
+    "message": "リフレクショット製作開始",
+    "visible": false,
+    "summary": "リフレクショット製作開始?????"
+  },
+  {
+    "date": "2026-03-25",
+    "message": "feat(lab/reflec-shot): スリングショットとタッチチャージ射出を実装",
+    "visible": true,
+    "summary": "スリングショットとタッチチャージ射出を実装?????"
+  },
+  {
+    "date": "2026-03-26",
+    "message": "feat(lab/reflec-shot): 逆トレースによるステージ自動生成と検証ルート表示",
+    "visible": true,
+    "summary": "逆トレースによるステージ自動生成と検証ルート表示?????"
+  },
+  {
+    "date": "2026-03-26",
+    "message": "fix(lab/reflec-shot): クリア条件に全バンパー正解向きを要求",
+    "visible": false,
+    "summary": "クリア条件に全バンパー正解向きを要求?????"
+  },
+  {
+    "date": "2026-03-26",
+    "message": "feat(lab/reflec-shot): 射出UX改善・デバッグパネル・動的AGENT_RADIUS",
+    "visible": true,
+    "summary": "射出UX改善・デバッグパネル・動的AGENT_RADIUS?????"
+  },
+  {
+    "date": "2026-03-26",
+    "message": "feat(lab/reflec-shot): devtj 時のみ自動解答（正解角度適用＋MAX_POWER射出）",
+    "visible": true,
+    "summary": "devtj 時のみ自動解答（正解角度適用＋MAX_POWER射出）?????"
+  },
+  {
+    "date": "2026-03-26",
+    "message": "fix(lab/reflec-shot): 正解ガイドを鏡面反射のヒット点列に修正",
+    "visible": false,
+    "summary": "正解ガイドを鏡面反射のヒット点列に修正?????"
+  },
+  {
+    "date": "2026-03-26",
+    "message": "Revert \"fix(lab/reflec-shot): 正解ガイドを鏡面反射のヒット点列に修正\"",
+    "visible": true,
+    "summary": "正解ガイドを鏡面反射のヒット点列に修正\"?????"
+  },
+  {
+    "date": "2026-03-26",
+    "message": "reflec-shot: grid-based logic puzzle (replace physics stage gen)",
+    "visible": false,
+    "summary": "grid-based logic puzzle (replace physics stage gen)?????"
+  },
+  {
+    "date": "2026-03-26",
+    "message": "reflec-shot: explicit START launch row and GOAL pad above board",
+    "visible": false,
+    "summary": "explicit START launch row and GOAL pad above board?????"
+  },
+  {
+    "date": "2026-03-26",
+    "message": "reflec-shot: show build hash and build time in dev debug panel",
+    "visible": false,
+    "summary": "show build hash and build time in dev debug panel?????"
+  },
+  {
+    "date": "2026-03-26",
+    "message": "reflec-shot: pad-row neighbor cells, grade-based board size (G1=4x4)",
+    "visible": false,
+    "summary": "pad-row neighbor cells, grade-based board size (G1=4x4)?????"
+  },
+  {
+    "date": "2026-03-26",
+    "message": "reflec-shot: hide pad-row slots except portal cells; portal gap by ball size",
+    "visible": false,
+    "summary": "hide pad-row slots except portal cells; portal gap by ball size?????"
+  },
+  {
+    "date": "2026-03-26",
+    "message": "reflec-shot: snap projectile to launch/goalPad on won/lost arrival frame",
+    "visible": false,
+    "summary": "snap projectile to launch/goalPad on won/lost arrival frame?????"
+  },
+  {
+    "date": "2026-03-27",
+    "message": "reflec-shot: gapped grid borders on all cell edges with fillColor notch",
+    "visible": false,
+    "summary": "gapped grid borders on all cell edges with fillColor notch?????"
+  },
+  {
+    "date": "2026-03-27",
+    "message": "docs(reflec-shot): document logical XY vs CellCoord/Dir mapping",
+    "visible": false,
+    "summary": "document logical XY vs CellCoord/Dir mapping?????"
+  },
+  {
+    "date": "2026-03-27",
+    "message": "reflec-shot: polyline path gen for G1/G2 with diagonal-only bumpers",
+    "visible": false,
+    "summary": "polyline path gen for G1/G2 with diagonal-only bumpers?????"
+  },
+  {
+    "date": "2026-03-27",
+    "message": "reflec-shot: diagonal bumpers at launch→start and goal→goalPad turns",
+    "visible": false,
+    "summary": "diagonal bumpers at launch→start and goal→goalPad turns?????"
+  },
+  {
+    "date": "2026-03-27",
+    "message": "reflec-shot: correct slash/backslash bumper reflection maps",
+    "visible": false,
+    "summary": "correct slash/backslash bumper reflection maps?????"
+  },
+  {
+    "date": "2026-03-27",
+    "message": "reflec-shot: fail on wall-blocked exit instead of 180° wall bounce",
+    "visible": false,
+    "summary": "fail on wall-blocked exit instead of 180° wall bounce?????"
+  },
+  {
+    "date": "2026-03-27",
+    "message": "reflec-shot: align DIR.U/D with cell dy (U=dy+1, D=dy-1) and fix bumpers/sim",
+    "visible": false,
+    "summary": "align DIR.U/D with cell dy (U=dy+1, D=dy-1) and fix bumpers/sim?????"
+  },
+  {
+    "date": "2026-03-27",
+    "message": "reflec-shot(G2): require two-axis span for bend-4 and try both segment orders",
+    "visible": false,
+    "summary": "require two-axis span for bend-4 and try both segment orders?????"
+  },
+  {
+    "date": "2026-03-27",
+    "message": "reflec-shot: add pathHasOrthogonalCrossCell for cross-cell detection",
+    "visible": false,
+    "summary": "add pathHasOrthogonalCrossCell for cross-cell detection?????"
+  },
+  {
+    "date": "2026-03-27",
+    "message": "reflec-shot(G2): require orthogonal cross cell in polyline generation; update fallback path",
+    "visible": false,
+    "summary": "require orthogonal cross cell in polyline generation; update fallback path?????"
+  },
+  {
+    "date": "2026-03-27",
+    "message": "reflec-shot(Grade2): 経路回転・goalPad延長・内角バンパーのみに変更し仕様書を更新",
+    "visible": false,
+    "summary": "経路回転・goalPad延長・内角バンパーのみに変更し仕様書を更新?????"
+  },
+  {
+    "date": "2026-03-28",
+    "message": "reflec-shot: 座標系を画面xy（y上向き正）に統一",
+    "visible": false,
+    "summary": "座標系を画面xy（y上向き正）に統一?????"
+  },
+  {
+    "date": "2026-03-28",
+    "message": "reflec-shot: SLASH/BACKSLASHマップ修正とDEBUG盤面ハッシュ（rs1）",
+    "visible": false,
+    "summary": "SLASH/BACKSLASHマップ修正とDEBUG盤面ハッシュ（rs1）?????"
+  },
+  {
+    "date": "2026-03-28",
+    "message": "reflec-shot: rs2 シード短形式と球速度（既定2倍・デバッグ調整）",
+    "visible": false,
+    "summary": "rs2 シード短形式と球速度（既定2倍・デバッグ調整）?????"
+  },
+  {
+    "date": "2026-03-28",
+    "message": "reflec-shot: Grade1 折れ1〜4・バンパー4個以下、Grade2 折れ6は全マス非再訪",
+    "visible": false,
+    "summary": "Grade1 折れ1〜4・バンパー4個以下、Grade2 折れ6は全マス非再訪?????"
+  },
+  {
+    "date": "2026-03-28",
+    "message": "reflec-shot: stageRowRange に正解経路の行を含め描画欠けを解消",
+    "visible": false,
+    "summary": "stageRowRange に正解経路の行を含め描画欠けを解消?????"
+  },
+  {
+    "date": "2026-03-28",
+    "message": "reflec-shot: Grade3 を折れ6・1マス再訪経路に、旧3〜5を4〜5へ",
+    "visible": false,
+    "summary": "Grade3 を折れ6・1マス再訪経路に、旧3〜5を4〜5へ?????"
+  },
+  {
+    "date": "2026-03-28",
+    "message": "reflec-shot: Grade3 再訪は両回90°折れ・入射制約に合わせて生成を刷新",
+    "visible": false,
+    "summary": "Grade3 再訪は両回90°折れ・入射制約に合わせて生成を刷新?????"
+  },
+  {
+    "date": "2026-03-28",
+    "message": "Reflect-Shot: move board generation to Web Worker",
+    "visible": false,
+    "summary": "move board generation to Web Worker?????"
+  },
+  {
+    "date": "2026-03-28",
+    "message": "Reflect-Shot: grade-based prefetch stock queue (Web Worker)",
+    "visible": false,
+    "summary": "grade-based prefetch stock queue (Web Worker)?????"
+  },
+  {
+    "date": "2026-03-28",
+    "message": "Reflect-Shot: defer prefetch so initial board is not stuck behind worker queue",
+    "visible": false,
+    "summary": "defer prefetch so initial board is not stuck behind worker queue?????"
+  },
+  {
+    "date": "2026-03-28",
+    "message": "Reflect-Shot: debug Source line, pause stock prefetch, ball speed 3.5",
+    "visible": false,
+    "summary": "debug Source line, pause stock prefetch, ball speed 3.5?????"
+  },
+  {
+    "date": "2026-03-28",
+    "message": "chore: rebuild reflect-shot-worker bundle",
+    "visible": false,
+    "summary": "rebuild reflect-shot-worker bundle?????"
+  },
+  {
+    "date": "2026-03-28",
+    "message": "fix(reflec-shot): Grade2 正規化後に goalPad を新ゴール直上の盤外へ再接続",
+    "visible": false,
+    "summary": "Grade2 正規化後に goalPad を新ゴール直上の盤外へ再接続?????"
+  },
+  {
+    "date": "2026-03-28",
+    "message": "docs(reflec-shot): パッド逆向き時の正規化を仕様書に追記",
+    "visible": false,
+    "summary": "パッド逆向き時の正規化を仕様書に追記?????"
+  },
+  {
+    "date": "2026-03-28",
+    "message": "fix(reflec-shot): Grade2折れ6のバンパーを内角6個に統一し仕様書を更新",
+    "visible": false,
+    "summary": "Grade2折れ6のバンパーを内角6個に統一し仕様書を更新?????"
+  },
+  {
+    "date": "2026-03-28",
+    "message": "feat(reflec-shot): Grade2折れ6でstart/goalにバンパー可・totalDiagonalTurnCount整合",
+    "visible": true,
+    "summary": "Grade2折れ6でstart/goalにバンパー可・totalDiagonalTurnCount整合?????"
+  },
+  {
+    "date": "2026-03-28",
+    "message": "chore(reflec-shot): 折れ6生成トレース lastGrade2Bend6Trace と検証スクリプト",
+    "visible": false,
+    "summary": "折れ6生成トレース lastGrade2Bend6Trace と検証スクリプト?????"
+  },
+  {
+    "date": "2026-03-29",
+    "message": "feat(reflec-shot): Grade2折れ6の目標折れをデバッグスライダーで固定可能に",
+    "visible": true,
+    "summary": "Grade2折れ6の目標折れをデバッグスライダーで固定可能に?????"
+  },
+  {
+    "date": "2026-03-29",
+    "message": "refactor(reflec-shot): グレード再編成（Lv.1-4・盤サイズ・バンパー採否）",
+    "visible": true,
+    "summary": "グレード再編成（Lv.1-4・盤サイズ・バンパー採否）?????"
+  },
+  {
+    "date": "2026-03-29",
+    "message": "fix(reflec-shot): rs2ハッシュの再現性とパッド行の経路マス描画",
+    "visible": false,
+    "summary": "rs2ハッシュの再現性とパッド行の経路マス描画?????"
+  },
+  {
+    "date": "2026-03-29",
+    "message": "Revert \"fix(reflec-shot): rs2ハッシュの再現性とパッド行の経路マス描画\"",
+    "visible": true,
+    "summary": "rs2ハッシュの再現性とパッド行の経路マス描画\"?????"
+  },
+  {
+    "date": "2026-03-29",
+    "message": "reflec-shot: Pad延伸を向き調整前に適用しrs2再現を修正",
+    "visible": false,
+    "summary": "Pad延伸を向き調整前に適用しrs2再現を修正?????"
+  },
+  {
+    "date": "2026-03-29",
+    "message": "Revert \"reflec-shot: Pad延伸を向き調整前に適用しrs2再現を修正\"",
+    "visible": true,
+    "summary": "Pad延伸を向き調整前に適用しrs2再現を修正\"?????"
+  },
+  {
+    "date": "2026-03-29",
+    "message": "reflec-shot: goal->upside down 時に start を最深行へ延長",
+    "visible": false,
+    "summary": "goal->upside down 時に start を最深行へ延長?????"
+  },
+  {
+    "date": "2026-03-29",
+    "message": "reflec-shot: rs2ハッシュでgrade先同期とWorkerオプションの一意化",
+    "visible": false,
+    "summary": "rs2ハッシュでgrade先同期とWorkerオプションの一意化?????"
+  },
+  {
+    "date": "2026-03-29",
+    "message": "fix(reflec-shot): swapSlashKey後のwrongDiagonalを廃止しsolutionと物理を整合",
+    "visible": false,
+    "summary": "swapSlashKey後のwrongDiagonalを廃止しsolutionと物理を整合?????"
+  },
+  {
+    "date": "2026-03-29",
+    "message": "reflec-shot: デバッグパネルに直前のrs2(Previous)を表示",
+    "visible": false,
+    "summary": "デバッグパネルに直前のrs2(Previous)を表示?????"
+  },
+  {
+    "date": "2026-03-30",
+    "message": "feat(reflec-shot): Grade5 Lv.4 R-First (N=1) と生成モードデバッグUI",
+    "visible": true,
+    "summary": "Grade5 Lv.4 R-First (N=1) と生成モードデバッグ????"
+  },
+  {
+    "date": "2026-03-30",
+    "message": "chore(reflec-shot): 未使用の tryOrthogonalPolylineMinBends を削除",
+    "visible": false,
+    "summary": "未使用の tryOrthogonalPolylineMinBends を削除?????"
+  },
+  {
+    "date": "2026-03-30",
+    "message": "perf(reflec-shot): R-First Lv.4 の早期棄却と試行順改善",
+    "visible": false,
+    "summary": "R-First Lv.4 の早期棄却と試行順改善?????"
+  },
+  {
+    "date": "2026-03-30",
+    "message": "reflec-shot: R-First 対策1/3/4/5/6（ポリ予算・到達BFS・失敗直交組合せ・小盤列挲・ベンチ統計）",
+    "visible": false,
+    "summary": "R-First 対策1/3/4/5/6（ポリ予算・到達BFS・失敗直交組合せ・小盤列挲・ベンチ統計）?????"
+  },
+  {
+    "date": "2026-03-31",
+    "message": "reflec-shot: Grade5 Lv.4 に R-Second 生成（RS2-1 折れ配分・上辺/左右ゴール）とデバッグ UI",
+    "visible": true,
+    "summary": "Grade5 Lv.4 に R-Second 生成（RS2-1 折れ配分・上辺/左右ゴール）とデバッグ ????"
+  },
+  {
+    "date": "2026-03-31",
+    "message": "reflec-shot: Grade 変更では盤を再生成せず、seed/明示操作時のみロード",
+    "visible": false,
+    "summary": "Grade 変更では盤を再生成せず、seed/明示操作時のみロード?????"
+  },
+  {
+    "date": "2026-03-31",
+    "message": "reflec-shot: R-Second 診断用 lv4RSecondTrace と trace スクリプト",
+    "visible": false,
+    "summary": "R-Second 診断用 lv4RSecondTrace と trace スクリプト?????"
+  },
+  {
+    "date": "2026-04-01",
+    "message": "reflec-shot: Grade 5 Lv4 default to R-Second",
+    "visible": false,
+    "summary": "Grade 5 Lv4 default to R-Second?????"
+  },
+  {
+    "date": "2026-04-01",
+    "message": "reflec-shot: R-Second orient before seg2, goal on ULR in final frame",
+    "visible": false,
+    "summary": "R-Second orient before seg2, goal on ULR in final frame?????"
+  },
+  {
+    "date": "2026-04-01",
+    "message": "reflec-shot: R-Second b1/b2 map to open polyline bend counts",
+    "visible": false,
+    "summary": "R-Second b1/b2 map to open polyline bend counts?????"
+  },
+  {
+    "date": "2026-04-01",
+    "message": "fix(reflec-shot): R-Second 中脚・出口脚へ b1/b2 をそのまま渡す",
+    "visible": false,
+    "summary": "R-Second 中脚・出口脚へ b1/b2 をそのまま渡す?????"
+  },
+  {
+    "date": "2026-04-02",
+    "message": "Revert \"fix(reflec-shot): R-Second 中脚・出口脚へ b1/b2 をそのまま渡す\"",
+    "visible": true,
+    "summary": "R-Second 中脚・出口脚へ b1/b2 をそのまま渡す\"?????"
+  },
+  {
+    "date": "2026-04-02",
+    "message": "fix(reflec-shot): R-Second 中脚を短(b1Open)・長(b1)のハイブリッドに",
+    "visible": false,
+    "summary": "R-Second 中脚を短(b1Open)・長(b1)のハイブリッドに?????"
+  },
+  {
+    "date": "2026-04-02",
+    "message": "feat(reflec-shot): R-Second 中脚で S1/P2 関節折れの3パターンを列挙",
+    "visible": true,
+    "summary": "R-Second 中脚で S1/P2 関節折れの3パターンを列挙?????"
+  },
+  {
+    "date": "2026-04-02",
+    "message": "fix(reflec-shot): R-Second 再訪ループの中脚・探索順を拡張",
+    "visible": false,
+    "summary": "R-Second 再訪ループの中脚・探索順を拡張?????"
+  },
+  {
+    "date": "2026-04-02",
+    "message": "fix(reflec-shot): honor effective seed on fallback and surface Worker gen metrics",
+    "visible": false,
+    "summary": "honor effective seed on fallback and surface Worker gen metrics?????"
+  },
+  {
+    "date": "2026-04-02",
+    "message": "fix(reflec-shot): deterministic RNG consumption across Node and Worker",
+    "visible": false,
+    "summary": "deterministic RNG consumption across Node and Worker?????"
+  },
+  {
+    "date": "2026-04-02",
+    "message": "fix(reflec-shot): Lv4 goalPad rules (no below-bottom, L/R edge entry, HV tail flip)",
+    "visible": false,
+    "summary": "Lv4 goalPad rules (no below-bottom, L/R edge entry, HV tail flip)?????"
+  },
+  {
+    "date": "2026-04-03",
+    "message": "feat(reflec-shot): port GPT ad slots and refresh from Pair-link",
+    "visible": false,
+    "summary": "port GPT ad slots and refresh from Pair-link?????"
+  },
+  {
+    "date": "2026-04-03",
+    "message": "feat(reflec-shot): grade modal + 150px ad UI separation",
+    "visible": false,
+    "summary": "grade modal + 150px ad ???? separation?????"
+  },
+  {
+    "date": "2026-04-03",
+    "message": "Revert \"feat(reflec-shot): grade modal + 150px ad UI separation\"",
+    "visible": false,
+    "summary": "grade modal + 150px ad ???? separation\"?????"
+  },
+  {
+    "date": "2026-04-03",
+    "message": "feat(reflec-shot): horizontal grade strip like Pair-link",
+    "visible": true,
+    "summary": "horizontal grade strip like Pair-link?????"
+  },
+  {
+    "date": "2026-04-03",
+    "message": "feat(home): Reflec-Shot カード・知育コラム導線・正式名称の統一",
+    "visible": true,
+    "summary": "Reflec-Shot カード・知育コラム導線・正式名称の統一?????"
+  },
+  {
+    "date": "2026-04-04",
+    "message": "feat(reflec-shot): バンパー記号の描画サイズを2倍に",
+    "visible": true,
+    "summary": "バンパー記号の描画サイズを2倍に?????"
+  },
+  {
+    "date": "2026-04-04",
+    "message": "reflec-shot: タップ45°回転と devtj 一筆スワイプ検証UI",
+    "visible": true,
+    "summary": "タップ45°回転と devtj 一筆スワイプ検証????"
+  },
+  {
+    "date": "2026-04-04",
+    "message": "reflec-shot(devtj): ドラッグ中にバンパー判定・軌跡トリム、軌跡を白に",
+    "visible": false,
+    "summary": "ドラッグ中にバンパー判定・軌跡トリム、軌跡を白に?????"
+  },
+  {
+    "date": "2026-04-04",
+    "message": "reflec-shot: 判定マスを短時間フラッシュ、軌跡は線のみフェード",
+    "visible": false,
+    "summary": "判定マスを短時間フラッシュ、軌跡は線のみフェード?????"
+  },
+  {
+    "date": "2026-04-04",
+    "message": "reflec-shot(devtj): 盤外からスワイプ開始、バンパー判定はマス退出時",
+    "visible": false,
+    "summary": "盤外からスワイプ開始、バンパー判定はマス退出時?????"
+  },
+  {
+    "date": "2026-04-04",
+    "message": "reflec-shot: BUMPER_KIND_BY_SECTOR を Pipe→Slash→Hyphen→Backslash×2 に再定義",
+    "visible": false,
+    "summary": "BUMPER_KIND_BY_SECTOR を Pipe→Slash→Hyphen→Backslash×2 に再定義?????"
+  },
+  {
+    "date": "2026-04-04",
+    "message": "reflec-shot(devtj): 軌跡形状に基づくバンパー判定とデバッグUI",
+    "visible": true,
+    "summary": "軌跡形状に基づくバンパー判定とデバッグ????"
+  },
+  {
+    "date": "2026-04-04",
+    "message": "reflec-shot: StartPadで射出体をドラッグ・ダブルタップ射出",
+    "visible": false,
+    "summary": "StartPadで射出体をドラッグ・ダブルタップ射出?????"
+  },
+  {
+    "date": "2026-04-04",
+    "message": "reflec-shot: 失敗後の再配置で射出体をStartPad中央に戻す",
+    "visible": false,
+    "summary": "失敗後の再配置で射出体をStartPad中央に戻す?????"
+  },
+  {
+    "date": "2026-04-04",
+    "message": "reflec-shot: 編集ヒント文言・射出ボタン削除・フッター説明削除",
+    "visible": false,
+    "summary": "編集ヒント文言・射出ボタン削除・フッター説明削除?????"
+  },
+  {
+    "date": "2026-04-04",
+    "message": "reflec-shot: クリア/失敗の結果オーバーレイ・紙吹雪・ヒント改行",
+    "visible": false,
+    "summary": "クリア/失敗の結果オーバーレイ・紙吹雪・ヒント改行?????"
+  },
+  {
+    "date": "2026-04-04",
+    "message": "reflec-shot: 盤上はタイマー固定行・ヒントは盤下・レイアウト安定",
+    "visible": false,
+    "summary": "盤上はタイマー固定行・ヒントは盤下・レイアウト安定?????"
+  },
+  {
+    "date": "2026-04-04",
+    "message": "reflec-shot: タイマー余白調整とmm:ss・1秒更新",
+    "visible": false,
+    "summary": "タイマー余白調整とmm:ss・1秒更新?????"
+  },
+  {
+    "date": "2026-04-04",
+    "message": "reflec-shot: 軌跡バンパー本番化・橙フラッシュ・P→Qフェード・文言",
+    "visible": false,
+    "summary": "軌跡バンパー本番化・橙フラッシュ・P→Qフェード・文言?????"
+  },
+  {
+    "date": "2026-04-04",
+    "message": "feat(reflec-shot): gem collection on bumper hits, goal gate VFX, light drop projectile",
+    "visible": true,
+    "summary": "gem collection on bumper hits, goal gate VFX, light drop projectile?????"
+  },
+  {
+    "date": "2026-04-04",
+    "message": "feat(reflec-shot): goal reflection label, finish FX tuning, wall/goal sequences",
+    "visible": true,
+    "summary": "goal reflection label, finish FX tuning, wall/goal sequences?????"
+  },
+  {
+    "date": "2026-04-05",
+    "message": "fix(reflec-shot): keep ball at wall on fail; tune defaults; board help i18n",
+    "visible": false,
+    "summary": "keep ball at wall on fail; tune defaults; board help i18n?????"
+  },
+  {
+    "date": "2026-04-05",
+    "message": "style(reflec-shot): tighten boardHelp; goal count above dots; start-pad bloom",
+    "visible": false,
+    "summary": "tighten boardHelp; goal count above dots; start-pad bloom?????"
+  },
+  {
+    "date": "2026-04-05",
+    "message": "feat(reflec-shot): launch hint arrow, half bloom, bumper tap flash, trail margin",
+    "visible": true,
+    "summary": "launch hint arrow, half bloom, bumper tap flash, trail margin?????"
+  },
+  {
+    "date": "2026-04-05",
+    "message": "Reflec-Shot: dummy density, grade-based initial wrong rate, debug visuals",
+    "visible": false,
+    "summary": "dummy density, grade-based initial wrong rate, debug visuals?????"
+  },
+  {
+    "date": "2026-04-05",
+    "message": "Reflec-Shot: random orientation for dummies on path straights",
+    "visible": false,
+    "summary": "random orientation for dummies on path straights?????"
+  },
+  {
+    "date": "2026-04-05",
+    "message": "Reflec-Shot: cross-path and two-sided bumper gem rules",
+    "visible": false,
+    "summary": "cross-path and two-sided bumper gem rules?????"
+  },
+  {
+    "date": "2026-04-05",
+    "message": "Reflec-Shot: no gems on HYPHEN pass-through; two-sided red sparks + bumper flash",
+    "visible": false,
+    "summary": "no gems on HYPHEN pass-through; two-sided red sparks + bumper flash?????"
+  },
+  {
+    "date": "2026-04-05",
+    "message": "Reflec-Shot: no gems on PIPE vertical pass-through",
+    "visible": false,
+    "summary": "no gems on PIPE vertical pass-through?????"
+  },
+  {
+    "date": "2026-04-05",
+    "message": "Reflec-Shot: cross gem on formation, orange flash, unified rule copy",
+    "visible": false,
+    "summary": "cross gem on formation, orange flash, unified rule copy?????"
+  },
+  {
+    "date": "2026-04-05",
+    "message": "reflec-shot: start/goalのバンパー反射を宝石カウント・十字/再訪ボーナス対象に",
+    "visible": false,
+    "summary": "start/goalのバンパー反射を宝石カウント・十字/再訪ボーナス対象に?????"
+  },
+  {
+    "date": "2026-04-05",
+    "message": "reflec-shot: GoalPadの射出中表示を取得数/目標数に変更",
+    "visible": false,
+    "summary": "GoalPadの射出中表示を取得数/目標数に変更?????"
+  },
+  {
+    "date": "2026-04-05",
+    "message": "reflec-shot: GoalPadは0個時は目標のみ表示、G1/G2初期向き固定、ルール文言とPC1行化",
+    "visible": false,
+    "summary": "GoalPadは0個時は目標のみ表示、G1/G2初期向き固定、ルール文言とPC1行化?????"
+  },
+  {
+    "date": "2026-04-05",
+    "message": "reflec-shot: ストック補充時にダミー密度をWorkerへ渡す",
+    "visible": false,
+    "summary": "ストック補充時にダミー密度をWorkerへ渡す?????"
+  },
+  {
+    "date": "2026-04-05",
+    "message": "reflec-shot: ゴール虹→成功の既定演出を150msに短縮",
+    "visible": false,
+    "summary": "ゴール虹→成功の既定演出を150msに短縮?????"
+  },
+  {
+    "date": "2026-04-05",
+    "message": "reflec-shot: 十字宝石はマス中央通過時、目標数に再訪十字を反映、十字演出を調整",
+    "visible": false,
+    "summary": "十字宝石はマス中央通過時、目標数に再訪十字を反映、十字演出を調整?????"
+  },
+  {
+    "date": "2026-04-05",
+    "message": "reflec-shot: redefine revisit-cross (straight pass, perpendicular entries)",
+    "visible": false,
+    "summary": "redefine revisit-cross (straight pass, perpendicular entries)?????"
+  },
+  {
+    "date": "2026-04-05",
+    "message": "reflec-shot: forbid dummy bumpers on revisit-cross path cells",
+    "visible": false,
+    "summary": "forbid dummy bumpers on revisit-cross path cells?????"
+  },
+  {
+    "date": "2026-04-05",
+    "message": "reflec-shot: award 1 gem on dummy bumper reflections",
+    "visible": false,
+    "summary": "award 1 gem on dummy bumper reflections?????"
+  },
+  {
+    "date": "2026-04-05",
+    "message": "reflec-shot: shot trail, cross-flash style, auto-solve dummy pass-through",
+    "visible": false,
+    "summary": "shot trail, cross-flash style, auto-solve dummy pass-through?????"
+  },
+  {
+    "date": "2026-04-06",
+    "message": "reflec-shot: add Grade 6 (6x6, bends 7-8, revisit cross + bend)",
+    "visible": false,
+    "summary": "add Grade 6 (6x6, bends 7-8, revisit cross + bend)?????"
+  },
+  {
+    "date": "2026-04-06",
+    "message": "fix(reflec-shot): 盤面全域の行描画と cMin 整合したマスレイアウト",
+    "visible": false,
+    "summary": "盤面全域の行描画と cMin 整合したマスレイアウト?????"
+  },
+  {
+    "date": "2026-04-06",
+    "message": "fix(reflec-shot): G6 startPad を盤外一段下に、左右 goalPad 列はパッドのみ描画",
+    "visible": false,
+    "summary": "G6 startPad を盤外一段下に、左右 goalPad 列はパッドのみ描画?????"
+  },
+  {
+    "date": "2026-04-06",
+    "message": "feat(reflec-shot): G6 経路ルール緩和と折れ7〜10・探索多様化",
+    "visible": true,
+    "summary": "G6 経路ルール緩和と折れ7〜10・探索多様化?????"
+  },
+  {
+    "date": "2026-04-06",
+    "message": "feat(reflec-shot): G6 再訪折れループ長の統計と生成バイアス",
+    "visible": true,
+    "summary": "G6 再訪折れループ長の統計と生成バイアス?????"
+  },
+  {
+    "date": "2026-04-06",
+    "message": "fix(reflec-shot): G6 目標宝石数を 折れ+再訪十字+3×再訪折れマス に統一",
+    "visible": false,
+    "summary": "G6 目標宝石数を 折れ+再訪十字+3×再訪折れマス に統一?????"
+  },
+  {
+    "date": "2026-04-06",
+    "message": "reflec-shot: G6/G7 難易度改定（6x6 再訪十字なし・7x7 dual）と Grade7 追加",
+    "visible": false,
+    "summary": "G6/G7 難易度改定（6x6 再訪十字なし・7x7 dual）と Grade7 追加?????"
+  },
+  {
+    "date": "2026-04-06",
+    "message": "reflec-shot: G7 の折れ数を 8〜11 に変更",
+    "visible": false,
+    "summary": "G7 の折れ数を 8〜11 に変更?????"
+  },
+  {
+    "date": "2026-04-06",
+    "message": "reflec-shot: G6/G7 再訪閉路の単位辺区間を抑え G5 に寄せる探索と統計スクリプト",
+    "visible": false,
+    "summary": "G6/G7 再訪閉路の単位辺区間を抑え G5 に寄せる探索と統計スクリプト?????"
+  },
+  {
+    "date": "2026-04-07",
+    "message": "reflec-shot: G7 の再訪十字を閉路外優先にし多様性を改善",
+    "visible": false,
+    "summary": "G7 の再訪十字を閉路外優先にし多様性を改善?????"
+  },
+  {
+    "date": "2026-04-07",
+    "message": "reflec-shot: G6/G7 のダミーバンパー既定密度を25%に変更",
+    "visible": false,
+    "summary": "G6/G7 のダミーバンパー既定密度を25%に変更?????"
+  },
+  {
+    "date": "2026-04-07",
+    "message": "feat(reflec-shot): SVG vertex dots at bumper reflection points",
+    "visible": true,
+    "summary": "SVG vertex dots at bumper reflection points?????"
+  },
+  {
+    "date": "2026-04-07",
+    "message": "feat(reflec-shot): rounded shot trail + dev trajectory style toggle",
+    "visible": true,
+    "summary": "rounded shot trail + dev trajectory style toggle?????"
+  },
+  {
+    "date": "2026-04-07",
+    "message": "feat(reflec-shot): debug slider for curved trajectory radius",
+    "visible": false,
+    "summary": "debug slider for curved trajectory radius?????"
+  },
+  {
+    "date": "2026-04-08",
+    "message": "chore: デフォルトテーマを botanicalSport に、Reflec-Shot 曲線半径を 5px / デバッグ上限 7.5px",
+    "visible": false,
+    "summary": "デフォルトテーマを botanicalSport に、Reflec-Shot 曲線半径を 5px / デバッグ上限 7.5px?????"
+  },
+  {
+    "date": "2026-04-12",
+    "message": "fix(lab): Reflec-Shot 離脱時のストック補充ループとアンマウント後 setState を防止",
+    "visible": false,
+    "summary": "Reflec-Shot 離脱時のストック補充ループとアンマウント後 setState を防止?????"
+  },
+  {
+    "date": "2026-04-16",
+    "message": "Reflec-Shot: 盤面ビューポート中央化、アコーディオン説明、広告・グレード再配置",
+    "visible": false,
+    "summary": "盤面ビューポート中央化、アコーディオン説明、広告・グレード再配置?????"
+  },
+  {
+    "date": "2026-04-16",
+    "message": "Reflec-Shot: ヘルプモーダル・盤上📖、タイマーをデバッグへ、アコーディオン順変更",
+    "visible": false,
+    "summary": "ヘルプモーダル・盤上📖、タイマーをデバッグへ、アコーディオン順変更?????"
+  },
+  {
+    "date": "2026-04-16",
+    "message": "Reflec-Shot: 📖外枠配置とPC2カラム化、盤面拡大レイアウト",
+    "visible": false,
+    "summary": "📖外枠配置とPC2カラム化、盤面拡大レイアウト?????"
+  },
+  {
+    "date": "2026-04-16",
+    "message": "Reflec-Shot: PC版の最大幅を拡大して盤面を大きく表示",
+    "visible": false,
+    "summary": "PC版の最大幅を拡大して盤面を大きく表示?????"
+  },
+  {
+    "date": "2026-04-16",
+    "message": "Reflec-Shot: 盤面のはみ出し防止と画面幅シミュレーション追加",
+    "visible": false,
+    "summary": "盤面のはみ出し防止と画面幅シミュレーション追加?????"
+  },
+  {
+    "date": "2026-04-16",
+    "message": "Reflec-Shot: PC初期表示を広告優先にしCanvasとsticky sidebarを最適化",
+    "visible": false,
+    "summary": "PC初期表示を広告優先にしCanvasとsticky sidebarを最適化?????"
+  },
+  {
+    "date": "2026-04-16",
+    "message": "Reflec-Shot: 初期表示を広告1へ合わせルール文言の折返しを調整",
+    "visible": false,
+    "summary": "初期表示を広告1へ合わせルール文言の折返しを調整?????"
+  },
+  {
+    "date": "2026-04-16",
+    "message": "Reflec-Shot: PC盤面サイズの下限と上限を定義して余白を圧縮",
+    "visible": false,
+    "summary": "PC盤面サイズの下限と上限を定義して余白を圧縮?????"
+  },
+  {
+    "date": "2026-04-16",
+    "message": "Reflec-Shot: サイドバー整理で広告2を上げモバイル初期位置を先頭化",
+    "visible": false,
+    "summary": "サイドバー整理で広告2を上げモバイル初期位置を先頭化?????"
+  },
+  {
+    "date": "2026-04-16",
+    "message": "Reflec-Shot: ねらい・対象をゲーム本体の下に並べ替え",
+    "visible": false,
+    "summary": "ねらい・対象をゲーム本体の下に並べ替え?????"
+  },
+  {
+    "date": "2026-04-16",
+    "message": "Reflec-Shot: ねらい・対象の幅と余白を下部セクションに合わせる",
+    "visible": false,
+    "summary": "ねらい・対象の幅と余白を下部セクションに合わせる?????"
+  }
+]

@@ -1,6 +1,8 @@
 type AppHistoryEntry = {
   date: string;
   message: string;
+  visible?: boolean;
+  summary?: string;
 };
 
 type GameAppUpdateHistorySectionProps = {
@@ -78,11 +80,16 @@ function formatEntryMessage(message: string): { line1: string } {
 function toRenderableEntries(entries: AppHistoryEntry[]): RenderableHistoryEntry[] {
   return entries
     .map((entry, index) => ({ ...entry, index }))
-    .filter((entry) => !shouldHideEntry(entry.message))
-    .filter((entry) => shouldIncludeAsMajorEntry(entry.message))
+    .filter((entry) => {
+      if (typeof entry.visible === "boolean") return entry.visible;
+      if (shouldHideEntry(entry.message)) return false;
+      return shouldIncludeAsMajorEntry(entry.message);
+    })
     .reverse()
     .map((entry) => {
-      const formatted = formatEntryMessage(entry.message);
+      const formatted = entry.summary?.trim()
+        ? { line1: toPoliteLine(entry.summary) }
+        : formatEntryMessage(entry.message);
       return {
         key: `${entry.date}-${entry.index}`,
         dateLabel: toJapaneseDateLabel(entry.date),

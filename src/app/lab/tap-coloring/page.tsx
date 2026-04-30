@@ -8,11 +8,13 @@ import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSe
 import { GameTroubleshootingSection } from "@/components/lab/GameTroubleshootingSection";
 import { OtherPuzzlesSection } from "@/components/lab/OtherPuzzlesSection";
 import { ParentGuideNote } from "@/components/lab/ParentGuideNote";
+import { GameAppUpdateHistorySection } from "@/components/lab/GameAppUpdateHistorySection";
 import { SmartGuardLock } from "@/components/lab/SmartGuardLock";
 import { TapColoringLabShell } from "@/components/lab/TapColoringLabShell";
 import { gameLabAlternates, gameLabPageSeo } from "@/lib/gameLabPageSeo";
 import { buildGameSoftwareApplicationJsonLd } from "@/lib/gameSoftwareApplicationJsonLd";
 import { buildBreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import tapColoringHistory from "../../../../history_2026_04_29_tap-coloring.json";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wispo.pages.dev";
 const tapColoringJsonLd = buildGameSoftwareApplicationJsonLd("tap-coloring", SITE_URL);
@@ -65,6 +67,7 @@ export default function TapColoringLabPage() {
         gameTitle="タップぬりえ"
         text="はじめは色を3つに限定し、1枚を最後まで塗る体験を優先してください。迷った場面では正解を指示するより『次はどこを塗ると目立つかな？』と問いかけると、自分で選ぶ力が伸びます。終了後に『どの色の組み合わせが好き？』と短く振り返ると、言語化と色彩認知の両方を支えられます。"
       />
+      <GameAppUpdateHistorySection gameTitle="タップぬりえ" entries={tapColoringHistory} />
       <OtherPuzzlesSection currentId="tap-coloring" />
     </>
   );

@@ -8,11 +8,13 @@ import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSe
 import { GameTroubleshootingSection } from "@/components/lab/GameTroubleshootingSection";
 import { OtherPuzzlesSection } from "@/components/lab/OtherPuzzlesSection";
 import { ParentGuideNote } from "@/components/lab/ParentGuideNote";
+import { GameAppUpdateHistorySection } from "@/components/lab/GameAppUpdateHistorySection";
 import { SmartGuardLock } from "@/components/lab/SmartGuardLock";
 import ReflecShotGame from "./ReflecShotGame";
 import { gameLabAlternates, gameLabPageSeo } from "@/lib/gameLabPageSeo";
 import { buildGameSoftwareApplicationJsonLd } from "@/lib/gameSoftwareApplicationJsonLd";
 import { buildBreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import reflecShotHistory from "../../../../history_2026_04_29_reflec-shot.json";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wispo.pages.dev";
 const reflecShotJsonLd = buildGameSoftwareApplicationJsonLd("reflec-shot", SITE_URL);
@@ -66,6 +68,7 @@ export default function ReflecShotLabPage() {
         gameTitle="リフレクショット"
         text="反射が難しいときは、まず1回反射で届くかだけを確認し、複数反射は段階的に増やしてください。『次に向きが変わるのはどこ？』と位置予測を言葉にする声かけが有効です。失敗時はバンパー配置を1つだけ変えて再試行すると、仮説検証の感覚が育ちます。"
       />
+      <GameAppUpdateHistorySection gameTitle="リフレクショット" entries={reflecShotHistory} />
       <OtherPuzzlesSection currentId="reflec-shot" />
     </>
   );

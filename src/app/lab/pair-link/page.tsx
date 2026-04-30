@@ -8,11 +8,13 @@ import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSe
 import { GameTroubleshootingSection } from "@/components/lab/GameTroubleshootingSection";
 import { OtherPuzzlesSection } from "@/components/lab/OtherPuzzlesSection";
 import { ParentGuideNote } from "@/components/lab/ParentGuideNote";
+import { GameAppUpdateHistorySection } from "@/components/lab/GameAppUpdateHistorySection";
 import { SmartGuardLock } from "@/components/lab/SmartGuardLock";
 import PairLinkGame from "./PairLinkGame";
 import { gameLabAlternates, gameLabPageSeo } from "@/lib/gameLabPageSeo";
 import { buildGameSoftwareApplicationJsonLd } from "@/lib/gameSoftwareApplicationJsonLd";
 import { buildBreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import pairLinkHistory from "../../../../history_2026_04_29_pair-link.json";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wispo.pages.dev";
 const pairLinkJsonLd = buildGameSoftwareApplicationJsonLd("pair-link", SITE_URL);
@@ -70,6 +72,7 @@ export default function PairLinkPage() {
         gameTitle="ペアリンク"
         text="行き詰まったときは盤面全体を解かせるのではなく、『今はこの2つの数字だけつないでみよう』と範囲を狭めると再開しやすくなります。間違いを指摘するより『この線のあと空きマスはどうなる？』と問い返すと、先読みが育ちます。最後に解き方を一言説明させると、推理の再現性が高まります。"
       />
+      <GameAppUpdateHistorySection gameTitle="ペアリンク" entries={pairLinkHistory} />
       <OtherPuzzlesSection currentId="pair-link" />
     </>
   );

@@ -1,0 +1,26 @@
+[
+  {
+    "date": "2026-03-15",
+    "message": "ペアリンク・スカイスクレイパー: クリアシーケンスを統一（戻る/次に進む・紙吹雪1回）",
+    "visible": false,
+    "summary": "クリアシーケンスを統一（戻る/次に進む・紙吹雪1回）?????"
+  },
+  {
+    "date": "2026-03-20",
+    "message": "feat: Pair-link・Skyscraperにシード値ベースの盤面生成を導入",
+    "visible": true,
+    "summary": "Pair-link・Skyscraperにシード値ベースの盤面生成を導入?????"
+  },
+  {
+    "date": "2026-03-20",
+    "message": "fix(skyscraper): ScopedPRNGで乱数決定性を100%保証",
+    "visible": false,
+    "summary": "ScopedPRNGで乱数決定性を100%保証?????"
+  },
+  {
+    "date": "2026-04-03",
+    "message": "feat(ui): ゲーム共通ヘッダー・広告列幅の統一と Skyscraper 用広告・デバッグ UI",
+    "visible": true,
+    "summary": "ゲーム共通ヘッダー・広告列幅の統一と Skyscraper 用広告・デバッグ ????"
+  }
+]

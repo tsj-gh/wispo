@@ -8,11 +8,13 @@ import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSe
 import { GameTroubleshootingSection } from "@/components/lab/GameTroubleshootingSection";
 import { OtherPuzzlesSection } from "@/components/lab/OtherPuzzlesSection";
 import { ParentGuideNote } from "@/components/lab/ParentGuideNote";
+import { GameAppUpdateHistorySection } from "@/components/lab/GameAppUpdateHistorySection";
 import { PopPopBubblesLabShell } from "@/components/lab/PopPopBubblesLabShell";
 import { SmartGuardLock } from "@/components/lab/SmartGuardLock";
 import { gameLabAlternates, gameLabPageSeo } from "@/lib/gameLabPageSeo";
 import { buildGameSoftwareApplicationJsonLd } from "@/lib/gameSoftwareApplicationJsonLd";
 import { buildBreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import popPopBubblesHistory from "../../../../history_2026_04_29_pop-pop-bubbles.json";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wispo.pages.dev";
 const popPopBubblesJsonLd = buildGameSoftwareApplicationJsonLd("pop-pop-bubbles", SITE_URL);
@@ -67,6 +69,7 @@ export default function PopPopBubblesPage() {
         gameTitle="はじけて！バブル"
         text="短時間で終わる区切りを作ると、集中が切れる前に達成感を得られます。『次は真ん中のバブルだけ狙おう』のように狙いを1つに絞る声かけが有効です。連打より観察を優先できた場面を具体的にほめると、注意切替の質が安定していきます。"
       />
+      <GameAppUpdateHistorySection gameTitle="はじけて！バブル" entries={popPopBubblesHistory} />
       <OtherPuzzlesSection currentId="pop-pop-bubbles" />
     </>
   );

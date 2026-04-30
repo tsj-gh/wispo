@@ -1,242 +1,362 @@
 [
   {
     "date": "2026-04-19",
-    "message": "feat(lab): Hidden Stack（かくれつみき）R3F+Cannonプロトタイプを/lab/hidden-stackに追加"
+    "message": "feat(lab): Hidden Stack（かくれつみき）R3F+Cannonプロトタイプを/lab/hidden-stackに追加",
+    "visible": true,
+    "summary": "??????（かくれつみき）R3F+Cannonプロトタイプを/lab/??????に追加?????"
   },
   {
     "date": "2026-04-20",
-    "message": "feat(lab): hidden-stackにシード表示・コピー・シード再生成デバッグ機能を追加"
+    "message": "feat(lab): hidden-stackにシード表示・コピー・シード再生成デバッグ機能を追加",
+    "visible": true,
+    "summary": "??????にシード表示・コピー・シード再生成デバッグ機能を追加?????"
   },
   {
     "date": "2026-04-20",
-    "message": "fix(hidden-stack): 親高さに合わせてCanvasが余白を吸収し縦を使い切る"
+    "message": "fix(hidden-stack): 親高さに合わせてCanvasが余白を吸収し縦を使い切る",
+    "visible": false,
+    "summary": "親高さに合わせてCanvasが余白を吸収し縦を使い切る?????"
   },
   {
     "date": "2026-04-20",
-    "message": "feat(hidden-stack): 3D盤面をOrthographicCameraに切替えパース隙間を解消"
+    "message": "feat(hidden-stack): 3D盤面をOrthographicCameraに切替えパース隙間を解消",
+    "visible": true,
+    "summary": "3D盤面をOrthographicCameraに切替えパース隙間を解消?????"
   },
   {
     "date": "2026-04-20",
-    "message": "feat(hidden-stack): PC没入100dvhレイアウトとortho自動スケール"
+    "message": "feat(hidden-stack): PC没入100dvhレイアウトとortho自動スケール",
+    "visible": true,
+    "summary": "PC没入100dvhレイアウトとortho自動スケール?????"
   },
   {
     "date": "2026-04-20",
-    "message": "fix(hidden-stack): PC没入でhtml/body固定・100vh配分とortho zoom強化"
+    "message": "fix(hidden-stack): PC没入でhtml/body固定・100vh配分とortho zoom強化",
+    "visible": false,
+    "summary": "PC没入でhtml/body固定・100vh配分とortho zoom強化?????"
   },
   {
     "date": "2026-04-20",
-    "message": "chore(hidden-stack): 未使用の広告ギャップimportを削除"
+    "message": "chore(hidden-stack): 未使用の広告ギャップimportを削除",
+    "visible": false,
+    "summary": "未使用の広告ギャップimportを削除?????"
   },
   {
     "date": "2026-04-20",
-    "message": "refactor(hidden-stack): html/body固定を廃止しPCはcalc(100dvh)2カラムとscrollIntoView"
+    "message": "refactor(hidden-stack): html/body固定を廃止しPCはcalc(100dvh)2カラムとscrollIntoView",
+    "visible": true,
+    "summary": "html/body固定を廃止しPCはcalc(100dvh)2カラムとscrollIntoView?????"
   },
   {
     "date": "2026-04-20",
-    "message": "feat(hidden-stack): PC版で広告1基準の没入レイアウトとCanvas高さの動的計算"
+    "message": "feat(hidden-stack): PC版で広告1基準の没入レイアウトとCanvas高さの動的計算",
+    "visible": true,
+    "summary": "PC版で広告1基準の没入レイアウトとCanvas高さの動的計算?????"
   },
   {
     "date": "2026-04-20",
-    "message": "fix(hidden-stack): 正射影ズームをBBox基準にしメッシュ微拡大で隙間を抑制"
+    "message": "fix(hidden-stack): 正射影ズームをBBox基準にしメッシュ微拡大で隙間を抑制",
+    "visible": false,
+    "summary": "正射影ズームをBBox基準にしメッシュ微拡大で隙間を抑制?????"
   },
   {
     "date": "2026-04-20",
-    "message": "fix(hidden-stack): メッシュ拡大既定1.05と金塊のIBL・ライト調整"
+    "message": "fix(hidden-stack): メッシュ拡大既定1.05と金塊のIBL・ライト調整",
+    "visible": false,
+    "summary": "メッシュ拡大既定1.05と金塊のIBL・ライト調整?????"
   },
   {
     "date": "2026-04-20",
-    "message": "feat(hidden-stack): 通常ライトと正解時のみRoom IBL・スポット演出を分離"
+    "message": "feat(hidden-stack): 通常ライトと正解時のみRoom IBL・スポット演出を分離",
+    "visible": true,
+    "summary": "通常ライトと正解時のみRoom IBL・スポット演出を分離?????"
   },
   {
     "date": "2026-04-20",
-    "message": "fix(hidden-stack): 床グリッドを線分ごとのLineに分割し斜め接続を除去"
+    "message": "fix(hidden-stack): 床グリッドを線分ごとのLineに分割し斜め接続を除去",
+    "visible": false,
+    "summary": "床グリッドを線分ごとのLineに分割し斜め接続を除去?????"
   },
   {
     "date": "2026-04-20",
-    "message": "revert(hidden-stack): 環境光・金演出・正誤ライトを撤去し初期ライトと木目に復帰"
+    "message": "revert(hidden-stack): 環境光・金演出・正誤ライトを撤去し初期ライトと木目に復帰",
+    "visible": true,
+    "summary": "環境光・金演出・正誤ライトを撤去し初期ライトと木目に復帰?????"
   },
   {
     "date": "2026-04-20",
-    "message": "fix(hidden-stack): 対角行ランダム順と挟壁遮蔽チェックを生成条件に追加"
+    "message": "fix(hidden-stack): 対角行ランダム順と挟壁遮蔽チェックを生成条件に追加",
+    "visible": false,
+    "summary": "対角行ランダム順と挟壁遮蔽チェックを生成条件に追加?????"
   },
   {
     "date": "2026-04-20",
-    "message": "feat(hidden-stack): 解答後ふりかえりモードとUI再構成を追加"
+    "message": "feat(hidden-stack): 解答後ふりかえりモードとUI再構成を追加",
+    "visible": true,
+    "summary": "解答後ふりかえりモードと????再構成を追加?????"
   },
   {
     "date": "2026-04-20",
-    "message": "fix(hidden-stack): ふりかえり時のカメラ同期と水平回転のみの制御を厳密化"
+    "message": "fix(hidden-stack): ふりかえり時のカメラ同期と水平回転のみの制御を厳密化",
+    "visible": false,
+    "summary": "ふりかえり時のカメラ同期と水平回転のみの制御を厳密化?????"
   },
   {
     "date": "2026-04-20",
-    "message": "fix(hidden-stack): ふりかえり中はzoom値を初期値で固定保持"
+    "message": "fix(hidden-stack): ふりかえり中はzoom値を初期値で固定保持",
+    "visible": false,
+    "summary": "ふりかえり中はzoom値を初期値で固定保持?????"
   },
   {
     "date": "2026-04-20",
-    "message": "refactor(hidden-stack): 結果エリアをモダン化しメッセージ表示スタイル切替を追加"
+    "message": "refactor(hidden-stack): 結果エリアをモダン化しメッセージ表示スタイル切替を追加",
+    "visible": true,
+    "summary": "結果エリアをモダン化しメッセージ表示スタイル切替を追加?????"
   },
   {
     "date": "2026-04-20",
-    "message": "fix(hidden-stack): Canvas領域を絶対配置UIで固定しふりかえり時の再計算を抑制"
+    "message": "fix(hidden-stack): Canvas領域を絶対配置UIで固定しふりかえり時の再計算を抑制",
+    "visible": true,
+    "summary": "Canvas領域を絶対配置????で固定しふりかえり時の再計算を抑制?????"
   },
   {
     "date": "2026-04-20",
-    "message": "fix(hidden-stack): Canvas寸法を初期+resize固定にしてUI干渉を排除"
+    "message": "fix(hidden-stack): Canvas寸法を初期+resize固定にしてUI干渉を排除",
+    "visible": true,
+    "summary": "Canvas寸法を初期+resize固定にして????干渉を排除?????"
   },
   {
     "date": "2026-04-20",
-    "message": "fix(hidden-stack): 解答エリア高さを固定しCanvas干渉のない重ねUIへ調整"
+    "message": "fix(hidden-stack): 解答エリア高さを固定しCanvas干渉のない重ねUIへ調整",
+    "visible": true,
+    "summary": "解答エリア高さを固定しCanvas干渉のない重ね????へ調整?????"
   },
   {
     "date": "2026-04-20",
-    "message": "fix(hidden-stack): ふりかえり時も解答UIを固定表示"
+    "message": "fix(hidden-stack): ふりかえり時も解答UIを固定表示",
+    "visible": true,
+    "summary": "ふりかえり時も解答????を固定表示?????"
   },
   {
     "date": "2026-04-20",
-    "message": "feat(hidden-stack): 判定メッセージを中央出現から右上退避へアニメーション化"
+    "message": "feat(hidden-stack): 判定メッセージを中央出現から右上退避へアニメーション化",
+    "visible": true,
+    "summary": "判定メッセージを中央出現から右上退避へアニメーション化?????"
   },
   {
     "date": "2026-04-21",
-    "message": "fix(hidden-stack): 判定メッセージの遅延・縦位置を調整可能にし枠を角丸四角へ"
+    "message": "fix(hidden-stack): 判定メッセージの遅延・縦位置を調整可能にし枠を角丸四角へ",
+    "visible": false,
+    "summary": "判定メッセージの遅延・縦位置を調整可能にし枠を角丸四角へ?????"
   },
   {
     "date": "2026-04-21",
-    "message": "feat(hidden-stack): ふりかえり時のスワイプ誘導アイコンと回転検知で非表示"
+    "message": "feat(hidden-stack): ふりかえり時のスワイプ誘導アイコンと回転検知で非表示",
+    "visible": true,
+    "summary": "ふりかえり時のスワイプ誘導アイコンと回転検知で非表示?????"
   },
   {
     "date": "2026-04-21",
-    "message": "fix(hidden-stack): 判定メッセージの縦位置既定20%と先頭記号の削除"
+    "message": "fix(hidden-stack): 判定メッセージの縦位置既定20%と先頭記号の削除",
+    "visible": false,
+    "summary": "判定メッセージの縦位置既定20%と先頭記号の削除?????"
   },
   {
     "date": "2026-04-21",
-    "message": "fix(hidden-stack): リロード後も広告#1先頭へ確実にスクロール"
+    "message": "fix(hidden-stack): リロード後も広告#1先頭へ確実にスクロール",
+    "visible": false,
+    "summary": "リロード後も広告#1先頭へ確実にスクロール?????"
   },
   {
     "date": "2026-04-21",
-    "message": "feat(hidden-stack): 木01 Matcap質感と低負荷ライト・エッジ調整"
+    "message": "feat(hidden-stack): 木01 Matcap質感と低負荷ライト・エッジ調整",
+    "visible": true,
+    "summary": "木01 Matcap質感と低負荷ライト・エッジ調整?????"
   },
   {
     "date": "2026-04-21",
-    "message": "feat(hidden-stack): 正解時の死角を金Matcap化しゴールドブラウンエッジへ"
+    "message": "feat(hidden-stack): 正解時の死角を金Matcap化しゴールドブラウンエッジへ",
+    "visible": true,
+    "summary": "正解時の死角を金Matcap化しゴールドブラウンエッジへ?????"
   },
   {
     "date": "2026-04-22",
-    "message": "fix(hidden-stack): Matcap設定の正規化と法線デバッグ、テクスチャ更新"
+    "message": "fix(hidden-stack): Matcap設定の正規化と法線デバッグ、テクスチャ更新",
+    "visible": false,
+    "summary": "Matcap設定の正規化と法線デバッグ、テクスチャ更新?????"
   },
   {
     "date": "2026-04-22",
-    "message": "feat(hidden-stack): fBm wood texture, 3-color blend, brushing pass"
+    "message": "feat(hidden-stack): fBm wood texture, 3-color blend, brushing pass",
+    "visible": true,
+    "summary": "fBm wood texture, 3-color blend, brushing pass?????"
   },
   {
     "date": "2026-04-22",
-    "message": "feat(hidden-stack): 外部木目6種をプリロードしWoodTexとデバッグ切替を追加"
+    "message": "feat(hidden-stack): 外部木目6種をプリロードしWoodTexとデバッグ切替を追加",
+    "visible": true,
+    "summary": "外部木目6種をプリロードしWoodTexとデバッグ切替を追加?????"
   },
   {
     "date": "2026-04-22",
-    "message": "fix(hidden-stack): walnut暗転を修正しアンビエント調整をデバッグ追加"
+    "message": "fix(hidden-stack): walnut暗転を修正しアンビエント調整をデバッグ追加",
+    "visible": false,
+    "summary": "walnut暗転を修正しアンビエント調整をデバッグ追加?????"
   },
   {
     "date": "2026-04-22",
-    "message": "feat(hidden-stack): WoodTex専用の明るさ補正と調整UIを追加"
+    "message": "feat(hidden-stack): WoodTex専用の明るさ補正と調整UIを追加",
+    "visible": true,
+    "summary": "WoodTex専用の明るさ補正と調整????を追加?????"
   },
   {
     "date": "2026-04-22",
-    "message": "feat(hidden-stack): WoodTexに2灯目フィルとリムライト調整を追加"
+    "message": "feat(hidden-stack): WoodTexに2灯目フィルとリムライト調整を追加",
+    "visible": true,
+    "summary": "WoodTexに2灯目フィルとリムライト調整を追加?????"
   },
   {
     "date": "2026-04-22",
-    "message": "chore(hidden-stack): walnut向け初期ライティング値を調整"
+    "message": "chore(hidden-stack): walnut向け初期ライティング値を調整",
+    "visible": false,
+    "summary": "walnut向け初期ライティング値を調整?????"
   },
   {
     "date": "2026-04-22",
-    "message": "feat(hidden-stack): WoodTexのUVスケール調整とデバッグスライダーを追加"
+    "message": "feat(hidden-stack): WoodTexのUVスケール調整とデバッグスライダーを追加",
+    "visible": true,
+    "summary": "WoodTexのUVスケール調整とデバッグスライダーを追加?????"
   },
   {
     "date": "2026-04-22",
-    "message": "fix(hidden-stack): intro後のWoodTex再乱択で質感が変わる不具合を修正"
+    "message": "fix(hidden-stack): intro後のWoodTex再乱択で質感が変わる不具合を修正",
+    "visible": false,
+    "summary": "intro後のWoodTex再乱択で質感が変わる不具合を修正?????"
   },
   {
     "date": "2026-04-22",
-    "message": "feat(hidden-stack): 金塊テクスチャPBRとenvMap調整デバッグを追加"
+    "message": "feat(hidden-stack): 金塊テクスチャPBRとenvMap調整デバッグを追加",
+    "visible": true,
+    "summary": "金塊テクスチャPBRとenvMap調整デバッグを追加?????"
   },
   {
     "date": "2026-04-22",
-    "message": "fix(hidden-stack): 環境反射を金塊専用に限定"
+    "message": "fix(hidden-stack): 環境反射を金塊専用に限定",
+    "visible": false,
+    "summary": "環境反射を金塊専用に限定?????"
   },
   {
     "date": "2026-04-22",
-    "message": "fix(hidden-stack): repeat端またぎによる継ぎ目を抑制"
+    "message": "fix(hidden-stack): repeat端またぎによる継ぎ目を抑制",
+    "visible": false,
+    "summary": "repeat端またぎによる継ぎ目を抑制?????"
   },
   {
     "date": "2026-04-22",
-    "message": "feat(hidden-stack): WoodTex折りたたみUIと判定スポットライト演出を追加"
+    "message": "feat(hidden-stack): WoodTex折りたたみUIと判定スポットライト演出を追加",
+    "visible": true,
+    "summary": "WoodTex折りたたみ????と判定スポットライト演出を追加?????"
   },
   {
     "date": "2026-04-23",
-    "message": "feat(hidden-stack): 正誤判定ライト強化・金envMapブースト・追従PointLight"
+    "message": "feat(hidden-stack): 正誤判定ライト強化・金envMapブースト・追従PointLight",
+    "visible": true,
+    "summary": "正誤判定ライト強化・金envMapブースト・追従PointLight?????"
   },
   {
     "date": "2026-04-23",
-    "message": "fix(hidden-stack): スポット2秒1周の連続軌道・ふりかえり拡大は可視ブロックのみ"
+    "message": "fix(hidden-stack): スポット2秒1周の連続軌道・ふりかえり拡大は可視ブロックのみ",
+    "visible": false,
+    "summary": "スポット2秒1周の連続軌道・ふりかえり拡大は可視ブロックのみ?????"
   },
   {
     "date": "2026-04-23",
-    "message": "feat(hidden-stack): デフォルト調整・スポット/金アコーディオン・正誤判定格子の薄色化"
+    "message": "feat(hidden-stack): デフォルト調整・スポット/金アコーディオン・正誤判定格子の薄色化",
+    "visible": true,
+    "summary": "デフォルト調整・スポット/金アコーディオン・正誤判定格子の薄色化?????"
   },
   {
     "date": "2026-04-23",
-    "message": "refactor(hidden-stack): 質感ABC再編・セミグロス5色・曇りガラス/木01削除"
+    "message": "refactor(hidden-stack): 質感ABC再編・セミグロス5色・曇りガラス/木01削除",
+    "visible": true,
+    "summary": "質感ABC再編・セミグロス5色・曇りガラス/木01削除?????"
   },
   {
     "date": "2026-04-23",
-    "message": "fix(hidden-stack): 正誤判定の格子を可視セル枠線に変更し床格子は固定"
+    "message": "fix(hidden-stack): 正誤判定の格子を可視セル枠線に変更し床格子は固定",
+    "visible": false,
+    "summary": "正誤判定の格子を可視セル枠線に変更し床格子は固定?????"
   },
   {
     "date": "2026-04-23",
-    "message": "feat(hidden-stack): デフォルト調整・イントロ跳ね固定・正誤判定で可視と床の衝突を無効化"
+    "message": "feat(hidden-stack): デフォルト調整・イントロ跳ね固定・正誤判定で可視と床の衝突を無効化",
+    "visible": true,
+    "summary": "デフォルト調整・イントロ跳ね固定・正誤判定で可視と床の衝突を無効化?????"
   },
   {
     "date": "2026-04-23",
-    "message": "feat(hidden-stack): ふりかえり枠表示トグル・結果メッセージ字サイズ・既定値更新"
+    "message": "feat(hidden-stack): ふりかえり枠表示トグル・結果メッセージ字サイズ・既定値更新",
+    "visible": true,
+    "summary": "ふりかえり枠表示トグル・結果メッセージ字サイズ・既定値更新?????"
   },
   {
     "date": "2026-04-24",
-    "message": "feat(hidden-stack): グリッド別ブロック充填率・影角・解答中自動回転"
+    "message": "feat(hidden-stack): グリッド別ブロック充填率・影角・解答中自動回転",
+    "visible": true,
+    "summary": "グリッド別ブロック充填率・影角・解答中自動回転?????"
   },
   {
     "date": "2026-04-24",
-    "message": "fix(hidden-stack): 充填率ロールバック・影固定・Ortho zoom・UI強化"
+    "message": "fix(hidden-stack): 充填率ロールバック・影固定・Ortho zoom・UI強化",
+    "visible": true,
+    "summary": "充填率ロールバック・影固定・Ortho zoom・????強化?????"
   },
   {
     "date": "2026-04-24",
-    "message": "fix(hidden-stack): 宝石枠を正方形化・リード字級・グレードUI整理"
+    "message": "fix(hidden-stack): 宝石枠を正方形化・リード字級・グレードUI整理",
+    "visible": true,
+    "summary": "宝石枠を正方形化・リード字級・グレード????整理?????"
   },
   {
     "date": "2026-04-24",
-    "message": "fix(hidden-stack): 解答UI・ふりかえり・グレード配置とOrtho調整を改善"
+    "message": "fix(hidden-stack): 解答UI・ふりかえり・グレード配置とOrtho調整を改善",
+    "visible": true,
+    "summary": "解答????・ふりかえり・グレード配置とOrtho調整を改善?????"
   },
   {
     "date": "2026-04-24",
-    "message": "feat(hidden-stack): 奥高重み付け生成とデバッグ調整UIを追加"
+    "message": "feat(hidden-stack): 奥高重み付け生成とデバッグ調整UIを追加",
+    "visible": true,
+    "summary": "奥高重み付け生成とデバッグ調整????を追加?????"
   },
   {
     "date": "2026-04-24",
-    "message": "fix(hidden-stack): 奥高重み付けのtargetをG基準に修正"
+    "message": "fix(hidden-stack): 奥高重み付けのtargetをG基準に修正",
+    "visible": false,
+    "summary": "奥高重み付けのtargetをG基準に修正?????"
   },
   {
     "date": "2026-04-24",
-    "message": "feat(hidden-stack): グレード再定義と質感ランダム抽選を追加"
+    "message": "feat(hidden-stack): グレード再定義と質感ランダム抽選を追加",
+    "visible": true,
+    "summary": "グレード再定義と質感ランダム抽選を追加?????"
   },
   {
     "date": "2026-04-24",
-    "message": "feat(hidden-stack): 連続質感回避とトップ統合導線・知育効果セクション追加"
+    "message": "feat(hidden-stack): 連続質感回避とトップ統合導線・知育効果セクション追加",
+    "visible": true,
+    "summary": "連続質感回避とトップ統合導線・知育効果セクション追加?????"
   },
   {
     "date": "2026-04-26",
-    "message": "fix(hidden-stack): 教材概要をタイトル下の位置へ調整"
+    "message": "fix(hidden-stack): 教材概要をタイトル下の位置へ調整",
+    "visible": false,
+    "summary": "教材概要をタイトル下の位置へ調整?????"
   },
   {
     "date": "2026-04-26",
-    "message": "SEO: sitemap に hidden-stack を追加、ルート description 更新、各ラボに一次情報ブロックを追加"
+    "message": "SEO: sitemap に hidden-stack を追加、ルート description 更新、各ラボに一次情報ブロックを追加",
+    "visible": false,
+    "summary": "sitemap に ?????? を追加、ルート description 更新、各ラボに一次情報ブロックを追加?????"
   }
 ]

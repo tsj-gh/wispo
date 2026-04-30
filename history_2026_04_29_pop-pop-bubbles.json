@@ -1,0 +1,104 @@
+[
+  {
+    "date": "2026-04-14",
+    "message": "feat(pop-pop-bubbles): Kids向けバブルゲームを新規追加",
+    "visible": true,
+    "summary": "Kids向けバブルゲームを新規追加?????"
+  },
+  {
+    "date": "2026-04-14",
+    "message": "feat(pop-pop-bubbles): タップぬりえ同型レイアウトとデバッグ調整UIを追加",
+    "visible": true,
+    "summary": "タップぬりえ同型レイアウトとデバッグ調整????を追加?????"
+  },
+  {
+    "date": "2026-04-14",
+    "message": "fix(pop-pop-bubbles): devtj時のみデバッグ表示とバブル等速移動化",
+    "visible": false,
+    "summary": "devtj時のみデバッグ表示とバブル等速移動化?????"
+  },
+  {
+    "date": "2026-04-14",
+    "message": "feat(pop-pop-bubbles): バブル大型化と衝突ぷにん挙動・弾性デバッグ調整を追加",
+    "visible": true,
+    "summary": "バブル大型化と衝突ぷにん挙動・弾性デバッグ調整を追加?????"
+  },
+  {
+    "date": "2026-04-15",
+    "message": "lab: 塗り達成アニメを遅く・成功後ウェイト追加、バブル粒子1.5倍とDEBUG調整",
+    "visible": false,
+    "summary": "塗り達成アニメを遅く・成功後ウェイト追加、バブル粒子1.5倍とDEBUG調整?????"
+  },
+  {
+    "date": "2026-04-15",
+    "message": "seo: pop-pop-bubbles を審査向け構造へ統一",
+    "visible": false,
+    "summary": "pop-pop-bubbles を審査向け構造へ統一?????"
+  },
+  {
+    "date": "2026-04-15",
+    "message": "feat(pop-pop-bubbles): モバイル縮小補正と落下挙動を最適化",
+    "visible": true,
+    "summary": "モバイル縮小補正と落下挙動を最適化?????"
+  },
+  {
+    "date": "2026-04-15",
+    "message": "feat(pop-pop-bubbles): 放射パーティクルと外周リングを実装",
+    "visible": true,
+    "summary": "放射パーティクルと外周リングを実装?????"
+  },
+  {
+    "date": "2026-04-15",
+    "message": "feat(pop-pop-bubbles): 割れ表現デバッグ調整と内容物ランダム拡張",
+    "visible": true,
+    "summary": "割れ表現デバッグ調整と内容物ランダム拡張?????"
+  },
+  {
+    "date": "2026-04-15",
+    "message": "style(pop-pop-bubbles): Canvas背景と白エフェクト視認性を強化",
+    "visible": false,
+    "summary": "Canvas背景と白エフェクト視認性を強化?????"
+  },
+  {
+    "date": "2026-04-15",
+    "message": "feat(pop-pop-bubbles): 大爆発パーティクルと全クリア背景チェンジ",
+    "visible": true,
+    "summary": "大爆発パーティクルと全クリア背景チェンジ?????"
+  },
+  {
+    "date": "2026-04-16",
+    "message": "Pop-Pop Bubbles: 次ウェーブで背景切替、パーティクル0.5px基準と初速スライダー、デバッグUI整理",
+    "visible": true,
+    "summary": "次ウェーブで背景切替、パーティクル0.5px基準と初速スライダー、デバッグ????整理?????"
+  },
+  {
+    "date": "2026-04-16",
+    "message": "Pop-Pop Bubbles: 破裂・内容物パラメータの既定値を更新",
+    "visible": false,
+    "summary": "破裂・内容物パラメータの既定値を更新?????"
+  },
+  {
+    "date": "2026-04-16",
+    "message": "Pop-Pop Bubbles: ビビッド背景・パレット切替、破片発光、バブル輪郭の二重円弧",
+    "visible": false,
+    "summary": "ビビッド背景・パレット切替、破片発光、バブル輪郭の二重円弧?????"
+  },
+  {
+    "date": "2026-04-16",
+    "message": "Pop-Pop Bubbles: サブハイライトを右下（Canvas 30°〜90°）に修正",
+    "visible": false,
+    "summary": "サブハイライトを右下（Canvas 30°〜90°）に修正?????"
+  },
+  {
+    "date": "2026-04-16",
+    "message": "Pop-Pop Bubbles: 膜ゆらぎ・疑似屈折グラデ・リムの動的連動",
+    "visible": false,
+    "summary": "膜ゆらぎ・疑似屈折グラデ・リムの動的連動?????"
+  },
+  {
+    "date": "2026-04-16",
+    "message": "fix(pop-pop-bubbles): square stage on PC and cap size for canvas perf",
+    "visible": false,
+    "summary": "square stage on PC and cap size for canvas perf?????"
+  }
+]

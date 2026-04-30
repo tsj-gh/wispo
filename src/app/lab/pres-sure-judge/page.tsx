@@ -8,11 +8,13 @@ import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSe
 import { GameTroubleshootingSection } from "@/components/lab/GameTroubleshootingSection";
 import { OtherPuzzlesSection } from "@/components/lab/OtherPuzzlesSection";
 import { ParentGuideNote } from "@/components/lab/ParentGuideNote";
+import { GameAppUpdateHistorySection } from "@/components/lab/GameAppUpdateHistorySection";
 import { SmartGuardLock } from "@/components/lab/SmartGuardLock";
 import PresSureJudgeGame from "./PresSureJudgeGame";
 import { gameLabAlternates, gameLabPageSeo } from "@/lib/gameLabPageSeo";
 import { buildGameSoftwareApplicationJsonLd } from "@/lib/gameSoftwareApplicationJsonLd";
 import { buildBreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import presSureJudgeHistory from "../../../../history_2026_04_29_pres-sure-judge.json";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wispo.pages.dev";
 const presSureJsonLd = buildGameSoftwareApplicationJsonLd("pres-sure-judge", SITE_URL);
@@ -70,6 +72,7 @@ export default function PresSureJudgePage() {
         gameTitle="プレッシャージャッジ"
         text="時間圧があるため、先に『今回は安全重視でいこう』など方針を決めてから始めると判断が安定します。失敗時は結果だけでなく『どの時点で急いだか』を一緒に振り返ると改善点が見えます。短い休憩を挟んで再挑戦する運用が、集中と自己調整の学習に効果的です。"
       />
+      <GameAppUpdateHistorySection gameTitle="プレッシャージャッジ" entries={presSureJudgeHistory} />
       <OtherPuzzlesSection currentId="pres-sure-judge" />
     </>
   );

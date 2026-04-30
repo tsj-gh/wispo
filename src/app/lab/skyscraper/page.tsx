@@ -8,11 +8,13 @@ import { GamePrimaryContextSection } from "@/components/lab/GamePrimaryContextSe
 import { GameTroubleshootingSection } from "@/components/lab/GameTroubleshootingSection";
 import { OtherPuzzlesSection } from "@/components/lab/OtherPuzzlesSection";
 import { ParentGuideNote } from "@/components/lab/ParentGuideNote";
+import { GameAppUpdateHistorySection } from "@/components/lab/GameAppUpdateHistorySection";
 import { SmartGuardLock } from "@/components/lab/SmartGuardLock";
 import SkyscraperGame from "./SkyscraperGame";
 import { gameLabAlternates, gameLabPageSeo } from "@/lib/gameLabPageSeo";
 import { buildGameSoftwareApplicationJsonLd } from "@/lib/gameSoftwareApplicationJsonLd";
 import { buildBreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import skyscraperHistory from "../../../../history_2026_04_29_skyscraper.json";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wispo.pages.dev";
 const skyscraperJsonLd = buildGameSoftwareApplicationJsonLd("skyscraper", SITE_URL);
@@ -70,6 +72,7 @@ export default function SkyscraperPage() {
         gameTitle="スカイスクレイパー"
         text="最初は『1』や最大値ヒントから確定するマスだけを一緒に探し、全体を一気に解こうとしない進め方がおすすめです。止まったら『この行でまだ置ける数字は何個？』と候補整理を促してください。答え合わせでは正誤より、どの根拠で置いたかを話せた点を評価すると継続しやすくなります。"
       />
+      <GameAppUpdateHistorySection gameTitle="スカイスクレイパー" entries={skyscraperHistory} />
       <OtherPuzzlesSection currentId="skyscraper" />
     </>
   );
