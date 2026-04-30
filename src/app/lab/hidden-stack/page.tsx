@@ -9,11 +9,13 @@ import { GameQuickInfoNote } from "@/components/lab/GameQuickInfoNote";
 import { GameTroubleshootingSection } from "@/components/lab/GameTroubleshootingSection";
 import { OtherPuzzlesSection } from "@/components/lab/OtherPuzzlesSection";
 import { ParentGuideNote } from "@/components/lab/ParentGuideNote";
+import { GameAppUpdateHistorySection } from "@/components/lab/GameAppUpdateHistorySection";
 import { SmartGuardLock } from "@/components/lab/SmartGuardLock";
 import HiddenStackGame from "./HiddenStackGame";
 import { gameLabAlternates, gameLabPageSeo } from "@/lib/gameLabPageSeo";
 import { buildGameSoftwareApplicationJsonLd } from "@/lib/gameSoftwareApplicationJsonLd";
 import { buildBreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import hiddenStackHistory from "../../../../history_2026_04_29_hidden-stack.json";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wispo.pages.dev";
 const hiddenStackJsonLd = buildGameSoftwareApplicationJsonLd("hidden-stack", SITE_URL);
@@ -85,6 +87,7 @@ export default function HiddenStackPage() {
         gameTitle="かくれつみき"
         text="答えを先に伝えず、『どの面が見えていて、どこが見えていないか』を一緒に確認する進め方がおすすめです。迷ったら最低個数と最大個数を分けて考えるよう促すと推定が安定します。解答後に1列だけ振り返る習慣を作ると、空間推理の再現性が高まります。"
       />
+      <GameAppUpdateHistorySection gameTitle="かくれつみき" entries={hiddenStackHistory} />
       <OtherPuzzlesSection currentId="hidden-stack" />
     </>
   );
