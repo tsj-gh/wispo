@@ -1,0 +1,8 @@
+/assets/tap-coloring/Pictures/SVG/*
+  Cache-Control: public, max-age=31536000, s-maxage=31536000, stale-while-revalidate=86400
+
+/assets/tap-coloring/Frame/SVG/*
+  Cache-Control: public, max-age=31536000, s-maxage=31536000, stale-while-revalidate=86400
+
+/assets/tap-coloring/Splatter/*
+  Cache-Control: public, max-age=31536000, s-maxage=31536000, stale-while-revalidate=86400

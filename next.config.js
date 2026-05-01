@@ -6,31 +6,8 @@ const nextConfig = {
     unoptimized: true,
     formats: ["image/avif", "image/webp"],
   },
-  async headers() {
-    const longCache =
-      "public, max-age=31536000, s-maxage=31536000, stale-while-revalidate=86400";
-    return [
-      {
-        source: "/assets/tap-coloring/Pictures/SVG/:path*",
-        headers: [{ key: "Cache-Control", value: longCache }],
-      },
-      {
-        source: "/assets/tap-coloring/Frame/SVG/:path*",
-        headers: [{ key: "Cache-Control", value: longCache }],
-      },
-      {
-        source: "/assets/tap-coloring/Splatter/:path*",
-        headers: [{ key: "Cache-Control", value: longCache }],
-      },
-    ];
-  },
-  async redirects() {
-    return [
-      { source: "/games/pair-link", destination: "/lab/pair-link", permanent: true },
-      { source: "/games/skyscraper", destination: "/lab/skyscraper", permanent: true },
-      { source: "/games/pres-sure-judge", destination: "/lab/pres-sure-judge", permanent: true },
-    ];
-  },
+  // NOTE: output: "export" では next.config.js の redirects/headers は適用されないため、
+  // Cloudflare Pages 向けに public/_redirects と public/_headers へ移管済み。
   env: {
     NEXT_PUBLIC_BUILD_DATE: new Date().toLocaleString("ja-JP", {
       timeZone: "Asia/Tokyo",
