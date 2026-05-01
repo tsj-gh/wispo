@@ -2,7 +2,7 @@
   {
     "date": "2026-03-25",
     "message": "リフレクショット製作開始",
-    "visible": false,
+    "visible": true,
     "summary": "リフレクショット製作開始。"
   },
   {
@@ -27,12 +27,12 @@
     "date": "2026-03-26",
     "message": "feat(lab/reflec-shot): 射出UX改善・デバッグパネル・動的AGENT_RADIUS",
     "visible": true,
-    "summary": "射出UX改善・デバッグパネル・動的AGENT_RADIUS。"
+    "summary": "射出UX改善。"
   },
   {
     "date": "2026-03-26",
     "message": "feat(lab/reflec-shot): devtj 時のみ自動解答（正解角度適用＋MAX_POWER射出）",
-    "visible": true,
+    "visible": false,
     "summary": "devtj 時のみ自動解答（正解角度適用＋MAX_POWER射出）。"
   },
   {
@@ -44,8 +44,8 @@
   {
     "date": "2026-03-26",
     "message": "Revert \"fix(lab/reflec-shot): 正解ガイドを鏡面反射のヒット点列に修正\"",
-    "visible": true,
-    "summary": "正解ガイドを鏡面反射のヒット点列に修正\"。"
+    "visible": false,
+    "summary": "正解ガイドを鏡面反射のヒット点列に修正。"
   },
   {
     "date": "2026-03-26",
@@ -146,8 +146,8 @@
   {
     "date": "2026-03-27",
     "message": "reflec-shot(Grade2): 経路回転・goalPad延長・内角バンパーのみに変更し仕様書を更新",
-    "visible": false,
-    "summary": "経路回転・goalPad延長・内角バンパーのみに変更し仕様書を更新。"
+    "visible": true,
+    "summary": "射出を盤面最下段から行うように生成盤面を回転させる実装。"
   },
   {
     "date": "2026-03-28",
@@ -242,7 +242,7 @@
   {
     "date": "2026-03-28",
     "message": "feat(reflec-shot): Grade2折れ6でstart/goalにバンパー可・totalDiagonalTurnCount整合",
-    "visible": true,
+    "visible": false,
     "summary": "Grade2折れ6でstart/goalにバンパー可・totalDiagonalTurnCount整合。"
   },
   {
@@ -254,14 +254,14 @@
   {
     "date": "2026-03-29",
     "message": "feat(reflec-shot): Grade2折れ6の目標折れをデバッグスライダーで固定可能に",
-    "visible": true,
+    "visible": false,
     "summary": "Grade2折れ6の目標折れをデバッグスライダーで固定可能に。"
   },
   {
     "date": "2026-03-29",
     "message": "refactor(reflec-shot): グレード再編成（Lv.1-4・盤サイズ・バンパー採否）",
     "visible": true,
-    "summary": "グレード再編成（Lv.1-4・盤サイズ・バンパー採否）。"
+    "summary": "グレード編成（Lv.1-4・盤サイズ・バンパー採否）。"
   },
   {
     "date": "2026-03-29",
@@ -272,7 +272,7 @@
   {
     "date": "2026-03-29",
     "message": "Revert \"fix(reflec-shot): rs2ハッシュの再現性とパッド行の経路マス描画\"",
-    "visible": true,
+    "visible": false,
     "summary": "rs2ハッシュの再現性とパッド行の経路マス描画\"。"
   },
   {
@@ -284,7 +284,7 @@
   {
     "date": "2026-03-29",
     "message": "Revert \"reflec-shot: Pad延伸を向き調整前に適用しrs2再現を修正\"",
-    "visible": true,
+    "visible": false,
     "summary": "Pad延伸を向き調整前に適用しrs2再現を修正\"。"
   },
   {
@@ -315,7 +315,7 @@
     "date": "2026-03-30",
     "message": "feat(reflec-shot): Grade5 Lv.4 R-First (N=1) と生成モードデバッグUI",
     "visible": true,
-    "summary": "Grade5 Lv.4 R-First (N=1) と生成モードデバッグ。"
+    "summary": "Grade5 生成Lv.4の実装 "
   },
   {
     "date": "2026-03-30",
@@ -338,7 +338,7 @@
   {
     "date": "2026-03-31",
     "message": "reflec-shot: Grade5 Lv.4 に R-Second 生成（RS2-1 折れ配分・上辺/左右ゴール）とデバッグ UI",
-    "visible": true,
+    "visible": false,
     "summary": "Grade5 Lv.4 に R-Second 生成（RS2-1 折れ配分・上辺/左右ゴール）とデバッグ。"
   },
   {
@@ -380,7 +380,7 @@
   {
     "date": "2026-04-02",
     "message": "Revert \"fix(reflec-shot): R-Second 中脚・出口脚へ b1/b2 をそのまま渡す\"",
-    "visible": true,
+    "visible": false,
     "summary": "R-Second 中脚・出口脚へ b1/b2 をそのまま渡す\"。"
   },
   {
@@ -392,7 +392,7 @@
   {
     "date": "2026-04-02",
     "message": "feat(reflec-shot): R-Second 中脚で S1/P2 関節折れの3パターンを列挙",
-    "visible": true,
+    "visible": false,
     "summary": "R-Second 中脚で S1/P2 関節折れの3パターンを列挙。"
   },
   {
@@ -410,8 +410,8 @@
   {
     "date": "2026-04-02",
     "message": "fix(reflec-shot): deterministic RNG consumption across Node and Worker",
-    "visible": false,
-    "summary": "deterministic RNG consumption across Node and Worker。"
+    "visible": true,
+    "summary": "バンパーを再利用する経路探索と難易度の設定を実装。"
   },
   {
     "date": "2026-04-02",
@@ -440,26 +440,26 @@
   {
     "date": "2026-04-03",
     "message": "feat(reflec-shot): horizontal grade strip like Pair-link",
-    "visible": true,
+    "visible": false,
     "summary": "horizontal grade strip like Pair-link。"
   },
   {
     "date": "2026-04-03",
     "message": "feat(home): Reflec-Shot カード・知育コラム導線・正式名称の統一",
-    "visible": true,
+    "visible": false,
     "summary": "Reflec-Shot カード・知育コラム導線・正式名称の統一。"
   },
   {
     "date": "2026-04-04",
     "message": "feat(reflec-shot): バンパー記号の描画サイズを2倍に",
-    "visible": true,
+    "visible": false,
     "summary": "バンパー記号の描画サイズを2倍に。"
   },
   {
     "date": "2026-04-04",
     "message": "reflec-shot: タップ45°回転と devtj 一筆スワイプ検証UI",
     "visible": true,
-    "summary": "タップ45°回転と devtj 一筆スワイプ検証。"
+    "summary": "タップ45°回転と 一筆スワイプ検証。"
   },
   {
     "date": "2026-04-04",
@@ -488,7 +488,7 @@
   {
     "date": "2026-04-04",
     "message": "reflec-shot(devtj): 軌跡形状に基づくバンパー判定とデバッグUI",
-    "visible": true,
+    "visible": false,
     "summary": "軌跡形状に基づくバンパー判定とデバッグ。"
   },
   {
@@ -513,7 +513,7 @@
     "date": "2026-04-04",
     "message": "reflec-shot: クリア/失敗の結果オーバーレイ・紙吹雪・ヒント改行",
     "visible": false,
-    "summary": "クリア/失敗の結果オーバーレイ・紙吹雪・ヒント改行。"
+    "summary": "クリア/失敗シーケンス実装。"
   },
   {
     "date": "2026-04-04",
@@ -537,13 +537,13 @@
     "date": "2026-04-04",
     "message": "feat(reflec-shot): gem collection on bumper hits, goal gate VFX, light drop projectile",
     "visible": true,
-    "summary": "gem collection on bumper hits, goal gate VFX, light drop projectile。"
+    "summary": "宝石カウント・ゴールゲートVFX・光のドロップショット実装。"
   },
   {
     "date": "2026-04-04",
     "message": "feat(reflec-shot): goal reflection label, finish FX tuning, wall/goal sequences",
     "visible": true,
-    "summary": "goal reflection label, finish FX tuning, wall/goal sequences。"
+    "summary": "ゴール反射ラベル・ゴールゲートVFX・壁/ゴールシーケンス実装。"
   },
   {
     "date": "2026-04-05",
@@ -561,37 +561,37 @@
     "date": "2026-04-05",
     "message": "feat(reflec-shot): launch hint arrow, half bloom, bumper tap flash, trail margin",
     "visible": true,
-    "summary": "launch hint arrow, half bloom, bumper tap flash, trail margin。"
+    "summary": "射出ヒント矢印・半分のブルーム・バンパータップフラッシュ・軌跡マージン実装。"
   },
   {
     "date": "2026-04-05",
     "message": "Reflec-Shot: dummy density, grade-based initial wrong rate, debug visuals",
     "visible": false,
-    "summary": "dummy density, grade-based initial wrong rate, debug visuals。"
+    "summary": "ダミー密度・難易度連動の初期不正率・デバッグ表示実装。"
   },
   {
     "date": "2026-04-05",
     "message": "Reflec-Shot: random orientation for dummies on path straights",
-    "visible": false,
-    "summary": "random orientation for dummies on path straights。"
+    "visible": true,
+    "summary": "ダミーバンパーを実装、難易度調整。"
   },
   {
     "date": "2026-04-05",
     "message": "Reflec-Shot: cross-path and two-sided bumper gem rules",
     "visible": false,
-    "summary": "cross-path and two-sided bumper gem rules。"
+    "summary": "交差パスと両面バンパー宝石ルール実装。"
   },
   {
     "date": "2026-04-05",
     "message": "Reflec-Shot: no gems on HYPHEN pass-through; two-sided red sparks + bumper flash",
     "visible": false,
-    "summary": "no gems on HYPHEN pass-through; two-sided red sparks + bumper flash。"
+    "summary": "HYPHENスルー時は宝石なし・両面バンパー赤スパーク・バンパーフラッシュ実装。"
   },
   {
     "date": "2026-04-05",
     "message": "Reflec-Shot: no gems on PIPE vertical pass-through",
     "visible": false,
-    "summary": "no gems on PIPE vertical pass-through。"
+    "summary": "PIPE垂直スルー時は宝石なし。"
   },
   {
     "date": "2026-04-05",
@@ -608,8 +608,8 @@
   {
     "date": "2026-04-05",
     "message": "reflec-shot: GoalPadの射出中表示を取得数/目標数に変更",
-    "visible": false,
-    "summary": "GoalPadの射出中表示を取得数/目標数に変更。"
+    "visible": true,
+    "summary": "Goal到達の条件に宝石の取得数/目標数を反映するように。"
   },
   {
     "date": "2026-04-05",
@@ -686,7 +686,7 @@
   {
     "date": "2026-04-06",
     "message": "feat(reflec-shot): G6 再訪折れループ長の統計と生成バイアス",
-    "visible": true,
+    "visible": false,
     "summary": "G6 再訪折れループ長の統計と生成バイアス。"
   },
   {
@@ -698,7 +698,7 @@
   {
     "date": "2026-04-06",
     "message": "reflec-shot: G6/G7 難易度改定（6x6 再訪十字なし・7x7 dual）と Grade7 追加",
-    "visible": false,
+    "visible": true,
     "summary": "G6/G7 難易度改定（6x6 再訪十字なし・7x7 dual）と Grade7 追加。"
   },
   {
@@ -728,20 +728,20 @@
   {
     "date": "2026-04-07",
     "message": "feat(reflec-shot): SVG vertex dots at bumper reflection points",
-    "visible": true,
-    "summary": "SVG vertex dots at bumper reflection points。"
+    "visible": false,
+    "summary": "バンパー反射点にSVGドットを描画。"
   },
   {
     "date": "2026-04-07",
     "message": "feat(reflec-shot): rounded shot trail + dev trajectory style toggle",
-    "visible": true,
-    "summary": "rounded shot trail + dev trajectory style toggle。"
+    "visible": false,
+    "summary": "丸み軌跡・dev trajectory style toggle。"
   },
   {
     "date": "2026-04-07",
     "message": "feat(reflec-shot): debug slider for curved trajectory radius",
     "visible": false,
-    "summary": "debug slider for curved trajectory radius。"
+    "summary": "曲線軌跡半径のデバッグスライダー。"
   },
   {
     "date": "2026-04-08",
@@ -770,8 +770,8 @@
   {
     "date": "2026-04-16",
     "message": "Reflec-Shot: 📖外枠配置とPC2カラム化、盤面拡大レイアウト",
-    "visible": false,
-    "summary": "📖外枠配置とPC2カラム化、盤面拡大レイアウト。"
+    "visible": true,
+    "summary": "あそびかた「📖」設置。"
   },
   {
     "date": "2026-04-16",

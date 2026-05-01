@@ -38,8 +38,8 @@
   {
     "date": "2026-03-15",
     "message": "pair-link 引き返し挙動修正",
-    "visible": false,
-    "summary": "pair-link 引き返し挙動修正。"
+    "visible": true,
+    "summary": "引き返し挙動を実装"
   },
   {
     "date": "2026-03-15",
@@ -116,7 +116,7 @@
   {
     "date": "2026-03-19",
     "message": "Revert \"fix(pair-link): モバイル版100vhレイアウト最適化・スクロールなしで盤面全体表示\"",
-    "visible": true,
+    "visible": false,
     "summary": "モバイル版100vhレイアウト最適化・スクロールなしで盤面全体表示\"。"
   },
   {
@@ -140,7 +140,7 @@
   {
     "date": "2026-03-19",
     "message": "fix: Pres-Sure JudgeヘッダーをWispoに統一・ペアリンクの「ペアリンク（ナンバーリンク）」削除・盤面と操作UIの表示順入れ替え",
-    "visible": true,
+    "visible": false,
     "summary": "Pres-Sure JudgeヘッダーをWispoに統一・ペアリンクの「ペアリンク（ナンバーリンク）」削除・盤面と操作の表示順入れ替え。"
   },
   {
@@ -152,7 +152,7 @@
   {
     "date": "2026-03-19",
     "message": "Revert \"fix(pair-link): サイズ/新規作成とAD-UNIT-Bの順序を入れ替え\"",
-    "visible": true,
+    "visible": false,
     "summary": "サイズ/新規作成とAD-UNIT-Bの順序を入れ替え\"。"
   },
   {
@@ -171,25 +171,25 @@
     "date": "2026-03-19",
     "message": "feat(pair-link): プリフェッチ監視をデバッグパネルに追加（状態・ストック数・最終生成時間・手動トリガー）",
     "visible": true,
-    "summary": "プリフェッチ監視をデバッグパネルに追加（状態・ストック数・最終生成時間・手動トリガー）。"
+    "summary": "プリフェッチ盤面生成機能を追加、待ち時間短縮へ。"
   },
   {
     "date": "2026-03-19",
     "message": "feat(pair-link): 盤面生成の工程別時間計測とデバッグパネル表示を追加",
-    "visible": true,
+    "visible": false,
     "summary": "盤面生成の工程別時間計測とデバッグパネル表示を追加。"
   },
   {
     "date": "2026-03-19",
     "message": "feat(pair-link): 再試行ループの計測を追加（Attempts・累計内訳・全体所要時間）",
-    "visible": true,
+    "visible": false,
     "summary": "再試行ループの計測を追加（Attempts・累計内訳・全体所要時間）。"
   },
   {
     "date": "2026-03-20",
     "message": "feat: Pair-link・Skyscraperにシード値ベースの盤面生成を導入",
     "visible": true,
-    "summary": "Pair-link・Skyscraperにシード値ベースの盤面生成を導入。"
+    "summary": "シード値ベースの盤面生成を導入。"
   },
   {
     "date": "2026-03-20",
@@ -200,7 +200,7 @@
   {
     "date": "2026-03-20",
     "message": "feat(pair-link): ABCスコア計算とデバッグ表示を追加 (?devtj=true)",
-    "visible": true,
+    "visible": false,
     "summary": "ABCスコア計算とデバッグ表示を追加 (devtj=true)。"
   },
   {
@@ -242,8 +242,8 @@
   {
     "date": "2026-03-22",
     "message": "Refine: Count pair-link enclosures once per encloser→victim path pair",
-    "visible": false,
-    "summary": "Count pair-link enclosures once per encloser→victim path pair。"
+    "visible": true,
+    "summary": "囲い込みを考慮した難易度調整を実装。"
   },
   {
     "date": "2026-03-22",
@@ -255,12 +255,12 @@
     "date": "2026-03-23",
     "message": "feat(pair-link): Edge Swapモードで4x4〜6x6の盤面も生成可能に",
     "visible": true,
-    "summary": "Edge Swapモードで4x4〜6x6の盤面も生成可能に。"
+    "summary": "Edge Swapモードの生成機能を追加。"
   },
   {
     "date": "2026-03-23",
     "message": "feat(pair-link): Edge Swapで10x10まで生成可能に、9x9以上は線の太さを調整",
-    "visible": true,
+    "visible": false,
     "summary": "Edge Swapで10x10まで生成可能に、9x9以上は線の太さを調整。"
   },
   {
@@ -284,13 +284,13 @@
   {
     "date": "2026-03-23",
     "message": "feat(pair-link): straddle brackets, pseudo K=4, per-endpoint checks with pair dedup",
-    "visible": true,
+    "visible": false,
     "summary": "straddle brackets, pseudo K=4, per-endpoint checks with pair dedup。"
   },
   {
     "date": "2026-03-23",
     "message": "Revert \"feat(pair-link): straddle brackets, pseudo K=4, per-endpoint checks with pair dedup\"",
-    "visible": true,
+    "visible": false,
     "summary": "straddle brackets, pseudo K=4, per-endpoint checks with pair dedup\"。"
   },
   {
@@ -314,7 +314,7 @@
   {
     "date": "2026-03-24",
     "message": "feat(pair-link): 11段階グレード別プリフェッチ・知育ステップシステム",
-    "visible": true,
+    "visible": false,
     "summary": "11段階グレード別プリフェッチ・知育ステップシステム。"
   },
   {
@@ -332,19 +332,19 @@
   {
     "date": "2026-03-24",
     "message": "fix(pair-link): UIモードをサイズ/レガシーをデフォルトに、G1問題対策",
-    "visible": true,
+    "visible": false,
     "summary": "モードをサイズ/レガシーをデフォルトに、G1問題対策。"
   },
   {
     "date": "2026-03-24",
     "message": "feat(pair-link): ストック空き時Worker試行が1秒超なら保険へ、裏でプリフェッチ継続",
-    "visible": true,
+    "visible": false,
     "summary": "ストック空き時Worker試行が1秒超なら保険へ、裏でプリフェッチ継続。"
   },
   {
     "date": "2026-03-24",
     "message": "feat(pair-link): Worker→保険までの累計msをデバッグで調整、既定300ms",
-    "visible": true,
+    "visible": false,
     "summary": "Worker→保険までの累計msをデバッグで調整、既定300ms。"
   },
   {
@@ -356,26 +356,26 @@
   {
     "date": "2026-03-24",
     "message": "feat(pair-link): 全グレード共通で adjRate < 40% を採用条件に追加",
-    "visible": true,
+    "visible": false,
     "summary": "全グレード共通で adjRate < 40% を採用条件に追加。"
   },
   {
     "date": "2026-03-24",
     "message": "feat(pair-link): G7/G8囲い0〜1・G9囲い2以上・G11スコア3500・lte条件とbench既定500試行",
-    "visible": true,
+    "visible": false,
     "summary": "G7/G8囲い0〜1・G9囲い2以上・G11スコア3500・lte条件とbench既定500試行。"
   },
   {
     "date": "2026-03-24",
     "message": "feat(pair-link): ストック補填1000回統一・UI既定グレード・保険まで100ms",
-    "visible": true,
+    "visible": false,
     "summary": "ストック補填1000回統一・既定グレード・保険まで100ms。"
   },
   {
     "date": "2026-03-24",
     "message": "feat(pair-link): 端点タップのスプリング＋波紋と相方共鳴（TAP_SCALE_FACTOR）",
     "visible": true,
-    "summary": "端点タップのスプリング＋波紋と相方共鳴（TAP_SCALE_FACTOR）。"
+    "summary": "操作感を向上、相方の端点が見えやすいように演出。"
   },
   {
     "date": "2026-03-24",
@@ -392,7 +392,7 @@
   {
     "date": "2026-03-24",
     "message": "feat(pair-link): TAP_SCALE_FACTORをデバッグ調整・波紋距離を盤面密度で自動",
-    "visible": true,
+    "visible": false,
     "summary": "TAP_SCALE_FACTORをデバッグ調整・波紋距離を盤面密度で自動。"
   },
   {
@@ -416,7 +416,7 @@
   {
     "date": "2026-04-03",
     "message": "feat(reflec-shot): horizontal grade strip like Pair-link",
-    "visible": true,
+    "visible": false,
     "summary": "horizontal grade strip like Pair-link。"
   }
 ]

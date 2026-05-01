@@ -54,14 +54,6 @@ function toJapaneseDateLabel(value: string): string {
   return `${yyyy}/${mm}/${dd}`;
 }
 
-function toPoliteLine(body: string): string {
-  const trimmed = body.trim().replace(/[。.]$/, "");
-  if (trimmed.endsWith("しました")) return `${trimmed}。`;
-  if (trimmed.endsWith("した")) return `${trimmed}。`;
-  if (trimmed.endsWith("する")) return `${trimmed.slice(0, -2)}しました。`;
-  return `${trimmed}しました。`;
-}
-
 function formatEntryMessage(message: string): { line1: string } {
   const normalized = message.trim();
   const [, ...rest] = normalized.split(":");
@@ -73,7 +65,7 @@ function formatEntryMessage(message: string): { line1: string } {
     .replaceAll("UI", "画面表示");
 
   return {
-    line1: toPoliteLine(body),
+    line1: body,
   };
 }
 
@@ -88,7 +80,7 @@ function toRenderableEntries(entries: AppHistoryEntry[]): RenderableHistoryEntry
     .reverse()
     .map((entry) => {
       const formatted = entry.summary?.trim()
-        ? { line1: toPoliteLine(entry.summary) }
+        ? { line1: entry.summary.trim() }
         : formatEntryMessage(entry.message);
       return {
         key: `${entry.date}-${entry.index}`,

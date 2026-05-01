@@ -69,8 +69,8 @@ export function OtherPuzzlesSection({ currentId }: OtherPuzzlesSectionProps) {
   const cards = APP_CARDS.filter((card) => card.id !== currentId);
 
   return (
-    <section className="mx-auto w-full max-w-[1080px] px-4 pb-12" aria-label="他の知育パズルに挑戦">
-      <h2 className="mb-3 text-sm font-semibold text-[var(--color-text)]">他の知育パズルに挑戦</h2>
+    <section className="mx-auto mt-6 w-full max-w-[1080px] px-4 pb-12" aria-label="他の知育アプリに挑戦">
+      <h2 className="mb-3 text-sm font-semibold text-[var(--color-text)]">他の知育アプリに挑戦</h2>
       <div className="grid grid-cols-1 gap-2 min-[520px]:grid-cols-2">
         {cards.map((card) => (
           <Link

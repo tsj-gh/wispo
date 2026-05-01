@@ -9,12 +9,12 @@
     "date": "2026-03-16",
     "message": "Refactor: Transform Pres-Sure Judge into an object-stacking system with DnD mechanics",
     "visible": true,
-    "summary": "Transform Pres-Sure Judge into an object-stacking system with & mechanics。"
+    "summary": "プロトタイプを追加。"
   },
   {
     "date": "2026-03-16",
     "message": "Fix: Resolve UI interference and optimize responsive layout for Pres-Sure Judge",
-    "visible": true,
+    "visible": false,
     "summary": "Resolve interference and optimize responsive layout for Pres-Sure Judge。"
   },
   {
@@ -38,7 +38,7 @@
   {
     "date": "2026-03-17",
     "message": "Revert \"天秤位置が上に寄っていたのを修正\"",
-    "visible": true,
+    "visible": false,
     "summary": "Revert \"天秤位置が上に寄っていたのを修正\"。"
   },
   {
@@ -50,8 +50,8 @@
   {
     "date": "2026-03-17",
     "message": "fix(pres-sure-judge): 上方向のみベジエ発射、ドラッグ制限、P2を右器接続点に統一",
-    "visible": false,
-    "summary": "上方向のみベジエ発射、ドラッグ制限、P2を右器接続点に統一。"
+    "visible": true,
+    "summary": "ベジエ軌道の射出を実装。"
   },
   {
     "date": "2026-03-17",
@@ -92,8 +92,8 @@
   {
     "date": "2026-03-18",
     "message": "fix(pres-sure-judge): 2つ目以降の重りが1つ目の沈み込みに追従するよう修正",
-    "visible": false,
-    "summary": "2つ目以降の重りが1つ目の沈み込みに追従するよう修正。"
+    "visible": true,
+    "summary": "重りの積み重なりを実装。"
   },
   {
     "date": "2026-03-18",
@@ -128,7 +128,7 @@
   {
     "date": "2026-03-18",
     "message": "feat(pres-sure-judge): ?devtj=true時にビューポート疑似変更ボタン（PC/Mobile/Tablet）を追加",
-    "visible": true,
+    "visible": false,
     "summary": "devtj=true時にビューポート疑似変更ボタン（PC/Mobile/Tablet）を追加。"
   },
   {
@@ -146,37 +146,37 @@
   {
     "date": "2026-03-18",
     "message": "fix(pres-sure-judge): 支点座標をコンテンツボックス基準に修正し、左右アームの距離が等しく器が配置されるように",
-    "visible": false,
+    "visible": true,
     "summary": "支点座標をコンテンツボックス基準に修正し、左右アームの距離が等しく器が配置されるように。"
   },
   {
     "date": "2026-03-18",
     "message": "feat(pres-sure-judge): デバッグモードにモバイル版アーム長比率(0.1～1.0)の入力フォームを追加",
-    "visible": true,
+    "visible": false,
     "summary": "デバッグモードにモバイル版アーム長比率(0.1～1.0)の入力フォームを追加。"
   },
   {
     "date": "2026-03-18",
     "message": "refactor(pres-sure-judge): 「↓You +XX」「↑NPC +YY」オフスクリーン指標を削除",
-    "visible": true,
+    "visible": false,
     "summary": "「↓You +XX」「↑NPC +YY」オフスクリーン指標を削除。"
   },
   {
     "date": "2026-03-18",
     "message": "feat(pres-sure-judge): 秒数表示を境界枠表示の対象に追加（赤い点線）",
-    "visible": true,
+    "visible": false,
     "summary": "秒数表示を境界枠表示の対象に追加（赤い点線）。"
   },
   {
     "date": "2026-03-18",
     "message": "feat(pres-sure-judge): 在庫コンテナの高さ固定・横スライド・ジェスチャー分離を実装",
-    "visible": true,
+    "visible": false,
     "summary": "在庫コンテナの高さ固定・横スライド・ジェスチャー分離を実装。"
   },
   {
     "date": "2026-03-18",
     "message": "feat(pres-sure-judge): モバイル在庫2段表示・デバッグで在庫2倍テスト用チェックボックス追加",
-    "visible": true,
+    "visible": false,
     "summary": "モバイル在庫2段表示・デバッグで在庫2倍テスト用チェックボックス追加。"
   },
   {
@@ -200,13 +200,13 @@
   {
     "date": "2026-03-19",
     "message": "feat(pair-link): Pres-Sure Judge同等のデバッグ機能とビューポート疑似変更を実装（devtj時パネル・[AD-UNIT-A/B]・リフレッシュ状態表示・PC/Mobile/Tablet切替）",
-    "visible": true,
+    "visible": false,
     "summary": "Pres-Sure Judge同等のデバッグ機能とビューポート疑似変更を実装（devtj時パネル・[AD-UNIT-A/B]・リフレッシュ状態表示・PC/Mobile/Tablet切替）。"
   },
   {
     "date": "2026-03-19",
     "message": "feat(pres-sure-judge): ゲームサイクル連動の広告配置・リフレッシュ・30秒Cooldown・デバッグパネル統合を実装",
-    "visible": true,
+    "visible": false,
     "summary": "ゲームサイクル連動の広告配置・リフレッシュ・30秒Cooldown・デバッグパネル統合を実装。"
   },
   {
@@ -218,7 +218,7 @@
   {
     "date": "2026-03-19",
     "message": "fix: Pres-Sure JudgeヘッダーをWispoに統一・ペアリンクの「ペアリンク（ナンバーリンク）」削除・盤面と操作UIの表示順入れ替え",
-    "visible": true,
+    "visible": false,
     "summary": "Pres-Sure JudgeヘッダーをWispoに統一・ペアリンクの「ペアリンク（ナンバーリンク）」削除・盤面と操作の表示順入れ替え。"
   },
   {
@@ -236,13 +236,13 @@
   {
     "date": "2026-04-03",
     "message": "feat(education): Pres-Sure Judge の知育セクションとコラム第4節を追加",
-    "visible": true,
+    "visible": false,
     "summary": "Pres-Sure Judge の知育セクションとコラム第4節を追加。"
   },
   {
     "date": "2026-04-04",
     "message": "feat(i18n): Pres-Sure Judge の知育セクションを ja/en 対応",
     "visible": true,
-    "summary": "Pres-Sure Judge の知育セクションを ja/en 対応。"
+    "summary": "Pres-Sure Judge ja/en 対応。"
   }
 ]
