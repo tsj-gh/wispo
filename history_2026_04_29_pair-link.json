@@ -302,7 +302,7 @@
   {
     "date": "2026-03-23",
     "message": "feat(pair-link): vertical pseudo east-west symmetry (upper+lower, L/R)",
-    "visible": true,
+    "visible": false,
     "summary": "vertical pseudo east-west symmetry (upper+lower, L/R)。"
   },
   {
