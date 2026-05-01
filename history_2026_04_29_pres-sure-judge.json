@@ -3,246 +3,246 @@
     "date": "2026-03-16",
     "message": "Engine: Implement continuous balance survival loop for Pres-Sure Judge",
     "visible": false,
-    "summary": "Implement continuous balance survival loop for Pres-Sure Judge?????"
+    "summary": "Implement continuous balance survival loop for Pres-Sure Judge。"
   },
   {
     "date": "2026-03-16",
     "message": "Refactor: Transform Pres-Sure Judge into an object-stacking system with DnD mechanics",
     "visible": true,
-    "summary": "Transform Pres-Sure Judge into an object-stacking system with DnD mechanics?????"
+    "summary": "Transform Pres-Sure Judge into an object-stacking system with & mechanics。"
   },
   {
     "date": "2026-03-16",
     "message": "Fix: Resolve UI interference and optimize responsive layout for Pres-Sure Judge",
     "visible": true,
-    "summary": "Resolve ???? interference and optimize responsive layout for Pres-Sure Judge?????"
+    "summary": "Resolve interference and optimize responsive layout for Pres-Sure Judge。"
   },
   {
     "date": "2026-03-17",
     "message": "天秤位置が隅に寄っていたのを修正",
     "visible": false,
-    "summary": "天秤位置が隅に寄っていたのを修正?????"
+    "summary": "天秤位置が隅に寄っていたのを修正。"
   },
   {
     "date": "2026-03-17",
     "message": "天秤位置が上に寄っていたのを修正",
     "visible": false,
-    "summary": "天秤位置が上に寄っていたのを修正?????"
+    "summary": "天秤位置が上に寄っていたのを修正。"
   },
   {
     "date": "2026-03-17",
     "message": "天秤位置が上に寄っていたのを修正",
     "visible": false,
-    "summary": "天秤位置が上に寄っていたのを修正?????"
+    "summary": "天秤位置が上に寄っていたのを修正。"
   },
   {
     "date": "2026-03-17",
     "message": "Revert \"天秤位置が上に寄っていたのを修正\"",
     "visible": true,
-    "summary": "Revert \"天秤位置が上に寄っていたのを修正\"?????"
+    "summary": "Revert \"天秤位置が上に寄っていたのを修正\"。"
   },
   {
     "date": "2026-03-17",
     "message": "fix(pres-sure-judge): 器の位置計算の符号を修正し、デバッグモードで接続位置を●表示",
     "visible": false,
-    "summary": "器の位置計算の符号を修正し、デバッグモードで接続位置を●表示?????"
+    "summary": "器の位置計算の符号を修正し、デバッグモードで接続位置を●表示。"
   },
   {
     "date": "2026-03-17",
     "message": "fix(pres-sure-judge): 上方向のみベジエ発射、ドラッグ制限、P2を右器接続点に統一",
     "visible": false,
-    "summary": "上方向のみベジエ発射、ドラッグ制限、P2を右器接続点に統一?????"
+    "summary": "上方向のみベジエ発射、ドラッグ制限、P2を右器接続点に統一。"
   },
   {
     "date": "2026-03-17",
     "message": "fix(pres-sure-judge): 初速倍率2.25、ズーム削除、器を在庫レイアウト裏に隠す",
     "visible": false,
-    "summary": "初速倍率2.25、ズーム削除、器を在庫レイアウト裏に隠す?????"
+    "summary": "初速倍率2.25、ズーム削除、器を在庫レイアウト裏に隠す。"
   },
   {
     "date": "2026-03-17",
     "message": "fix(pres-sure-judge): 器を在庫レイアウト境界でクリップ",
     "visible": false,
-    "summary": "器を在庫レイアウト境界でクリップ?????"
+    "summary": "器を在庫レイアウト境界でクリップ。"
   },
   {
     "date": "2026-03-17",
     "message": "fix(pres-sure-judge): ドラッグ可能範囲を在庫枠内に収める",
     "visible": false,
-    "summary": "ドラッグ可能範囲を在庫枠内に収める?????"
+    "summary": "ドラッグ可能範囲を在庫枠内に収める。"
   },
   {
     "date": "2026-03-18",
     "message": "fix(pres-sure-judge): ベジエ発射をオブジェクト位置で判定するよう変更",
     "visible": false,
-    "summary": "ベジエ発射をオブジェクト位置で判定するよう変更?????"
+    "summary": "ベジエ発射をオブジェクト位置で判定するよう変更。"
   },
   {
     "date": "2026-03-18",
     "message": "fix(pres-sure-judge): 発射判定をオブジェクト中心に、P0をドラッグ中の位置に",
     "visible": false,
-    "summary": "発射判定をオブジェクト中心に、P0をドラッグ中の位置に?????"
+    "summary": "発射判定をオブジェクト中心に、P0をドラッグ中の位置に。"
   },
   {
     "date": "2026-03-18",
     "message": "fix(pres-sure-judge): 器に新規入った重りを上に格納するよう修正",
     "visible": false,
-    "summary": "器に新規入った重りを上に格納するよう修正?????"
+    "summary": "器に新規入った重りを上に格納するよう修正。"
   },
   {
     "date": "2026-03-18",
     "message": "fix(pres-sure-judge): 2つ目以降の重りが1つ目の沈み込みに追従するよう修正",
     "visible": false,
-    "summary": "2つ目以降の重りが1つ目の沈み込みに追従するよう修正?????"
+    "summary": "2つ目以降の重りが1つ目の沈み込みに追従するよう修正。"
   },
   {
     "date": "2026-03-18",
     "message": "fix(pres-sure-judge): 新規アイテムも沈み込みアニメに追従するよう修正",
     "visible": false,
-    "summary": "新規アイテムも沈み込みアニメに追従するよう修正?????"
+    "summary": "新規アイテムも沈み込みアニメに追従するよう修正。"
   },
   {
     "date": "2026-03-18",
     "message": "fix: ラウンド跨ぎで秒数非表示時も枠を維持し天秤位置がずれないよう修正",
     "visible": false,
-    "summary": "ラウンド跨ぎで秒数非表示時も枠を維持し天秤位置がずれないよう修正?????"
+    "summary": "ラウンド跨ぎで秒数非表示時も枠を維持し天秤位置がずれないよう修正。"
   },
   {
     "date": "2026-03-18",
     "message": "fix: Pres-Sure Judgeのアームバーを左右均等に描画するよう修正",
     "visible": false,
-    "summary": "Pres-Sure Judgeのアームバーを左右均等に描画するよう修正?????"
+    "summary": "Pres-Sure Judgeのアームバーを左右均等に描画するよう修正。"
   },
   {
     "date": "2026-03-18",
     "message": "feat: 天秤をモバイル対応のレスポンシブレイアウトに変更",
     "visible": true,
-    "summary": "天秤をモバイル対応のレスポンシブレイアウトに変更?????"
+    "summary": "天秤をモバイル対応のレスポンシブレイアウトに変更。"
   },
   {
     "date": "2026-03-18",
     "message": "feat(pres-sure-judge): DEBUG OFFボタン常時表示・ビューポート幅表示",
     "visible": false,
-    "summary": "DEBUG OFFボタン常時表示・ビューポート幅表示?????"
+    "summary": "DEBUG OFFボタン常時表示・ビューポート幅表示。"
   },
   {
     "date": "2026-03-18",
     "message": "feat(pres-sure-judge): ?devtj=true時にビューポート疑似変更ボタン（PC/Mobile/Tablet）を追加",
     "visible": true,
-    "summary": "?devtj=true時にビューポート疑似変更ボタン（PC/Mobile/Tablet）を追加?????"
+    "summary": "devtj=true時にビューポート疑似変更ボタン（PC/Mobile/Tablet）を追加。"
   },
   {
     "date": "2026-03-18",
     "message": "fix(pres-sure-judge): forcedWidth指定時はeffectiveScaleWidthでアーム・器の座標を計算（案1）",
     "visible": false,
-    "summary": "forcedWidth指定時はeffectiveScaleWidthでアーム・器の座標を計算（案1）?????"
+    "summary": "forcedWidth指定時はeffectiveScaleWidthでアーム・器の座標を計算（案1）。"
   },
   {
     "date": "2026-03-18",
     "message": "fix(pres-sure-judge): scaleContainerWidthの初期値をビューポート幅に合わせて調整、デバッグパネルにScale表示を追加",
     "visible": false,
-    "summary": "scaleContainerWidthの初期値をビューポート幅に合わせて調整、デバッグパネルにScale表示を追加?????"
+    "summary": "scaleContainerWidthの初期値をビューポート幅に合わせて調整、デバッグパネルにScale表示を追加。"
   },
   {
     "date": "2026-03-18",
     "message": "fix(pres-sure-judge): 支点座標をコンテンツボックス基準に修正し、左右アームの距離が等しく器が配置されるように",
     "visible": false,
-    "summary": "支点座標をコンテンツボックス基準に修正し、左右アームの距離が等しく器が配置されるように?????"
+    "summary": "支点座標をコンテンツボックス基準に修正し、左右アームの距離が等しく器が配置されるように。"
   },
   {
     "date": "2026-03-18",
     "message": "feat(pres-sure-judge): デバッグモードにモバイル版アーム長比率(0.1～1.0)の入力フォームを追加",
     "visible": true,
-    "summary": "デバッグモードにモバイル版アーム長比率(0.1～1.0)の入力フォームを追加?????"
+    "summary": "デバッグモードにモバイル版アーム長比率(0.1～1.0)の入力フォームを追加。"
   },
   {
     "date": "2026-03-18",
     "message": "refactor(pres-sure-judge): 「↓You +XX」「↑NPC +YY」オフスクリーン指標を削除",
     "visible": true,
-    "summary": "「↓You +XX」「↑NPC +YY」オフスクリーン指標を削除?????"
+    "summary": "「↓You +XX」「↑NPC +YY」オフスクリーン指標を削除。"
   },
   {
     "date": "2026-03-18",
     "message": "feat(pres-sure-judge): 秒数表示を境界枠表示の対象に追加（赤い点線）",
     "visible": true,
-    "summary": "秒数表示を境界枠表示の対象に追加（赤い点線）?????"
+    "summary": "秒数表示を境界枠表示の対象に追加（赤い点線）。"
   },
   {
     "date": "2026-03-18",
     "message": "feat(pres-sure-judge): 在庫コンテナの高さ固定・横スライド・ジェスチャー分離を実装",
     "visible": true,
-    "summary": "在庫コンテナの高さ固定・横スライド・ジェスチャー分離を実装?????"
+    "summary": "在庫コンテナの高さ固定・横スライド・ジェスチャー分離を実装。"
   },
   {
     "date": "2026-03-18",
     "message": "feat(pres-sure-judge): モバイル在庫2段表示・デバッグで在庫2倍テスト用チェックボックス追加",
     "visible": true,
-    "summary": "モバイル在庫2段表示・デバッグで在庫2倍テスト用チェックボックス追加?????"
+    "summary": "モバイル在庫2段表示・デバッグで在庫2倍テスト用チェックボックス追加。"
   },
   {
     "date": "2026-03-18",
     "message": "fix(pres-sure-judge): モバイル版アーム長比率のデフォルト値を0.8に変更",
     "visible": false,
-    "summary": "モバイル版アーム長比率のデフォルト値を0.8に変更?????"
+    "summary": "モバイル版アーム長比率のデフォルト値を0.8に変更。"
   },
   {
     "date": "2026-03-18",
     "message": "fix(pres-sure-judge): デバッグMobileモード(forcedWidth=375)時も在庫を2段表示に",
     "visible": false,
-    "summary": "デバッグMobileモード(forcedWidth=375)時も在庫を2段表示に?????"
+    "summary": "デバッグMobileモード(forcedWidth=375)時も在庫を2段表示に。"
   },
   {
     "date": "2026-03-19",
     "message": "Pres-Sure Judge要約ファイル出力",
     "visible": false,
-    "summary": "Pres-Sure Judge要約ファイル出力?????"
+    "summary": "Pres-Sure Judge要約ファイル出力。"
   },
   {
     "date": "2026-03-19",
     "message": "feat(pair-link): Pres-Sure Judge同等のデバッグ機能とビューポート疑似変更を実装（devtj時パネル・[AD-UNIT-A/B]・リフレッシュ状態表示・PC/Mobile/Tablet切替）",
     "visible": true,
-    "summary": "Pres-Sure Judge同等のデバッグ機能とビューポート疑似変更を実装（devtj時パネル・[AD-UNIT-A/B]・リフレッシュ状態表示・PC/Mobile/Tablet切替）?????"
+    "summary": "Pres-Sure Judge同等のデバッグ機能とビューポート疑似変更を実装（devtj時パネル・[AD-UNIT-A/B]・リフレッシュ状態表示・PC/Mobile/Tablet切替）。"
   },
   {
     "date": "2026-03-19",
     "message": "feat(pres-sure-judge): ゲームサイクル連動の広告配置・リフレッシュ・30秒Cooldown・デバッグパネル統合を実装",
     "visible": true,
-    "summary": "ゲームサイクル連動の広告配置・リフレッシュ・30秒Cooldown・デバッグパネル統合を実装?????"
+    "summary": "ゲームサイクル連動の広告配置・リフレッシュ・30秒Cooldown・デバッグパネル統合を実装。"
   },
   {
     "date": "2026-03-19",
     "message": "fix(pres-sure-judge): 広告配置をPair-linkと揃える・Aはヘッダー下(PC)、Bはパネル外直下・誤タップ防止の余白",
     "visible": false,
-    "summary": "広告配置をPair-linkと揃える・Aはヘッダー下(PC)、Bはパネル外直下・誤タップ防止の余白?????"
+    "summary": "広告配置をPair-linkと揃える・Aはヘッダー下(PC)、Bはパネル外直下・誤タップ防止の余白。"
   },
   {
     "date": "2026-03-19",
     "message": "fix: Pres-Sure JudgeヘッダーをWispoに統一・ペアリンクの「ペアリンク（ナンバーリンク）」削除・盤面と操作UIの表示順入れ替え",
     "visible": true,
-    "summary": "Pres-Sure JudgeヘッダーをWispoに統一・ペアリンクの「ペアリンク（ナンバーリンク）」削除・盤面と操作????の表示順入れ替え?????"
+    "summary": "Pres-Sure JudgeヘッダーをWispoに統一・ペアリンクの「ペアリンク（ナンバーリンク）」削除・盤面と操作の表示順入れ替え。"
   },
   {
     "date": "2026-03-20",
     "message": "fix(pres-sure-judge): NPC重りの初期表示位置を在庫枠の水平中央に修正",
     "visible": false,
-    "summary": "NPC重りの初期表示位置を在庫枠の水平中央に修正?????"
+    "summary": "NPC重りの初期表示位置を在庫枠の水平中央に修正。"
   },
   {
     "date": "2026-03-20",
     "message": "Pair-link と Pres-Sure Judge の強制クリア/強制終了を完全対応、累計カウントのリアルタイム更新",
     "visible": false,
-    "summary": "Pair-link と Pres-Sure Judge の強制クリア/強制終了を完全対応、累計カウントのリアルタイム更新?????"
+    "summary": "Pair-link と Pres-Sure Judge の強制クリア/強制終了を完全対応、累計カウントのリアルタイム更新。"
   },
   {
     "date": "2026-04-03",
     "message": "feat(education): Pres-Sure Judge の知育セクションとコラム第4節を追加",
     "visible": true,
-    "summary": "Pres-Sure Judge の知育セクションとコラム第4節を追加?????"
+    "summary": "Pres-Sure Judge の知育セクションとコラム第4節を追加。"
   },
   {
     "date": "2026-04-04",
     "message": "feat(i18n): Pres-Sure Judge の知育セクションを ja/en 対応",
     "visible": true,
-    "summary": "Pres-Sure Judge の知育セクションを ja/en 対応?????"
+    "summary": "Pres-Sure Judge の知育セクションを ja/en 対応。"
   }
 ]

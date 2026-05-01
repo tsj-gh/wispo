@@ -3,270 +3,270 @@
     "date": "2026-04-09",
     "message": "feat(lab): タップぬりえ実験ページ（Canvas・混色・98%クリア）",
     "visible": true,
-    "summary": "タップぬりえ実験ページ（Canvas・混色・98%クリア）?????"
+    "summary": "タップぬりえ実験ページ（Canvas・混色・98%クリア）。"
   },
   {
     "date": "2026-04-10",
     "message": "feat(lab): タップぬりえに色相環12色・hue混色・デバッグパネル",
     "visible": true,
-    "summary": "タップぬりえに色相環12色・hue混色・デバッグパネル?????"
+    "summary": "タップぬりえに色相環12色・hue混色・デバッグパネル。"
   },
   {
     "date": "2026-04-10",
     "message": "feat(lab): タップぬりえのシミを public PNG 10種＋着色合成に刷新",
     "visible": true,
-    "summary": "タップぬりえのシミを public PNG 10種＋着色合成に刷新?????"
+    "summary": "タップぬりえのシミを public PNG 10種＋着色合成に刷新。"
   },
   {
     "date": "2026-04-11",
     "message": "fix(lab): タップぬりえのシミPNGを9種に変更",
     "visible": false,
-    "summary": "タップぬりえのシミPNGを9種に変更?????"
+    "summary": "タップぬりえのシミPNGを9種に変更。"
   },
   {
     "date": "2026-04-11",
     "message": "chore(assets): タップぬりえのシミPNGを更新",
     "visible": false,
-    "summary": "タップぬりえのシミPNGを更新?????"
+    "summary": "タップぬりえのシミPNGを更新。"
   },
   {
     "date": "2026-04-11",
     "message": "feat(lab): タップぬりえのパレット3色固定とシミ既定12.5VB",
     "visible": true,
-    "summary": "タップぬりえのパレット3色固定とシミ既定12.5VB?????"
+    "summary": "タップぬりえのパレット3色固定とシミ既定12.5VB。"
   },
   {
     "date": "2026-04-12",
     "message": "fix(tap-coloring): Canvas 高解像度化とインク描画のスムージング強化",
     "visible": false,
-    "summary": "Canvas 高解像度化とインク描画のスムージング強化?????"
+    "summary": "Canvas 高解像度化とインク描画のスムージング強化。"
   },
   {
     "date": "2026-04-13",
     "message": "feat(tap-coloring): 動物PNGを出題レイヤーに差し替え",
     "visible": true,
-    "summary": "動物PNGを出題レイヤーに差し替え?????"
+    "summary": "動物PNGを出題レイヤーに差し替え。"
   },
   {
     "date": "2026-04-13",
     "message": "feat(tap-coloring): 出題カテゴリを動物・食べ物・乗り物へ拡張",
     "visible": true,
-    "summary": "出題カテゴリを動物・食べ物・乗り物へ拡張?????"
+    "summary": "出題カテゴリを動物・食べ物・乗り物へ拡張。"
   },
   {
     "date": "2026-04-14",
     "message": "feat(tap-coloring): 知育効果セクションを既存フォーマットで追加",
     "visible": true,
-    "summary": "知育効果セクションを既存フォーマットで追加?????"
+    "summary": "知育効果セクションを既存フォーマットで追加。"
   },
   {
     "date": "2026-04-14",
     "message": "feat(home,tap-coloring): トップを性質別セクション化しタップぬりえをゲームシェルに統一",
     "visible": true,
-    "summary": "トップを性質別セクション化しタップぬりえをゲームシェルに統一?????"
+    "summary": "トップを性質別セクション化しタップぬりえをゲームシェルに統一。"
   },
   {
     "date": "2026-04-14",
     "message": "feat(pop-pop-bubbles): タップぬりえ同型レイアウトとデバッグ調整UIを追加",
     "visible": true,
-    "summary": "タップぬりえ同型レイアウトとデバッグ調整????を追加?????"
+    "summary": "タップぬりえ同型レイアウトとデバッグ調整を追加。"
   },
   {
     "date": "2026-04-14",
     "message": "feat(tap-coloring): 非言語ステート遷移シーケンスへ全面移行",
     "visible": true,
-    "summary": "非言語ステート遷移シーケンスへ全面移行?????"
+    "summary": "非言語ステート遷移シーケンスへ全面移行。"
   },
   {
     "date": "2026-04-14",
     "message": "fix(tap-coloring): 退場完了後に次絵切替し赤パレット候補を除外",
     "visible": false,
-    "summary": "退場完了後に次絵切替し赤パレット候補を除外?????"
+    "summary": "退場完了後に次絵切替し赤パレット候補を除外。"
   },
   {
     "date": "2026-04-14",
     "message": "fix(tap-coloring): 退場中旧キャンバスへの次絵再描画を防止",
     "visible": false,
-    "summary": "退場中旧キャンバスへの次絵再描画を防止?????"
+    "summary": "退場中旧キャンバスへの次絵再描画を防止。"
   },
   {
     "date": "2026-04-17",
     "message": "tap-coloring: 黒枠内イラスト倍率・PC左カラム縮小・パレット縦位置を調整",
     "visible": false,
-    "summary": "黒枠内イラスト倍率・PC左カラム縮小・パレット縦位置を調整?????"
+    "summary": "黒枠内イラスト倍率・PC左カラム縮小・パレット縦位置を調整。"
   },
   {
     "date": "2026-04-17",
     "message": "tap-coloring: 作品履歴ギャラリー（保存・再開・PNG）を追加",
     "visible": false,
-    "summary": "作品履歴ギャラリー（保存・再開・PNG）を追加?????"
+    "summary": "作品履歴ギャラリー（保存・再開・PNG）を追加。"
   },
   {
     "date": "2026-04-17",
     "message": "tap-coloring: 履歴編集の深度アニメ・スタッシュ復元・PCレイアウトとギャラリーUI調整",
     "visible": true,
-    "summary": "履歴編集の深度アニメ・スタッシュ復元・PCレイアウトとギャラリー????調整?????"
+    "summary": "履歴編集の深度アニメ・スタッシュ復元・PCレイアウトとギャラリー調整。"
   },
   {
     "date": "2026-04-17",
     "message": "tap-coloring: 履歴切替を縮小→拡大の順にし、編集中はキャンバススライドを無効化",
     "visible": false,
-    "summary": "履歴切替を縮小→拡大の順にし、編集中はキャンバススライドを無効化?????"
+    "summary": "履歴切替を縮小→拡大の順にし、編集中はキャンバススライドを無効化。"
   },
   {
     "date": "2026-04-17",
     "message": "tap-coloring: 履歴オーバーレイとキャンバス手渡しの二重アニメを解消",
     "visible": false,
-    "summary": "履歴オーバーレイとキャンバス手渡しの二重アニメを解消?????"
+    "summary": "履歴オーバーレイとキャンバス手渡しの二重アニメを解消。"
   },
   {
     "date": "2026-04-17",
     "message": "fix(tap-coloring): 履歴演出の二重拡大を解消し、演出中はパレットと作品履歴をロック",
     "visible": false,
-    "summary": "履歴演出の二重拡大を解消し、演出中はパレットと作品履歴をロック?????"
+    "summary": "履歴演出の二重拡大を解消し、演出中はパレットと作品履歴をロック。"
   },
   {
     "date": "2026-04-17",
     "message": "fix(tap-coloring): 履歴ハンドオフ後のキャンバス明滅を抑止し、パレットを履歴に保存・復元",
     "visible": false,
-    "summary": "履歴ハンドオフ後のキャンバス明滅を抑止し、パレットを履歴に保存・復元?????"
+    "summary": "履歴ハンドオフ後のキャンバス明滅を抑止し、パレットを履歴に保存・復元。"
   },
   {
     "date": "2026-04-17",
     "message": "fix(tap-coloring): 履歴編集のキャンバスでスライド入場とopacity入場を抑止",
     "visible": false,
-    "summary": "履歴編集のキャンバスでスライド入場とopacity入場を抑止?????"
+    "summary": "履歴編集のキャンバスでスライド入場とopacity入場を抑止。"
   },
   {
     "date": "2026-04-17",
     "message": "feat(tap-coloring): 高画質額縁合成・エクスポートモーダルと isLocked 連動",
     "visible": true,
-    "summary": "高画質額縁合成・エクスポートモーダルと isLocked 連動?????"
+    "summary": "高画質額縁合成・エクスポートモーダルと isLocked 連動。"
   },
   {
     "date": "2026-04-17",
     "message": "feat(tap-coloring): 額縁トリミング・内枠背景・ロゴ回避配置とエクスポートUI調整",
     "visible": true,
-    "summary": "額縁トリミング・内枠背景・ロゴ回避配置とエクスポート????調整?????"
+    "summary": "額縁トリミング・内枠背景・ロゴ回避配置とエクスポート調整。"
   },
   {
     "date": "2026-04-17",
     "message": "アセット修正（ロゴ、タップぬりえpng画像）",
     "visible": false,
-    "summary": "アセット修正（ロゴ、タップぬりえpng画像）?????"
+    "summary": "アセット修正（ロゴ、タップぬりえpng画像）。"
   },
   {
     "date": "2026-04-17",
     "message": "feat(tap-coloring): 外側白の洪水透過・トリミング後ロゴ配置とエクスポートUI調整",
     "visible": true,
-    "summary": "外側白の洪水透過・トリミング後ロゴ配置とエクスポート????調整?????"
+    "summary": "外側白の洪水透過・トリミング後ロゴ配置とエクスポート調整。"
   },
   {
     "date": "2026-04-17",
     "message": "feat(tap-coloring): 内枠自動検出と作品領域基準の合成配置へ更新",
     "visible": true,
-    "summary": "内枠自動検出と作品領域基準の合成配置へ更新?????"
+    "summary": "内枠自動検出と作品領域基準の合成配置へ更新。"
   },
   {
     "date": "2026-04-17",
     "message": "fix(tap-coloring): 内枠検出ベース合成と回転・余白UIを調整",
     "visible": true,
-    "summary": "内枠検出ベース合成と回転・余白????を調整?????"
+    "summary": "内枠検出ベース合成と回転・余白を調整。"
   },
   {
     "date": "2026-04-17",
     "message": "fix(tap-coloring): PCプレビュー見切れ解消と各スライダーにリセット追加",
     "visible": false,
-    "summary": "PCプレビュー見切れ解消と各スライダーにリセット追加?????"
+    "summary": "PCプレビュー見切れ解消と各スライダーにリセット追加。"
   },
   {
     "date": "2026-04-17",
     "message": "fix(tap-coloring): PCプレビュー調整と保存共有UIの操作系を改善",
     "visible": true,
-    "summary": "PCプレビュー調整と保存共有????の操作系を改善?????"
+    "summary": "PCプレビュー調整と保存共有の操作系を改善。"
   },
   {
     "date": "2026-04-17",
     "message": "fix(tap-coloring): デバッグ導線移設とモバイル操作/保存UIを改善",
     "visible": true,
-    "summary": "デバッグ導線移設とモバイル操作/保存????を改善?????"
+    "summary": "デバッグ導線移設とモバイル操作/保存を改善。"
   },
   {
     "date": "2026-04-17",
     "message": "fix(tap-coloring): 線画タップ補正と作品履歴ラベルを調整",
     "visible": false,
-    "summary": "線画タップ補正と作品履歴ラベルを調整?????"
+    "summary": "線画タップ補正と作品履歴ラベルを調整。"
   },
   {
     "date": "2026-04-18",
     "message": "fix(tap-coloring): デバッグ探索UIと選択応答性を改善",
     "visible": true,
-    "summary": "デバッグ探索????と選択応答性を改善?????"
+    "summary": "デバッグ探索と選択応答性を改善。"
   },
   {
     "date": "2026-04-18",
     "message": "fix(tap-coloring): デバッグパネル配置と線画探索判定を修正",
     "visible": false,
-    "summary": "デバッグパネル配置と線画探索判定を修正?????"
+    "summary": "デバッグパネル配置と線画探索判定を修正。"
   },
   {
     "date": "2026-04-18",
     "message": "feat(tap-coloring): 履歴ピン留めとデバッグパネル調整",
     "visible": true,
-    "summary": "履歴ピン留めとデバッグパネル調整?????"
+    "summary": "履歴ピン留めとデバッグパネル調整。"
   },
   {
     "date": "2026-04-18",
     "message": "fix(tap-coloring): モバイル背景をCanvas枠に限定しDEBUG表記とピンUIを調整",
     "visible": false,
-    "summary": "モバイル背景をCanvas枠に限定しDEBUG表記とピン????を調整?????"
+    "summary": "モバイル背景をCanvas枠に限定しDEBUG表記とピンを調整。"
   },
   {
     "date": "2026-04-18",
     "message": "fix(tap-coloring): ピンを黄色★にし連続塗りデバッグ切替を追加",
     "visible": false,
-    "summary": "ピンを黄色★にし連続塗りデバッグ切替を追加?????"
+    "summary": "ピンを黄色★にし連続塗りデバッグ切替を追加。"
   },
   {
     "date": "2026-04-18",
     "message": "fix(tap-coloring): ピン色と連続塗り判定の既定を調整",
     "visible": false,
-    "summary": "ピン色と連続塗り判定の既定を調整?????"
+    "summary": "ピン色と連続塗り判定の既定を調整。"
   },
   {
     "date": "2026-04-18",
     "message": "fix(tap-coloring): ロック配置・履歴文言・保存UIとロゴ反転を改善",
     "visible": true,
-    "summary": "ロック配置・履歴文言・保存????とロゴ反転を改善?????"
+    "summary": "ロック配置・履歴文言・保存とロゴ反転を改善。"
   },
   {
     "date": "2026-04-18",
     "message": "feat(tap-coloring): 履歴編集の「編集終了」をShellとギャラリーに配置",
     "visible": true,
-    "summary": "履歴編集の「編集終了」をShellとギャラリーに配置?????"
+    "summary": "履歴編集の「編集終了」をShellとギャラリーに配置。"
   },
   {
     "date": "2026-04-18",
     "message": "docs(tap-coloring): あそびかた文言と知育見出しを教材向けに更新",
     "visible": false,
-    "summary": "あそびかた文言と知育見出しを教材向けに更新?????"
+    "summary": "あそびかた文言と知育見出しを教材向けに更新。"
   },
   {
     "date": "2026-04-18",
     "message": "tap-coloring: スプラッターをSVG定義＋ラスタ化に移行しSplatter配下にアセット整理",
     "visible": false,
-    "summary": "スプラッターをSVG定義＋ラスタ化に移行しSplatter配下にアセット整理?????"
+    "summary": "スプラッターをSVG定義＋ラスタ化に移行しSplatter配下にアセット整理。"
   },
   {
     "date": "2026-04-18",
     "message": "tap-coloring: 線画・額縁をSVG(Image)化、スプラッターPNG維持と書き出し高解像度化",
     "visible": false,
-    "summary": "線画・額縁をSVG(Image)化、スプラッターPNG維持と書き出し高解像度化?????"
+    "summary": "線画・額縁をSVG(Image)化、スプラッターPNG維持と書き出し高解像度化。"
   },
   {
     "date": "2026-04-18",
     "message": "fix(tap-coloring): clip export art to inner hole before frame",
     "visible": false,
-    "summary": "clip export art to inner hole before frame?????"
+    "summary": "clip export art to inner hole before frame。"
   }
 ]

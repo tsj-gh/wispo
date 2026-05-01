@@ -2,421 +2,421 @@
   {
     "date": "2026-03-14",
     "message": "pair-link操作感を修正",
-    "visible": false,
-    "summary": "pair-link操作感を修正?????"
+    "visible": true,
+    "summary": "ペアリンクプロトタイプ追加。"
   },
   {
     "date": "2026-03-14",
     "message": "fix(pair-link): クリア時の紙吹雪演出が重複する不具合を修正（ref で一度だけに制限）",
     "visible": false,
-    "summary": "クリア時の紙吹雪演出が重複する不具合を修正（ref で一度だけに制限）?????"
+    "summary": "クリア時の紙吹雪演出が重複する不具合を修正（ref で一度だけに制限）。"
   },
   {
     "date": "2026-03-14",
     "message": "fix(pair-link): 紙吹雪をクリア画面ポップアップ時（showClearOverlay）の発火に変更し1回に限定",
-    "visible": false,
-    "summary": "紙吹雪をクリア画面ポップアップ時（showClearOverlay）の発火に変更し1回に限定?????"
+    "visible": true,
+    "summary": "クリア時に紙吹雪演出。"
   },
   {
     "date": "2026-03-14",
     "message": "fix(pair-link): クリア検証中（isCheckingClearRef）は盤面操作をロックし線の引き剥がしを防ぐ",
     "visible": false,
-    "summary": "クリア検証中（isCheckingClearRef）は盤面操作をロックし線の引き剥がしを防ぐ?????"
+    "summary": "クリア検証中（isCheckingClearRef）は盤面操作をロックし線の引き剥がしを防ぐ。"
   },
   {
     "date": "2026-03-14",
     "message": "pair-kink: 待ち時間ゼロ化",
     "visible": false,
-    "summary": "待ち時間ゼロ化?????"
+    "summary": "待ち時間ゼロ化。"
   },
   {
     "date": "2026-03-15",
     "message": "pair-link 引き返し挙動修正",
     "visible": false,
-    "summary": "pair-link 引き返し挙動修正?????"
+    "summary": "pair-link 引き返し挙動修正。"
   },
   {
     "date": "2026-03-15",
     "message": "pair-link 引き返し挙動修正",
     "visible": false,
-    "summary": "pair-link 引き返し挙動修正?????"
+    "summary": "pair-link 引き返し挙動修正。"
   },
   {
     "date": "2026-03-15",
     "message": "fix(pair-link): 数字から2本以上の線が伸びないように制限（端点チェック・方向制限・ループ防止）",
     "visible": false,
-    "summary": "数字から2本以上の線が伸びないように制限（端点チェック・方向制限・ループ防止）?????"
+    "summary": "数字から2本以上の線が伸びないように制限（端点チェック・方向制限・ループ防止）。"
   },
   {
     "date": "2026-03-15",
     "message": "fix(pair-link): lastIsNumでpath.length>1を条件に追加し開始点からの初回延伸を許可",
     "visible": false,
-    "summary": "lastIsNumでpath.length>1を条件に追加し開始点からの初回延伸を許可?????"
+    "summary": "lastIsNumでpath.length>1を条件に追加し開始点からの初回延伸を許可。"
   },
   {
     "date": "2026-03-15",
     "message": "fix(pair-link): ペア完成時は両端点に円表示、popで線の切り離しを禁止",
     "visible": false,
-    "summary": "ペア完成時は両端点に円表示、popで線の切り離しを禁止?????"
+    "summary": "ペア完成時は両端点に円表示、popで線の切り離しを禁止。"
   },
   {
     "date": "2026-03-15",
     "message": "ペアリンク: 数字・端点に半径ベースの当たり判定を導入して掴みやすく改善",
     "visible": false,
-    "summary": "数字・端点に半径ベースの当たり判定を導入して掴みやすく改善?????"
+    "summary": "数字・端点に半径ベースの当たり判定を導入して掴みやすく改善。"
   },
   {
     "date": "2026-03-15",
     "message": "ペアリンク: findNearestHit の型エラー修正と、固定 canvas でのスケール・座標系簡素化",
     "visible": false,
-    "summary": "findNearestHit の型エラー修正と、固定 canvas でのスケール・座標系簡素化?????"
+    "summary": "findNearestHit の型エラー修正と、固定 canvas でのスケール・座標系簡素化。"
   },
   {
     "date": "2026-03-15",
     "message": "ペアリンク・スカイスクレイパー: クリアシーケンスを統一（戻る/次に進む・紙吹雪1回）",
     "visible": false,
-    "summary": "クリアシーケンスを統一（戻る/次に進む・紙吹雪1回）?????"
+    "summary": "クリアシーケンスを統一（戻る/次に進む・紙吹雪1回）。"
   },
   {
     "date": "2026-03-15",
     "message": "ペアリンク: マージ直後の誤 pop で線が消える不具合を修正（mergeJustHappenedRef ガード）",
     "visible": false,
-    "summary": "マージ直後の誤 pop で線が消える不具合を修正（mergeJustHappenedRef ガード）?????"
+    "summary": "マージ直後の誤 pop で線が消える不具合を修正（mergeJustHappenedRef ガード）。"
   },
   {
     "date": "2026-03-15",
     "message": "fix(pair-link): ペア線を戻したときに端点情報が消える不具合を修正",
     "visible": false,
-    "summary": "ペア線を戻したときに端点情報が消える不具合を修正?????"
+    "summary": "ペア線を戻したときに端点情報が消える不具合を修正。"
   },
   {
     "date": "2026-03-19",
     "message": "feat(pair-link): AdSense 2箇所配置・ゲームサイクル連動の動的リフレッシュを実装（30秒Cooldown、devtj時プレースホルダー）",
     "visible": false,
-    "summary": "AdSense 2箇所配置・ゲームサイクル連動の動的リフレッシュを実装（30秒Cooldown、devtj時プレースホルダー）?????"
+    "summary": "AdSense 2箇所配置・ゲームサイクル連動の動的リフレッシュを実装（30秒Cooldown、devtj時プレースホルダー）。"
   },
   {
     "date": "2026-03-19",
     "message": "feat(pair-link): Pres-Sure Judge同等のデバッグ機能とビューポート疑似変更を実装（devtj時パネル・[AD-UNIT-A/B]・リフレッシュ状態表示・PC/Mobile/Tablet切替）",
-    "visible": true,
-    "summary": "Pres-Sure Judge同等のデバッグ機能とビューポート疑似変更を実装（devtj時パネル・[AD-UNIT-A/B]・リフレッシュ状態表示・PC/Mobile/Tablet切替）?????"
+    "visible": false,
+    "summary": "Pres-Sure Judge同等のデバッグ機能とビューポート疑似変更を実装（devtj時パネル・[AD-UNIT-A/B]・リフレッシュ状態表示・PC/Mobile/Tablet切替）。"
   },
   {
     "date": "2026-03-19",
     "message": "fix(pair-link): 広告リフレッシュ状態のリアルタイム反映・コールドウン時(Wait...)、回数フラッシュ、フラッシュテスト連動を実装",
     "visible": false,
-    "summary": "広告リフレッシュ状態のリアルタイム反映・コールドウン時(Wait...)、回数フラッシュ、フラッシュテスト連動を実装?????"
+    "summary": "広告リフレッシュ状態のリアルタイム反映・コールドウン時(Wait...)、回数フラッシュ、フラッシュテスト連動を実装。"
   },
   {
     "date": "2026-03-19",
     "message": "fix(pair-link): モバイル版100vhレイアウト最適化・スクロールなしで盤面全体表示",
     "visible": false,
-    "summary": "モバイル版100vhレイアウト最適化・スクロールなしで盤面全体表示?????"
+    "summary": "モバイル版100vhレイアウト最適化・スクロールなしで盤面全体表示。"
   },
   {
     "date": "2026-03-19",
     "message": "Revert \"fix(pair-link): モバイル版100vhレイアウト最適化・スクロールなしで盤面全体表示\"",
     "visible": true,
-    "summary": "モバイル版100vhレイアウト最適化・スクロールなしで盤面全体表示\"?????"
+    "summary": "モバイル版100vhレイアウト最適化・スクロールなしで盤面全体表示\"。"
   },
   {
     "date": "2026-03-19",
     "message": "fix(pair-link): モバイルで広告を盤面直下へ移動・広告コンテナ安定化・Layout Shift防止",
     "visible": false,
-    "summary": "モバイルで広告を盤面直下へ移動・広告コンテナ安定化・Layout Shift防止?????"
+    "summary": "モバイルで広告を盤面直下へ移動・広告コンテナ安定化・Layout Shift防止。"
   },
   {
     "date": "2026-03-19",
     "message": "fix(pair-link): モバイルで広告を盤面直下へ移動・広告コンテナ安定化・Layout Shift防止",
     "visible": false,
-    "summary": "モバイルで広告を盤面直下へ移動・広告コンテナ安定化・Layout Shift防止?????"
+    "summary": "モバイルで広告を盤面直下へ移動・広告コンテナ安定化・Layout Shift防止。"
   },
   {
     "date": "2026-03-19",
     "message": "fix(pres-sure-judge): 広告配置をPair-linkと揃える・Aはヘッダー下(PC)、Bはパネル外直下・誤タップ防止の余白",
     "visible": false,
-    "summary": "広告配置をPair-linkと揃える・Aはヘッダー下(PC)、Bはパネル外直下・誤タップ防止の余白?????"
+    "summary": "広告配置をPair-linkと揃える・Aはヘッダー下(PC)、Bはパネル外直下・誤タップ防止の余白。"
   },
   {
     "date": "2026-03-19",
     "message": "fix: Pres-Sure JudgeヘッダーをWispoに統一・ペアリンクの「ペアリンク（ナンバーリンク）」削除・盤面と操作UIの表示順入れ替え",
     "visible": true,
-    "summary": "Pres-Sure JudgeヘッダーをWispoに統一・ペアリンクの「ペアリンク（ナンバーリンク）」削除・盤面と操作????の表示順入れ替え?????"
+    "summary": "Pres-Sure JudgeヘッダーをWispoに統一・ペアリンクの「ペアリンク（ナンバーリンク）」削除・盤面と操作の表示順入れ替え。"
   },
   {
     "date": "2026-03-19",
     "message": "fix(pair-link): サイズ/新規作成とAD-UNIT-Bの順序を入れ替え",
     "visible": false,
-    "summary": "サイズ/新規作成とAD-UNIT-Bの順序を入れ替え?????"
+    "summary": "サイズ/新規作成とAD-UNIT-Bの順序を入れ替え。"
   },
   {
     "date": "2026-03-19",
     "message": "Revert \"fix(pair-link): サイズ/新規作成とAD-UNIT-Bの順序を入れ替え\"",
     "visible": true,
-    "summary": "サイズ/新規作成とAD-UNIT-Bの順序を入れ替え\"?????"
+    "summary": "サイズ/新規作成とAD-UNIT-Bの順序を入れ替え\"。"
   },
   {
     "date": "2026-03-19",
     "message": "fix(pair-link): サイズ/新規作成とAD-UNIT-Bの順序を調整",
     "visible": false,
-    "summary": "サイズ/新規作成とAD-UNIT-Bの順序を調整?????"
+    "summary": "サイズ/新規作成とAD-UNIT-Bの順序を調整。"
   },
   {
     "date": "2026-03-19",
     "message": "fix(pair-link): サイズ/新規作成を中央に配置",
     "visible": false,
-    "summary": "サイズ/新規作成を中央に配置?????"
+    "summary": "サイズ/新規作成を中央に配置。"
   },
   {
     "date": "2026-03-19",
     "message": "feat(pair-link): プリフェッチ監視をデバッグパネルに追加（状態・ストック数・最終生成時間・手動トリガー）",
     "visible": true,
-    "summary": "プリフェッチ監視をデバッグパネルに追加（状態・ストック数・最終生成時間・手動トリガー）?????"
+    "summary": "プリフェッチ監視をデバッグパネルに追加（状態・ストック数・最終生成時間・手動トリガー）。"
   },
   {
     "date": "2026-03-19",
     "message": "feat(pair-link): 盤面生成の工程別時間計測とデバッグパネル表示を追加",
     "visible": true,
-    "summary": "盤面生成の工程別時間計測とデバッグパネル表示を追加?????"
+    "summary": "盤面生成の工程別時間計測とデバッグパネル表示を追加。"
   },
   {
     "date": "2026-03-19",
     "message": "feat(pair-link): 再試行ループの計測を追加（Attempts・累計内訳・全体所要時間）",
     "visible": true,
-    "summary": "再試行ループの計測を追加（Attempts・累計内訳・全体所要時間）?????"
+    "summary": "再試行ループの計測を追加（Attempts・累計内訳・全体所要時間）。"
   },
   {
     "date": "2026-03-20",
     "message": "feat: Pair-link・Skyscraperにシード値ベースの盤面生成を導入",
     "visible": true,
-    "summary": "Pair-link・Skyscraperにシード値ベースの盤面生成を導入?????"
+    "summary": "Pair-link・Skyscraperにシード値ベースの盤面生成を導入。"
   },
   {
     "date": "2026-03-20",
     "message": "Pair-link と Pres-Sure Judge の強制クリア/強制終了を完全対応、累計カウントのリアルタイム更新",
     "visible": false,
-    "summary": "Pair-link と Pres-Sure Judge の強制クリア/強制終了を完全対応、累計カウントのリアルタイム更新?????"
+    "summary": "Pair-link と Pres-Sure Judge の強制クリア/強制終了を完全対応、累計カウントのリアルタイム更新。"
   },
   {
     "date": "2026-03-20",
     "message": "feat(pair-link): ABCスコア計算とデバッグ表示を追加 (?devtj=true)",
     "visible": true,
-    "summary": "ABCスコア計算とデバッグ表示を追加 (?devtj=true)?????"
+    "summary": "ABCスコア計算とデバッグ表示を追加 (devtj=true)。"
   },
   {
     "date": "2026-03-20",
     "message": "pair-link盤面生成の測定結果を出力",
     "visible": false,
-    "summary": "pair-link盤面生成の測定結果を出力?????"
+    "summary": "pair-link盤面生成の測定結果を出力。"
   },
   {
     "date": "2026-03-20",
     "message": "Docs: Pair-link生成アルゴリズムの詳細解析レポート",
     "visible": false,
-    "summary": "Pair-link生成アルゴリズムの詳細解析レポート?????"
+    "summary": "Pair-link生成アルゴリズムの詳細解析レポート。"
   },
   {
     "date": "2026-03-21",
     "message": "pair-link：7x7, 8x8はペア10まで許容",
     "visible": false,
-    "summary": "pair-link：7x7, 8x8はペア10まで許容?????"
+    "summary": "pair-link：7x7, 8x8はペア10まで許容。"
   },
   {
     "date": "2026-03-21",
     "message": "Pair-link: デバッグボタン「ストック削除」を追加",
     "visible": false,
-    "summary": "デバッグボタン「ストック削除」を追加?????"
+    "summary": "デバッグボタン「ストック削除」を追加。"
   },
   {
     "date": "2026-03-22",
     "message": "UI: Move Pair-link debug action buttons to top of debug panel",
     "visible": false,
-    "summary": "Move Pair-link debug action buttons to top of debug panel?????"
+    "summary": "Move Pair-link debug action buttons to top of debug panel。"
   },
   {
     "date": "2026-03-22",
     "message": "Fix: Recompute pair-link score after crawl for final board metrics",
     "visible": false,
-    "summary": "Recompute pair-link score after crawl for final board metrics?????"
+    "summary": "Recompute pair-link score after crawl for final board metrics。"
   },
   {
     "date": "2026-03-22",
     "message": "Refine: Count pair-link enclosures once per encloser→victim path pair",
     "visible": false,
-    "summary": "Count pair-link enclosures once per encloser→victim path pair?????"
+    "summary": "Count pair-link enclosures once per encloser→victim path pair。"
   },
   {
     "date": "2026-03-22",
     "message": "pair-link デバッグ機能を整理",
     "visible": false,
-    "summary": "pair-link デバッグ機能を整理?????"
+    "summary": "pair-link デバッグ機能を整理。"
   },
   {
     "date": "2026-03-23",
     "message": "feat(pair-link): Edge Swapモードで4x4〜6x6の盤面も生成可能に",
     "visible": true,
-    "summary": "Edge Swapモードで4x4〜6x6の盤面も生成可能に?????"
+    "summary": "Edge Swapモードで4x4〜6x6の盤面も生成可能に。"
   },
   {
     "date": "2026-03-23",
     "message": "feat(pair-link): Edge Swapで10x10まで生成可能に、9x9以上は線の太さを調整",
     "visible": true,
-    "summary": "Edge Swapで10x10まで生成可能に、9x9以上は線の太さを調整?????"
+    "summary": "Edge Swapで10x10まで生成可能に、9x9以上は線の太さを調整。"
   },
   {
     "date": "2026-03-23",
     "message": "feat(pair-link): 囲い込み目標を定数化、Score閾値・リトライ・所要時間を追加",
     "visible": true,
-    "summary": "囲い込み目標を定数化、Score閾値・リトライ・所要時間を追加?????"
+    "summary": "囲い込み目標を定数化、Score閾値・リトライ・所要時間を追加。"
   },
   {
     "date": "2026-03-23",
     "message": "fix(pair-link): 囲い込み判定でパス反転フォールバックを追加（same_*_direction時）",
     "visible": false,
-    "summary": "囲い込み判定でパス反転フォールバックを追加（same_*_direction時）?????"
+    "summary": "囲い込み判定でパス反転フォールバックを追加（same_*_direction時）。"
   },
   {
     "date": "2026-03-23",
     "message": "fix(pair-link): bracket-based pseudo enclosure + purple dashed viz",
     "visible": false,
-    "summary": "bracket-based pseudo enclosure + purple dashed viz?????"
+    "summary": "bracket-based pseudo enclosure + purple dashed viz。"
   },
   {
     "date": "2026-03-23",
     "message": "feat(pair-link): straddle brackets, pseudo K=4, per-endpoint checks with pair dedup",
     "visible": true,
-    "summary": "straddle brackets, pseudo K=4, per-endpoint checks with pair dedup?????"
+    "summary": "straddle brackets, pseudo K=4, per-endpoint checks with pair dedup。"
   },
   {
     "date": "2026-03-23",
     "message": "Revert \"feat(pair-link): straddle brackets, pseudo K=4, per-endpoint checks with pair dedup\"",
     "visible": true,
-    "summary": "straddle brackets, pseudo K=4, per-endpoint checks with pair dedup\"?????"
+    "summary": "straddle brackets, pseudo K=4, per-endpoint checks with pair dedup\"。"
   },
   {
     "date": "2026-03-23",
     "message": "fix(pair-link): vertical enclosure uses opposite horizontal R/L arms + lower pseudo R scan (K=4)",
     "visible": false,
-    "summary": "vertical enclosure uses opposite horizontal R/L arms + lower pseudo R scan (K=4)?????"
+    "summary": "vertical enclosure uses opposite horizontal R/L arms + lower pseudo R scan (K=4)。"
   },
   {
     "date": "2026-03-23",
     "message": "feat(pair-link): vertical pseudo east-west symmetry (upper+lower, L/R)",
     "visible": true,
-    "summary": "vertical pseudo east-west symmetry (upper+lower, L/R)?????"
+    "summary": "vertical pseudo east-west symmetry (upper+lower, L/R)。"
   },
   {
     "date": "2026-03-24",
     "message": "fix(pair-link): ドロップダウンをチップUIに変更しAdSense誤クリック対策",
     "visible": false,
-    "summary": "ドロップダウンをチップ????に変更しAdSense誤クリック対策?????"
+    "summary": "ドロップダウンをチップに変更しAdSense誤クリック対策。"
   },
   {
     "date": "2026-03-24",
     "message": "feat(pair-link): 11段階グレード別プリフェッチ・知育ステップシステム",
     "visible": true,
-    "summary": "11段階グレード別プリフェッチ・知育ステップシステム?????"
+    "summary": "11段階グレード別プリフェッチ・知育ステップシステム。"
   },
   {
     "date": "2026-03-24",
     "message": "fix(pair-link): 「次の問題」ボタンで盤面が消えて次が生成されない問題を修正",
     "visible": false,
-    "summary": "「次の問題」ボタンで盤面が消えて次が生成されない問題を修正?????"
+    "summary": "「次の問題」ボタンで盤面が消えて次が生成されない問題を修正。"
   },
   {
     "date": "2026-03-24",
     "message": "fix(pair-link): コンソール出力をデバッグモード時のみ表示、詳細ログ用チェック追加",
     "visible": false,
-    "summary": "コンソール出力をデバッグモード時のみ表示、詳細ログ用チェック追加?????"
+    "summary": "コンソール出力をデバッグモード時のみ表示、詳細ログ用チェック追加。"
   },
   {
     "date": "2026-03-24",
     "message": "fix(pair-link): UIモードをサイズ/レガシーをデフォルトに、G1問題対策",
     "visible": true,
-    "summary": "????モードをサイズ/レガシーをデフォルトに、G1問題対策?????"
+    "summary": "モードをサイズ/レガシーをデフォルトに、G1問題対策。"
   },
   {
     "date": "2026-03-24",
     "message": "feat(pair-link): ストック空き時Worker試行が1秒超なら保険へ、裏でプリフェッチ継続",
     "visible": true,
-    "summary": "ストック空き時Worker試行が1秒超なら保険へ、裏でプリフェッチ継続?????"
+    "summary": "ストック空き時Worker試行が1秒超なら保険へ、裏でプリフェッチ継続。"
   },
   {
     "date": "2026-03-24",
     "message": "feat(pair-link): Worker→保険までの累計msをデバッグで調整、既定300ms",
     "visible": true,
-    "summary": "Worker→保険までの累計msをデバッグで調整、既定300ms?????"
+    "summary": "Worker→保険までの累計msをデバッグで調整、既定300ms。"
   },
   {
     "date": "2026-03-24",
     "message": "fix(pair-link): G1囲い込みをちょうど0、G2を1以上に変更",
     "visible": false,
-    "summary": "G1囲い込みをちょうど0、G2を1以上に変更?????"
+    "summary": "G1囲い込みをちょうど0、G2を1以上に変更。"
   },
   {
     "date": "2026-03-24",
     "message": "feat(pair-link): 全グレード共通で adjRate < 40% を採用条件に追加",
     "visible": true,
-    "summary": "全グレード共通で adjRate < 40% を採用条件に追加?????"
+    "summary": "全グレード共通で adjRate < 40% を採用条件に追加。"
   },
   {
     "date": "2026-03-24",
     "message": "feat(pair-link): G7/G8囲い0〜1・G9囲い2以上・G11スコア3500・lte条件とbench既定500試行",
     "visible": true,
-    "summary": "G7/G8囲い0〜1・G9囲い2以上・G11スコア3500・lte条件とbench既定500試行?????"
+    "summary": "G7/G8囲い0〜1・G9囲い2以上・G11スコア3500・lte条件とbench既定500試行。"
   },
   {
     "date": "2026-03-24",
     "message": "feat(pair-link): ストック補填1000回統一・UI既定グレード・保険まで100ms",
     "visible": true,
-    "summary": "ストック補填1000回統一・????既定グレード・保険まで100ms?????"
+    "summary": "ストック補填1000回統一・既定グレード・保険まで100ms。"
   },
   {
     "date": "2026-03-24",
     "message": "feat(pair-link): 端点タップのスプリング＋波紋と相方共鳴（TAP_SCALE_FACTOR）",
     "visible": true,
-    "summary": "端点タップのスプリング＋波紋と相方共鳴（TAP_SCALE_FACTOR）?????"
+    "summary": "端点タップのスプリング＋波紋と相方共鳴（TAP_SCALE_FACTOR）。"
   },
   {
     "date": "2026-03-24",
     "message": "fix(pair-link): 印刷数字マス上の端点のみタップ演出（線先端では非表示）",
     "visible": false,
-    "summary": "印刷数字マス上の端点のみタップ演出（線先端では非表示）?????"
+    "summary": "印刷数字マス上の端点のみタップ演出（線先端では非表示）。"
   },
   {
     "date": "2026-03-24",
     "message": "style(pair-link): タップ波紋をゆっくり・ソナー風の1発に調整",
     "visible": false,
-    "summary": "タップ波紋をゆっくり・ソナー風の1発に調整?????"
+    "summary": "タップ波紋をゆっくり・ソナー風の1発に調整。"
   },
   {
     "date": "2026-03-24",
     "message": "feat(pair-link): TAP_SCALE_FACTORをデバッグ調整・波紋距離を盤面密度で自動",
     "visible": true,
-    "summary": "TAP_SCALE_FACTORをデバッグ調整・波紋距離を盤面密度で自動?????"
+    "summary": "TAP_SCALE_FACTORをデバッグ調整・波紋距離を盤面密度で自動。"
   },
   {
     "date": "2026-03-24",
     "message": "fix(pair-link): prevent tap ripple from restarting on path redraws",
     "visible": false,
-    "summary": "prevent tap ripple from restarting on path redraws?????"
+    "summary": "prevent tap ripple from restarting on path redraws。"
   },
   {
     "date": "2026-03-25",
     "message": "Pair-link仕様書作成",
     "visible": false,
-    "summary": "Pair-link仕様書作成?????"
+    "summary": "Pair-link仕様書作成。"
   },
   {
     "date": "2026-04-03",
     "message": "feat(reflec-shot): port GPT ad slots and refresh from Pair-link",
     "visible": false,
-    "summary": "port GPT ad slots and refresh from Pair-link?????"
+    "summary": "port GPT ad slots and refresh from Pair-link。"
   },
   {
     "date": "2026-04-03",
     "message": "feat(reflec-shot): horizontal grade strip like Pair-link",
     "visible": true,
-    "summary": "horizontal grade strip like Pair-link?????"
+    "summary": "horizontal grade strip like Pair-link。"
   }
 ]
