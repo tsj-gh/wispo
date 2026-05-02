@@ -441,7 +441,15 @@ export function FlagGuesserPlayfield() {
           onPointerMove={handleSvgPointerMove}
           onPointerLeave={handleSvgLeave}
         >
-          <rect width={size.w} height={size.h} fill="color-mix(in_srgb,var(--color-bg)_96%,transparent)" />
+          {/*
+            fill/stroke に color-mix や var を「属性」で渡すと、SVG パーサが解釈できず fill の初期値 #000 になり国が真っ黒になる。
+            CSS の style 経由なら色が正しく計算される。
+          */}
+          <rect
+            width={size.w}
+            height={size.h}
+            style={{ fill: "color-mix(in_srgb,var(--color-bg)_96%,transparent)" }}
+          />
           {regionModel.allFeatures.map((f) => {
             const id = String(f.id ?? "");
             const d = regionModel.pathDById.get(id);
@@ -450,10 +458,12 @@ export function FlagGuesserPlayfield() {
               <path
                 key={id}
                 d={d}
-                stroke="color-mix(in_srgb,var(--color-text)_18%,transparent)"
-                strokeWidth={0.6}
-                fill={countryFill(id)}
                 className="transition-[fill] duration-150"
+                style={{
+                  fill: countryFill(id),
+                  stroke: "color-mix(in_srgb,var(--color-text)_18%,transparent)",
+                  strokeWidth: 0.6,
+                }}
               />
             );
           })}
