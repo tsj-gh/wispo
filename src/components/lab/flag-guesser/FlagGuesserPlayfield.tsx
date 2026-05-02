@@ -29,11 +29,12 @@ import { spawnBubbleLike, stepBubbleLikeInBox, type FloatingBubbleLike } from "@
 const TOPO_URL = "/assets/flag-guesser/countries-50m.json";
 const ISO_URL = "/assets/flag-guesser/iso-3166.json";
 
-const MAP_FILL_DEFAULT = "color-mix(in_srgb,var(--color-primary)_12%,transparent)";
-const MAP_FILL_HOVER = "color-mix(in_srgb,var(--color-primary)_28%,transparent)";
-const MAP_FILL_DRAG = "color-mix(in_srgb,var(--color-primary)_42%,transparent)";
-const MAP_FILL_CORRECT = "color-mix(in_srgb,#22c55e_42%,transparent)";
-const MAP_FILL_WRONG = "color-mix(in_srgb,#ef4444_42%,transparent)";
+/** Tailwind の `in_srgb` はクラス名用エスケープ。生の CSS では `in srgb` とスペースが必須。 */
+const MAP_FILL_DEFAULT = "color-mix(in srgb, var(--color-primary) 12%, transparent)";
+const MAP_FILL_HOVER = "color-mix(in srgb, var(--color-primary) 28%, transparent)";
+const MAP_FILL_DRAG = "color-mix(in srgb, var(--color-primary) 42%, transparent)";
+const MAP_FILL_CORRECT = "color-mix(in srgb, #22c55e 42%, transparent)";
+const MAP_FILL_WRONG = "color-mix(in srgb, #ef4444 42%, transparent)";
 
 const CARD_W = 72;
 const CARD_H = 54;
@@ -442,13 +443,14 @@ export function FlagGuesserPlayfield() {
           onPointerLeave={handleSvgLeave}
         >
           {/*
-            fill/stroke に color-mix や var を「属性」で渡すと、SVG パーサが解釈できず fill の初期値 #000 になり国が真っ黒になる。
-            CSS の style 経由なら色が正しく計算される。
+            1) fill 属性に color-mix を渡すと SVG パーサが無効扱い → #000。
+            2) JS 文字列で in_srgb / var(--x)_12% と書くと CSS として無効 → やはり #000。
+            style + 正しい color-mix(in srgb, …) 構文を使う。
           */}
           <rect
             width={size.w}
             height={size.h}
-            style={{ fill: "color-mix(in_srgb,var(--color-bg)_96%,transparent)" }}
+            style={{ fill: "color-mix(in srgb, var(--color-bg) 96%, transparent)" }}
           />
           {regionModel.allFeatures.map((f) => {
             const id = String(f.id ?? "");
@@ -461,7 +463,7 @@ export function FlagGuesserPlayfield() {
                 className="transition-[fill] duration-150"
                 style={{
                   fill: countryFill(id),
-                  stroke: "color-mix(in_srgb,var(--color-text)_18%,transparent)",
+                  stroke: "color-mix(in srgb, var(--color-text) 18%, transparent)",
                   strokeWidth: 0.6,
                 }}
               />
