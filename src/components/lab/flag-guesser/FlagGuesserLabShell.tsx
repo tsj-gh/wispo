@@ -10,7 +10,7 @@ import { GAME_AD_GAP_BEFORE_SLOT_2_PX, GAME_COLUMN_CLASS, GAME_NO_TOP_AD_LAYOUT_
 
 export function FlagGuesserLabShell() {
   return (
-    <div className={`${GAME_COLUMN_CLASS} flex min-h-0 flex-1 flex-col lg:max-w-none`}>
+    <div className={`${GAME_COLUMN_CLASS} flex h-full min-h-0 flex-1 flex-col lg:max-w-none`}>
       <GamePageHeader
         titleEn="Flag Guesser"
         titleJa="フラッグゲッサー"
@@ -24,14 +24,16 @@ export function FlagGuesserLabShell() {
         <PairLinkAdSlot slotIndex={1} />
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3 lg:flex-row lg:items-start lg:gap-5">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 lg:min-h-0 lg:flex-row lg:items-stretch lg:gap-5">
         <div
-          className="flex min-h-0 w-full flex-1 flex-col lg:max-h-[calc(100dvh-var(--fg-wrap-off)-80px)] lg:min-w-0 lg:justify-center"
+          className="flex min-h-0 w-full flex-1 flex-col lg:max-h-[calc(100dvh-var(--fg-wrap-off)-80px)] lg:min-w-0"
           style={{ "--fg-wrap-off": `${GAME_NO_TOP_AD_LAYOUT_OFFSET_PX}px` } as CSSProperties}
         >
-          <section className="relative z-[1] mb-0 w-full rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] px-4 pb-4 pt-2 backdrop-blur sm:px-5 sm:pb-5 sm:pt-2 lg:mb-0">
+          <section className="relative z-[1] mb-0 flex min-h-[min(52dvh,560px)] flex-1 flex-col rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] px-4 pb-4 pt-2 backdrop-blur sm:px-5 sm:pb-5 sm:pt-2 lg:mb-0">
             <Suspense fallback={<div className="py-10 text-center text-sm text-[var(--color-muted)]">読み込み中…</div>}>
-              <FlagGuesserPlayfield />
+              <div className="flex min-h-0 flex-1 flex-col">
+                <FlagGuesserPlayfield />
+              </div>
             </Suspense>
           </section>
         </div>

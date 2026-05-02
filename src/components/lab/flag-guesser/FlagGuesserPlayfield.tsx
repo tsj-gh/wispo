@@ -150,15 +150,15 @@ export function FlagGuesserPlayfield() {
   useEffect(() => {
     const el = stageRef.current;
     if (!el) return;
-    const ro = new ResizeObserver(() => {
+    const measure = () => {
       const r = el.getBoundingClientRect();
-      const w = Math.floor(r.width);
-      const h = Math.floor(Math.max(240, r.width * 0.72));
-      setSize({ w: Math.max(280, w), h });
-    });
+      const w = Math.max(280, Math.floor(r.width));
+      const h = Math.max(280, Math.floor(r.height));
+      if (w > 0 && h > 0) setSize({ w, h });
+    };
+    const ro = new ResizeObserver(() => measure());
     ro.observe(el);
-    const r = el.getBoundingClientRect();
-    setSize({ w: Math.max(280, Math.floor(r.width)), h: Math.floor(Math.max(240, r.width * 0.72)) });
+    measure();
     return () => ro.disconnect();
   }, []);
 
@@ -405,8 +405,7 @@ export function FlagGuesserPlayfield() {
   return (
     <div
       ref={stageRef}
-      className="relative w-full touch-none overflow-hidden rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_94%,white_6%)] shadow-inner"
-      style={{ minHeight: Math.min(560, size.h + CARD_H * 2) }}
+      className="relative flex h-full min-h-[min(58dvh,640px)] w-full flex-1 flex-col touch-none overflow-hidden rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_94%,white_6%)] shadow-inner"
     >
       <div className="pointer-events-none absolute right-2 top-2 z-30 md:right-3 md:top-3">
         {!answered ? (
@@ -429,8 +428,9 @@ export function FlagGuesserPlayfield() {
         )}
       </div>
 
+      <div className="relative flex min-h-0 w-full flex-1 flex-col items-center justify-center">
       <div
-        className="relative mx-auto origin-center transition-transform duration-300 ease-out"
+        className="relative mx-auto min-h-0 w-full max-w-full flex-1 origin-center transition-transform duration-300 ease-out"
         style={{ transform: `scale(${mapScale})`, width: size.w, height: size.h }}
       >
         <svg
@@ -548,6 +548,7 @@ export function FlagGuesserPlayfield() {
               </button>
             );
           })}
+      </div>
       </div>
 
       {hoverCountryId && projection && !drag && (
