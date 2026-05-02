@@ -12,7 +12,8 @@ export type LabOperatorMemoLabId =
   | "pop-pop-bubbles"
   | "pres-sure-judge"
   | "skyscraper"
-  | "reflec-shot";
+  | "reflec-shot"
+  | "flag-guesser";
 
 export const LAB_OPERATOR_MEMO_BODIES: Record<LabOperatorMemoLabId, string> = {
   "hidden-stack":
@@ -31,10 +32,12 @@ export const LAB_OPERATOR_MEMO_BODIES: Record<LabOperatorMemoLabId, string> = {
     全体の90%を塗ることができたら、次の線画へ遷移するようにしています。細い線などを細かく塗り切ることより、
     大雑把に塗れた状態で完成とすることで、成功体験をテンポよく体験させることができます。
     後の編集モードでは塗り切れていない領域まで修正できるようにしています。
-    
+
   「色の混ざり方」
     最初は乗算混合で絵の具のような色の混ざり方を再現していましたが、タップするほど黒に収束するのが効果的でありませんでした。
     そこで12分割色相環の隣色、中間色に変化させるようにすることで、どれだけ色を重ねても鮮やかな色のまま塗り絵が進行できるようにしています。
+
+  「真っ赤」
     "赤"は血飛沫のような表現になるためカラーパレットの選択肢からは除外していますが、重ね合わさった結果赤で塗ることは可能です。
     `,
   "pair-link":
@@ -47,6 +50,8 @@ export const LAB_OPERATOR_MEMO_BODIES: Record<LabOperatorMemoLabId, string> = {
     "運営ではヒント数字の読み違いが全体の停滞点になりやすいため、誤解の訂正と保護者向けの進め方を先に揃える運用です。難度帯ごとの躓きは更新履歴とあわせてここに短く追記していきます。",
   "reflec-shot":
     "運営では反射の段階を飛ばすと離脱が早いため、操作は増やす前に「1反射の予測が安定する」回数を確保する方針です。難関ステージでの離脱点はメモし、教材概要・運営メモの両方で補足を更新します。",
+  "flag-guesser":
+    "運営では出題リージョンと国旗セットの偏りが継続率に効くため、同一地域の連続出題やデコイ枚数は様子を見ながら調整します。つまずきが出た国・地域はこの段落に短く追記していきます。",
 };
 
 export function getLabOperatorMemoBody(id: LabOperatorMemoLabId): string {

@@ -39,6 +39,11 @@ export const gameLabPageSeo = {
     description:
       "3D積み木の死角にある個数を推測する空間認識パズル。見える情報から見えない量を再構成し、数概念と論理推論をつなげます。",
   },
+  flagGuesser: {
+    title: "フラッグゲッサー | 直感と論理を育む知育パズル Wispo",
+    description:
+      "地域にズームした地図へ国旗をドラッグして重ね、国と記号の対応を学ぶ地理クイズのプロトタイプ。位置判断とフィードバックで地理区分の直感を育てます。",
+  },
 } as const;
 
 export function gameLabAlternates(path: `/${string}`): Metadata["alternates"] {

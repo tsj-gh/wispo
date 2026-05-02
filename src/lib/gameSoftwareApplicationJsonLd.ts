@@ -5,7 +5,8 @@ type SupportedGameAppId =
   | "pres-sure-judge"
   | "skyscraper"
   | "reflec-shot"
-  | "hidden-stack";
+  | "hidden-stack"
+  | "flag-guesser";
 
 type GameJsonLdSeed = {
   name: string;
@@ -63,6 +64,13 @@ const GAME_JSONLD_SEEDS: Record<SupportedGameAppId, GameJsonLdSeed> = {
     description:
       "3×3×3 の積み木を限定視点から観察し、死角に隠れた立方体の個数を推測する空間課題です。落下演出と物理フィードバックを通じて、遮蔽関係の想像と検証のサイクルを促します。",
     featureList: ["空間推理", "遮蔽と可視性", "数量推定", "物理フィードバック", "試行と検証"],
+  },
+  "flag-guesser": {
+    name: "フラッグゲッサー",
+    path: "/lab/flag-guesser",
+    description:
+      "リージョンにズームした世界地図へ国旗を重ね、国と旗の対応を学ぶ地理体験のプロトタイプです。ドラッグ操作と色フィードバックで位置判断と記号の結びつきを反復しやすくします。",
+    featureList: ["地理", "国旗", "地図読み", "空間配置", "自己検証学習"],
   },
 };
 

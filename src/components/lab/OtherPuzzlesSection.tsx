@@ -2,7 +2,15 @@ import Image from "next/image";
 import Link from "next/link";
 
 type AppCard = {
-  id: "tap-coloring" | "pop-pop-bubbles" | "pair-link" | "pres-sure-judge" | "skyscraper" | "reflec-shot" | "hidden-stack";
+  id:
+    | "tap-coloring"
+    | "pop-pop-bubbles"
+    | "pair-link"
+    | "pres-sure-judge"
+    | "skyscraper"
+    | "reflec-shot"
+    | "hidden-stack"
+    | "flag-guesser";
   title: string;
   href: `/${string}`;
   emoji: string;
@@ -10,6 +18,13 @@ type AppCard = {
 };
 
 const APP_CARDS: AppCard[] = [
+  {
+    id: "flag-guesser",
+    title: "フラッグゲッサー",
+    href: "/lab/flag-guesser",
+    emoji: "🌍",
+    summary: "地域マップに国旗を重ねて対応を学ぶ",
+  },
   {
     id: "tap-coloring",
     title: "タップぬりえ",
