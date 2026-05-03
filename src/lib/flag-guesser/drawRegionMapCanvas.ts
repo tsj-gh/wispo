@@ -36,19 +36,23 @@ export type DrawRegionMapCanvasParams = {
   projection: GeoProjection;
   features: readonly CountryFeature[];
   zoom: { x: number; y: number; k: number };
-  centroidById: Map<string, [number, number]>;
-  /** 各国 fill（CSS 文字列）→ Canvas 用に解決した色を返す */
   fillForId: (id: string) => string;
   seaFillResolved: string;
   borderStrokeResolved: string;
   borderStrokeWidth: number;
+  /** ホバー国の太い輪郭（陸地 fill ハイライトに代わる） */
+  hoverStrokeResolved: string;
+  hoverLineWidth: number;
+  /** ドラッグ着弾候補の輪郭 */
+  dragTargetStrokeResolved: string;
   hoverCountryId: string | null;
-  pathHoverScale: number;
+  dragTargetCountryId: string | null;
   drag: boolean;
 };
 
 /**
  * d3.geoPath + Canvas 2D。ズームは ctx.translate / scale で SVG の `<g transform>` と同等。
+ * 国境は実線。ホバー／ドラッグ先は同じ path を太線で重ね描き。
  */
 export function drawRegionMapCanvas(p: DrawRegionMapCanvasParams): void {
   const {
@@ -59,13 +63,15 @@ export function drawRegionMapCanvas(p: DrawRegionMapCanvasParams): void {
     projection,
     features,
     zoom,
-    centroidById,
     fillForId,
     seaFillResolved,
     borderStrokeResolved,
     borderStrokeWidth,
+    hoverStrokeResolved,
+    hoverLineWidth,
+    dragTargetStrokeResolved,
     hoverCountryId,
-    pathHoverScale,
+    dragTargetCountryId,
     drag,
   } = p;
 
@@ -84,31 +90,35 @@ export function drawRegionMapCanvas(p: DrawRegionMapCanvasParams): void {
   ctx.scale(zoom.k, zoom.k);
 
   const k = Math.max(zoom.k, 0.08);
-  const lineW = borderStrokeWidth / k;
-  const dashUnit = 1 / k;
+  const normalLineW = borderStrokeWidth / k;
 
   for (const f of features) {
     const id = String(f.id ?? "");
     ctx.save();
-    const c = centroidById.get(id);
-    const pathHover = !drag && hoverCountryId === id;
-    if (c && pathHover) {
-      ctx.translate(c[0], c[1]);
-      ctx.scale(pathHoverScale, pathHoverScale);
-      ctx.translate(-c[0], -c[1]);
-    }
 
     ctx.beginPath();
     pathGen(f as Feature<Geometry, GeoJsonProperties>);
     ctx.fillStyle = fillForId(id);
     ctx.fill();
 
+    ctx.beginPath();
+    pathGen(f as Feature<Geometry, GeoJsonProperties>);
     ctx.strokeStyle = borderStrokeResolved;
-    ctx.lineWidth = lineW;
+    ctx.lineWidth = normalLineW;
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
-    ctx.setLineDash([1.2 * dashUnit, 2.2 * dashUnit]);
+    ctx.setLineDash([]);
     ctx.stroke();
+
+    const emphasisDrag = drag && dragTargetCountryId === id;
+    const emphasisHover = !drag && hoverCountryId === id;
+    if (emphasisDrag || emphasisHover) {
+      ctx.beginPath();
+      pathGen(f as Feature<Geometry, GeoJsonProperties>);
+      ctx.strokeStyle = emphasisDrag ? dragTargetStrokeResolved : hoverStrokeResolved;
+      ctx.lineWidth = emphasisDrag ? hoverLineWidth * 1.05 : hoverLineWidth;
+      ctx.stroke();
+    }
 
     ctx.restore();
   }

@@ -96,7 +96,7 @@ export function FlagGuesserDebugPanel({
               <div className="rounded-lg border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] p-2">
                 <div className="mb-2 font-semibold text-[var(--color-text)]">描画方式（検証）</div>
                 <p className="mb-2 text-[9px] leading-snug">
-                  SVG は DOM 負荷が大きい。Canvas は d3.geoPath(context)＋rAF 再描画。ホバー判定は geoContains（既存ロジック）。
+                  SVG は DOM 負荷が大きい。Canvas は d3.geoPath(context)＋rAF 再描画。ホバーは投影済み path と Path2D の一致判定（島嶼で geoContains だけより安全）。
                 </p>
                 <div className="flex gap-1">
                   <button

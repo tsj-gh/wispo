@@ -8,19 +8,77 @@ export function featureIdString(f: CountryFeature): string | null {
   return String(raw);
 }
 
+/** geoPath が出力した `d` から Path2D をキャッシュ（ヒットテストのピーク負荷軽減） */
+const path2dFromDCache = new Map<string, Path2D>();
+
+function path2DFromPathString(d: string): Path2D | null {
+  let p = path2dFromDCache.get(d);
+  if (p) return p;
+  try {
+    p = new Path2D(d);
+    path2dFromDCache.set(d, p);
+    return p;
+  } catch {
+    return null;
+  }
+}
+
+let hitTestCanvas: HTMLCanvasElement | null = null;
+let hitTestCtx: CanvasRenderingContext2D | null = null;
+
+function getHitTestContext2D(): CanvasRenderingContext2D | null {
+  if (typeof document === "undefined") return null;
+  if (!hitTestCtx) {
+    hitTestCanvas = document.createElement("canvas");
+    hitTestCanvas.width = hitTestCanvas.height = 8;
+    hitTestCtx = hitTestCanvas.getContext("2d");
+  }
+  return hitTestCtx;
+}
+
 /**
- * 画面上の点がどの国に属するか（面積の小さいポリゴンを先に判定し、重なりで大国が先に奪われるのを防ぐ）。
+ * 画面上の点がどの国に属するか（面積の小さいポリゴンを先に判定）。
+ *
+ * `pathDById` があるときは **Mercator に投影した SVG path（画面と同一ジオメトリ）** に対して
+ * `Path2D` + `isPointInPath` で判定する。球面の `geoContains` だけだと、島嶼・ズーム大で
+ * 「海上なのにモルディブ」など描画と不一致になるケースがある。
  */
 export function countryIdAtPixel(
   projection: GeoProjection,
   features: readonly CountryFeature[],
   x: number,
-  y: number
+  y: number,
+  pathDById?: ReadonlyMap<string, string>
 ): string | null {
+  const sorted = sortFeaturesForHitTest(features);
+
+  if (pathDById?.size) {
+    const ctx = getHitTestContext2D();
+    if (ctx && typeof Path2D !== "undefined") {
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      for (const feat of sorted) {
+        const id = featureIdString(feat);
+        if (!id) continue;
+        const d = pathDById.get(id);
+        if (!d) continue;
+        const p = path2DFromPathString(d);
+        if (!p) continue;
+        try {
+          const inOdd = ctx.isPointInPath(p, x, y, "evenodd");
+          const inNon = ctx.isPointInPath(p, x, y, "nonzero");
+          if (inOdd || inNon) return id;
+        } catch {
+          /* Path2D が不正なときは下へフォールバック */
+        }
+      }
+      return null;
+    }
+  }
+
   const inv = projection.invert?.([x, y]);
   if (!inv) return null;
   const [lon, lat] = inv;
-  for (const feat of features) {
+  for (const feat of sorted) {
     if (geoContains(feat as Feature<Geometry, GeoJsonProperties>, [lon, lat])) {
       const id = featureIdString(feat);
       if (id) return id;

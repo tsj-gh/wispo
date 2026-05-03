@@ -67,11 +67,14 @@ const ISO_URL = "/assets/flag-guesser/iso-3166.json";
 const MAP_SEA_FILL = "color-mix(in srgb, var(--color-bg) 96%, transparent)";
 /** 同一リージョンの陸（出題中はカード掲載国も含め同一トーン） */
 const MAP_LAND_REGION_QUIET = "color-mix(in srgb, var(--color-muted) 14%, transparent)";
-/** 国境・海岸の点線（ベース幅。nonScalingStroke でズーム時に画面ピクセルが暴れない） */
+/** 通常の陸地国境（実線） */
 const MAP_BORDER_STROKE = "color-mix(in srgb, var(--color-text) 26%, transparent)";
+/** ホバー時の太い輪郭（以前のホバー fill トーンに合わせる） */
+const MAP_HOVER_STROKE = "color-mix(in srgb, var(--color-primary) 72%, transparent)";
+/** ドラッグ着弾候補の輪郭（やや濃いめ） */
+const MAP_DRAG_STROKE = "color-mix(in srgb, var(--color-primary) 88%, transparent)";
 
 /** Tailwind の `in_srgb` はクラス名用エスケープ。生の CSS では `in srgb` とスペースが必須。 */
-const MAP_FILL_HOVER = "color-mix(in srgb, var(--color-primary) 28%, transparent)";
 const MAP_FILL_DRAG = "color-mix(in srgb, var(--color-primary) 42%, transparent)";
 const MAP_FILL_CORRECT = "color-mix(in srgb, #22c55e 42%, transparent)";
 const MAP_FILL_WRONG = "color-mix(in srgb, #ef4444 42%, transparent)";
@@ -133,8 +136,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   const [isDebugMode, setIsDebugMode] = useState(false);
   const [isDebugPanelExpanded, setIsDebugPanelExpanded] = useState(true);
   const [mapManipEnabled, setMapManipEnabled] = useState(false);
-  /** devtj デバッグ時のみ UI 切替。通常は SVG。 */
-  const [mapRenderBackend, setMapRenderBackend] = useState<MapRenderBackend>("svg");
+  const [mapRenderBackend, setMapRenderBackend] = useState<MapRenderBackend>("canvas");
   const [zoomTransform, setZoomTransform] = useState<ZoomPlain>(ZOOM_IDENTITY);
   const [devicePixelRatioState, setDevicePixelRatioState] = useState(1);
   const [listedCountryLabelsJa, setListedCountryLabelsJa] = useState<string[]>([]);
@@ -243,18 +245,6 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
 
   const projection = regionModel?.projection;
 
-  /** ホバー時に各国ポリゴンだけ拡大するための基準点（投影座標） */
-  const centroidByCountryId = useMemo(() => {
-    const m = new Map<string, [number, number]>();
-    if (!projection || !regionModel) return m;
-    for (const f of regionModel.allFeatures) {
-      const id = String(f.id ?? "");
-      const p = projectCentroid(projection, f as CountryFeature);
-      if (p) m.set(id, p);
-    }
-    return m;
-  }, [projection, regionModel]);
-
   const gTransform = useMemo(() => {
     return zoomIdentity.translate(zoomTransform.x, zoomTransform.y).scale(zoomTransform.k).toString();
   }, [zoomTransform]);
@@ -292,7 +282,6 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     if (!isDevTj) {
       setIsDebugMode(false);
       setMapManipEnabled(false);
-      setMapRenderBackend("svg");
       setZoomTransform(ZOOM_IDENTITY);
     }
   }, [isDevTj]);
@@ -469,7 +458,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       const pt = pointerToMapCoords(event.clientX, event.clientY);
       if (!pt) return;
       const [x, y] = pt;
-      const id = countryIdAtPixel(projection, hitFeatures, x, y);
+      const id = countryIdAtPixel(projection, hitFeatures, x, y, regionModel.pathDById);
       setHoverCountryId(id);
     },
     [projection, regionModel, hitFeatures, answered, drag, pointerToMapCoords]
@@ -487,10 +476,9 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         if (m === "wrong") return MAP_FILL_WRONG;
       }
       if (drag && dragTargetCountryId === id) return MAP_FILL_DRAG;
-      if (hoverCountryId === id) return MAP_FILL_HOVER;
       return MAP_LAND_REGION_QUIET;
     },
-    [answered, resultByCountryId, drag, dragTargetCountryId, hoverCountryId]
+    [answered, resultByCountryId, drag, dragTargetCountryId]
   );
 
   const beginDrag = useCallback(
@@ -521,17 +509,17 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
 
   const moveDrag = useCallback(
     (clientX: number, clientY: number) => {
-      if (!projection || !drag || mapManipEnabled) return;
+      if (!projection || !drag || mapManipEnabled || !regionModel) return;
       const pt = pointerToMapCoords(clientX, clientY);
       if (!pt) return;
       const [x, y] = pt;
       const nx = x - drag.offsetX;
       const ny = y - drag.offsetY;
       setDragPos({ x: nx, y: ny });
-      const id = countryIdAtPixel(projection, hitFeatures, nx, ny);
+      const id = countryIdAtPixel(projection, hitFeatures, nx, ny, regionModel.pathDById);
       setDragTargetCountryId(id);
     },
-    [projection, drag, hitFeatures, mapManipEnabled, pointerToMapCoords]
+    [projection, drag, hitFeatures, mapManipEnabled, pointerToMapCoords, regionModel]
   );
 
   const endDrag = useCallback(
@@ -657,6 +645,12 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     return Math.max(0.35, Math.min(1.15, 1.0 / Math.sqrt(k)));
   }, [zoomTransform.k]);
 
+  /** ホバー／ドラッグ強調の太線（地図座標系。Canvas は /k で画面ピクセル感を揃える） */
+  const hoverOutlineWidth = useMemo(() => {
+    const k = Math.max(zoomTransform.k, 0.08);
+    return Math.max((borderStrokeWidth * 3.6) / k, 2.6 / k);
+  }, [zoomTransform.k, borderStrokeWidth]);
+
   const hoverCountryLabel = useMemo(() => {
     if (!hoverCountryId) return null;
     const row = byCountryCode.get(hoverCountryId);
@@ -748,6 +742,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       if (cancelled) return;
       const sea = resolveCssColorForCanvas(MAP_SEA_FILL, probeMount);
       const border = resolveCssColorForCanvas(MAP_BORDER_STROKE, probeMount);
+      const hoverS = resolveCssColorForCanvas(MAP_HOVER_STROKE, probeMount);
+      const dragS = resolveCssColorForCanvas(MAP_DRAG_STROKE, probeMount);
       const fillResolvedCache = new Map<string, string>();
       const fillForId = (id: string) => {
         const css = countryFill(id);
@@ -766,13 +762,15 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         projection,
         features: regionModel.allFeatures,
         zoom: zoomTransform,
-        centroidById: centroidByCountryId,
         fillForId,
         seaFillResolved: sea,
         borderStrokeResolved: border,
         borderStrokeWidth,
+        hoverStrokeResolved: hoverS,
+        hoverLineWidth: hoverOutlineWidth,
+        dragTargetStrokeResolved: dragS,
         hoverCountryId,
-        pathHoverScale: 1.035,
+        dragTargetCountryId,
         drag: !!drag,
       });
     });
@@ -788,10 +786,12 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     size.h,
     devicePixelRatioState,
     zoomTransform,
-    centroidByCountryId,
     borderStrokeWidth,
+    hoverOutlineWidth,
     countryFill,
     drag,
+    hoverCountryId,
+    dragTargetCountryId,
   ]);
 
   useEffect(() => {
@@ -905,30 +905,24 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                     const id = String(f.id ?? "");
                     const d = regionModel.pathDById.get(id);
                     if (!d) return null;
-                    const c = centroidByCountryId.get(id);
-                    const pathHover = !drag && hoverCountryId === id;
-                    const pathScale = pathHover ? 1.035 : 1;
-                    const tf =
-                      c && pathScale !== 1
-                        ? `translate(${c[0]},${c[1]}) scale(${pathScale}) translate(${-c[0]},${-c[1]})`
-                        : undefined;
+                    const emphasisDrag = drag && dragTargetCountryId === id;
+                    const emphasisHover = !drag && hoverCountryId === id;
+                    const emphasis = emphasisDrag || emphasisHover;
                     return (
-                      <g key={id} transform={tf} style={{ transition: "transform 280ms ease-out" }}>
-                        <path
-                          data-fg-cid={id}
-                          d={d}
-                          className="transition-[fill] duration-150"
-                          style={{
-                            fill: countryFill(id),
-                            stroke: MAP_BORDER_STROKE,
-                            strokeWidth: borderStrokeWidth,
-                            strokeDasharray: "1.2 2.2",
-                            strokeLinecap: "round",
-                            strokeLinejoin: "round",
-                            vectorEffect: "non-scaling-stroke",
-                          }}
-                        />
-                      </g>
+                      <path
+                        key={id}
+                        data-fg-cid={id}
+                        d={d}
+                        className="transition-[fill,stroke,stroke-width] duration-150"
+                        style={{
+                          fill: countryFill(id),
+                          stroke: emphasisDrag ? MAP_DRAG_STROKE : emphasisHover ? MAP_HOVER_STROKE : MAP_BORDER_STROKE,
+                          strokeWidth: emphasis ? borderStrokeWidth * 3.6 : borderStrokeWidth,
+                          strokeLinecap: "round",
+                          strokeLinejoin: "round",
+                          vectorEffect: "non-scaling-stroke",
+                        }}
+                      />
                     );
                   })}
                 </g>
