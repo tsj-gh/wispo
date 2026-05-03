@@ -54,11 +54,20 @@ import {
   type TopoLodId,
   TOPO_LOD_URL,
 } from "@/lib/flag-guesser/topoLod";
+import { filterWorldTopoFeatures } from "@/lib/flag-guesser/topoFeatureFilter";
 
 const ISO_URL = "/assets/flag-guesser/iso-3166.json";
 
+/** 海（SVG 背景）。陸とのコントラスト用 */
+const MAP_SEA_FILL = "color-mix(in srgb, rgb(165 198 228) 38%, var(--color-bg) 62%)";
+/** 同一リージョンのうち、今ラウンドのカードに載っている国のベース塗り */
+const MAP_LAND_CARD_ROUND = "color-mix(in srgb, var(--color-primary) 14%, transparent)";
+/** 同一リージョンのその他の陸（補助的な国土） */
+const MAP_LAND_REGION_QUIET = "color-mix(in srgb, var(--color-muted) 14%, transparent)";
+const MAP_COAST_STROKE_CARD = "color-mix(in srgb, var(--color-text) 18%, transparent)";
+const MAP_COAST_STROKE_QUIET = "color-mix(in srgb, var(--color-text) 11%, transparent)";
+
 /** Tailwind の `in_srgb` はクラス名用エスケープ。生の CSS では `in srgb` とスペースが必須。 */
-const MAP_FILL_DEFAULT = "color-mix(in srgb, var(--color-primary) 12%, transparent)";
 const MAP_FILL_HOVER = "color-mix(in srgb, var(--color-primary) 28%, transparent)";
 const MAP_FILL_DRAG = "color-mix(in srgb, var(--color-primary) 42%, transparent)";
 const MAP_FILL_CORRECT = "color-mix(in srgb, #22c55e 42%, transparent)";
@@ -146,13 +155,35 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   const lastTsRef = useRef(0);
   const rafRef = useRef(0);
 
-  const { byCountryCode } = useMemo(() => resolveIsoRows(isoRows), [isoRows]);
+  const { byCountryCode, byAlpha2 } = useMemo(() => resolveIsoRows(isoRows), [isoRows]);
 
-  const topoIds = useMemo(() => topoNumericIdSet(featuresCache["110"] ?? []), [featuresCache]);
+  /** ISO 照合＋極小ポリゴン除去済み（描画・ヒットテスト・出題に使用） */
+  const featuresForGame = useMemo(() => {
+    const out: Partial<Record<TopoLodId, CountryFeature[]>> = {};
+    for (const lod of ["110", "50", "10"] as const) {
+      const raw = featuresCache[lod];
+      if (!raw?.length) continue;
+      out[lod] = isoRows.length ? filterWorldTopoFeatures(raw, byCountryCode) : raw;
+    }
+    return out;
+  }, [featuresCache, isoRows.length, byCountryCode]);
+
+  const roundCardCountryNumericIds = useMemo(() => {
+    const s = new Set<string>();
+    if (!roundPlan) return s;
+    for (const a2 of roundPlan.cardAlpha2s) {
+      const row = byAlpha2.get(a2.toUpperCase());
+      const code = row?.["country-code"]?.trim();
+      if (code) s.add(code);
+    }
+    return s;
+  }, [roundPlan, byAlpha2]);
+
+  const topoIds = useMemo(() => topoNumericIdSet(featuresForGame["110"] ?? []), [featuresForGame]);
 
   const regionModel = useMemo<RegionRoundModel | null>(() => {
     if (!roundPlan || size.w < 32 || size.h < 32) return null;
-    const world = featuresCache[displayedLod];
+    const world = featuresForGame[displayedLod];
     if (!world?.length) return null;
     try {
       const roundChanged = frozenRoundSeqRef.current !== roundSeq;
@@ -183,7 +214,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     } catch {
       return null;
     }
-  }, [roundPlan, featuresCache, displayedLod, byCountryCode, size.w, size.h, roundSeq]);
+  }, [roundPlan, featuresForGame, displayedLod, byCountryCode, size.w, size.h, roundSeq]);
 
   const lodMetric = useMemo(() => {
     const p = regionModel?.projection;
@@ -328,19 +359,19 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
 
   /** 必要な解像度が揃ったら表示 LOD を追従（読み込み中は従来のまま） */
   useEffect(() => {
-    if (featuresCache[desiredLod]?.length) {
+    if (featuresForGame[desiredLod]?.length) {
       setDisplayedLod(desiredLod);
     }
-  }, [desiredLod, featuresCache]);
+  }, [desiredLod, featuresForGame]);
 
   useEffect(() => {
-    if (!isoRows.length || !featuresCache["110"]?.length || initRoundRef.current) return;
-    const plan = createRoundPlan(isoRows, topoNumericIdSet(featuresCache["110"] ?? []), new Set(), 3);
+    if (!isoRows.length || !featuresForGame["110"]?.length || initRoundRef.current) return;
+    const plan = createRoundPlan(isoRows, topoNumericIdSet(featuresForGame["110"] ?? []), new Set(), 3);
     if (plan) {
       setRoundPlan(plan);
       initRoundRef.current = true;
     }
-  }, [isoRows, featuresCache]);
+  }, [isoRows, featuresForGame]);
 
   useEffect(() => {
     const el = stageRef.current;
@@ -431,6 +462,14 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     if (!drag) setHoverCountryId(null);
   }, [drag]);
 
+  const countryLandFillBase = (id: string): string =>
+    roundCardCountryNumericIds.has(id) ? MAP_LAND_CARD_ROUND : MAP_LAND_REGION_QUIET;
+
+  const countryLandStroke = (id: string): string =>
+    roundCardCountryNumericIds.has(id) ? MAP_COAST_STROKE_CARD : MAP_COAST_STROKE_QUIET;
+
+  const countryLandStrokeWidth = (id: string): number => (roundCardCountryNumericIds.has(id) ? 0.65 : 0.48);
+
   const countryFill = (id: string): string => {
     if (answered) {
       const m = resultByCountryId[id];
@@ -439,7 +478,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     }
     if (drag && dragTargetCountryId === id) return MAP_FILL_DRAG;
     if (hoverCountryId === id) return MAP_FILL_HOVER;
-    return MAP_FILL_DEFAULT;
+    return countryLandFillBase(id);
   };
 
   const beginDrag = useCallback(
@@ -587,7 +626,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   };
 
   const startNewRound = useCallback(() => {
-    if (!isoRows.length || !featuresCache["110"]?.length) return;
+    if (!isoRows.length || !featuresForGame["110"]?.length) return;
     const plan = createRoundPlan(isoRows, topoIds, excludeAlphas, 3);
     if (!plan) return;
     setRoundSeq((s) => s + 1);
@@ -598,7 +637,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     setHoverCountryId(null);
     setDragTargetCountryId(null);
     setDrag(null);
-  }, [isoRows, featuresCache, topoIds, excludeAlphas]);
+  }, [isoRows, featuresForGame, topoIds, excludeAlphas]);
 
   const mapScale = !drag && hoverCountryId && !mapManipEnabled ? 1.03 : 1;
 
@@ -611,7 +650,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   }, [hoverCountryId, byCountryCode, locale]);
 
   const onEnumerateVisible = useCallback(() => {
-    const world = featuresCache[displayedLod];
+    const world = featuresForGame[displayedLod];
     if (!projection || !world?.length || size.w < 32 || size.h < 32) {
       setListedCountryLabelsJa([]);
       return;
@@ -633,7 +672,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       .sort((a, b) => a.localeCompare(b, "ja"))
       .slice(0, 10);
     setListedCountryLabelsJa(labels);
-  }, [projection, featuresCache, displayedLod, size.w, size.h, zoomTransform, byCountryCode]);
+  }, [projection, featuresForGame, displayedLod, size.w, size.h, zoomTransform, byCountryCode]);
 
   useLayoutEffect(() => {
     if (!svgRef.current || !regionModel) return;
@@ -782,11 +821,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
               onPointerMove={handleSvgPointerMove}
               onPointerLeave={handleSvgLeave}
             >
-              <rect
-                width={size.w}
-                height={size.h}
-                style={{ fill: "color-mix(in srgb, var(--color-bg) 96%, transparent)" }}
-              />
+              <rect width={size.w} height={size.h} style={{ fill: MAP_SEA_FILL }} />
               <g transform={gTransform}>
                 {regionModel.allFeatures.map((f) => {
                   const id = String(f.id ?? "");
@@ -800,8 +835,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                       className="transition-[fill] duration-150"
                       style={{
                         fill: countryFill(id),
-                        stroke: "color-mix(in srgb, var(--color-text) 18%, transparent)",
-                        strokeWidth: 0.6,
+                        stroke: countryLandStroke(id),
+                        strokeWidth: countryLandStrokeWidth(id),
                       }}
                     />
                   );
