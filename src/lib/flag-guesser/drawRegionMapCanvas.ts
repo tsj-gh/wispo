@@ -36,23 +36,31 @@ export type DrawRegionMapCanvasParams = {
   projection: GeoProjection;
   features: readonly CountryFeature[];
   zoom: { x: number; y: number; k: number };
+  /** 解決済み RGB の fillStyle 文字列を返す（同一色バッチ用） */
   fillForId: (id: string) => string;
   seaFillResolved: string;
   borderStrokeResolved: string;
   borderStrokeWidth: number;
-  /** ホバー国の太い輪郭（陸地 fill ハイライトに代わる） */
   hoverStrokeResolved: string;
   hoverLineWidth: number;
-  /** ドラッグ着弾候補の輪郭 */
   dragTargetStrokeResolved: string;
   hoverCountryId: string | null;
   dragTargetCountryId: string | null;
   drag: boolean;
+  /** 描画完了ごとに呼ぶ（FPS 計測用） */
+  onDrawComplete?: () => void;
 };
 
+function safePath2D(d: string): Path2D | null {
+  try {
+    return new Path2D(d);
+  } catch {
+    return null;
+  }
+}
+
 /**
- * d3.geoPath + Canvas 2D。ズームは ctx.translate / scale で SVG の `<g transform>` と同等。
- * 国境は実線。ホバー／ドラッグ先は同じ path を太線で重ね描き。
+ * d3.geoPath + Canvas 2D。同色 fill／共通国境ストロークをバッチ化。
  */
 export function drawRegionMapCanvas(p: DrawRegionMapCanvasParams): void {
   const {
@@ -73,6 +81,7 @@ export function drawRegionMapCanvas(p: DrawRegionMapCanvasParams): void {
     hoverCountryId,
     dragTargetCountryId,
     drag,
+    onDrawComplete,
   } = p;
 
   ctx.save();
@@ -82,9 +91,7 @@ export function drawRegionMapCanvas(p: DrawRegionMapCanvasParams): void {
   ctx.fillStyle = seaFillResolved;
   ctx.fillRect(0, 0, logicalW, logicalH);
 
-  const pathGen = geoPath(projection);
-  pathGen.context(ctx);
-
+  const pathStringGen = geoPath(projection);
   ctx.save();
   ctx.translate(zoom.x, zoom.y);
   ctx.scale(zoom.k, zoom.k);
@@ -92,37 +99,76 @@ export function drawRegionMapCanvas(p: DrawRegionMapCanvasParams): void {
   const k = Math.max(zoom.k, 0.08);
   const normalLineW = borderStrokeWidth / k;
 
+  const byFill = new Map<string, CountryFeature[]>();
   for (const f of features) {
     const id = String(f.id ?? "");
-    ctx.save();
-
-    ctx.beginPath();
-    pathGen(f as Feature<Geometry, GeoJsonProperties>);
-    ctx.fillStyle = fillForId(id);
-    ctx.fill();
-
-    ctx.beginPath();
-    pathGen(f as Feature<Geometry, GeoJsonProperties>);
-    ctx.strokeStyle = borderStrokeResolved;
-    ctx.lineWidth = normalLineW;
-    ctx.lineJoin = "round";
-    ctx.lineCap = "round";
-    ctx.setLineDash([]);
-    ctx.stroke();
-
-    const emphasisDrag = drag && dragTargetCountryId === id;
-    const emphasisHover = !drag && hoverCountryId === id;
-    if (emphasisDrag || emphasisHover) {
-      ctx.beginPath();
-      pathGen(f as Feature<Geometry, GeoJsonProperties>);
-      ctx.strokeStyle = emphasisDrag ? dragTargetStrokeResolved : hoverStrokeResolved;
-      ctx.lineWidth = emphasisDrag ? hoverLineWidth * 1.05 : hoverLineWidth;
-      ctx.stroke();
+    const resolvedFill = fillForId(id);
+    let arr = byFill.get(resolvedFill);
+    if (!arr) {
+      arr = [];
+      byFill.set(resolvedFill, arr);
     }
+    arr.push(f);
+  }
 
-    ctx.restore();
+  for (const [fillStyle, feats] of Array.from(byFill.entries())) {
+    let combined = "";
+    for (const f of feats) {
+      const d = pathStringGen(f as Feature<Geometry, GeoJsonProperties>);
+      if (d) combined += d;
+    }
+    if (!combined) continue;
+    const path = safePath2D(combined);
+    if (!path) continue;
+    ctx.fillStyle = fillStyle;
+    ctx.fill(path);
+  }
+
+  let borderCombined = "";
+  for (const f of features) {
+    const d = pathStringGen(f as Feature<Geometry, GeoJsonProperties>);
+    if (d) borderCombined += d;
+  }
+  if (borderCombined) {
+    const borderPath = safePath2D(borderCombined);
+    if (borderPath) {
+      ctx.strokeStyle = borderStrokeResolved;
+      ctx.lineWidth = normalLineW;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.setLineDash([]);
+      ctx.stroke(borderPath);
+    }
+  }
+
+  if (drag && dragTargetCountryId) {
+    const f = features.find((x) => String(x.id ?? "") === dragTargetCountryId);
+    if (f) {
+      const d = pathStringGen(f as Feature<Geometry, GeoJsonProperties>);
+      const ep = d ? safePath2D(d) : null;
+      if (ep) {
+        ctx.strokeStyle = dragTargetStrokeResolved;
+        ctx.lineWidth = hoverLineWidth * 1.05;
+        ctx.stroke(ep);
+      }
+    }
+  }
+
+  if (!drag && hoverCountryId) {
+    const f = features.find((x) => String(x.id ?? "") === hoverCountryId);
+    if (f) {
+      const d = pathStringGen(f as Feature<Geometry, GeoJsonProperties>);
+      const ep = d ? safePath2D(d) : null;
+      if (ep) {
+        ctx.strokeStyle = hoverStrokeResolved;
+        ctx.lineWidth = hoverLineWidth;
+        ctx.stroke(ep);
+      }
+    }
   }
 
   ctx.restore();
   ctx.restore();
+
+  onDrawComplete?.();
 }

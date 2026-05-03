@@ -138,8 +138,13 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   const [mapManipEnabled, setMapManipEnabled] = useState(false);
   const [mapRenderBackend, setMapRenderBackend] = useState<MapRenderBackend>("canvas");
   const [zoomTransform, setZoomTransform] = useState<ZoomPlain>(ZOOM_IDENTITY);
+  /** マップ操作のズーム／パン中は true（終了後 200ms で false → Canvas を高精細に戻す） */
+  const [canvasMapInteracting, setCanvasMapInteracting] = useState(false);
+  const canvasRefineTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [devicePixelRatioState, setDevicePixelRatioState] = useState(1);
   const [listedCountryLabelsJa, setListedCountryLabelsJa] = useState<string[]>([]);
+  const [canvasMapFps, setCanvasMapFps] = useState<number | null>(null);
+  const canvasFpsAccumRef = useRef({ frames: 0, t0: 0 });
 
   const [roundSeq, setRoundSeq] = useState(0);
   const [roundPlan, setRoundPlan] = useState<{ targetRow: Iso3166Row; cardAlpha2s: string[] } | null>(null);
@@ -227,13 +232,51 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     [lodMetric, lodThresholdLow, lodThresholdHighEffective]
   );
 
+  /** ズーム操作中は 50m で描き、操作終了 200ms 後に displayedLod（10m 含む）へ Refine */
+  const canvasPaintLod = useMemo<TopoLodId>(() => {
+    if (!mapManipEnabled || !canvasMapInteracting) return displayedLod;
+    if (desiredLod === "10" && featuresForGame["50"]?.length) return "50";
+    return displayedLod;
+  }, [mapManipEnabled, canvasMapInteracting, desiredLod, displayedLod, featuresForGame]);
+
   const loadingHighDetail =
     fetchingLod === "10" || (desiredLod === "10" && !featuresCache["10"]?.length);
 
-  const hitFeatures = useMemo(() => {
-    if (!regionModel) return [];
-    return sortFeaturesForHitTest(regionModel.allFeatures as CountryFeature[]);
-  }, [regionModel]);
+  const regionModelForCanvas = useMemo<RegionRoundModel | null>(() => {
+    if (!regionModel || !roundPlan) return null;
+    if (canvasPaintLod === displayedLod) return regionModel;
+    const world = featuresForGame[canvasPaintLod];
+    if (!world?.length) return regionModel;
+    try {
+      return buildRegionRoundModelSameProjection({
+        target: roundPlan.targetRow,
+        region: roundPlan.targetRow.region!,
+        projection: regionModel.projection,
+        allWorldFeatures: world,
+        isoByCode: byCountryCode,
+        width: size.w,
+        height: size.h,
+      });
+    } catch {
+      return regionModel;
+    }
+  }, [
+    regionModel,
+    roundPlan,
+    canvasPaintLod,
+    displayedLod,
+    featuresForGame,
+    byCountryCode,
+    size.w,
+    size.h,
+  ]);
+
+  const pointerRegionModel = mapRenderBackend === "canvas" ? (regionModelForCanvas ?? regionModel) : regionModel;
+
+  const hitFeaturesForPointer = useMemo(() => {
+    if (!pointerRegionModel) return [];
+    return sortFeaturesForHitTest(pointerRegionModel.allFeatures as CountryFeature[]);
+  }, [pointerRegionModel]);
 
   const cards: PlayCard[] = useMemo(() => {
     if (!roundPlan) return [];
@@ -299,19 +342,47 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   }, [mapManipEnabled]);
 
   useEffect(() => {
+    if (!mapManipEnabled) {
+      setCanvasMapInteracting(false);
+      if (canvasRefineTimerRef.current) {
+        clearTimeout(canvasRefineTimerRef.current);
+        canvasRefineTimerRef.current = null;
+      }
+    }
+  }, [mapManipEnabled]);
+
+  useEffect(() => {
     if (!isDevTj || !isDebugMode || !mapManipEnabled) return;
     const host = zoomHostRef.current;
     if (!host) return;
     const sel = select(host);
     const z = d3zoom<HTMLDivElement, unknown>()
       .scaleExtent([0.12, 80])
+      .on("start", () => {
+        if (canvasRefineTimerRef.current) {
+          clearTimeout(canvasRefineTimerRef.current);
+          canvasRefineTimerRef.current = null;
+        }
+        setCanvasMapInteracting(true);
+      })
       .on("zoom", (event) => {
         setZoomTransform({ x: event.transform.x, y: event.transform.y, k: event.transform.k });
+      })
+      .on("end", () => {
+        if (canvasRefineTimerRef.current) clearTimeout(canvasRefineTimerRef.current);
+        canvasRefineTimerRef.current = setTimeout(() => {
+          setCanvasMapInteracting(false);
+          canvasRefineTimerRef.current = null;
+        }, 200);
       });
     sel.call(z);
     sel.call(z.transform, zoomIdentity);
     return () => {
       sel.on(".zoom", null);
+      if (canvasRefineTimerRef.current) {
+        clearTimeout(canvasRefineTimerRef.current);
+        canvasRefineTimerRef.current = null;
+      }
     };
   }, [isDevTj, isDebugMode, mapManipEnabled, size.w, size.h]);
 
@@ -454,14 +525,14 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
 
   const handleMapPointerMove = useCallback(
     (event: React.PointerEvent<HTMLCanvasElement | SVGSVGElement>) => {
-      if (!projection || !regionModel || answered || drag) return;
+      if (!projection || !pointerRegionModel || answered || drag) return;
       const pt = pointerToMapCoords(event.clientX, event.clientY);
       if (!pt) return;
       const [x, y] = pt;
-      const id = countryIdAtPixel(projection, hitFeatures, x, y, regionModel.pathDById);
+      const id = countryIdAtPixel(projection, hitFeaturesForPointer, x, y, pointerRegionModel.pathDById);
       setHoverCountryId(id);
     },
-    [projection, regionModel, hitFeatures, answered, drag, pointerToMapCoords]
+    [projection, pointerRegionModel, hitFeaturesForPointer, answered, drag, pointerToMapCoords]
   );
 
   const handleMapLeave = useCallback(() => {
@@ -516,10 +587,11 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       const nx = x - drag.offsetX;
       const ny = y - drag.offsetY;
       setDragPos({ x: nx, y: ny });
-      const id = countryIdAtPixel(projection, hitFeatures, nx, ny, regionModel.pathDById);
+      if (!pointerRegionModel) return;
+      const id = countryIdAtPixel(projection, hitFeaturesForPointer, nx, ny, pointerRegionModel.pathDById);
       setDragTargetCountryId(id);
     },
-    [projection, drag, hitFeatures, mapManipEnabled, pointerToMapCoords, regionModel]
+    [projection, drag, hitFeaturesForPointer, mapManipEnabled, pointerToMapCoords, pointerRegionModel]
   );
 
   const endDrag = useCallback(
@@ -727,9 +799,23 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     prevPathDByIdForMorphRef.current = new Map(next);
   }, [regionModel, roundSeq, mapRenderBackend]);
 
-  /** Canvas: d3.geoPath(context) ＋ requestAnimationFrame でズーム・ホバーに追従（DOM 大量 path より軽量を狙う） */
+  const recordCanvasDrawFrame = useCallback(() => {
+    const a = canvasFpsAccumRef.current;
+    const now = performance.now();
+    if (!a.t0) a.t0 = now;
+    a.frames++;
+    if (now - a.t0 >= 650) {
+      const sec = (now - a.t0) / 1000;
+      setCanvasMapFps(Math.round(a.frames / sec));
+      a.frames = 0;
+      a.t0 = now;
+    }
+  }, []);
+
+  /** Canvas: バッチ fill／clipExtent 済み投影／操作中は 50m に落として Refine */
   useLayoutEffect(() => {
-    if (mapRenderBackend !== "canvas" || !regionModel || !projection) return;
+    const rm = regionModelForCanvas;
+    if (mapRenderBackend !== "canvas" || !rm || !projection) return;
     const canvas = canvasRef.current;
     const probeMount = stageRef.current;
     if (!canvas || !probeMount) return;
@@ -760,7 +846,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         logicalH: size.h,
         dpr: devicePixelRatioState,
         projection,
-        features: regionModel.allFeatures,
+        features: rm.allFeatures,
         zoom: zoomTransform,
         fillForId,
         seaFillResolved: sea,
@@ -772,6 +858,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         hoverCountryId,
         dragTargetCountryId,
         drag: !!drag,
+        onDrawComplete: recordCanvasDrawFrame,
       });
     });
     return () => {
@@ -780,7 +867,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     };
   }, [
     mapRenderBackend,
-    regionModel,
+    regionModelForCanvas,
     projection,
     size.w,
     size.h,
@@ -792,7 +879,15 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     drag,
     hoverCountryId,
     dragTargetCountryId,
+    recordCanvasDrawFrame,
   ]);
+
+  useEffect(() => {
+    if (mapRenderBackend !== "canvas") {
+      setCanvasMapFps(null);
+      canvasFpsAccumRef.current = { frames: 0, t0: 0 };
+    }
+  }, [mapRenderBackend]);
 
   useEffect(() => {
     if (!onDebugPanelPropsChange) return;
@@ -822,6 +917,9 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       loadingHighDetail,
       mapRenderBackend,
       setMapRenderBackend,
+      canvasMapFps,
+      canvasPaintLod,
+      canvasMapInteracting,
     });
     return () => onDebugPanelPropsChange(null);
   }, [
@@ -840,6 +938,9 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     desiredLod,
     loadingHighDetail,
     mapRenderBackend,
+    canvasMapFps,
+    canvasPaintLod,
+    canvasMapInteracting,
   ]);
 
   if (loadError) {

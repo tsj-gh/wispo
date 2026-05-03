@@ -104,6 +104,12 @@ export function buildMercatorForCollection(
     ],
     collection as FeatureCollection
   );
+  const w = Math.max(1, width);
+  const h = Math.max(1, height);
+  projection.clipExtent([
+    [0, 0],
+    [w, h],
+  ]);
   return projection;
 }
 
@@ -212,6 +218,12 @@ export function buildRegionRoundModelSameProjection(input: SameProjectionInput):
     type: "FeatureCollection",
     features: inRegion as Feature<Geometry, GeoJsonProperties>[],
   };
+  const w = Math.max(1, width);
+  const h = Math.max(1, height);
+  projection.clipExtent([
+    [0, 0],
+    [w, h],
+  ]);
   const pathDById = buildPathStrings(projection, inRegion);
   return {
     target,

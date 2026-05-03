@@ -26,6 +26,12 @@ export type FlagGuesserDebugPanelProps = {
   loadingHighDetail: boolean;
   mapRenderBackend: MapRenderBackend;
   setMapRenderBackend: (v: MapRenderBackend) => void;
+  /** Canvas 再描画ベースのおおよその FPS（devtj デバッグ用） */
+  canvasMapFps: number | null;
+  /** 実際に Canvas に渡している地形 LOD */
+  canvasPaintLod: TopoLodId;
+  /** ズーム／パン操作中（終了後 200ms は false） */
+  canvasMapInteracting: boolean;
 };
 
 /**
@@ -53,6 +59,9 @@ export function FlagGuesserDebugPanel({
   loadingHighDetail,
   mapRenderBackend,
   setMapRenderBackend,
+  canvasMapFps,
+  canvasPaintLod,
+  canvasMapInteracting,
 }: FlagGuesserDebugPanelProps) {
   return (
     <div className="w-full">
@@ -98,6 +107,19 @@ export function FlagGuesserDebugPanel({
                 <p className="mb-2 text-[9px] leading-snug">
                   SVG は DOM 負荷が大きい。Canvas は d3.geoPath(context)＋rAF 再描画。ホバーは投影済み path と Path2D の一致判定（島嶼で geoContains だけより安全）。
                 </p>
+                <div className="mb-2 font-mono text-[9px] text-[var(--color-text)]">
+                  Canvas FPS:{" "}
+                  <span className="tabular-nums font-semibold">{canvasMapFps !== null ? `${canvasMapFps}` : "—"}</span>
+                  {mapRenderBackend === "canvas" && (
+                    <>
+                      {" "}
+                      · 描画 LOD <span className="font-semibold">{canvasPaintLod}m</span>
+                      {canvasMapInteracting ? (
+                        <span className="text-[var(--color-primary)]">（操作中は簡略）</span>
+                      ) : null}
+                    </>
+                  )}
+                </div>
                 <div className="flex gap-1">
                   <button
                     type="button"
