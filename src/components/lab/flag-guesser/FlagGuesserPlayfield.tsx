@@ -40,7 +40,7 @@ import {
   featuresOverlappingViewport,
   viewportLonLatBounds,
 } from "@/lib/flag-guesser/viewportGeo";
-import { FlagGuesserDebugPanel } from "@/components/lab/flag-guesser/FlagGuesserDebugPanel";
+import type { FlagGuesserDebugPanelProps } from "@/components/lab/flag-guesser/FlagGuesserDebugPanel";
 
 const TOPO_URL = "/assets/flag-guesser/countries-50m.json";
 const ISO_URL = "/assets/flag-guesser/iso-3166.json";
@@ -75,7 +75,12 @@ function localToMap([sx, sy]: [number, number], zoomTf: ZoomPlain): [number, num
 
 type PlayCard = { id: string; alpha2: string };
 
-export function FlagGuesserPlayfield() {
+export type FlagGuesserPlayfieldProps = {
+  /** devtj デバッグパネルをラボシェルのサイドバーに出すときに渡す */
+  onDebugPanelPropsChange?: (props: FlagGuesserDebugPanelProps | null) => void;
+};
+
+export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPlayfieldProps = {}) {
   const searchParams = useSearchParams();
   const isDevTj = searchParams.get("devtj") === "true";
   const { locale } = useI18n();
@@ -531,6 +536,37 @@ export function FlagGuesserPlayfield() {
     setListedCountryLabelsJa(labels);
   }, [projection, allTopoFeatures, size.w, size.h, zoomTransform, byCountryCode]);
 
+  useEffect(() => {
+    if (!onDebugPanelPropsChange) return;
+    if (!isDevTj) {
+      onDebugPanelPropsChange(null);
+      return;
+    }
+    onDebugPanelPropsChange({
+      isDebugMode,
+      setIsDebugMode,
+      isDebugPanelExpanded,
+      setIsDebugPanelExpanded,
+      mapManipEnabled,
+      setMapManipEnabled,
+      onEnumerateVisible,
+      listedCountryLabelsJa,
+      mapDebugSnippet: mapDebugCenterScale?.snippet ?? null,
+      centerLonLatText: mapDebugCenterScale?.centerLonLatText ?? null,
+      scaleText: mapDebugCenterScale?.scaleText ?? null,
+    });
+    return () => onDebugPanelPropsChange(null);
+  }, [
+    onDebugPanelPropsChange,
+    isDevTj,
+    isDebugMode,
+    isDebugPanelExpanded,
+    mapManipEnabled,
+    listedCountryLabelsJa,
+    mapDebugCenterScale,
+    onEnumerateVisible,
+  ]);
+
   if (loadError) {
     return <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200">{loadError}</div>;
   }
@@ -549,22 +585,6 @@ export function FlagGuesserPlayfield() {
       ref={stageRef}
       className="relative flex h-full min-h-[min(58dvh,640px)] w-full flex-1 flex-col touch-none overflow-hidden rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_94%,white_6%)] shadow-inner"
     >
-      {isDevTj && (
-        <FlagGuesserDebugPanel
-          isDebugMode={isDebugMode}
-          setIsDebugMode={setIsDebugMode}
-          isDebugPanelExpanded={isDebugPanelExpanded}
-          setIsDebugPanelExpanded={setIsDebugPanelExpanded}
-          mapManipEnabled={mapManipEnabled}
-          setMapManipEnabled={setMapManipEnabled}
-          onEnumerateVisible={onEnumerateVisible}
-          listedCountryLabelsJa={listedCountryLabelsJa}
-          mapDebugSnippet={mapDebugCenterScale?.snippet ?? null}
-          centerLonLatText={mapDebugCenterScale?.centerLonLatText ?? null}
-          scaleText={mapDebugCenterScale?.scaleText ?? null}
-        />
-      )}
-
       <div className="pointer-events-none absolute right-2 top-2 z-30 md:right-3 md:top-3">
         {!answered ? (
           <button

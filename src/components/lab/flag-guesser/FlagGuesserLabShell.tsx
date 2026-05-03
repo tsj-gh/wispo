@@ -1,14 +1,26 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { Suspense } from "react";
+import { Suspense, useCallback, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { PairLinkAdSlot } from "@/components/PairLinkAdSlots";
 import { GamePageHeader } from "@/components/GamePageHeader";
 import { GameQuickInfoNote } from "@/components/lab/GameQuickInfoNote";
 import { FlagGuesserPlayfield } from "@/components/lab/flag-guesser/FlagGuesserPlayfield";
+import {
+  FlagGuesserDebugPanel,
+  type FlagGuesserDebugPanelProps,
+} from "@/components/lab/flag-guesser/FlagGuesserDebugPanel";
 import { GAME_AD_GAP_BEFORE_SLOT_2_PX, GAME_COLUMN_CLASS, GAME_NO_TOP_AD_LAYOUT_OFFSET_PX, GAME_AD_SLOT_MIN_HEIGHT_PX } from "@/lib/gameLayout";
 
 export function FlagGuesserLabShell() {
+  const searchParams = useSearchParams();
+  const isDevTj = searchParams.get("devtj") === "true";
+  const [debugPanelProps, setDebugPanelProps] = useState<FlagGuesserDebugPanelProps | null>(null);
+  const onDebugPanelPropsChange = useCallback((p: FlagGuesserDebugPanelProps | null) => {
+    setDebugPanelProps(p);
+  }, []);
+
   return (
     <div className={`${GAME_COLUMN_CLASS} flex h-full min-h-0 flex-1 flex-col lg:max-w-none`}>
       <GamePageHeader
@@ -32,13 +44,18 @@ export function FlagGuesserLabShell() {
           <section className="relative z-[1] mb-0 flex min-h-[min(52dvh,560px)] flex-1 flex-col rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] px-4 pb-4 pt-2 backdrop-blur sm:px-5 sm:pb-5 sm:pt-2 lg:mb-0">
             <Suspense fallback={<div className="py-10 text-center text-sm text-[var(--color-muted)]">読み込み中…</div>}>
               <div className="flex min-h-0 flex-1 flex-col">
-                <FlagGuesserPlayfield />
+                <FlagGuesserPlayfield onDebugPanelPropsChange={onDebugPanelPropsChange} />
               </div>
             </Suspense>
           </section>
         </div>
 
         <aside className="order-2 w-full shrink-0 lg:sticky lg:top-5 lg:max-h-[calc(100dvh-20px)] lg:w-[360px] lg:self-start lg:overflow-y-auto">
+          {isDevTj && debugPanelProps ? (
+            <div className="mb-3 w-full">
+              <FlagGuesserDebugPanel {...debugPanelProps} />
+            </div>
+          ) : null}
           <div className="mb-2 flex flex-col gap-2 lg:hidden">
             <details className="rounded-xl border border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] text-[var(--color-text)]">
               <summary className="cursor-pointer select-none px-3 py-2 text-sm font-semibold text-[var(--color-text)]">

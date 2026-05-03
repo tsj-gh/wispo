@@ -1,6 +1,6 @@
 "use client";
 
-type Props = {
+export type FlagGuesserDebugPanelProps = {
   isDebugMode: boolean;
   setIsDebugMode: (v: boolean) => void;
   isDebugPanelExpanded: boolean;
@@ -14,6 +14,9 @@ type Props = {
   scaleText: string | null;
 };
 
+/**
+ * 盤面外（ラボシェルのサイドバー等）に配置する。`fixed` は使わない。
+ */
 export function FlagGuesserDebugPanel({
   isDebugMode,
   setIsDebugMode,
@@ -26,25 +29,26 @@ export function FlagGuesserDebugPanel({
   mapDebugSnippet,
   centerLonLatText,
   scaleText,
-}: Props) {
+}: FlagGuesserDebugPanelProps) {
   return (
-    <>
+    <div className="w-full">
       {!isDebugMode && (
-        <div className="fixed right-4 top-4 z-50">
+        <div className="w-full">
           <button
             type="button"
             onClick={() => setIsDebugMode(true)}
-            className="rounded border border-[color-mix(in_srgb,var(--color-text)_22%,transparent)] bg-[color-mix(in_srgb,var(--color-surface)_84%,var(--color-bg))] px-2 py-1 font-mono text-xs text-[var(--color-text)] shadow-sm"
+            className="rounded border border-stone-300 bg-white/90 px-2 py-1 font-mono text-xs text-stone-800 shadow-sm"
+            title="デバッグを開始"
           >
             DEBUG OFF
           </button>
         </div>
       )}
       {isDebugMode && (
-        <div className="fixed right-4 top-4 z-50 max-h-[90vh] w-[min(92vw,300px)] overflow-y-auto rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_18%,transparent)] bg-[color-mix(in_srgb,var(--color-surface)_90%,var(--color-bg))] p-3 text-left text-xs text-[var(--color-text)] shadow-lg backdrop-blur">
+        <div className="max-h-[min(70vh,520px)] w-full overflow-y-auto rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_18%,transparent)] bg-[color-mix(in_srgb,var(--color-surface)_90%,var(--color-bg))] p-3 text-left text-xs text-[var(--color-text)] shadow-sm backdrop-blur">
           <div className="mb-2 flex items-center justify-between gap-2">
             {isDebugPanelExpanded && <span className="font-bold text-[var(--color-primary)]">フラッグゲッサー DEBUG</span>}
-            <div className="ml-auto flex items-center gap-1">
+            <div className="ml-auto flex shrink-0 items-center gap-1">
               <button
                 type="button"
                 onClick={() => setIsDebugMode(false)}
@@ -114,6 +118,6 @@ export function FlagGuesserDebugPanel({
           )}
         </div>
       )}
-    </>
+    </div>
   );
 }
