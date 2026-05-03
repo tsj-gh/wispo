@@ -25,6 +25,8 @@ import {
   resolveIsoRows,
 } from "@/lib/flag-guesser/selectRound";
 import { spawnBubbleLike, stepBubbleLikeInBox, type FloatingBubbleLike } from "@/lib/flag-guesser/floatingFlagPhysics";
+import { useI18n } from "@/lib/i18n-context";
+import { getCountryDisplayName } from "@/components/lab/flag-guesser/MapCanvas";
 
 const TOPO_URL = "/assets/flag-guesser/countries-50m.json";
 const ISO_URL = "/assets/flag-guesser/iso-3166.json";
@@ -54,6 +56,7 @@ function clientToLocal(clientX: number, clientY: number, rect: DOMRect, innerW: 
 type PlayCard = { id: string; alpha2: string };
 
 export function FlagGuesserPlayfield() {
+  const { locale } = useI18n();
   const stageRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ w: 520, h: 390 });
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -389,6 +392,14 @@ export function FlagGuesserPlayfield() {
 
   const mapScale = !drag && hoverCountryId ? 1.03 : 1;
 
+  const hoverCountryLabel = useMemo(() => {
+    if (!hoverCountryId) return null;
+    const row = byCountryCode.get(hoverCountryId);
+    if (!row) return locale === "ja" ? "国を選択中" : "Select a country";
+    const localized = getCountryDisplayName(row["alpha-2"], locale);
+    return localized ?? row.name;
+  }, [hoverCountryId, byCountryCode, locale]);
+
   if (loadError) {
     return <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200">{loadError}</div>;
   }
@@ -553,7 +564,7 @@ export function FlagGuesserPlayfield() {
 
       {hoverCountryId && projection && !drag && (
         <div className="pointer-events-none absolute bottom-2 left-2 right-2 z-10 rounded-lg bg-[color-mix(in_srgb,var(--color-bg)_88%,transparent)] px-2 py-1 text-center text-[11px] text-[var(--color-text)] backdrop-blur-sm md:text-xs">
-          {byCountryCode.get(hoverCountryId)?.name ?? "国を選択中"}
+          {hoverCountryLabel ?? (locale === "ja" ? "国を選択中" : "Select a country")}
         </div>
       )}
     </div>
