@@ -60,10 +60,10 @@ const ISO_URL = "/assets/flag-guesser/iso-3166.json";
 
 /** 海（SVG 背景）— 視認性のため以前どおり淡い背景のみ */
 const MAP_SEA_FILL = "color-mix(in srgb, var(--color-bg) 96%, transparent)";
-/** 同一リージョンのうち、今ラウンドのカードに載っている国のベース塗り */
-const MAP_LAND_CARD_ROUND = "color-mix(in srgb, var(--color-primary) 14%, transparent)";
-/** 同一リージョンのその他の陸（補助的な国土） */
+/** 同一リージョンの陸（出題中はカード掲載国も含め同一トーン） */
 const MAP_LAND_REGION_QUIET = "color-mix(in srgb, var(--color-muted) 14%, transparent)";
+/** 国境・海岸の点線（ベース幅。nonScalingStroke でズーム時に画面ピクセルが暴れない） */
+const MAP_BORDER_STROKE = "color-mix(in srgb, var(--color-text) 26%, transparent)";
 
 /** Tailwind の `in_srgb` はクラス名用エスケープ。生の CSS では `in srgb` とスペースが必須。 */
 const MAP_FILL_HOVER = "color-mix(in srgb, var(--color-primary) 28%, transparent)";
@@ -153,7 +153,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   const lastTsRef = useRef(0);
   const rafRef = useRef(0);
 
-  const { byCountryCode, byAlpha2 } = useMemo(() => resolveIsoRows(isoRows), [isoRows]);
+  const { byCountryCode } = useMemo(() => resolveIsoRows(isoRows), [isoRows]);
 
   /** ISO 照合＋極小ポリゴン除去済み（描画・ヒットテスト・出題に使用） */
   const featuresForGame = useMemo(() => {
@@ -165,17 +165,6 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     }
     return out;
   }, [featuresCache, isoRows.length, byCountryCode]);
-
-  const roundCardCountryNumericIds = useMemo(() => {
-    const s = new Set<string>();
-    if (!roundPlan) return s;
-    for (const a2 of roundPlan.cardAlpha2s) {
-      const row = byAlpha2.get(a2.toUpperCase());
-      const code = row?.["country-code"]?.trim();
-      if (code) s.add(code);
-    }
-    return s;
-  }, [roundPlan, byAlpha2]);
 
   const topoIds = useMemo(() => topoNumericIdSet(featuresForGame["110"] ?? []), [featuresForGame]);
 
@@ -244,6 +233,18 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   }, [roundPlan, roundSeq]);
 
   const projection = regionModel?.projection;
+
+  /** ホバー時に各国ポリゴンだけ拡大するための基準点（投影座標） */
+  const centroidByCountryId = useMemo(() => {
+    const m = new Map<string, [number, number]>();
+    if (!projection || !regionModel) return m;
+    for (const f of regionModel.allFeatures) {
+      const id = String(f.id ?? "");
+      const p = projectCentroid(projection, f as CountryFeature);
+      if (p) m.set(id, p);
+    }
+    return m;
+  }, [projection, regionModel]);
 
   const gTransform = useMemo(() => {
     return zoomIdentity.translate(zoomTransform.x, zoomTransform.y).scale(zoomTransform.k).toString();
@@ -460,9 +461,6 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     if (!drag) setHoverCountryId(null);
   }, [drag]);
 
-  const countryLandFillBase = (id: string): string =>
-    roundCardCountryNumericIds.has(id) ? MAP_LAND_CARD_ROUND : MAP_LAND_REGION_QUIET;
-
   const countryFill = (id: string): string => {
     if (answered) {
       const m = resultByCountryId[id];
@@ -471,7 +469,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     }
     if (drag && dragTargetCountryId === id) return MAP_FILL_DRAG;
     if (hoverCountryId === id) return MAP_FILL_HOVER;
-    return countryLandFillBase(id);
+    return MAP_LAND_REGION_QUIET;
   };
 
   const beginDrag = useCallback(
@@ -632,7 +630,11 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     setDrag(null);
   }, [isoRows, featuresForGame, topoIds, excludeAlphas]);
 
-  const mapScale = !drag && hoverCountryId && !mapManipEnabled ? 1.03 : 1;
+  /** ズーム k が大きいほど線を細く（ユーザー座標上の太さ = base/k →画面上は nonScaling でほぼ一定） */
+  const borderStrokeWidth = useMemo(() => {
+    const k = Math.max(zoomTransform.k, 0.08);
+    return Math.max(0.35, Math.min(1.15, 1.0 / Math.sqrt(k)));
+  }, [zoomTransform.k]);
 
   const hoverCountryLabel = useMemo(() => {
     if (!hoverCountryId) return null;
@@ -795,10 +797,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       </div>
 
       <div className="relative flex min-h-0 w-full flex-1 flex-col items-center justify-center">
-        <div
-          className="relative mx-auto min-h-0 w-full max-w-full flex-1 origin-center transition-transform duration-300 ease-out"
-          style={{ transform: `scale(${mapScale})`, width: size.w, height: size.h }}
-        >
+        <div className="relative mx-auto min-h-0 w-full max-w-full flex-1" style={{ width: size.w, height: size.h }}>
           <div
             ref={zoomHostRef}
             className={`relative touch-none ${mapManipEnabled ? "cursor-grab active:cursor-grabbing" : ""}`}
@@ -820,18 +819,30 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                   const id = String(f.id ?? "");
                   const d = regionModel.pathDById.get(id);
                   if (!d) return null;
+                  const c = centroidByCountryId.get(id);
+                  const pathHover = !drag && hoverCountryId === id;
+                  const pathScale = pathHover ? 1.035 : 1;
+                  const tf =
+                    c && pathScale !== 1
+                      ? `translate(${c[0]},${c[1]}) scale(${pathScale}) translate(${-c[0]},${-c[1]})`
+                      : undefined;
                   return (
-                    <path
-                      key={id}
-                      data-fg-cid={id}
-                      d={d}
-                      className="transition-[fill] duration-150"
-                      style={{
-                        fill: countryFill(id),
-                        /* 半透明の stroke は国境・島嶼間で重なり「薄いグレーの帯」に見えるため描画しない */
-                        stroke: "none",
-                      }}
-                    />
+                    <g key={id} transform={tf} style={{ transition: "transform 280ms ease-out" }}>
+                      <path
+                        data-fg-cid={id}
+                        d={d}
+                        className="transition-[fill] duration-150"
+                        style={{
+                          fill: countryFill(id),
+                          stroke: MAP_BORDER_STROKE,
+                          strokeWidth: borderStrokeWidth,
+                          strokeDasharray: "1.2 2.2",
+                          strokeLinecap: "round",
+                          strokeLinejoin: "round",
+                          vectorEffect: "non-scaling-stroke",
+                        }}
+                      />
+                    </g>
                   );
                 })}
               </g>
@@ -973,7 +984,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         </div>
       </div>
 
-      {hoverCountryId && projection && !drag && !mapManipEnabled && (
+      {hoverCountryId && projection && !drag && (
         <div className="pointer-events-none absolute bottom-2 left-2 right-2 z-10 rounded-lg bg-[color-mix(in_srgb,var(--color-bg)_88%,transparent)] px-2 py-1 text-center text-[11px] text-[var(--color-text)] backdrop-blur-sm md:text-xs">
           {hoverCountryLabel ?? (locale === "ja" ? "国を選択中" : "Select a country")}
         </div>
