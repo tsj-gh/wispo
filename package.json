@@ -24,6 +24,8 @@
     "cannon-es": "^0.20.0",
     "canvas-confetti": "^1.9.3",
     "d3-geo": "^3.1.1",
+    "d3-selection": "^3.0.0",
+    "d3-zoom": "^3.0.0",
     "framer-motion": "^12.36.0",
     "i18n-iso-countries": "^7.14.0",
     "next": "14.2.18",
@@ -36,6 +38,8 @@
   "devDependencies": {
     "@types/canvas-confetti": "^1.9.0",
     "@types/d3-geo": "^3.1.0",
+    "@types/d3-selection": "^3.0.11",
+    "@types/d3-zoom": "^3.0.8",
     "@types/geojson": "^7946.0.16",
     "@types/node": "^22.9.0",
     "@types/react": "^18.3.12",

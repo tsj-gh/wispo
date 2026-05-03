@@ -34,6 +34,7 @@ export default function FlagGuesserLabPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(flagGuesserJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <main className="mx-auto flex min-h-[100dvh] w-full max-w-3xl flex-1 flex-col px-4 py-4 md:py-6 lg:max-w-[1400px] lg:px-6">
+        {/* FlagGuesserPlayfield は `useSearchParams`（?devtj=true デバッグ）のため Suspense 内に置く */}
         <Suspense fallback={<div className="py-8 text-sm text-[var(--color-muted)]">読み込み中…</div>}>
           <div className="flex min-h-[min(62dvh,720px)] flex-1 flex-col">
             <FlagGuesserLabShell />

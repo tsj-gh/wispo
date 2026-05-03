@@ -25,3 +25,11 @@ export function getCountryDisplayName(alpha2: string | undefined | null, locale:
   const lang = locale === "ja" ? "ja" : "en";
   return countries.getName(code, lang) ?? undefined;
 }
+
+export {
+  formatMapDebugSnippet,
+  screenToMapSpace,
+  mapSpaceToScreen,
+  type ZoomPlain,
+  ZOOM_IDENTITY,
+} from "@/lib/flag-guesser/viewportGeo";
