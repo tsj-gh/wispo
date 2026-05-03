@@ -1,6 +1,77 @@
-import { geoArea, geoCentroid, geoContains, geoMercator, geoPath, type GeoProjection } from "d3-geo";
+import { geoArea, geoBounds, geoCentroid, geoContains, geoMercator, geoPath, type GeoProjection } from "d3-geo";
 import type { Feature, FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 import type { CountryFeature, Iso3166Row, RegionRoundModel } from "./types";
+
+/** 経度を基準子午線まわり 360° 未満の帯に収め、±180° 縫い目での分断を減らす */
+export function unwrapLongitude(lon: number, centerMeridian: number): number {
+  let L = lon;
+  while (L > centerMeridian + 180) L -= 360;
+  while (L < centerMeridian - 180) L += 360;
+  return L;
+}
+
+function unwrapCoordinatesTree(coords: unknown, centerMeridian: number): unknown {
+  if (!Array.isArray(coords)) return coords;
+  if (
+    coords.length >= 2 &&
+    typeof coords[0] === "number" &&
+    typeof coords[1] === "number"
+  ) {
+    const lon = coords[0] as number;
+    const lat = coords[1] as number;
+    const rest = coords.slice(2) as number[];
+    return [unwrapLongitude(lon, centerMeridian), lat, ...rest];
+  }
+  return coords.map((c) => unwrapCoordinatesTree(c, centerMeridian));
+}
+
+function unwrapGeometry(geometry: Geometry, centerMeridian: number): Geometry {
+  const g = JSON.parse(JSON.stringify(geometry)) as Geometry & {
+    coordinates?: unknown;
+    geometries?: Geometry[];
+  };
+  if (g.type === "GeometryCollection" && g.geometries) {
+    g.geometries = g.geometries.map((sub) => unwrapGeometry(sub, centerMeridian));
+    return g;
+  }
+  if ("coordinates" in g && g.coordinates !== undefined) {
+    g.coordinates = unwrapCoordinatesTree(g.coordinates, centerMeridian) as never;
+  }
+  return g;
+}
+
+/** Region の重心経度（[-180,180]）を基準にする。bounds が異常に広いときも centroid にフォールバック */
+export function computeUnwrapCenterMeridian(
+  fc: FeatureCollection<Geometry, GeoJsonProperties>
+): number {
+  try {
+    const [[lon0], [lon1]] = geoBounds(fc);
+    if (Number.isFinite(lon0) && Number.isFinite(lon1)) {
+      const span = lon1 - lon0;
+      if (span > 0 && span <= 180) {
+        const mid = (lon0 + lon1) / 2;
+        return unwrapLongitude(mid, 0);
+      }
+    }
+  } catch {
+    /* fall through */
+  }
+  try {
+    const [lon] = geoCentroid(fc);
+    if (Number.isFinite(lon)) return unwrapLongitude(lon as number, 0);
+  } catch {
+    /* fall through */
+  }
+  return 60;
+}
+
+export function cloneCountryFeatureUnwrapped(f: CountryFeature, centerMeridian: number): CountryFeature {
+  if (!f.geometry) return { ...f };
+  return {
+    ...f,
+    geometry: unwrapGeometry(f.geometry, centerMeridian),
+  };
+}
 
 export function featureIdString(f: CountryFeature): string | null {
   const raw = f.id;
@@ -89,14 +160,19 @@ export function countryIdAtPixel(
 
 /**
  * フィルタ済み Feature の bounding を中央フィットする Mercator を構築。
+ * `centralMeridian` を渡すと `rotate([-λ,0,0])` で縫い目をデータから逃がしてから fit する。
  */
 export function buildMercatorForCollection(
   collection: FeatureCollection<Geometry, GeoJsonProperties>,
   width: number,
   height: number,
-  pad = 8
+  pad = 8,
+  centralMeridian?: number
 ): GeoProjection {
   const projection = geoMercator();
+  if (centralMeridian !== undefined && Number.isFinite(centralMeridian)) {
+    projection.rotate([-centralMeridian, 0, 0]);
+  }
   projection.fitExtent(
     [
       [pad, pad],
@@ -172,17 +248,24 @@ export function filterFeaturesByRegion(
 
 export function buildRegionRoundModel(input: BuildRoundInput): RegionRoundModel {
   const { target, region, allFeatures, isoByCode, width, height } = input;
-  const inRegion = filterFeaturesByRegion(allFeatures, region, isoByCode);
+  const inRegionRaw = filterFeaturesByRegion(allFeatures, region, isoByCode);
 
-  if (inRegion.length === 0) {
+  if (inRegionRaw.length === 0) {
     throw new Error("region has no mappable features");
   }
+
+  const fcRaw: FeatureCollection<Geometry, GeoJsonProperties> = {
+    type: "FeatureCollection",
+    features: inRegionRaw as Feature<Geometry, GeoJsonProperties>[],
+  };
+  const unwrapCenterMeridian = computeUnwrapCenterMeridian(fcRaw);
+  const inRegion = inRegionRaw.map((f) => cloneCountryFeatureUnwrapped(f, unwrapCenterMeridian));
 
   const collection: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
     features: inRegion as Feature<Geometry, GeoJsonProperties>[],
   };
-  const projection = buildMercatorForCollection(collection, width, height);
+  const projection = buildMercatorForCollection(collection, width, height, 8, unwrapCenterMeridian);
   const pathDById = buildPathStrings(projection, inRegion);
   return {
     target,
@@ -192,6 +275,7 @@ export function buildRegionRoundModel(input: BuildRoundInput): RegionRoundModel 
     pathDById,
     width,
     height,
+    unwrapCenterMeridian,
   };
 }
 
@@ -203,17 +287,19 @@ type SameProjectionInput = {
   isoByCode: Map<string, Iso3166Row>;
   width: number;
   height: number;
+  unwrapCenterMeridian: number;
 };
 
 /**
  * 同一 Mercator（ズームと整合させるため fit の投影を凍結したまま）で別解像度の国土だけ差し替える。
  */
 export function buildRegionRoundModelSameProjection(input: SameProjectionInput): RegionRoundModel {
-  const { target, region, projection, allWorldFeatures, isoByCode, width, height } = input;
-  const inRegion = filterFeaturesByRegion(allWorldFeatures, region, isoByCode);
-  if (inRegion.length === 0) {
+  const { target, region, projection, allWorldFeatures, isoByCode, width, height, unwrapCenterMeridian } = input;
+  const inRegionRaw = filterFeaturesByRegion(allWorldFeatures, region, isoByCode);
+  if (inRegionRaw.length === 0) {
     throw new Error("region has no mappable features");
   }
+  const inRegion = inRegionRaw.map((f) => cloneCountryFeatureUnwrapped(f, unwrapCenterMeridian));
   const collection: FeatureCollection<Geometry, GeoJsonProperties> = {
     type: "FeatureCollection",
     features: inRegion as Feature<Geometry, GeoJsonProperties>[],
@@ -233,5 +319,6 @@ export function buildRegionRoundModelSameProjection(input: SameProjectionInput):
     pathDById,
     width,
     height,
+    unwrapCenterMeridian,
   };
 }

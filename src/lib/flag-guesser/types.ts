@@ -27,6 +27,11 @@ export type RegionRoundModel = {
   pathDById: Map<string, string>;
   width: number;
   height: number;
+  /**
+   * 日付変更線付近の分断を避けるための基準経度（経度シフト＋Mercator.rotate と一致）。
+   * LOD 差し替え時は同一値でアンラップする。
+   */
+  unwrapCenterMeridian: number;
 };
 
 export type PlacedFlag = {

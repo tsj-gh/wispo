@@ -128,6 +128,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   const featuresCacheRef = useRef(featuresCache);
   featuresCacheRef.current = featuresCache;
   const frozenProjectionRef = useRef<GeoProjection | null>(null);
+  /** ラウンド開始時の経度アンラップ基準（LOD 差し替えで不変） */
+  const frozenUnwrapMeridianRef = useRef(60);
   const frozenRoundSeqRef = useRef<number | null>(null);
   const pathMorphRoundSeqRef = useRef(-1);
   const prevPathDByIdForMorphRef = useRef<Map<string, string>>(new Map());
@@ -201,6 +203,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
           height: size.h,
         });
         frozenProjectionRef.current = rm.projection;
+        frozenUnwrapMeridianRef.current = rm.unwrapCenterMeridian;
         return rm;
       }
       const proj = frozenProjectionRef.current;
@@ -213,6 +216,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         isoByCode: byCountryCode,
         width: size.w,
         height: size.h,
+        unwrapCenterMeridian: frozenUnwrapMeridianRef.current,
       });
     } catch {
       return null;
@@ -256,6 +260,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         isoByCode: byCountryCode,
         width: size.w,
         height: size.h,
+        unwrapCenterMeridian: regionModel.unwrapCenterMeridian,
       });
     } catch {
       return regionModel;
