@@ -58,14 +58,12 @@ import { filterWorldTopoFeatures } from "@/lib/flag-guesser/topoFeatureFilter";
 
 const ISO_URL = "/assets/flag-guesser/iso-3166.json";
 
-/** 海（SVG 背景）。陸とのコントラスト用 */
-const MAP_SEA_FILL = "color-mix(in srgb, rgb(165 198 228) 38%, var(--color-bg) 62%)";
+/** 海（SVG 背景）— 視認性のため以前どおり淡い背景のみ */
+const MAP_SEA_FILL = "color-mix(in srgb, var(--color-bg) 96%, transparent)";
 /** 同一リージョンのうち、今ラウンドのカードに載っている国のベース塗り */
 const MAP_LAND_CARD_ROUND = "color-mix(in srgb, var(--color-primary) 14%, transparent)";
 /** 同一リージョンのその他の陸（補助的な国土） */
 const MAP_LAND_REGION_QUIET = "color-mix(in srgb, var(--color-muted) 14%, transparent)";
-const MAP_COAST_STROKE_CARD = "color-mix(in srgb, var(--color-text) 18%, transparent)";
-const MAP_COAST_STROKE_QUIET = "color-mix(in srgb, var(--color-text) 11%, transparent)";
 
 /** Tailwind の `in_srgb` はクラス名用エスケープ。生の CSS では `in srgb` とスペースが必須。 */
 const MAP_FILL_HOVER = "color-mix(in srgb, var(--color-primary) 28%, transparent)";
@@ -465,11 +463,6 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   const countryLandFillBase = (id: string): string =>
     roundCardCountryNumericIds.has(id) ? MAP_LAND_CARD_ROUND : MAP_LAND_REGION_QUIET;
 
-  const countryLandStroke = (id: string): string =>
-    roundCardCountryNumericIds.has(id) ? MAP_COAST_STROKE_CARD : MAP_COAST_STROKE_QUIET;
-
-  const countryLandStrokeWidth = (id: string): number => (roundCardCountryNumericIds.has(id) ? 0.65 : 0.48);
-
   const countryFill = (id: string): string => {
     if (answered) {
       const m = resultByCountryId[id];
@@ -835,8 +828,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                       className="transition-[fill] duration-150"
                       style={{
                         fill: countryFill(id),
-                        stroke: countryLandStroke(id),
-                        strokeWidth: countryLandStrokeWidth(id),
+                        /* 半透明の stroke は国境・島嶼間で重なり「薄いグレーの帯」に見えるため描画しない */
+                        stroke: "none",
                       }}
                     />
                   );
@@ -869,7 +862,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                   pointerEvents: "none",
                 }}
               >
-                {projection &&
+                {!mapManipEnabled &&
+                  projection &&
                   cards.map((c) => {
                     const cid = placedByCard[c.id];
                     if (!cid || drag?.cardId === c.id) return null;
@@ -905,7 +899,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                     );
                   })}
 
-                {drag &&
+                {!mapManipEnabled &&
+                  drag &&
                   (() => {
                     const c = cards.find((x) => x.id === drag.cardId);
                     if (!c) return null;
@@ -933,7 +928,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                     );
                   })()}
 
-                {!answered &&
+                {!mapManipEnabled &&
+                  !answered &&
                   cards.map((c) => {
                     if (placedByCard[c.id] || drag?.cardId === c.id) return null;
                     const fl = floatByCard[c.id];
