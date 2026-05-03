@@ -1,5 +1,6 @@
 "use client";
 
+import type { MapRenderBackend } from "@/lib/flag-guesser/drawRegionMapCanvas";
 import type { TopoLodId } from "@/lib/flag-guesser/topoLod";
 
 export type FlagGuesserDebugPanelProps = {
@@ -23,6 +24,8 @@ export type FlagGuesserDebugPanelProps = {
   displayedLod: TopoLodId;
   desiredLod: TopoLodId;
   loadingHighDetail: boolean;
+  mapRenderBackend: MapRenderBackend;
+  setMapRenderBackend: (v: MapRenderBackend) => void;
 };
 
 /**
@@ -48,6 +51,8 @@ export function FlagGuesserDebugPanel({
   displayedLod,
   desiredLod,
   loadingHighDetail,
+  mapRenderBackend,
+  setMapRenderBackend,
 }: FlagGuesserDebugPanelProps) {
   return (
     <div className="w-full">
@@ -88,6 +93,37 @@ export function FlagGuesserDebugPanel({
 
           {isDebugPanelExpanded && (
             <div className="space-y-3 text-[10px] text-[var(--color-muted)]">
+              <div className="rounded-lg border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] p-2">
+                <div className="mb-2 font-semibold text-[var(--color-text)]">描画方式（検証）</div>
+                <p className="mb-2 text-[9px] leading-snug">
+                  SVG は DOM 負荷が大きい。Canvas は d3.geoPath(context)＋rAF 再描画。ホバー判定は geoContains（既存ロジック）。
+                </p>
+                <div className="flex gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setMapRenderBackend("svg")}
+                    className={`flex-1 rounded border px-2 py-1.5 font-semibold ${
+                      mapRenderBackend === "svg"
+                        ? "border-[var(--color-primary)] bg-[color-mix(in_srgb,var(--color-primary)_22%,transparent)] text-[var(--color-text)]"
+                        : "border-[color-mix(in_srgb,var(--color-text)_20%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_6%,transparent)] text-[var(--color-text)]"
+                    }`}
+                  >
+                    SVG
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMapRenderBackend("canvas")}
+                    className={`flex-1 rounded border px-2 py-1.5 font-semibold ${
+                      mapRenderBackend === "canvas"
+                        ? "border-[var(--color-primary)] bg-[color-mix(in_srgb,var(--color-primary)_22%,transparent)] text-[var(--color-text)]"
+                        : "border-[color-mix(in_srgb,var(--color-text)_20%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_6%,transparent)] text-[var(--color-text)]"
+                    }`}
+                  >
+                    Canvas
+                  </button>
+                </div>
+              </div>
+
               <div className="rounded-lg border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] p-2">
                 <div className="mb-2 font-semibold text-[var(--color-text)]">地形 LOD（解像度）</div>
                 <p className="mb-2 text-[9px] leading-snug">

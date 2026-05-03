@@ -1,6 +1,6 @@
 /**
  * フラッグゲッサー地図まわりの表示ヘルパー。
- * （現状 SVG は FlagGuesserPlayfield 内。このファイルは国名ローカライズと将来の地図抽出用の置き場）
+ * ビュー変換・ズーム型は viewportGeo 経由で共有。描画本体は FlagGuesserPlayfield（SVG / Canvas 切替可）。
  */
 
 import countries from "i18n-iso-countries";

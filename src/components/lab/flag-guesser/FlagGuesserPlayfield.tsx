@@ -48,6 +48,11 @@ import {
 } from "@/lib/flag-guesser/viewportGeo";
 import type { FlagGuesserDebugPanelProps } from "@/components/lab/flag-guesser/FlagGuesserDebugPanel";
 import {
+  drawRegionMapCanvas,
+  resolveCssColorForCanvas,
+  type MapRenderBackend,
+} from "@/lib/flag-guesser/drawRegionMapCanvas";
+import {
   DEFAULT_LOD_THRESHOLD_HIGH,
   DEFAULT_LOD_THRESHOLD_LOW,
   lodTierForMetric,
@@ -106,6 +111,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   const stageRef = useRef<HTMLDivElement>(null);
   const zoomHostRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [size, setSize] = useState({ w: 520, h: 390 });
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -127,7 +133,10 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   const [isDebugMode, setIsDebugMode] = useState(false);
   const [isDebugPanelExpanded, setIsDebugPanelExpanded] = useState(true);
   const [mapManipEnabled, setMapManipEnabled] = useState(false);
+  /** devtj デバッグ時のみ UI 切替。通常は SVG。 */
+  const [mapRenderBackend, setMapRenderBackend] = useState<MapRenderBackend>("svg");
   const [zoomTransform, setZoomTransform] = useState<ZoomPlain>(ZOOM_IDENTITY);
+  const [devicePixelRatioState, setDevicePixelRatioState] = useState(1);
   const [listedCountryLabelsJa, setListedCountryLabelsJa] = useState<string[]>([]);
 
   const [roundSeq, setRoundSeq] = useState(0);
@@ -283,9 +292,18 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     if (!isDevTj) {
       setIsDebugMode(false);
       setMapManipEnabled(false);
+      setMapRenderBackend("svg");
       setZoomTransform(ZOOM_IDENTITY);
     }
   }, [isDevTj]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const setD = () => setDevicePixelRatioState(window.devicePixelRatio || 1);
+    setD();
+    window.addEventListener("resize", setD);
+    return () => window.removeEventListener("resize", setD);
+  }, []);
 
   useEffect(() => {
     if (!mapManipEnabled) setZoomTransform(ZOOM_IDENTITY);
@@ -428,12 +446,12 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   }, [cards, placedByCard, drag, answered, size.w, size.h, roundSeq]);
 
   const getMapRect = useCallback((): DOMRect | null => {
-    const svg = svgRef.current;
+    const mapEl = mapRenderBackend === "canvas" ? canvasRef.current : svgRef.current;
     const host = zoomHostRef.current;
-    const el = svg ?? host;
+    const el = mapEl ?? host;
     if (!el) return null;
     return el.getBoundingClientRect();
-  }, []);
+  }, [mapRenderBackend]);
 
   const pointerToMapCoords = useCallback(
     (clientX: number, clientY: number): [number, number] | null => {
@@ -445,8 +463,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     [getMapRect, size.w, size.h, zoomTransform]
   );
 
-  const handleSvgPointerMove = useCallback(
-    (event: React.PointerEvent<SVGSVGElement>) => {
+  const handleMapPointerMove = useCallback(
+    (event: React.PointerEvent<HTMLCanvasElement | SVGSVGElement>) => {
       if (!projection || !regionModel || answered || drag) return;
       const pt = pointerToMapCoords(event.clientX, event.clientY);
       if (!pt) return;
@@ -457,20 +475,23 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     [projection, regionModel, hitFeatures, answered, drag, pointerToMapCoords]
   );
 
-  const handleSvgLeave = useCallback(() => {
+  const handleMapLeave = useCallback(() => {
     if (!drag) setHoverCountryId(null);
   }, [drag]);
 
-  const countryFill = (id: string): string => {
-    if (answered) {
-      const m = resultByCountryId[id];
-      if (m === "correct") return MAP_FILL_CORRECT;
-      if (m === "wrong") return MAP_FILL_WRONG;
-    }
-    if (drag && dragTargetCountryId === id) return MAP_FILL_DRAG;
-    if (hoverCountryId === id) return MAP_FILL_HOVER;
-    return MAP_LAND_REGION_QUIET;
-  };
+  const countryFill = useCallback(
+    (id: string): string => {
+      if (answered) {
+        const m = resultByCountryId[id];
+        if (m === "correct") return MAP_FILL_CORRECT;
+        if (m === "wrong") return MAP_FILL_WRONG;
+      }
+      if (drag && dragTargetCountryId === id) return MAP_FILL_DRAG;
+      if (hoverCountryId === id) return MAP_FILL_HOVER;
+      return MAP_LAND_REGION_QUIET;
+    },
+    [answered, resultByCountryId, drag, dragTargetCountryId, hoverCountryId]
+  );
 
   const beginDrag = useCallback(
     (cardId: string, clientX: number, clientY: number) => {
@@ -670,7 +691,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   }, [projection, featuresForGame, displayedLod, size.w, size.h, zoomTransform, byCountryCode]);
 
   useLayoutEffect(() => {
-    if (!svgRef.current || !regionModel) return;
+    if (mapRenderBackend !== "svg" || !svgRef.current || !regionModel) return;
 
     if (pathMorphRoundSeqRef.current !== roundSeq) {
       pathMorphRoundSeqRef.current = roundSeq;
@@ -710,7 +731,68 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       }
     }
     prevPathDByIdForMorphRef.current = new Map(next);
-  }, [regionModel, roundSeq]);
+  }, [regionModel, roundSeq, mapRenderBackend]);
+
+  /** Canvas: d3.geoPath(context) ＋ requestAnimationFrame でズーム・ホバーに追従（DOM 大量 path より軽量を狙う） */
+  useLayoutEffect(() => {
+    if (mapRenderBackend !== "canvas" || !regionModel || !projection) return;
+    const canvas = canvasRef.current;
+    const probeMount = stageRef.current;
+    if (!canvas || !probeMount) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let cancelled = false;
+    const raf = requestAnimationFrame(() => {
+      if (cancelled) return;
+      const sea = resolveCssColorForCanvas(MAP_SEA_FILL, probeMount);
+      const border = resolveCssColorForCanvas(MAP_BORDER_STROKE, probeMount);
+      const fillResolvedCache = new Map<string, string>();
+      const fillForId = (id: string) => {
+        const css = countryFill(id);
+        let r = fillResolvedCache.get(css);
+        if (!r) {
+          r = resolveCssColorForCanvas(css, probeMount);
+          fillResolvedCache.set(css, r);
+        }
+        return r;
+      };
+      drawRegionMapCanvas({
+        ctx,
+        logicalW: size.w,
+        logicalH: size.h,
+        dpr: devicePixelRatioState,
+        projection,
+        features: regionModel.allFeatures,
+        zoom: zoomTransform,
+        centroidById: centroidByCountryId,
+        fillForId,
+        seaFillResolved: sea,
+        borderStrokeResolved: border,
+        borderStrokeWidth,
+        hoverCountryId,
+        pathHoverScale: 1.035,
+        drag: !!drag,
+      });
+    });
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(raf);
+    };
+  }, [
+    mapRenderBackend,
+    regionModel,
+    projection,
+    size.w,
+    size.h,
+    devicePixelRatioState,
+    zoomTransform,
+    centroidByCountryId,
+    borderStrokeWidth,
+    countryFill,
+    drag,
+  ]);
 
   useEffect(() => {
     if (!onDebugPanelPropsChange) return;
@@ -738,6 +820,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       displayedLod,
       desiredLod,
       loadingHighDetail,
+      mapRenderBackend,
+      setMapRenderBackend,
     });
     return () => onDebugPanelPropsChange(null);
   }, [
@@ -755,6 +839,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     displayedLod,
     desiredLod,
     loadingHighDetail,
+    mapRenderBackend,
   ]);
 
   if (loadError) {
@@ -803,50 +888,64 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
             className={`relative touch-none ${mapManipEnabled ? "cursor-grab active:cursor-grabbing" : ""}`}
             style={{ width: size.w, height: size.h }}
           >
-            <svg
-              ref={svgRef}
-              width={size.w}
-              height={size.h}
-              className="block select-none"
-              role="img"
-              aria-label="地域マップ"
-              onPointerMove={handleSvgPointerMove}
-              onPointerLeave={handleSvgLeave}
-            >
-              <rect width={size.w} height={size.h} style={{ fill: MAP_SEA_FILL }} />
-              <g transform={gTransform}>
-                {regionModel.allFeatures.map((f) => {
-                  const id = String(f.id ?? "");
-                  const d = regionModel.pathDById.get(id);
-                  if (!d) return null;
-                  const c = centroidByCountryId.get(id);
-                  const pathHover = !drag && hoverCountryId === id;
-                  const pathScale = pathHover ? 1.035 : 1;
-                  const tf =
-                    c && pathScale !== 1
-                      ? `translate(${c[0]},${c[1]}) scale(${pathScale}) translate(${-c[0]},${-c[1]})`
-                      : undefined;
-                  return (
-                    <g key={id} transform={tf} style={{ transition: "transform 280ms ease-out" }}>
-                      <path
-                        data-fg-cid={id}
-                        d={d}
-                        className="transition-[fill] duration-150"
-                        style={{
-                          fill: countryFill(id),
-                          stroke: MAP_BORDER_STROKE,
-                          strokeWidth: borderStrokeWidth,
-                          strokeDasharray: "1.2 2.2",
-                          strokeLinecap: "round",
-                          strokeLinejoin: "round",
-                          vectorEffect: "non-scaling-stroke",
-                        }}
-                      />
-                    </g>
-                  );
-                })}
-              </g>
-            </svg>
+            {mapRenderBackend === "svg" ? (
+              <svg
+                ref={svgRef}
+                width={size.w}
+                height={size.h}
+                className="block select-none"
+                role="img"
+                aria-label="地域マップ"
+                onPointerMove={handleMapPointerMove}
+                onPointerLeave={handleMapLeave}
+              >
+                <rect width={size.w} height={size.h} style={{ fill: MAP_SEA_FILL }} />
+                <g transform={gTransform}>
+                  {regionModel.allFeatures.map((f) => {
+                    const id = String(f.id ?? "");
+                    const d = regionModel.pathDById.get(id);
+                    if (!d) return null;
+                    const c = centroidByCountryId.get(id);
+                    const pathHover = !drag && hoverCountryId === id;
+                    const pathScale = pathHover ? 1.035 : 1;
+                    const tf =
+                      c && pathScale !== 1
+                        ? `translate(${c[0]},${c[1]}) scale(${pathScale}) translate(${-c[0]},${-c[1]})`
+                        : undefined;
+                    return (
+                      <g key={id} transform={tf} style={{ transition: "transform 280ms ease-out" }}>
+                        <path
+                          data-fg-cid={id}
+                          d={d}
+                          className="transition-[fill] duration-150"
+                          style={{
+                            fill: countryFill(id),
+                            stroke: MAP_BORDER_STROKE,
+                            strokeWidth: borderStrokeWidth,
+                            strokeDasharray: "1.2 2.2",
+                            strokeLinecap: "round",
+                            strokeLinejoin: "round",
+                            vectorEffect: "non-scaling-stroke",
+                          }}
+                        />
+                      </g>
+                    );
+                  })}
+                </g>
+              </svg>
+            ) : (
+              <canvas
+                ref={canvasRef}
+                width={Math.max(1, Math.round(size.w * devicePixelRatioState))}
+                height={Math.max(1, Math.round(size.h * devicePixelRatioState))}
+                className="block select-none"
+                role="img"
+                aria-label="地域マップ"
+                style={{ width: size.w, height: size.h }}
+                onPointerMove={handleMapPointerMove}
+                onPointerLeave={handleMapLeave}
+              />
+            )}
 
             {loadingHighDetail && (
               <div className="pointer-events-none absolute bottom-1 left-1 z-[11] rounded border border-[color-mix(in_srgb,var(--color-primary)_25%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_90%,transparent)] px-1.5 py-0.5 text-[9px] text-[var(--color-muted)] backdrop-blur-sm">
