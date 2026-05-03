@@ -228,6 +228,12 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     [zoomTransform]
   );
 
+  /** 親の d3-zoom scale(k) に追従してもカードの見た目サイズが一定になるよう打ち消し */
+  const flagVisualScale = useMemo(
+    () => 1 / Math.max(zoomTransform.k, 0.06),
+    [zoomTransform.k]
+  );
+
   const mapDebugCenterScale = useMemo(() => {
     if (!projection || size.w < 8 || size.h < 8) return null;
     const midLocal: [number, number] = [size.w / 2, size.h / 2];
@@ -411,14 +417,14 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
 
   const handleSvgPointerMove = useCallback(
     (event: React.PointerEvent<SVGSVGElement>) => {
-      if (!projection || !regionModel || answered || drag || mapManipEnabled) return;
+      if (!projection || !regionModel || answered || drag) return;
       const pt = pointerToMapCoords(event.clientX, event.clientY);
       if (!pt) return;
       const [x, y] = pt;
       const id = countryIdAtPixel(projection, hitFeatures, x, y);
       setHoverCountryId(id);
     },
-    [projection, regionModel, hitFeatures, answered, drag, mapManipEnabled, pointerToMapCoords]
+    [projection, regionModel, hitFeatures, answered, drag, pointerToMapCoords]
   );
 
   const handleSvgLeave = useCallback(() => {
@@ -817,6 +823,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
               </div>
             )}
 
+            {/* 全面を pointer-events:auto にしない（SVG のホバー検出が届かなくなる）。国旗ボタンのみ auto */}
             <div className="pointer-events-none absolute inset-0">
               <div
                 className="absolute left-0 top-0"
@@ -824,7 +831,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                   ...overlayParentTransform,
                   width: size.w,
                   height: size.h,
-                  pointerEvents: mapManipEnabled ? "none" : "auto",
+                  pointerEvents: "none",
                 }}
               >
                 {projection &&
@@ -839,8 +846,14 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                       <button
                         key={`stuck-${c.id}`}
                         type="button"
-                        className="pointer-events-auto absolute z-20 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-md border-2 border-white/40 bg-white/10 p-0.5 shadow-md backdrop-blur-sm active:cursor-grabbing"
-                        style={{ left: p[0], top: p[1], width: CARD_W, height: CARD_H }}
+                        className="pointer-events-auto absolute z-20 cursor-grab rounded-md border-2 border-white/40 bg-white/10 p-0.5 shadow-md backdrop-blur-sm active:cursor-grabbing"
+                        style={{
+                          left: p[0],
+                          top: p[1],
+                          width: CARD_W,
+                          height: CARD_H,
+                          transform: `translate(-50%, -50%) scale(${flagVisualScale})`,
+                        }}
                         onPointerDown={(e) => handleCardPointerDown(c.id, e)}
                         aria-label="国旗を戻す"
                       >
@@ -863,8 +876,14 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                     if (!c) return null;
                     return (
                       <div
-                        className="pointer-events-none absolute z-40 -translate-x-1/2 -translate-y-1/2 rounded-md border-2 border-[var(--color-primary)] bg-white/90 p-0.5 shadow-xl"
-                        style={{ left: dragPos.x, top: dragPos.y, width: CARD_W, height: CARD_H }}
+                        className="pointer-events-none absolute z-40 rounded-md border-2 border-[var(--color-primary)] bg-white/90 p-0.5 shadow-xl"
+                        style={{
+                          left: dragPos.x,
+                          top: dragPos.y,
+                          width: CARD_W,
+                          height: CARD_H,
+                          transform: `translate(-50%, -50%) scale(${flagVisualScale})`,
+                        }}
                       >
                         <Image
                           src={flagUrlForAlpha2(c.alpha2)}
@@ -888,8 +907,14 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                       <button
                         key={c.id}
                         type="button"
-                        className="pointer-events-auto absolute z-20 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-md border border-[color-mix(in_srgb,var(--color-text)_15%,transparent)] bg-[color-mix(in_srgb,var(--color-surface)_88%,transparent)] p-0.5 shadow-md active:cursor-grabbing"
-                        style={{ left: fl.x, top: fl.y, width: CARD_W, height: CARD_H }}
+                        className="pointer-events-auto absolute z-20 cursor-grab rounded-md border border-[color-mix(in_srgb,var(--color-text)_15%,transparent)] bg-[color-mix(in_srgb,var(--color-surface)_88%,transparent)] p-0.5 shadow-md active:cursor-grabbing"
+                        style={{
+                          left: fl.x,
+                          top: fl.y,
+                          width: CARD_W,
+                          height: CARD_H,
+                          transform: `translate(-50%, -50%) scale(${flagVisualScale})`,
+                        }}
                         onPointerDown={(e) => handleCardPointerDown(c.id, e)}
                       >
                         <Image
