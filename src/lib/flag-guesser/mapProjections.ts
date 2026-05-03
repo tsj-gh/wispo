@@ -90,8 +90,11 @@ type BuildRoundInput = {
 /**
  * 同一 Region のポリゴンのみ集め、投影と path d を返す（純粋・Worker 向け分離の核）。
  */
-export function buildRegionRoundModel(input: BuildRoundInput): RegionRoundModel {
-  const { target, region, allFeatures, isoByCode, width, height } = input;
+export function filterFeaturesByRegion(
+  allFeatures: readonly CountryFeature[],
+  region: string,
+  isoByCode: Map<string, Iso3166Row>
+): CountryFeature[] {
   const inRegion: CountryFeature[] = [];
   for (const f of allFeatures) {
     const id = featureIdString(f);
@@ -100,6 +103,12 @@ export function buildRegionRoundModel(input: BuildRoundInput): RegionRoundModel 
     if (!row || !row.region || row.region !== region) continue;
     inRegion.push(f);
   }
+  return inRegion;
+}
+
+export function buildRegionRoundModel(input: BuildRoundInput): RegionRoundModel {
+  const { target, region, allFeatures, isoByCode, width, height } = input;
+  const inRegion = filterFeaturesByRegion(allFeatures, region, isoByCode);
 
   if (inRegion.length === 0) {
     throw new Error("region has no mappable features");
@@ -110,6 +119,41 @@ export function buildRegionRoundModel(input: BuildRoundInput): RegionRoundModel 
     features: inRegion as Feature<Geometry, GeoJsonProperties>[],
   };
   const projection = buildMercatorForCollection(collection, width, height);
+  const pathDById = buildPathStrings(projection, inRegion);
+  return {
+    target,
+    regionCollection: collection,
+    allFeatures: inRegion,
+    projection,
+    pathDById,
+    width,
+    height,
+  };
+}
+
+type SameProjectionInput = {
+  target: Iso3166Row;
+  region: string;
+  projection: GeoProjection;
+  allWorldFeatures: CountryFeature[];
+  isoByCode: Map<string, Iso3166Row>;
+  width: number;
+  height: number;
+};
+
+/**
+ * 同一 Mercator（ズームと整合させるため fit の投影を凍結したまま）で別解像度の国土だけ差し替える。
+ */
+export function buildRegionRoundModelSameProjection(input: SameProjectionInput): RegionRoundModel {
+  const { target, region, projection, allWorldFeatures, isoByCode, width, height } = input;
+  const inRegion = filterFeaturesByRegion(allWorldFeatures, region, isoByCode);
+  if (inRegion.length === 0) {
+    throw new Error("region has no mappable features");
+  }
+  const collection: FeatureCollection<Geometry, GeoJsonProperties> = {
+    type: "FeatureCollection",
+    features: inRegion as Feature<Geometry, GeoJsonProperties>[],
+  };
   const pathDById = buildPathStrings(projection, inRegion);
   return {
     target,

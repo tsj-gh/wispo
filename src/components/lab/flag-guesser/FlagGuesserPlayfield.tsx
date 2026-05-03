@@ -5,20 +5,26 @@ import { useSearchParams } from "next/navigation";
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import type { Topology } from "topojson-specification";
+import { easeCubicOut } from "d3-ease";
 import { zoom as d3zoom, zoomIdentity } from "d3-zoom";
 import { select } from "d3-selection";
+import { interpolate } from "flubber";
+import "d3-transition";
 import {
   buildRegionRoundModel,
+  buildRegionRoundModelSameProjection,
   countryIdAtPixel,
   projectCentroid,
   sortFeaturesForHitTest,
 } from "@/lib/flag-guesser/mapProjections";
+import type { GeoProjection } from "d3-geo";
 import type { CountryFeature, Iso3166Row, RegionRoundModel } from "@/lib/flag-guesser/types";
 import {
   countryFeaturesFromTopology,
@@ -41,8 +47,14 @@ import {
   viewportLonLatBounds,
 } from "@/lib/flag-guesser/viewportGeo";
 import type { FlagGuesserDebugPanelProps } from "@/components/lab/flag-guesser/FlagGuesserDebugPanel";
+import {
+  DEFAULT_LOD_THRESHOLD_HIGH,
+  DEFAULT_LOD_THRESHOLD_LOW,
+  lodTierForMetric,
+  type TopoLodId,
+  TOPO_LOD_URL,
+} from "@/lib/flag-guesser/topoLod";
 
-const TOPO_URL = "/assets/flag-guesser/countries-50m.json";
 const ISO_URL = "/assets/flag-guesser/iso-3166.json";
 
 /** Tailwind の `in_srgb` はクラス名用エスケープ。生の CSS では `in srgb` とスペースが必須。 */
@@ -91,7 +103,18 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   const [size, setSize] = useState({ w: 520, h: 390 });
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isoRows, setIsoRows] = useState<Iso3166Row[]>([]);
-  const [allTopoFeatures, setAllTopoFeatures] = useState<CountryFeature[]>([]);
+  /** 必要になった解像度だけ逐次 fetch して保持 */
+  const [featuresCache, setFeaturesCache] = useState<Partial<Record<TopoLodId, CountryFeature[]>>>({});
+  const [displayedLod, setDisplayedLod] = useState<TopoLodId>("110");
+  const [fetchingLod, setFetchingLod] = useState<TopoLodId | null>(null);
+  const [lodThresholdLow, setLodThresholdLow] = useState(DEFAULT_LOD_THRESHOLD_LOW);
+  const [lodThresholdHigh, setLodThresholdHigh] = useState(DEFAULT_LOD_THRESHOLD_HIGH);
+  const featuresCacheRef = useRef(featuresCache);
+  featuresCacheRef.current = featuresCache;
+  const frozenProjectionRef = useRef<GeoProjection | null>(null);
+  const frozenRoundSeqRef = useRef<number | null>(null);
+  const pathMorphRoundSeqRef = useRef(-1);
+  const prevPathDByIdForMorphRef = useRef<Map<string, string>>(new Map());
   const initRoundRef = useRef(false);
 
   const [isDebugMode, setIsDebugMode] = useState(false);
@@ -125,15 +148,34 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
 
   const { byCountryCode } = useMemo(() => resolveIsoRows(isoRows), [isoRows]);
 
-  const topoIds = useMemo(() => topoNumericIdSet(allTopoFeatures), [allTopoFeatures]);
+  const topoIds = useMemo(() => topoNumericIdSet(featuresCache["110"] ?? []), [featuresCache]);
 
   const regionModel = useMemo<RegionRoundModel | null>(() => {
-    if (!roundPlan || !allTopoFeatures.length || size.w < 32 || size.h < 32) return null;
+    if (!roundPlan || size.w < 32 || size.h < 32) return null;
+    const world = featuresCache[displayedLod];
+    if (!world?.length) return null;
     try {
-      return buildRegionRoundModel({
+      const roundChanged = frozenRoundSeqRef.current !== roundSeq;
+      if (roundChanged) {
+        frozenRoundSeqRef.current = roundSeq;
+        const rm = buildRegionRoundModel({
+          target: roundPlan.targetRow,
+          region: roundPlan.targetRow.region!,
+          allFeatures: world,
+          isoByCode: byCountryCode,
+          width: size.w,
+          height: size.h,
+        });
+        frozenProjectionRef.current = rm.projection;
+        return rm;
+      }
+      const proj = frozenProjectionRef.current;
+      if (!proj) return null;
+      return buildRegionRoundModelSameProjection({
         target: roundPlan.targetRow,
         region: roundPlan.targetRow.region!,
-        allFeatures: allTopoFeatures,
+        projection: proj,
+        allWorldFeatures: world,
         isoByCode: byCountryCode,
         width: size.w,
         height: size.h,
@@ -141,7 +183,23 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     } catch {
       return null;
     }
-  }, [roundPlan, allTopoFeatures, byCountryCode, size.w, size.h]);
+  }, [roundPlan, featuresCache, displayedLod, byCountryCode, size.w, size.h, roundSeq]);
+
+  const lodMetric = useMemo(() => {
+    const p = regionModel?.projection;
+    if (!p || typeof p.scale !== "function") return 0;
+    return p.scale() * zoomTransform.k;
+  }, [regionModel?.projection, zoomTransform.k]);
+
+  const lodThresholdHighEffective = Math.max(lodThresholdHigh, lodThresholdLow + 1);
+
+  const desiredLod = useMemo(
+    () => lodTierForMetric(lodMetric, lodThresholdLow, lodThresholdHighEffective),
+    [lodMetric, lodThresholdLow, lodThresholdHighEffective]
+  );
+
+  const loadingHighDetail =
+    fetchingLod === "10" || (desiredLod === "10" && !featuresCache["10"]?.length);
 
   const hitFeatures = useMemo(() => {
     if (!regionModel) return [];
@@ -217,32 +275,66 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   useEffect(() => {
     let cancelled = false;
     setLoadError(null);
-    Promise.all([
-      fetch(TOPO_URL).then((r) => r.json() as Promise<Topology>),
-      fetch(ISO_URL).then((r) => r.json() as Promise<Iso3166Row[]>),
-    ])
-      .then(([topo, iso]) => {
-        if (cancelled) return;
-        setIsoRows(iso);
-        const feats = countryFeaturesFromTopology(topo);
-        setAllTopoFeatures(feats);
+    fetch(ISO_URL)
+      .then((r) => r.json() as Promise<Iso3166Row[]>)
+      .then((iso) => {
+        if (!cancelled) setIsoRows(iso);
       })
       .catch(() => {
-        if (!cancelled) setLoadError("データの読み込みに失敗しました");
+        if (!cancelled) setLoadError("国情報の読み込みに失敗しました");
       });
     return () => {
       cancelled = true;
     };
   }, []);
 
+  /** 閾値を跨いだときだけ該当解像度を fetch（キャッシュがあればスキップ） */
   useEffect(() => {
-    if (!isoRows.length || !allTopoFeatures.length || initRoundRef.current) return;
-    const plan = createRoundPlan(isoRows, topoNumericIdSet(allTopoFeatures), new Set(), 3);
+    const tier = desiredLod;
+    if (featuresCacheRef.current[tier]) return;
+
+    let cancelled = false;
+    setFetchingLod((f) => f ?? tier);
+
+    fetch(TOPO_LOD_URL[tier])
+      .then((r) => {
+        if (!r.ok) throw new Error(String(r.status));
+        return r.json() as Promise<Topology>;
+      })
+      .then((topo) => {
+        if (cancelled) return;
+        const feats = countryFeaturesFromTopology(topo);
+        setFeaturesCache((prev) => ({ ...prev, [tier]: feats }));
+      })
+      .catch(() => {
+        if (!cancelled) setLoadError("地形データの読み込みに失敗しました");
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setFetchingLod((f) => (f === tier ? null : f));
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [desiredLod]);
+
+  /** 必要な解像度が揃ったら表示 LOD を追従（読み込み中は従来のまま） */
+  useEffect(() => {
+    if (featuresCache[desiredLod]?.length) {
+      setDisplayedLod(desiredLod);
+    }
+  }, [desiredLod, featuresCache]);
+
+  useEffect(() => {
+    if (!isoRows.length || !featuresCache["110"]?.length || initRoundRef.current) return;
+    const plan = createRoundPlan(isoRows, topoNumericIdSet(featuresCache["110"] ?? []), new Set(), 3);
     if (plan) {
       setRoundPlan(plan);
       initRoundRef.current = true;
     }
-  }, [isoRows, allTopoFeatures]);
+  }, [isoRows, featuresCache]);
 
   useEffect(() => {
     const el = stageRef.current;
@@ -489,7 +581,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   };
 
   const startNewRound = useCallback(() => {
-    if (!isoRows.length || !allTopoFeatures.length) return;
+    if (!isoRows.length || !featuresCache["110"]?.length) return;
     const plan = createRoundPlan(isoRows, topoIds, excludeAlphas, 3);
     if (!plan) return;
     setRoundSeq((s) => s + 1);
@@ -500,7 +592,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     setHoverCountryId(null);
     setDragTargetCountryId(null);
     setDrag(null);
-  }, [isoRows, allTopoFeatures, topoIds, excludeAlphas]);
+  }, [isoRows, featuresCache, topoIds, excludeAlphas]);
 
   const mapScale = !drag && hoverCountryId && !mapManipEnabled ? 1.03 : 1;
 
@@ -513,7 +605,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   }, [hoverCountryId, byCountryCode, locale]);
 
   const onEnumerateVisible = useCallback(() => {
-    if (!projection || !allTopoFeatures.length || size.w < 32 || size.h < 32) {
+    const world = featuresCache[displayedLod];
+    if (!projection || !world?.length || size.w < 32 || size.h < 32) {
       setListedCountryLabelsJa([]);
       return;
     }
@@ -522,7 +615,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       setListedCountryLabelsJa([]);
       return;
     }
-    const overlapping = featuresOverlappingViewport(allTopoFeatures, vp);
+    const overlapping = featuresOverlappingViewport(world, vp);
     const labels = overlapping
       .map((f) => {
         const id = String(f.id ?? "");
@@ -534,7 +627,50 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       .sort((a, b) => a.localeCompare(b, "ja"))
       .slice(0, 10);
     setListedCountryLabelsJa(labels);
-  }, [projection, allTopoFeatures, size.w, size.h, zoomTransform, byCountryCode]);
+  }, [projection, featuresCache, displayedLod, size.w, size.h, zoomTransform, byCountryCode]);
+
+  useLayoutEffect(() => {
+    if (!svgRef.current || !regionModel) return;
+
+    if (pathMorphRoundSeqRef.current !== roundSeq) {
+      pathMorphRoundSeqRef.current = roundSeq;
+      prevPathDByIdForMorphRef.current = new Map(regionModel.pathDById);
+      return;
+    }
+
+    const prev = prevPathDByIdForMorphRef.current;
+    const next = regionModel.pathDById;
+    if (prev.size === 0) {
+      prevPathDByIdForMorphRef.current = new Map(next);
+      return;
+    }
+
+    let anyPathChanged = false;
+    for (const id of Array.from(next.keys())) {
+      if (prev.get(id) !== next.get(id)) {
+        anyPathChanged = true;
+        break;
+      }
+    }
+    if (!anyPathChanged) return;
+
+    for (const f of regionModel.allFeatures) {
+      const id = String(f.id ?? "");
+      const oldD = prev.get(id);
+      const newD = next.get(id);
+      if (!newD || oldD === newD) continue;
+      const el = svgRef.current.querySelector(`path[data-fg-cid="${id}"]`);
+      if (!(el instanceof SVGPathElement) || !oldD) continue;
+      el.setAttribute("d", oldD);
+      try {
+        const gen = interpolate(oldD, newD, { maxSegmentLength: 4 });
+        select(el).interrupt().transition().duration(420).ease(easeCubicOut).attrTween("d", () => gen);
+      } catch {
+        select(el).attr("d", newD);
+      }
+    }
+    prevPathDByIdForMorphRef.current = new Map(next);
+  }, [regionModel, roundSeq]);
 
   useEffect(() => {
     if (!onDebugPanelPropsChange) return;
@@ -554,6 +690,14 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       mapDebugSnippet: mapDebugCenterScale?.snippet ?? null,
       centerLonLatText: mapDebugCenterScale?.centerLonLatText ?? null,
       scaleText: mapDebugCenterScale?.scaleText ?? null,
+      lodThresholdLow,
+      setLodThresholdLow,
+      lodThresholdHigh,
+      setLodThresholdHigh,
+      lodMetric,
+      displayedLod,
+      desiredLod,
+      loadingHighDetail,
     });
     return () => onDebugPanelPropsChange(null);
   }, [
@@ -565,6 +709,12 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     listedCountryLabelsJa,
     mapDebugCenterScale,
     onEnumerateVisible,
+    lodThresholdLow,
+    lodThresholdHigh,
+    lodMetric,
+    displayedLod,
+    desiredLod,
+    loadingHighDetail,
   ]);
 
   if (loadError) {
@@ -639,6 +789,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                   return (
                     <path
                       key={id}
+                      data-fg-cid={id}
                       d={d}
                       className="transition-[fill] duration-150"
                       style={{
@@ -651,6 +802,12 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                 })}
               </g>
             </svg>
+
+            {loadingHighDetail && (
+              <div className="pointer-events-none absolute bottom-1 left-1 z-[11] rounded border border-[color-mix(in_srgb,var(--color-primary)_25%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_90%,transparent)] px-1.5 py-0.5 text-[9px] text-[var(--color-muted)] backdrop-blur-sm">
+                高精細データ読み込み中…
+              </div>
+            )}
 
             {isDevTj && isDebugMode && mapDebugCenterScale && (
               <div className="pointer-events-none absolute right-1 top-1 z-10 max-w-[min(100%,18rem)] rounded border border-[color-mix(in_srgb,var(--color-text)_20%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_88%,transparent)] px-1.5 py-1 font-mono text-[9px] leading-tight text-[var(--color-text)] backdrop-blur-sm">

@@ -1,5 +1,7 @@
 "use client";
 
+import type { TopoLodId } from "@/lib/flag-guesser/topoLod";
+
 export type FlagGuesserDebugPanelProps = {
   isDebugMode: boolean;
   setIsDebugMode: (v: boolean) => void;
@@ -12,6 +14,15 @@ export type FlagGuesserDebugPanelProps = {
   mapDebugSnippet: string | null;
   centerLonLatText: string | null;
   scaleText: string | null;
+  /** LOD（devtj 時のみ UI 以外でも値は渡せる） */
+  lodThresholdLow: number;
+  setLodThresholdLow: (n: number) => void;
+  lodThresholdHigh: number;
+  setLodThresholdHigh: (n: number) => void;
+  lodMetric: number;
+  displayedLod: TopoLodId;
+  desiredLod: TopoLodId;
+  loadingHighDetail: boolean;
 };
 
 /**
@@ -29,6 +40,14 @@ export function FlagGuesserDebugPanel({
   mapDebugSnippet,
   centerLonLatText,
   scaleText,
+  lodThresholdLow,
+  setLodThresholdLow,
+  lodThresholdHigh,
+  setLodThresholdHigh,
+  lodMetric,
+  displayedLod,
+  desiredLod,
+  loadingHighDetail,
 }: FlagGuesserDebugPanelProps) {
   return (
     <div className="w-full">
@@ -69,6 +88,46 @@ export function FlagGuesserDebugPanel({
 
           {isDebugPanelExpanded && (
             <div className="space-y-3 text-[10px] text-[var(--color-muted)]">
+              <div className="rounded-lg border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] p-2">
+                <div className="mb-2 font-semibold text-[var(--color-text)]">地形 LOD（解像度）</div>
+                <p className="mb-2 text-[9px] leading-snug">
+                  指標 = projection.scale() × ズーム k。閾値で 110m / 50m / 10m を切替（初回のみ fetch、キャッシュ）。
+                </p>
+                <div className="mb-1 font-mono text-[9px] text-[var(--color-text)]">
+                  指標: <span className="tabular-nums">{lodMetric.toFixed(1)}</span> → 希望{" "}
+                  <span className="font-semibold">{desiredLod}m</span> / 表示 <span className="font-semibold">{displayedLod}m</span>
+                </div>
+                <label className="mb-2 block">
+                  <div className="mb-0.5 font-semibold text-[var(--color-text)]">低〜中 閾値（未満は 110m）</div>
+                  <input
+                    type="range"
+                    min={50}
+                    max={2000}
+                    step={10}
+                    value={lodThresholdLow}
+                    onChange={(e) => setLodThresholdLow(Number(e.target.value))}
+                    className="w-full accent-[var(--color-primary)]"
+                  />
+                  <div className="tabular-nums">{lodThresholdLow}</div>
+                </label>
+                <label className="block">
+                  <div className="mb-0.5 font-semibold text-[var(--color-text)]">中〜高 閾値（未満は 50m、以上は 10m）</div>
+                  <input
+                    type="range"
+                    min={200}
+                    max={8000}
+                    step={50}
+                    value={lodThresholdHigh}
+                    onChange={(e) => setLodThresholdHigh(Number(e.target.value))}
+                    className="w-full accent-[var(--color-primary)]"
+                  />
+                  <div className="tabular-nums">{lodThresholdHigh}</div>
+                </label>
+                {loadingHighDetail && (
+                  <p className="mt-2 text-[9px] font-medium text-[var(--color-primary)]">高精細データ読み込み中…</p>
+                )}
+              </div>
+
               <div className="rounded-lg border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] p-2">
                 <div className="mb-2 font-semibold text-[var(--color-text)]">マップ操作モード</div>
                 <p className="mb-2 text-[9px] leading-snug">ON のときホイール／ピンチでズーム、ドラッグでパン。国旗操作は一時的に無効です。</p>
