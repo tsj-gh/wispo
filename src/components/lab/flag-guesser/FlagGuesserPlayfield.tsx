@@ -82,11 +82,54 @@ const MAP_FILL_WRONG = "color-mix(in srgb, #ef4444 42%, transparent)";
 const CARD_W = 72;
 const CARD_H = 54;
 
+/** 画面上でカード中心をポインタから離す量（斜め 45° のベクトル長さ・px） */
+const DRAG_CARD_SCREEN_OFFSET_PX = 60;
+/** カードがターゲット位置に追従する係数（毎フレーム。小さいほど遅れる） */
+const DRAG_CARD_SPRING = 0.22;
+
 type DragState = {
   cardId: string;
-  offsetX: number;
-  offsetY: number;
 };
+
+function mapUnitsPerScreenPx(zoomK: number): number {
+  return 1 / Math.max(zoomK, 0.08);
+}
+
+function dragCardTargetFromPointer(px: number, py: number, zoomK: number): { x: number; y: number } {
+  const step = (DRAG_CARD_SCREEN_OFFSET_PX * mapUnitsPerScreenPx(zoomK)) / Math.SQRT2;
+  return { x: px + step, y: py - step };
+}
+
+function cardCornerNearestPointer(px: number, py: number, cx: number, cy: number, w: number, h: number): [number, number] {
+  const l = cx - w / 2;
+  const r = cx + w / 2;
+  const t = cy - h / 2;
+  const b = cy + h / 2;
+  const corners: [number, number][] = [
+    [l, t],
+    [r, t],
+    [r, b],
+    [l, b],
+  ];
+  let best = corners[0]!;
+  let bestD = Infinity;
+  for (const [x, y] of corners) {
+    const d = (x - px) ** 2 + (y - py) ** 2;
+    if (d < bestD) {
+      bestD = d;
+      best = [x, y];
+    }
+  }
+  return best;
+}
+
+function dragConnectorPathD(px: number, py: number, tx: number, ty: number): string {
+  const c1x = px + (tx - px) * 0.42;
+  const c1y = py;
+  const c2x = tx - (tx - px) * 0.42;
+  const c2y = ty;
+  return `M ${px} ${py} C ${c1x} ${c1y} ${c2x} ${c2y} ${tx} ${ty}`;
+}
 
 /** client → SVG と同寸法のローカル px（左上原点） */
 function clientToLocalSvg(clientX: number, clientY: number, rect: DOMRect, innerW: number, innerH: number): [number, number] {
@@ -161,7 +204,11 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   floatRef.current = floatByCard;
 
   const [drag, setDrag] = useState<DragState | null>(null);
-  const [dragPos, setDragPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  /** ドロップ判定・十字の中心（地図座標） */
+  const [dragPointerMap, setDragPointerMap] = useState<{ x: number; y: number } | null>(null);
+  /** カード中心（地図座標・慣性追従） */
+  const [dragCardDisplay, setDragCardDisplay] = useState<{ x: number; y: number } | null>(null);
+  const dragPointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
   const [hoverCountryId, setHoverCountryId] = useState<string | null>(null);
   const [dragTargetCountryId, setDragTargetCountryId] = useState<string | null>(null);
@@ -570,8 +617,10 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         cx = fl.x;
         cy = fl.y;
       }
-      setDrag({ cardId, offsetX: x - cx, offsetY: y - cy });
-      setDragPos({ x: cx, y: cy });
+      dragPointerRef.current = { x, y };
+      setDragPointerMap({ x, y });
+      setDragCardDisplay({ x: cx, y: cy });
+      setDrag({ cardId });
       if (fl) {
         setFloatByCard((prev) => {
           const next = { ...prev };
@@ -579,21 +628,25 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
           return next;
         });
       }
+      if (projection && pointerRegionModel) {
+        const id = countryIdAtPixel(projection, hitFeaturesForPointer, x, y, pointerRegionModel.pathDById);
+        setDragTargetCountryId(id);
+      } else {
+        setDragTargetCountryId(null);
+      }
     },
-    [projection, mapManipEnabled, pointerToMapCoords]
+    [projection, mapManipEnabled, pointerToMapCoords, pointerRegionModel, hitFeaturesForPointer]
   );
 
   const moveDrag = useCallback(
     (clientX: number, clientY: number) => {
-      if (!projection || !drag || mapManipEnabled || !regionModel) return;
+      if (!projection || !drag || mapManipEnabled || !pointerRegionModel) return;
       const pt = pointerToMapCoords(clientX, clientY);
       if (!pt) return;
       const [x, y] = pt;
-      const nx = x - drag.offsetX;
-      const ny = y - drag.offsetY;
-      setDragPos({ x: nx, y: ny });
-      if (!pointerRegionModel) return;
-      const id = countryIdAtPixel(projection, hitFeaturesForPointer, nx, ny, pointerRegionModel.pathDById);
+      dragPointerRef.current = { x, y };
+      setDragPointerMap({ x, y });
+      const id = countryIdAtPixel(projection, hitFeaturesForPointer, x, y, pointerRegionModel.pathDById);
       setDragTargetCountryId(id);
     },
     [projection, drag, hitFeaturesForPointer, mapManipEnabled, pointerToMapCoords, pointerRegionModel]
@@ -604,6 +657,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       const countryId = dragTargetCountryId;
       setDrag(null);
       setDragTargetCountryId(null);
+      setDragPointerMap(null);
+      setDragCardDisplay(null);
 
       if (countryId) {
         const prevPlaced = placedRef.current;
@@ -686,6 +741,35 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     };
   }, [drag, moveDrag, endDrag]);
 
+  /** ドラッグ中カードをポインタ＋オフセット目標へ慣性追従 */
+  useEffect(() => {
+    if (!drag) return;
+    let frameId = 0;
+    const tick = () => {
+      const pt = dragPointerRef.current;
+      const k = Math.max(zoomTransform.k, 0.08);
+      const target = dragCardTargetFromPointer(pt.x, pt.y, k);
+      setDragCardDisplay((prev) => {
+        if (!prev) return target;
+        const s = DRAG_CARD_SPRING;
+        const nx = prev.x + (target.x - prev.x) * s;
+        const ny = prev.y + (target.y - prev.y) * s;
+        if (
+          Math.abs(nx - prev.x) < 0.03 &&
+          Math.abs(ny - prev.y) < 0.03 &&
+          Math.abs(target.x - prev.x) < 0.12 &&
+          Math.abs(target.y - prev.y) < 0.12
+        ) {
+          return prev;
+        }
+        return { x: nx, y: ny };
+      });
+      frameId = requestAnimationFrame(tick);
+    };
+    frameId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frameId);
+  }, [drag, zoomTransform.k]);
+
   const submitAnswer = () => {
     if (!roundPlan) return;
     const byC: Record<string, "correct" | "wrong"> = {};
@@ -714,6 +798,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     setHoverCountryId(null);
     setDragTargetCountryId(null);
     setDrag(null);
+    setDragPointerMap(null);
+    setDragCardDisplay(null);
   }, [isoRows, featuresForGame, topoIds, excludeAlphas]);
 
   /** ズーム k が大きいほど線を細く（ユーザー座標上の太さ = base/k →画面上は nonScaling でほぼ一定） */
@@ -1111,30 +1197,102 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
 
                 {!mapManipEnabled &&
                   drag &&
+                  dragPointerMap &&
+                  dragCardDisplay &&
                   (() => {
                     const c = cards.find((x) => x.id === drag.cardId);
                     if (!c) return null;
+                    const k = Math.max(zoomTransform.k, 0.08);
+                    const px = dragPointerMap.x;
+                    const py = dragPointerMap.y;
+                    const cx = dragCardDisplay.x;
+                    const cy = dragCardDisplay.y;
+                    const w = CARD_W * flagVisualScale;
+                    const h = CARD_H * flagVisualScale;
+                    const [tx, ty] = cardCornerNearestPointer(px, py, cx, cy, w, h);
+                    const inCountry = dragTargetCountryId !== null;
+                    const unit = mapUnitsPerScreenPx(k);
+                    const gap = unit;
+                    const arm = 14 * unit;
+                    const crossStroke = inCountry ? "var(--color-primary)" : "rgba(42,42,48,0.92)";
+                    const crossW = inCountry ? 1.65 : 1.05;
+                    const connStroke = inCountry ? 2.2 : 1.2;
                     return (
-                      <div
-                        className="pointer-events-none absolute z-40 rounded-md border-2 border-[var(--color-primary)] bg-white/90 p-0.5 shadow-xl"
-                        style={{
-                          left: dragPos.x,
-                          top: dragPos.y,
-                          width: CARD_W,
-                          height: CARD_H,
-                          transform: `translate(-50%, -50%) scale(${flagVisualScale})`,
-                        }}
-                      >
-                        <Image
-                          src={flagUrlForAlpha2(c.alpha2)}
-                          alt=""
-                          width={CARD_W - 4}
-                          height={CARD_H - 4}
-                          className="h-full w-full rounded object-contain"
-                          draggable={false}
-                          unoptimized
-                        />
-                      </div>
+                      <>
+                        <svg
+                          className="pointer-events-none absolute left-0 top-0 z-[38] overflow-visible"
+                          width={size.w}
+                          height={size.h}
+                          aria-hidden
+                        >
+                          <path
+                            d={dragConnectorPathD(px, py, tx, ty)}
+                            fill="none"
+                            stroke="rgba(100,100,108,0.42)"
+                            strokeWidth={connStroke}
+                            strokeLinecap="round"
+                            vectorEffect="non-scaling-stroke"
+                          />
+                          <g transform={`translate(${px},${py})`}>
+                            <line
+                              x1={-(gap + arm)}
+                              y1={0}
+                              x2={-gap}
+                              y2={0}
+                              stroke={crossStroke}
+                              strokeWidth={crossW}
+                              vectorEffect="non-scaling-stroke"
+                            />
+                            <line
+                              x1={gap}
+                              y1={0}
+                              x2={gap + arm}
+                              y2={0}
+                              stroke={crossStroke}
+                              strokeWidth={crossW}
+                              vectorEffect="non-scaling-stroke"
+                            />
+                            <line
+                              x1={0}
+                              y1={-(gap + arm)}
+                              x2={0}
+                              y2={-gap}
+                              stroke={crossStroke}
+                              strokeWidth={crossW}
+                              vectorEffect="non-scaling-stroke"
+                            />
+                            <line
+                              x1={0}
+                              y1={gap}
+                              x2={0}
+                              y2={gap + arm}
+                              stroke={crossStroke}
+                              strokeWidth={crossW}
+                              vectorEffect="non-scaling-stroke"
+                            />
+                          </g>
+                        </svg>
+                        <div
+                          className="pointer-events-none absolute z-40 rounded-md border-2 border-[var(--color-primary)] bg-white/90 p-0.5 shadow-xl"
+                          style={{
+                            left: cx,
+                            top: cy,
+                            width: CARD_W,
+                            height: CARD_H,
+                            transform: `translate(-50%, -50%) scale(${flagVisualScale})`,
+                          }}
+                        >
+                          <Image
+                            src={flagUrlForAlpha2(c.alpha2)}
+                            alt=""
+                            width={CARD_W - 4}
+                            height={CARD_H - 4}
+                            className="h-full w-full rounded object-contain"
+                            draggable={false}
+                            unoptimized
+                          />
+                        </div>
+                      </>
                     );
                   })()}
 
