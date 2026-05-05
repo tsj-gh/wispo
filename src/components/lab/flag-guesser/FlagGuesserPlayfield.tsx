@@ -234,7 +234,6 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
 
   const [isDebugMode, setIsDebugMode] = useState(false);
   const [isDebugPanelExpanded, setIsDebugPanelExpanded] = useState(true);
-  const [mapManipEnabled, setMapManipEnabled] = useState(true);
   const [mapRenderBackend, setMapRenderBackend] = useState<MapRenderBackend>("canvas");
   const [zoomTransform, setZoomTransform] = useState<ZoomPlain>(ZOOM_IDENTITY);
   /** マップ操作のズーム／パン中は true（終了後 200ms で false → Canvas を高精細に戻す） */
@@ -397,6 +396,9 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
 
   const projection = regionModel?.projection;
 
+  /** ロード完了前は盤面 DOM が無く zoomHostRef が null のため、これが true になったタイミングで d3-zoom を付け直す */
+  const mapStageMounted = regionModel != null;
+
   const gTransform = useMemo(() => {
     return zoomIdentity.translate(zoomTransform.x, zoomTransform.y).scale(zoomTransform.k).toString();
   }, [zoomTransform]);
@@ -487,7 +489,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         canvasRefineTimerRef.current = null;
       }
     };
-  }, [size.w, size.h]);
+  }, [size.w, size.h, mapStageMounted]);
 
   const applyZoomTransform = useCallback((next: ZoomPlain, smooth: boolean) => {
     const host = zoomHostRef.current;
@@ -1126,8 +1128,6 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       setIsDebugMode,
       isDebugPanelExpanded,
       setIsDebugPanelExpanded,
-      mapManipEnabled,
-      setMapManipEnabled,
       onEnumerateVisible,
       listedCountryLabelsJa,
       mapDebugSnippet: mapDebugCenterScale?.snippet ?? null,
@@ -1153,7 +1153,6 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     isDevTj,
     isDebugMode,
     isDebugPanelExpanded,
-    mapManipEnabled,
     listedCountryLabelsJa,
     mapDebugCenterScale,
     onEnumerateVisible,

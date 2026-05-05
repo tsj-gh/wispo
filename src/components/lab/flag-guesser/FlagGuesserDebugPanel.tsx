@@ -8,8 +8,6 @@ export type FlagGuesserDebugPanelProps = {
   setIsDebugMode: (v: boolean) => void;
   isDebugPanelExpanded: boolean;
   setIsDebugPanelExpanded: (v: boolean | ((p: boolean) => boolean)) => void;
-  mapManipEnabled: boolean;
-  setMapManipEnabled: (v: boolean) => void;
   onEnumerateVisible: () => void;
   listedCountryLabelsJa: string[];
   mapDebugSnippet: string | null;
@@ -42,8 +40,6 @@ export function FlagGuesserDebugPanel({
   setIsDebugMode,
   isDebugPanelExpanded,
   setIsDebugPanelExpanded,
-  mapManipEnabled,
-  setMapManipEnabled,
   onEnumerateVisible,
   listedCountryLabelsJa,
   mapDebugSnippet,
@@ -187,15 +183,10 @@ export function FlagGuesserDebugPanel({
               </div>
 
               <div className="rounded-lg border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] p-2">
-                <div className="mb-2 font-semibold text-[var(--color-text)]">マップ操作モード</div>
-                <p className="mb-2 text-[9px] leading-snug">ON のときホイール／ピンチでズーム、ドラッグでパン。国旗操作は一時的に無効です。</p>
-                <button
-                  type="button"
-                  onClick={() => setMapManipEnabled(!mapManipEnabled)}
-                  className="w-full rounded border border-[color-mix(in_srgb,var(--color-text)_20%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_6%,transparent)] px-2 py-1.5 font-semibold text-[var(--color-text)]"
-                >
-                  {mapManipEnabled ? "マップ操作: ON" : "マップ操作: OFF"}
-                </button>
+                <div className="mb-1 font-semibold text-[var(--color-text)]">マップ操作</div>
+                <p className="text-[9px] leading-snug text-[var(--color-muted)]">
+                  出題中も常にホイール・ピンチ・ドラッグでズーム／パンできます（d3-zoom）。
+                </p>
               </div>
 
               <div className="rounded-lg border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] p-2">
