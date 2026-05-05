@@ -13,7 +13,7 @@ import {
 } from "react";
 import type { Topology } from "topojson-specification";
 import { easeCubicOut } from "d3-ease";
-import { zoom as d3zoom, zoomIdentity } from "d3-zoom";
+import { zoom as d3zoom, zoomIdentity, type ZoomBehavior } from "d3-zoom";
 import { select } from "d3-selection";
 import { interpolate } from "flubber";
 import "d3-transition";
@@ -24,7 +24,7 @@ import {
   projectCentroid,
   sortFeaturesForHitTest,
 } from "@/lib/flag-guesser/mapProjections";
-import type { GeoProjection } from "d3-geo";
+import { geoPath, type GeoProjection } from "d3-geo";
 import type { CountryFeature, Iso3166Row, RegionRoundModel } from "@/lib/flag-guesser/types";
 import {
   countryFeaturesFromTopology,
@@ -81,6 +81,9 @@ const MAP_FILL_WRONG = "color-mix(in srgb, #ef4444 42%, transparent)";
 
 const CARD_W = 72;
 const CARD_H = 54;
+const ZOOM_MIN = 0.12;
+const ZOOM_MAX = 80;
+const ZOOM_STEP = 1.3;
 
 /** 画面上でカード中心をポインタから離す量（斜め 45° のベクトル長さ・px） */
 const DRAG_CARD_SCREEN_OFFSET_PX = 60;
@@ -129,6 +132,42 @@ function dragConnectorPathD(px: number, py: number, tx: number, ty: number): str
   const c2x = tx - (tx - px) * 0.42;
   const c2y = ty;
   return `M ${px} ${py} C ${c1x} ${c1y} ${c2x} ${c2y} ${tx} ${ty}`;
+}
+
+function clampZoomK(k: number): number {
+  return Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, k));
+}
+
+function zoomRatioToK(ratio: number): number {
+  const t = Math.max(0, Math.min(1, ratio));
+  const minLn = Math.log(ZOOM_MIN);
+  const maxLn = Math.log(ZOOM_MAX);
+  return Math.exp(minLn + (maxLn - minLn) * t);
+}
+
+function zoomKToRatio(k: number): number {
+  const kk = clampZoomK(k);
+  const minLn = Math.log(ZOOM_MIN);
+  const maxLn = Math.log(ZOOM_MAX);
+  return (Math.log(kk) - minLn) / (maxLn - minLn);
+}
+
+function fitTransformForRegion(regionModel: RegionRoundModel, width: number, height: number): ZoomPlain {
+  const p = geoPath(regionModel.projection);
+  const [[x0, y0], [x1, y1]] = p.bounds(regionModel.regionCollection);
+  const bw = Math.max(1e-6, x1 - x0);
+  const bh = Math.max(1e-6, y1 - y0);
+  const padding = Math.max(24, Math.min(width, height) * 0.08);
+  const usableW = Math.max(1, width - padding * 2);
+  const usableH = Math.max(1, height - padding * 2);
+  const k = clampZoomK(Math.min(usableW / bw, usableH / bh));
+  const cx = (x0 + x1) / 2;
+  const cy = (y0 + y1) / 2;
+  return {
+    x: width / 2 - cx * k,
+    y: height / 2 - cy * k,
+    k,
+  };
 }
 
 /** client → SVG と同寸法のローカル px（左上原点） */
@@ -180,12 +219,14 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
 
   const [isDebugMode, setIsDebugMode] = useState(false);
   const [isDebugPanelExpanded, setIsDebugPanelExpanded] = useState(true);
-  const [mapManipEnabled, setMapManipEnabled] = useState(false);
+  const [mapManipEnabled, setMapManipEnabled] = useState(true);
   const [mapRenderBackend, setMapRenderBackend] = useState<MapRenderBackend>("canvas");
   const [zoomTransform, setZoomTransform] = useState<ZoomPlain>(ZOOM_IDENTITY);
   /** マップ操作のズーム／パン中は true（終了後 200ms で false → Canvas を高精細に戻す） */
   const [canvasMapInteracting, setCanvasMapInteracting] = useState(false);
   const canvasRefineTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const zoomBehaviorRef = useRef<ZoomBehavior<HTMLDivElement, unknown> | null>(null);
+  const lastFitRoundSeqRef = useRef(-1);
   const [devicePixelRatioState, setDevicePixelRatioState] = useState(1);
   const [listedCountryLabelsJa, setListedCountryLabelsJa] = useState<string[]>([]);
   const [canvasMapFps, setCanvasMapFps] = useState<number | null>(null);
@@ -285,10 +326,10 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
 
   /** ズーム操作中は 50m で描き、操作終了 200ms 後に displayedLod（10m 含む）へ Refine */
   const canvasPaintLod = useMemo<TopoLodId>(() => {
-    if (!mapManipEnabled || !canvasMapInteracting) return displayedLod;
+    if (!canvasMapInteracting) return displayedLod;
     if (desiredLod === "10" && featuresForGame["50"]?.length) return "50";
     return displayedLod;
-  }, [mapManipEnabled, canvasMapInteracting, desiredLod, displayedLod, featuresForGame]);
+  }, [canvasMapInteracting, desiredLod, displayedLod, featuresForGame]);
 
   const loadingHighDetail =
     fetchingLod === "10" || (desiredLod === "10" && !featuresCache["10"]?.length);
@@ -376,8 +417,6 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   useEffect(() => {
     if (!isDevTj) {
       setIsDebugMode(false);
-      setMapManipEnabled(false);
-      setZoomTransform(ZOOM_IDENTITY);
     }
   }, [isDevTj]);
 
@@ -390,26 +429,20 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   }, []);
 
   useEffect(() => {
-    if (!mapManipEnabled) setZoomTransform(ZOOM_IDENTITY);
-  }, [mapManipEnabled]);
-
-  useEffect(() => {
-    if (!mapManipEnabled) {
-      setCanvasMapInteracting(false);
+    return () => {
       if (canvasRefineTimerRef.current) {
         clearTimeout(canvasRefineTimerRef.current);
         canvasRefineTimerRef.current = null;
       }
-    }
-  }, [mapManipEnabled]);
+    };
+  }, []);
 
   useEffect(() => {
-    if (!isDevTj || !isDebugMode || !mapManipEnabled) return;
     const host = zoomHostRef.current;
     if (!host) return;
     const sel = select(host);
     const z = d3zoom<HTMLDivElement, unknown>()
-      .scaleExtent([0.12, 80])
+      .scaleExtent([ZOOM_MIN, ZOOM_MAX])
       .on("start", () => {
         if (canvasRefineTimerRef.current) {
           clearTimeout(canvasRefineTimerRef.current);
@@ -427,16 +460,78 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
           canvasRefineTimerRef.current = null;
         }, 200);
       });
+    zoomBehaviorRef.current = z;
     sel.call(z);
-    sel.call(z.transform, zoomIdentity);
+    sel.call(z.transform, zoomIdentity.translate(zoomTransform.x, zoomTransform.y).scale(zoomTransform.k));
     return () => {
+      zoomBehaviorRef.current = null;
       sel.on(".zoom", null);
       if (canvasRefineTimerRef.current) {
         clearTimeout(canvasRefineTimerRef.current);
         canvasRefineTimerRef.current = null;
       }
     };
-  }, [isDevTj, isDebugMode, mapManipEnabled, size.w, size.h]);
+  }, [size.w, size.h]);
+
+  const applyZoomTransform = useCallback((next: ZoomPlain, smooth: boolean) => {
+    const host = zoomHostRef.current;
+    const behavior = zoomBehaviorRef.current;
+    if (!host || !behavior) {
+      setZoomTransform(next);
+      return;
+    }
+    const sel = select(host);
+    const t = zoomIdentity.translate(next.x, next.y).scale(clampZoomK(next.k));
+    if (smooth) {
+      sel
+        .transition()
+        .duration(180)
+        .ease(easeCubicOut)
+        .call(behavior.transform, t);
+    } else {
+      sel.call(behavior.transform, t);
+    }
+  }, []);
+
+  const zoomByFactor = useCallback(
+    (factor: number) => {
+      const centerX = size.w / 2;
+      const centerY = size.h / 2;
+      const nextK = clampZoomK(zoomTransform.k * factor);
+      const scale = nextK / Math.max(zoomTransform.k, 1e-6);
+      const next: ZoomPlain = {
+        k: nextK,
+        x: centerX - (centerX - zoomTransform.x) * scale,
+        y: centerY - (centerY - zoomTransform.y) * scale,
+      };
+      applyZoomTransform(next, true);
+    },
+    [size.w, size.h, zoomTransform, applyZoomTransform]
+  );
+
+  const setZoomFromSliderRatio = useCallback(
+    (ratio: number) => {
+      const centerX = size.w / 2;
+      const centerY = size.h / 2;
+      const nextK = zoomRatioToK(ratio);
+      const scale = nextK / Math.max(zoomTransform.k, 1e-6);
+      const next: ZoomPlain = {
+        k: nextK,
+        x: centerX - (centerX - zoomTransform.x) * scale,
+        y: centerY - (centerY - zoomTransform.y) * scale,
+      };
+      applyZoomTransform(next, true);
+    },
+    [size.w, size.h, zoomTransform, applyZoomTransform]
+  );
+
+  useEffect(() => {
+    if (!regionModel || size.w < 16 || size.h < 16) return;
+    if (lastFitRoundSeqRef.current === roundSeq) return;
+    lastFitRoundSeqRef.current = roundSeq;
+    const fitted = fitTransformForRegion(regionModel, size.w, size.h);
+    applyZoomTransform(fitted, false);
+  }, [regionModel, size.w, size.h, roundSeq, applyZoomTransform]);
 
   useEffect(() => {
     let cancelled = false;
@@ -606,7 +701,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
 
   const beginDrag = useCallback(
     (cardId: string, clientX: number, clientY: number) => {
-      if (!projection || mapManipEnabled) return;
+      if (!projection) return;
       const pt = pointerToMapCoords(clientX, clientY);
       if (!pt) return;
       const [x, y] = pt;
@@ -635,12 +730,12 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         setDragTargetCountryId(null);
       }
     },
-    [projection, mapManipEnabled, pointerToMapCoords, pointerRegionModel, hitFeaturesForPointer]
+    [projection, pointerToMapCoords, pointerRegionModel, hitFeaturesForPointer]
   );
 
   const moveDrag = useCallback(
     (clientX: number, clientY: number) => {
-      if (!projection || !drag || mapManipEnabled || !pointerRegionModel) return;
+      if (!projection || !drag || !pointerRegionModel) return;
       const pt = pointerToMapCoords(clientX, clientY);
       if (!pt) return;
       const [x, y] = pt;
@@ -649,7 +744,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       const id = countryIdAtPixel(projection, hitFeaturesForPointer, x, y, pointerRegionModel.pathDById);
       setDragTargetCountryId(id);
     },
-    [projection, drag, hitFeaturesForPointer, mapManipEnabled, pointerToMapCoords, pointerRegionModel]
+    [projection, drag, hitFeaturesForPointer, pointerToMapCoords, pointerRegionModel]
   );
 
   const endDrag = useCallback(
@@ -716,7 +811,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   );
 
   const handleCardPointerDown = (cardId: string, e: ReactPointerEvent) => {
-    if (answered || mapManipEnabled) return;
+    if (answered) return;
     e.preventDefault();
     if (placedByCard[cardId]) {
       peelStuck(cardId);
@@ -1056,7 +1151,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         {!answered ? (
           <button
             type="button"
-            disabled={Object.keys(placedByCard).length === 0 || mapManipEnabled}
+            disabled={Object.keys(placedByCard).length === 0}
             onClick={submitAnswer}
             className="pointer-events-auto rounded-full border border-[color-mix(in_srgb,var(--color-text)_18%,transparent)] bg-[color-mix(in_srgb,var(--color-surface)_92%,var(--color-bg))] px-3 py-1.5 text-xs font-semibold text-[var(--color-text)] shadow-sm transition hover:bg-[color-mix(in_srgb,var(--color-primary)_22%,transparent)] disabled:cursor-not-allowed disabled:opacity-40"
           >
@@ -1077,7 +1172,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         <div className="relative mx-auto min-h-0 w-full max-w-full flex-1" style={{ width: size.w, height: size.h }}>
           <div
             ref={zoomHostRef}
-            className={`relative touch-none ${mapManipEnabled ? "cursor-grab active:cursor-grabbing" : ""}`}
+            className="relative touch-none cursor-grab active:cursor-grabbing"
             style={{ width: size.w, height: size.h }}
           >
             {mapRenderBackend === "svg" ? (
@@ -1158,8 +1253,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                   pointerEvents: "none",
                 }}
               >
-                {!mapManipEnabled &&
-                  projection &&
+                {projection &&
                   cards.map((c) => {
                     const cid = placedByCard[c.id];
                     if (!cid || drag?.cardId === c.id) return null;
@@ -1195,8 +1289,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                     );
                   })}
 
-                {!mapManipEnabled &&
-                  drag &&
+                {drag &&
                   dragPointerMap &&
                   dragCardDisplay &&
                   (() => {
@@ -1296,8 +1389,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                     );
                   })()}
 
-                {!mapManipEnabled &&
-                  !answered &&
+                {!answered &&
                   cards.map((c) => {
                     if (placedByCard[c.id] || drag?.cardId === c.id) return null;
                     const fl = floatByCard[c.id];
@@ -1337,6 +1429,54 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                 {listedCountryLabelsJa.join(" · ")}
               </div>
             )}
+
+            <div className="absolute right-2 top-1/2 z-[35] -translate-y-1/2 pointer-events-none">
+              <div className="pointer-events-auto flex w-9 select-none flex-col items-center gap-1 rounded-xl border border-[color-mix(in_srgb,var(--color-text)_20%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_90%,transparent)] py-1.5 shadow-lg backdrop-blur-sm">
+                <button
+                  type="button"
+                  className="grid h-6 w-6 place-items-center rounded-md border border-[color-mix(in_srgb,var(--color-text)_16%,transparent)] text-sm font-bold text-[var(--color-text)] transition hover:bg-[color-mix(in_srgb,var(--color-primary)_14%,transparent)]"
+                  onClick={() => zoomByFactor(ZOOM_STEP)}
+                  aria-label="ズームイン"
+                >
+                  +
+                </button>
+                <div
+                  className="relative h-36 w-3 cursor-pointer rounded-full bg-[color-mix(in_srgb,var(--color-text)_15%,transparent)]"
+                  onPointerDown={(e) => {
+                    e.preventDefault();
+                    const track = e.currentTarget;
+                    const update = (clientY: number) => {
+                      const rect = track.getBoundingClientRect();
+                      const raw = 1 - (clientY - rect.top) / Math.max(rect.height, 1);
+                      setZoomFromSliderRatio(raw);
+                    };
+                    update(e.clientY);
+                    const onMove = (ev: PointerEvent) => update(ev.clientY);
+                    const onUp = () => {
+                      window.removeEventListener("pointermove", onMove);
+                      window.removeEventListener("pointerup", onUp);
+                      window.removeEventListener("pointercancel", onUp);
+                    };
+                    window.addEventListener("pointermove", onMove);
+                    window.addEventListener("pointerup", onUp);
+                    window.addEventListener("pointercancel", onUp);
+                  }}
+                >
+                  <div
+                    className="absolute left-1/2 h-3 w-3 -translate-x-1/2 rounded-full border border-white/80 bg-[var(--color-primary)] shadow"
+                    style={{ top: `${(1 - zoomKToRatio(zoomTransform.k)) * 100}%`, transform: "translate(-50%, -50%)" }}
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="grid h-6 w-6 place-items-center rounded-md border border-[color-mix(in_srgb,var(--color-text)_16%,transparent)] text-sm font-bold text-[var(--color-text)] transition hover:bg-[color-mix(in_srgb,var(--color-primary)_14%,transparent)]"
+                  onClick={() => zoomByFactor(1 / ZOOM_STEP)}
+                  aria-label="ズームアウト"
+                >
+                  -
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
