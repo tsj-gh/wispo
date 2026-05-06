@@ -1201,7 +1201,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       ref={stageRef}
       className="relative flex h-full min-h-[min(58dvh,640px)] w-full flex-1 flex-col touch-none overflow-hidden rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_94%,white_6%)] shadow-inner"
     >
-      <div className="pointer-events-none absolute right-2 top-2 z-30 md:right-3 md:top-3">
+      <div className="pointer-events-none absolute right-2 top-2 z-30 flex flex-col items-end gap-2 md:right-3 md:top-3">
         {!answered ? (
           <button
             type="button"
@@ -1220,6 +1220,66 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
             つぎの国
           </button>
         )}
+        <div className="pointer-events-auto flex w-10 select-none flex-col items-center gap-1 rounded-xl border border-[color-mix(in_srgb,var(--color-text)_20%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_90%,transparent)] px-1 py-1.5 shadow-lg backdrop-blur-sm">
+          <button
+            type="button"
+            className="grid h-6 w-6 place-items-center rounded-md border border-[color-mix(in_srgb,var(--color-text)_16%,transparent)] text-sm font-bold text-[var(--color-text)] transition hover:bg-[color-mix(in_srgb,var(--color-primary)_14%,transparent)]"
+            onClick={() => zoomByFactor(ZOOM_STEP)}
+            aria-label="ズームイン"
+          >
+            +
+          </button>
+          <div className="tabular-nums text-[10px] font-semibold leading-none text-[var(--color-muted)]">
+            {zoomTransform.k < 10 ? zoomTransform.k.toFixed(2) : zoomTransform.k.toFixed(1)}×
+          </div>
+          <div
+            role="slider"
+            aria-label="地図のズーム"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(zoomKToRatio(zoomTransform.k) * 100)}
+            className="relative mx-auto h-36 w-4 cursor-pointer touch-none rounded-full bg-[color-mix(in_srgb,var(--color-text)_15%,transparent)] px-1"
+            onPointerDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (canvasRefineTimerRef.current) {
+                clearTimeout(canvasRefineTimerRef.current);
+                canvasRefineTimerRef.current = null;
+              }
+              setCanvasMapInteracting(true);
+              const track = e.currentTarget;
+              const startY = e.clientY;
+              let moved = false;
+              const onMove = (ev: PointerEvent) => {
+                if (Math.abs(ev.clientY - startY) > 3) moved = true;
+                applySliderRatioFromClientY(track, ev.clientY, false);
+              };
+              const onUp = (ev: PointerEvent) => {
+                window.removeEventListener("pointermove", onMove);
+                window.removeEventListener("pointerup", onUp);
+                window.removeEventListener("pointercancel", onUp);
+                if (!moved) applySliderRatioFromClientY(track, ev.clientY, true);
+                endSliderMapInteraction();
+              };
+              window.addEventListener("pointermove", onMove);
+              window.addEventListener("pointerup", onUp);
+              window.addEventListener("pointercancel", onUp);
+            }}
+          >
+            <div
+              className="pointer-events-none absolute left-1/2 h-3 w-3 -translate-x-1/2 rounded-full border border-white/80 bg-[var(--color-primary)] shadow"
+              style={{ top: `${(1 - zoomKToRatio(zoomTransform.k)) * 100}%`, transform: "translate(-50%, -50%)" }}
+            />
+          </div>
+          <button
+            type="button"
+            className="grid h-6 w-6 place-items-center rounded-md border border-[color-mix(in_srgb,var(--color-text)_16%,transparent)] text-sm font-bold text-[var(--color-text)] transition hover:bg-[color-mix(in_srgb,var(--color-primary)_14%,transparent)]"
+            onClick={() => zoomByFactor(1 / ZOOM_STEP)}
+            aria-label="ズームアウト"
+          >
+            -
+          </button>
+        </div>
       </div>
 
       <div className="relative flex min-h-0 w-full flex-1 flex-col items-center justify-center">
@@ -1483,69 +1543,6 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                 {listedCountryLabelsJa.join(" · ")}
               </div>
             )}
-
-            <div className="absolute right-2 top-1/2 z-[35] -translate-y-1/2 pointer-events-none">
-              <div className="pointer-events-auto flex w-10 select-none flex-col items-center gap-1 rounded-xl border border-[color-mix(in_srgb,var(--color-text)_20%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_90%,transparent)] px-1 py-1.5 shadow-lg backdrop-blur-sm">
-                <button
-                  type="button"
-                  className="grid h-6 w-6 place-items-center rounded-md border border-[color-mix(in_srgb,var(--color-text)_16%,transparent)] text-sm font-bold text-[var(--color-text)] transition hover:bg-[color-mix(in_srgb,var(--color-primary)_14%,transparent)]"
-                  onClick={() => zoomByFactor(ZOOM_STEP)}
-                  aria-label="ズームイン"
-                >
-                  +
-                </button>
-                <div className="tabular-nums text-[10px] font-semibold leading-none text-[var(--color-muted)]">
-                  {zoomTransform.k < 10 ? zoomTransform.k.toFixed(2) : zoomTransform.k.toFixed(1)}×
-                </div>
-                <div
-                  role="slider"
-                  aria-label="地図のズーム"
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuenow={Math.round(zoomKToRatio(zoomTransform.k) * 100)}
-                  className="relative mx-auto h-36 w-4 cursor-pointer touch-none rounded-full bg-[color-mix(in_srgb,var(--color-text)_15%,transparent)] px-1"
-                  onPointerDown={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (canvasRefineTimerRef.current) {
-                      clearTimeout(canvasRefineTimerRef.current);
-                      canvasRefineTimerRef.current = null;
-                    }
-                    setCanvasMapInteracting(true);
-                    const track = e.currentTarget;
-                    const startY = e.clientY;
-                    let moved = false;
-                    const onMove = (ev: PointerEvent) => {
-                      if (Math.abs(ev.clientY - startY) > 3) moved = true;
-                      applySliderRatioFromClientY(track, ev.clientY, false);
-                    };
-                    const onUp = (ev: PointerEvent) => {
-                      window.removeEventListener("pointermove", onMove);
-                      window.removeEventListener("pointerup", onUp);
-                      window.removeEventListener("pointercancel", onUp);
-                      if (!moved) applySliderRatioFromClientY(track, ev.clientY, true);
-                      endSliderMapInteraction();
-                    };
-                    window.addEventListener("pointermove", onMove);
-                    window.addEventListener("pointerup", onUp);
-                    window.addEventListener("pointercancel", onUp);
-                  }}
-                >
-                  <div
-                    className="pointer-events-none absolute left-1/2 h-3 w-3 -translate-x-1/2 rounded-full border border-white/80 bg-[var(--color-primary)] shadow"
-                    style={{ top: `${(1 - zoomKToRatio(zoomTransform.k)) * 100}%`, transform: "translate(-50%, -50%)" }}
-                  />
-                </div>
-                <button
-                  type="button"
-                  className="grid h-6 w-6 place-items-center rounded-md border border-[color-mix(in_srgb,var(--color-text)_16%,transparent)] text-sm font-bold text-[var(--color-text)] transition hover:bg-[color-mix(in_srgb,var(--color-primary)_14%,transparent)]"
-                  onClick={() => zoomByFactor(1 / ZOOM_STEP)}
-                  aria-label="ズームアウト"
-                >
-                  -
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </div>
