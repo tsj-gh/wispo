@@ -8,6 +8,12 @@ export type FlagGuesserDebugPanelProps = {
   setIsDebugMode: (v: boolean) => void;
   isDebugPanelExpanded: boolean;
   setIsDebugPanelExpanded: (v: boolean | ((p: boolean) => boolean)) => void;
+  /** ドラッグ中カードとポインタのオフセット（画面上の斜め長さ・px） */
+  dragCardScreenOffsetPx: number;
+  setDragCardScreenOffsetPx: (n: number) => void;
+  /** ドラッグカードの追従（毎フレームの補間率 0〜1） */
+  dragCardSpring: number;
+  setDragCardSpring: (n: number) => void;
   onEnumerateVisible: () => void;
   listedCountryLabelsJa: string[];
   mapDebugSnippet: string | null;
@@ -40,6 +46,10 @@ export function FlagGuesserDebugPanel({
   setIsDebugMode,
   isDebugPanelExpanded,
   setIsDebugPanelExpanded,
+  dragCardScreenOffsetPx,
+  setDragCardScreenOffsetPx,
+  dragCardSpring,
+  setDragCardSpring,
   onEnumerateVisible,
   listedCountryLabelsJa,
   mapDebugSnippet,
@@ -180,6 +190,36 @@ export function FlagGuesserDebugPanel({
                 {loadingHighDetail && (
                   <p className="mt-2 text-[9px] font-medium text-[var(--color-primary)]">高精細データ読み込み中…</p>
                 )}
+              </div>
+
+              <div className="rounded-lg border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] p-2">
+                <div className="mb-2 font-semibold text-[var(--color-text)]">ドラッグ UI（国旗）</div>
+                <label className="mb-2 block">
+                  <div className="mb-0.5 font-semibold text-[var(--color-text)]">紐の長さ（画面 px・斜め）</div>
+                  <input
+                    type="range"
+                    min={40}
+                    max={200}
+                    step={5}
+                    value={dragCardScreenOffsetPx}
+                    onChange={(e) => setDragCardScreenOffsetPx(Number(e.target.value))}
+                    className="w-full accent-[var(--color-primary)]"
+                  />
+                  <div className="tabular-nums">{dragCardScreenOffsetPx}px</div>
+                </label>
+                <label className="block">
+                  <div className="mb-0.5 font-semibold text-[var(--color-text)]">追従率（毎フレーム、小さいほど遅い）</div>
+                  <input
+                    type="range"
+                    min={5}
+                    max={95}
+                    step={1}
+                    value={Math.round(dragCardSpring * 100)}
+                    onChange={(e) => setDragCardSpring(Number(e.target.value) / 100)}
+                    className="w-full accent-[var(--color-primary)]"
+                  />
+                  <div className="tabular-nums">{dragCardSpring.toFixed(2)}</div>
+                </label>
               </div>
 
               <div className="rounded-lg border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] p-2">

@@ -81,14 +81,14 @@ const MAP_FILL_WRONG = "color-mix(in srgb, #ef4444 42%, transparent)";
 
 const CARD_W = 72;
 const CARD_H = 54;
+/** ドラッグ中の円形カード直径（4:3 矩形に内接する正円＝短辺） */
+const CARD_DIAM = Math.min(CARD_W, CARD_H);
 const ZOOM_MIN = 0.12;
 const ZOOM_MAX = 80;
 const ZOOM_STEP = 1.3;
 
-/** 画面上でカード中心をポインタから離す量（斜め 45° のベクトル長さ・px） */
-const DRAG_CARD_SCREEN_OFFSET_PX = 60;
-/** カードがターゲット位置に追従する係数（毎フレーム。小さいほど遅れる） */
-const DRAG_CARD_SPRING = 0.22;
+const DEFAULT_DRAG_CARD_SCREEN_OFFSET_PX = 80;
+const DEFAULT_DRAG_CARD_SPRING = 0.22;
 
 type DragState = {
   cardId: string;
@@ -98,32 +98,25 @@ function mapUnitsPerScreenPx(zoomK: number): number {
   return 1 / Math.max(zoomK, 0.08);
 }
 
-function dragCardTargetFromPointer(px: number, py: number, zoomK: number): { x: number; y: number } {
-  const step = (DRAG_CARD_SCREEN_OFFSET_PX * mapUnitsPerScreenPx(zoomK)) / Math.SQRT2;
+function dragCardTargetFromPointer(
+  px: number,
+  py: number,
+  zoomK: number,
+  offsetScreenPx: number
+): { x: number; y: number } {
+  const step = (offsetScreenPx * mapUnitsPerScreenPx(zoomK)) / Math.SQRT2;
   return { x: px + step, y: py - step };
 }
 
-function cardCornerNearestPointer(px: number, py: number, cx: number, cy: number, w: number, h: number): [number, number] {
-  const l = cx - w / 2;
-  const r = cx + w / 2;
-  const t = cy - h / 2;
-  const b = cy + h / 2;
-  const corners: [number, number][] = [
-    [l, t],
-    [r, t],
-    [r, b],
-    [l, b],
-  ];
-  let best = corners[0]!;
-  let bestD = Infinity;
-  for (const [x, y] of corners) {
-    const d = (x - px) ** 2 + (y - py) ** 2;
-    if (d < bestD) {
-      bestD = d;
-      best = [x, y];
-    }
-  }
-  return best;
+/** ポインタ方向における円周上で最も近い点（コネクタ終端） */
+function circleEdgeNearestPointer(px: number, py: number, cx: number, cy: number, r: number): [number, number] {
+  const vx = px - cx;
+  const vy = py - cy;
+  const len = Math.hypot(vx, vy);
+  if (len < 1e-6) return [cx + r, cy];
+  const nx = vx / len;
+  const ny = vy / len;
+  return [cx + nx * r, cy + ny * r];
 }
 
 function dragConnectorPathD(px: number, py: number, tx: number, ty: number): string {
@@ -267,7 +260,13 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   const dragPointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
   const [hoverCountryId, setHoverCountryId] = useState<string | null>(null);
+  /** 出題中・マップ上で十字を描くためのポインタ位置（地図座標） */
+  const [mapHoverCrossMap, setMapHoverCrossMap] = useState<{ x: number; y: number } | null>(null);
   const [dragTargetCountryId, setDragTargetCountryId] = useState<string | null>(null);
+  /** ドラッグカードとポインタのオフセット（画面上の斜め方向の長さ・px） */
+  const [dragCardScreenOffsetPx, setDragCardScreenOffsetPx] = useState(DEFAULT_DRAG_CARD_SCREEN_OFFSET_PX);
+  /** ドラッグカードの慣性追従（毎フレームの補間率） */
+  const [dragCardSpring, setDragCardSpring] = useState(DEFAULT_DRAG_CARD_SPRING);
   const [answered, setAnswered] = useState(false);
   const [resultByCountryId, setResultByCountryId] = useState<Record<string, "correct" | "wrong">>({});
 
@@ -708,10 +707,15 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
 
   const handleMapPointerMove = useCallback(
     (event: React.PointerEvent<HTMLCanvasElement | SVGSVGElement>) => {
-      if (!projection || !pointerRegionModel || answered || drag) return;
       const pt = pointerToMapCoords(event.clientX, event.clientY);
-      if (!pt) return;
-      const [x, y] = pt;
+      if (pt && !answered && !drag) {
+        setMapHoverCrossMap({ x: pt[0], y: pt[1] });
+      } else {
+        setMapHoverCrossMap(null);
+      }
+
+      if (!projection || !pointerRegionModel || answered || drag) return;
+      const [x, y] = pt!;
       const id = countryIdAtPixel(projection, hitFeaturesForPointer, x, y, pointerRegionModel.pathDById);
       setHoverCountryId(id);
     },
@@ -720,6 +724,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
 
   const handleMapLeave = useCallback(() => {
     if (!drag) setHoverCountryId(null);
+    setMapHoverCrossMap(null);
   }, [drag]);
 
   const countryFill = useCallback(
@@ -751,6 +756,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       dragPointerRef.current = { x, y };
       setDragPointerMap({ x, y });
       setDragCardDisplay({ x: cx, y: cy });
+      setMapHoverCrossMap(null);
       setDrag({ cardId });
       if (fl) {
         setFloatByCard((prev) => {
@@ -879,10 +885,10 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     const tick = () => {
       const pt = dragPointerRef.current;
       const k = Math.max(zoomTransform.k, 0.08);
-      const target = dragCardTargetFromPointer(pt.x, pt.y, k);
+      const target = dragCardTargetFromPointer(pt.x, pt.y, k, dragCardScreenOffsetPx);
       setDragCardDisplay((prev) => {
         if (!prev) return target;
-        const s = DRAG_CARD_SPRING;
+        const s = dragCardSpring;
         const nx = prev.x + (target.x - prev.x) * s;
         const ny = prev.y + (target.y - prev.y) * s;
         if (
@@ -899,7 +905,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     };
     frameId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frameId);
-  }, [drag, zoomTransform.k]);
+  }, [drag, zoomTransform.k, dragCardScreenOffsetPx, dragCardSpring]);
 
   const submitAnswer = () => {
     if (!roundPlan) return;
@@ -927,6 +933,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     setAnswered(false);
     setResultByCountryId({});
     setHoverCountryId(null);
+    setMapHoverCrossMap(null);
     setDragTargetCountryId(null);
     setDrag(null);
     setDragPointerMap(null);
@@ -1128,6 +1135,10 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       setIsDebugMode,
       isDebugPanelExpanded,
       setIsDebugPanelExpanded,
+      dragCardScreenOffsetPx,
+      setDragCardScreenOffsetPx,
+      dragCardSpring,
+      setDragCardSpring,
       onEnumerateVisible,
       listedCountryLabelsJa,
       mapDebugSnippet: mapDebugCenterScale?.snippet ?? null,
@@ -1153,6 +1164,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     isDevTj,
     isDebugMode,
     isDebugPanelExpanded,
+    dragCardScreenOffsetPx,
+    dragCardSpring,
     listedCountryLabelsJa,
     mapDebugCenterScale,
     onEnumerateVisible,
@@ -1286,7 +1299,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         <div className="relative mx-auto min-h-0 w-full max-w-full flex-1" style={{ width: size.w, height: size.h }}>
           <div
             ref={zoomHostRef}
-            className="relative touch-none cursor-grab active:cursor-grabbing"
+            className={`relative touch-none ${answered && !drag ? "cursor-grab active:cursor-grabbing" : "cursor-crosshair"}`}
             style={{ width: size.w, height: size.h }}
           >
             {mapRenderBackend === "svg" ? (
@@ -1367,6 +1380,65 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                   pointerEvents: "none",
                 }}
               >
+                {!drag && !answered && mapHoverCrossMap && (() => {
+                  const k = Math.max(zoomTransform.k, 0.08);
+                  const px = mapHoverCrossMap.x;
+                  const py = mapHoverCrossMap.y;
+                  const unit = mapUnitsPerScreenPx(k);
+                  const gap = unit;
+                  const arm = 14 * unit;
+                  const onLand = hoverCountryId !== null;
+                  const stroke = onLand ? "var(--color-primary)" : "rgba(42,42,48,0.92)";
+                  const sw = onLand ? 1.65 : 1.05;
+                  return (
+                    <svg
+                      className="pointer-events-none absolute left-0 top-0 z-[38] overflow-visible"
+                      width={size.w}
+                      height={size.h}
+                      aria-hidden
+                    >
+                      <g transform={`translate(${px},${py})`}>
+                        <line
+                          x1={-(gap + arm)}
+                          y1={0}
+                          x2={-gap}
+                          y2={0}
+                          stroke={stroke}
+                          strokeWidth={sw}
+                          vectorEffect="non-scaling-stroke"
+                        />
+                        <line
+                          x1={gap}
+                          y1={0}
+                          x2={gap + arm}
+                          y2={0}
+                          stroke={stroke}
+                          strokeWidth={sw}
+                          vectorEffect="non-scaling-stroke"
+                        />
+                        <line
+                          x1={0}
+                          y1={-(gap + arm)}
+                          x2={0}
+                          y2={-gap}
+                          stroke={stroke}
+                          strokeWidth={sw}
+                          vectorEffect="non-scaling-stroke"
+                        />
+                        <line
+                          x1={0}
+                          y1={gap}
+                          x2={0}
+                          y2={gap + arm}
+                          stroke={stroke}
+                          strokeWidth={sw}
+                          vectorEffect="non-scaling-stroke"
+                        />
+                      </g>
+                    </svg>
+                  );
+                })()}
+
                 {projection &&
                   cards.map((c) => {
                     const cid = placedByCard[c.id];
@@ -1379,7 +1451,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                       <button
                         key={`stuck-${c.id}`}
                         type="button"
-                        className="pointer-events-auto absolute z-20 cursor-grab rounded-md border-2 border-white/40 bg-white/10 p-0.5 shadow-md backdrop-blur-sm active:cursor-grabbing"
+                        className="pointer-events-auto absolute z-20 flex cursor-default items-center justify-center overflow-hidden rounded-md border-2 border-white/40 bg-white/10 p-1 shadow-md backdrop-blur-sm"
                         style={{
                           left: p[0],
                           top: p[1],
@@ -1393,9 +1465,9 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                         <Image
                           src={flagUrlForAlpha2(c.alpha2)}
                           alt=""
-                          width={CARD_W - 4}
-                          height={CARD_H - 4}
-                          className="pointer-events-none h-full w-full rounded object-contain"
+                          width={CARD_W}
+                          height={CARD_H}
+                          className="pointer-events-none max-h-full max-w-full object-contain"
                           draggable={false}
                           unoptimized
                         />
@@ -1414,9 +1486,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                     const py = dragPointerMap.y;
                     const cx = dragCardDisplay.x;
                     const cy = dragCardDisplay.y;
-                    const w = CARD_W * flagVisualScale;
-                    const h = CARD_H * flagVisualScale;
-                    const [tx, ty] = cardCornerNearestPointer(px, py, cx, cy, w, h);
+                    const cardR = (CARD_DIAM / 2) * flagVisualScale;
+                    const [tx, ty] = circleEdgeNearestPointer(px, py, cx, cy, cardR);
                     const inCountry = dragTargetCountryId !== null;
                     const unit = mapUnitsPerScreenPx(k);
                     const gap = unit;
@@ -1480,21 +1551,21 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                           </g>
                         </svg>
                         <div
-                          className="pointer-events-none absolute z-40 rounded-md border-2 border-[var(--color-primary)] bg-white/90 p-0.5 shadow-xl"
+                          className="pointer-events-none absolute z-40 flex items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-primary)] bg-white/90 shadow-xl"
                           style={{
                             left: cx,
                             top: cy,
-                            width: CARD_W,
-                            height: CARD_H,
+                            width: CARD_DIAM,
+                            height: CARD_DIAM,
                             transform: `translate(-50%, -50%) scale(${flagVisualScale})`,
                           }}
                         >
                           <Image
                             src={flagUrlForAlpha2(c.alpha2)}
                             alt=""
-                            width={CARD_W - 4}
-                            height={CARD_H - 4}
-                            className="h-full w-full rounded object-contain"
+                            width={CARD_W}
+                            height={CARD_H}
+                            className="max-h-full max-w-full object-contain"
                             draggable={false}
                             unoptimized
                           />
@@ -1512,7 +1583,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                       <button
                         key={c.id}
                         type="button"
-                        className="pointer-events-auto absolute z-20 cursor-grab rounded-md border border-[color-mix(in_srgb,var(--color-text)_15%,transparent)] bg-[color-mix(in_srgb,var(--color-surface)_88%,transparent)] p-0.5 shadow-md active:cursor-grabbing"
+                        className="pointer-events-auto absolute z-20 flex cursor-default items-center justify-center overflow-hidden rounded-md border border-[color-mix(in_srgb,var(--color-text)_15%,transparent)] bg-[color-mix(in_srgb,var(--color-surface)_88%,transparent)] p-1 shadow-md"
                         style={{
                           left: fl.x,
                           top: fl.y,
@@ -1525,9 +1596,9 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                         <Image
                           src={flagUrlForAlpha2(c.alpha2)}
                           alt=""
-                          width={CARD_W - 4}
-                          height={CARD_H - 4}
-                          className="pointer-events-none rounded object-contain"
+                          width={CARD_W}
+                          height={CARD_H}
+                          className="pointer-events-none max-h-full max-w-full object-contain"
                           draggable={false}
                           unoptimized
                         />
