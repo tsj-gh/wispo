@@ -1,0 +1,9336 @@
+[
+  {
+    "alpha3": "AFG",
+    "name": "Afghanistan",
+    "difficulty": 4,
+    "region": "Asia",
+    "sub_region": "Southern Asia",
+    "intermediate_region": "Southern Asia",
+    "tags": {
+      "colors": [
+        "black",
+        "red",
+        "green"
+      ],
+      "design": "tricolor_vertical_emblem"
+    },
+    "confusable_region": [
+      "BGD",
+      "BTN",
+      "IND",
+      "IRN",
+      "MDV",
+      "NPL",
+      "PAK"
+    ],
+    "confusable_colors": [
+      "ALB",
+      "DZA",
+      "AND",
+      "AUS",
+      "AUT",
+      "BGD",
+      "BEL",
+      "BRA",
+      "CAN",
+      "TCD"
+    ],
+    "confusable_design": [
+      "AND",
+      "MEX"
+    ]
+  },
+  {
+    "alpha3": "ALA",
+    "name": "Åland Islands",
+    "difficulty": 3,
+    "region": "Europe",
+    "sub_region": "Northern Europe",
+    "intermediate_region": "Northern Europe",
+    "tags": {
+      "colors": [
+        "unknown"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "DNK",
+      "EST",
+      "FRO",
+      "FIN",
+      "GGY",
+      "ISL",
+      "IRL",
+      "IMN",
+      "JEY",
+      "LVA"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "ALB",
+    "name": "Albania",
+    "difficulty": 2,
+    "region": "Europe",
+    "sub_region": "Southern Europe",
+    "intermediate_region": "Southern Europe",
+    "tags": {
+      "colors": [
+        "red",
+        "black"
+      ],
+      "design": "emblem_centered"
+    },
+    "confusable_region": [
+      "AND",
+      "BIH",
+      "HRV",
+      "GIB",
+      "GRC",
+      "VAT",
+      "ITA",
+      "MKD",
+      "MLT",
+      "MNE"
+    ],
+    "confusable_colors": [
+      "AFG",
+      "DZA",
+      "AND",
+      "AGO",
+      "ATG",
+      "ARG",
+      "ARM",
+      "AUS",
+      "AUT",
+      "AZE"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "DZA",
+    "name": "Algeria",
+    "difficulty": 3,
+    "region": "Africa",
+    "sub_region": "Northern Africa",
+    "intermediate_region": "Northern Africa",
+    "tags": {
+      "colors": [
+        "green",
+        "white",
+        "red"
+      ],
+      "design": "crescent_star"
+    },
+    "confusable_region": [
+      "EGY",
+      "LBY",
+      "MAR",
+      "SDN",
+      "TUN",
+      "ESH"
+    ],
+    "confusable_colors": [
+      "AFG",
+      "ALB",
+      "AND",
+      "AGO",
+      "ATG",
+      "ARG",
+      "ARM",
+      "ABW",
+      "AUS",
+      "AUT"
+    ],
+    "confusable_design": [
+      "MRT",
+      "PAK",
+      "TUN",
+      "TUR"
+    ]
+  },
+  {
+    "alpha3": "ASM",
+    "name": "American Samoa",
+    "difficulty": 6,
+    "region": "Oceania",
+    "sub_region": "Polynesia",
+    "intermediate_region": "Polynesia",
+    "tags": {
+      "colors": [
+        "unknown"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "COK",
+      "PYF",
+      "NIU",
+      "PCN",
+      "WSM",
+      "TON",
+      "TUV"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "AND",
+    "name": "Andorra",
+    "difficulty": 4,
+    "region": "Europe",
+    "sub_region": "Southern Europe",
+    "intermediate_region": "Southern Europe",
+    "tags": {
+      "colors": [
+        "blue",
+        "yellow",
+        "red"
+      ],
+      "design": "tricolor_vertical_emblem"
+    },
+    "confusable_region": [
+      "ALB",
+      "BIH",
+      "HRV",
+      "GIB",
+      "GRC",
+      "VAT",
+      "ITA",
+      "MKD",
+      "MLT",
+      "MNE"
+    ],
+    "confusable_colors": [
+      "AFG",
+      "ALB",
+      "DZA",
+      "AGO",
+      "ATG",
+      "ARG",
+      "ARM",
+      "ABW",
+      "AUS",
+      "AUT"
+    ],
+    "confusable_design": [
+      "AFG",
+      "MEX",
+      "MDA",
+      "ROU",
+      "TCD"
+    ]
+  },
+  {
+    "alpha3": "AGO",
+    "name": "Angola",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Middle Africa",
+    "tags": {
+      "colors": [
+        "red",
+        "black",
+        "yellow"
+      ],
+      "design": "emblem_centered"
+    },
+    "confusable_region": [
+      "CMR",
+      "CAF",
+      "TCD",
+      "COG",
+      "COD",
+      "GNQ",
+      "GAB",
+      "STP",
+      "BEN",
+      "BWA"
+    ],
+    "confusable_colors": [
+      "ALB",
+      "DZA",
+      "ATG",
+      "ARG",
+      "ARM",
+      "ABW",
+      "AUS",
+      "AUT",
+      "AZE",
+      "BHS"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "AIA",
+    "name": "Anguilla",
+    "difficulty": 6,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "unknown"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUB",
+      "CUW",
+      "DMA",
+      "DOM"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "ATG",
+    "name": "Antigua and Barbuda",
+    "difficulty": 5,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "black",
+        "blue",
+        "white",
+        "red",
+        "yellow"
+      ],
+      "design": "v_shape_sun"
+    },
+    "confusable_region": [
+      "AIA",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUB",
+      "CUW",
+      "DMA",
+      "DOM"
+    ],
+    "confusable_colors": [
+      "ALB",
+      "DZA",
+      "AGO",
+      "ARG",
+      "ARM",
+      "ABW",
+      "AUS",
+      "AUT",
+      "AZE",
+      "BHS"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "ARG",
+    "name": "Argentina",
+    "difficulty": 2,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "South America",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "yellow"
+      ],
+      "design": "tricolor_horizontal_sun"
+    },
+    "confusable_region": [
+      "BRA",
+      "BOL",
+      "BVT",
+      "CHL",
+      "COL",
+      "ECU",
+      "FLK",
+      "GUF",
+      "GUY",
+      "PRY"
+    ],
+    "confusable_colors": [
+      "AFG",
+      "ALB",
+      "DZA",
+      "AND",
+      "AUS",
+      "AUT",
+      "BGD",
+      "BEL",
+      "BRA",
+      "CAN"
+    ],
+    "confusable_design": [
+      "SLV",
+      "GTM",
+      "HND",
+      "NIC"
+    ]
+  },
+  {
+    "alpha3": "ARM",
+    "name": "Armenia",
+    "difficulty": 4,
+    "region": "Asia",
+    "sub_region": "Western Asia",
+    "intermediate_region": "Western Asia",
+    "tags": {
+      "colors": [
+        "red",
+        "blue",
+        "orange"
+      ],
+      "design": "tricolor_horizontal"
+    },
+    "confusable_region": [
+      "AZE",
+      "BHR",
+      "CYP",
+      "GEO",
+      "IRQ",
+      "ISR",
+      "JOR",
+      "KWT",
+      "LBN",
+      "OMN"
+    ],
+    "confusable_colors": [
+      "ALB",
+      "DZA",
+      "AGO",
+      "ATG",
+      "ABW",
+      "AUS",
+      "AUT",
+      "AZE",
+      "BHS",
+      "BHR"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "ABW",
+    "name": "Aruba",
+    "difficulty": 6,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "blue",
+        "yellow",
+        "red",
+        "white"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "AIA",
+      "ATG",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUB",
+      "CUW",
+      "DMA",
+      "DOM"
+    ],
+    "confusable_colors": [
+      "DZA",
+      "AGO",
+      "ATG",
+      "ARM",
+      "AUS",
+      "AUT",
+      "AZE",
+      "BHS",
+      "BHR",
+      "BGD"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "AUS",
+    "name": "Australia",
+    "difficulty": 1,
+    "region": "Oceania",
+    "sub_region": "Australia and New Zealand",
+    "intermediate_region": "Australia and New Zealand",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "red"
+      ],
+      "design": "union_jack_stars"
+    },
+    "confusable_region": [
+      "CXR",
+      "CCK",
+      "HMD",
+      "NZL",
+      "NFK"
+    ],
+    "confusable_colors": [
+      "AFG",
+      "ALB",
+      "DZA",
+      "AND",
+      "AGO",
+      "ATG",
+      "ARG",
+      "ARM",
+      "ABW",
+      "AUT"
+    ],
+    "confusable_design": [
+      "COK",
+      "FJI",
+      "NZL",
+      "TUV"
+    ]
+  },
+  {
+    "alpha3": "AUT",
+    "name": "Austria",
+    "difficulty": 2,
+    "region": "Europe",
+    "sub_region": "Western Europe",
+    "intermediate_region": "Western Europe",
+    "tags": {
+      "colors": [
+        "red",
+        "white"
+      ],
+      "design": "tricolor_horizontal"
+    },
+    "confusable_region": [
+      "BEL",
+      "FRA",
+      "DEU",
+      "LIE",
+      "LUX",
+      "MCO",
+      "NLD",
+      "CHE"
+    ],
+    "confusable_colors": [
+      "AFG",
+      "ALB",
+      "DZA",
+      "AND",
+      "AGO",
+      "ATG",
+      "ARG",
+      "ARM",
+      "ABW",
+      "AUS"
+    ],
+    "confusable_design": [
+      "LVA",
+      "PYF"
+    ]
+  },
+  {
+    "alpha3": "AZE",
+    "name": "Azerbaijan",
+    "difficulty": 4,
+    "region": "Asia",
+    "sub_region": "Western Asia",
+    "intermediate_region": "Western Asia",
+    "tags": {
+      "colors": [
+        "blue",
+        "red",
+        "green",
+        "white"
+      ],
+      "design": "tricolor_horizontal_crescent"
+    },
+    "confusable_region": [
+      "ARM",
+      "BHR",
+      "CYP",
+      "GEO",
+      "IRQ",
+      "ISR",
+      "JOR",
+      "KWT",
+      "LBN",
+      "OMN"
+    ],
+    "confusable_colors": [
+      "ALB",
+      "AGO",
+      "ATG",
+      "ARM",
+      "ABW",
+      "AUS",
+      "AUT",
+      "BHS",
+      "BHR",
+      "BGD"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "BHS",
+    "name": "Bahamas",
+    "difficulty": 4,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "blue",
+        "yellow",
+        "black"
+      ],
+      "design": "triangle_horizontal_stripes"
+    },
+    "confusable_region": [
+      "AIA",
+      "ATG",
+      "ABW",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUB",
+      "CUW",
+      "DMA",
+      "DOM"
+    ],
+    "confusable_colors": [
+      "AGO",
+      "ATG",
+      "ARM",
+      "ABW",
+      "AZE",
+      "BHR",
+      "BGD",
+      "BRB",
+      "BEL",
+      "BLZ"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "BHR",
+    "name": "Bahrain",
+    "difficulty": 4,
+    "region": "Asia",
+    "sub_region": "Western Asia",
+    "intermediate_region": "Western Asia",
+    "tags": {
+      "colors": [
+        "red",
+        "white"
+      ],
+      "design": "zigzag_vertical"
+    },
+    "confusable_region": [
+      "ARM",
+      "AZE",
+      "CYP",
+      "GEO",
+      "IRQ",
+      "ISR",
+      "JOR",
+      "KWT",
+      "LBN",
+      "OMN"
+    ],
+    "confusable_colors": [
+      "ARM",
+      "ABW",
+      "AZE",
+      "BHS",
+      "BGD",
+      "BRB",
+      "BEL",
+      "BLZ",
+      "BEN",
+      "BMU"
+    ],
+    "confusable_design": [
+      "QAT"
+    ]
+  },
+  {
+    "alpha3": "BGD",
+    "name": "Bangladesh",
+    "difficulty": 3,
+    "region": "Asia",
+    "sub_region": "Southern Asia",
+    "intermediate_region": "Southern Asia",
+    "tags": {
+      "colors": [
+        "green",
+        "red"
+      ],
+      "design": "disk_offcentered"
+    },
+    "confusable_region": [
+      "AFG",
+      "BTN",
+      "IND",
+      "IRN",
+      "MDV",
+      "NPL",
+      "PAK"
+    ],
+    "confusable_colors": [
+      "ARG",
+      "ABW",
+      "AZE",
+      "BHS",
+      "BHR",
+      "BRB",
+      "BEL",
+      "BLZ",
+      "BEN",
+      "BMU"
+    ],
+    "confusable_design": [
+      "JPN",
+      "PLW"
+    ]
+  },
+  {
+    "alpha3": "BRB",
+    "name": "Barbados",
+    "difficulty": 4,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "blue",
+        "yellow",
+        "black"
+      ],
+      "design": "tricolor_vertical_emblem"
+    },
+    "confusable_region": [
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BES",
+      "CYM",
+      "CUB",
+      "CUW",
+      "DMA",
+      "DOM"
+    ],
+    "confusable_colors": [
+      "BHS",
+      "BHR",
+      "BGD",
+      "BEL",
+      "BLZ",
+      "BEN",
+      "BMU",
+      "BTN",
+      "BOL",
+      "BES"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "BLR",
+    "name": "Belarus",
+    "difficulty": 4,
+    "region": "Europe",
+    "sub_region": "Eastern Europe",
+    "intermediate_region": "Eastern Europe",
+    "tags": {
+      "colors": [
+        "red",
+        "green",
+        "white"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "BGR",
+      "CZE",
+      "MDA",
+      "ROU",
+      "RUS",
+      "SVK",
+      "UKR"
+    ],
+    "confusable_colors": [
+      "BEL",
+      "BLZ",
+      "BEN",
+      "BMU",
+      "BTN",
+      "BOL",
+      "BES",
+      "BIH",
+      "BWA",
+      "BRA"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "BEL",
+    "name": "Belgium",
+    "difficulty": 2,
+    "region": "Europe",
+    "sub_region": "Western Europe",
+    "intermediate_region": "Western Europe",
+    "tags": {
+      "colors": [
+        "black",
+        "yellow",
+        "red"
+      ],
+      "design": "tricolor_vertical"
+    },
+    "confusable_region": [
+      "AUT",
+      "FRA",
+      "DEU",
+      "LIE",
+      "LUX",
+      "MCO",
+      "NLD",
+      "CHE"
+    ],
+    "confusable_colors": [
+      "AFG",
+      "ARG",
+      "BHS",
+      "BHR",
+      "BGD",
+      "BRB",
+      "BLR",
+      "BLZ",
+      "BEN",
+      "BMU"
+    ],
+    "confusable_design": [
+      "DEU",
+      "ROU",
+      "TCD"
+    ]
+  },
+  {
+    "alpha3": "BLZ",
+    "name": "Belize",
+    "difficulty": 5,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Central America",
+    "tags": {
+      "colors": [
+        "blue",
+        "red",
+        "white",
+        "green"
+      ],
+      "design": "emblem_centered"
+    },
+    "confusable_region": [
+      "CRI",
+      "SLV",
+      "GTM",
+      "HND",
+      "MEX",
+      "NIC",
+      "PAN",
+      "AIA",
+      "ATG",
+      "ARG"
+    ],
+    "confusable_colors": [
+      "BHS",
+      "BHR",
+      "BGD",
+      "BRB",
+      "BLR",
+      "BEL",
+      "BEN",
+      "BMU",
+      "BTN",
+      "BOL"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "BEN",
+    "name": "Benin",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Western Africa",
+    "tags": {
+      "colors": [
+        "green",
+        "yellow",
+        "red"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "BFA",
+      "CPV",
+      "CIV",
+      "GMB",
+      "GHA",
+      "GIN",
+      "GNB",
+      "LBR",
+      "MLI",
+      "MRT"
+    ],
+    "confusable_colors": [
+      "BHS",
+      "BHR",
+      "BGD",
+      "BRB",
+      "BLR",
+      "BEL",
+      "BLZ",
+      "BMU",
+      "BTN",
+      "BOL"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "BMU",
+    "name": "Bermuda",
+    "difficulty": 5,
+    "region": "Americas",
+    "sub_region": "Northern America",
+    "intermediate_region": "Northern America",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "blue"
+      ],
+      "design": "union_jack_emblem"
+    },
+    "confusable_region": [
+      "CAN",
+      "GRL",
+      "SPM",
+      "USA"
+    ],
+    "confusable_colors": [
+      "BHR",
+      "BGD",
+      "BRB",
+      "BLR",
+      "BEL",
+      "BLZ",
+      "BEN",
+      "BTN",
+      "BOL",
+      "BES"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "BTN",
+    "name": "Bhutan",
+    "difficulty": 4,
+    "region": "Asia",
+    "sub_region": "Southern Asia",
+    "intermediate_region": "Southern Asia",
+    "tags": {
+      "colors": [
+        "yellow",
+        "orange",
+        "white",
+        "black"
+      ],
+      "design": "diagonal_dragon"
+    },
+    "confusable_region": [
+      "AFG",
+      "BGD",
+      "IND",
+      "IRN",
+      "MDV",
+      "NPL",
+      "PAK"
+    ],
+    "confusable_colors": [
+      "BHS",
+      "BRB",
+      "BLR",
+      "BEL",
+      "BLZ",
+      "BEN",
+      "BMU",
+      "BOL",
+      "BES",
+      "BIH"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "BOL",
+    "name": "Bolivia (Plurinational State of)",
+    "difficulty": 4,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "South America",
+    "tags": {
+      "colors": [
+        "red",
+        "yellow",
+        "green"
+      ],
+      "design": "tricolor_horizontal"
+    },
+    "confusable_region": [
+      "ARG",
+      "BRA",
+      "BVT",
+      "CHL",
+      "COL",
+      "ECU",
+      "FLK",
+      "GUF",
+      "GUY",
+      "PRY"
+    ],
+    "confusable_colors": [
+      "BRB",
+      "BLR",
+      "BEL",
+      "BLZ",
+      "BEN",
+      "BMU",
+      "BTN",
+      "BES",
+      "BIH",
+      "BWA"
+    ],
+    "confusable_design": [
+      "ETH",
+      "GHA",
+      "GIN",
+      "LTU",
+      "MLI",
+      "MMR",
+      "SEN"
+    ]
+  },
+  {
+    "alpha3": "BES",
+    "name": "Bonaire, Sint Eustatius and Saba",
+    "difficulty": 7,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "unknown"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "CYM",
+      "CUB",
+      "CUW",
+      "DMA",
+      "DOM"
+    ],
+    "confusable_colors": [
+      "BRB",
+      "BLR",
+      "BEL",
+      "BLZ",
+      "BEN",
+      "BMU",
+      "BTN",
+      "BOL",
+      "BIH",
+      "BWA"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "BIH",
+    "name": "Bosnia and Herzegovina",
+    "difficulty": 4,
+    "region": "Europe",
+    "sub_region": "Southern Europe",
+    "intermediate_region": "Southern Europe",
+    "tags": {
+      "colors": [
+        "blue",
+        "yellow",
+        "white"
+      ],
+      "design": "triangle_stars"
+    },
+    "confusable_region": [
+      "ALB",
+      "AND",
+      "HRV",
+      "GIB",
+      "GRC",
+      "VAT",
+      "ITA",
+      "MKD",
+      "MLT",
+      "MNE"
+    ],
+    "confusable_colors": [
+      "BLR",
+      "BEL",
+      "BLZ",
+      "BEN",
+      "BMU",
+      "BTN",
+      "BOL",
+      "BES",
+      "BWA",
+      "BRA"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "BWA",
+    "name": "Botswana",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Southern Africa",
+    "tags": {
+      "colors": [
+        "blue",
+        "black",
+        "white"
+      ],
+      "design": "stripes_horizontal"
+    },
+    "confusable_region": [
+      "SWZ",
+      "LSO",
+      "NAM",
+      "ZAF",
+      "AGO",
+      "BEN",
+      "IOT",
+      "BFA",
+      "BDI",
+      "CPV"
+    ],
+    "confusable_colors": [
+      "BLR",
+      "BEL",
+      "BLZ",
+      "BEN",
+      "BMU",
+      "BTN",
+      "BOL",
+      "BES",
+      "BIH",
+      "BRA"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "BVT",
+    "name": "Bouvet Island",
+    "difficulty": 7,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "South America",
+    "tags": {
+      "colors": [
+        "unknown"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "ARG",
+      "BOL",
+      "BRA",
+      "CHL",
+      "COL",
+      "ECU",
+      "FLK",
+      "GUF",
+      "GUY",
+      "PRY"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "BRA",
+    "name": "Brazil",
+    "difficulty": 1,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "South America",
+    "tags": {
+      "colors": [
+        "green",
+        "yellow",
+        "blue",
+        "white"
+      ],
+      "design": "diamond_disk"
+    },
+    "confusable_region": [
+      "ARG",
+      "BOL",
+      "BVT",
+      "CHL",
+      "COL",
+      "ECU",
+      "FLK",
+      "GUF",
+      "GUY",
+      "PRY"
+    ],
+    "confusable_colors": [
+      "AFG",
+      "ARG",
+      "BLR",
+      "BEL",
+      "BLZ",
+      "BEN",
+      "BMU",
+      "BTN",
+      "BOL",
+      "BES"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "IOT",
+    "name": "British Indian Ocean Territory",
+    "difficulty": 7,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "unknown"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "BDI",
+      "COM",
+      "DJI",
+      "ERI",
+      "ETH",
+      "ATF",
+      "KEN",
+      "MDG",
+      "MWI",
+      "MUS"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "BRN",
+    "name": "Brunei Darussalam",
+    "difficulty": 4,
+    "region": "Asia",
+    "sub_region": "South-eastern Asia",
+    "intermediate_region": "South-eastern Asia",
+    "tags": {
+      "colors": [
+        "yellow",
+        "white",
+        "black",
+        "red"
+      ],
+      "design": "diagonal_stripes_emblem"
+    },
+    "confusable_region": [
+      "KHM",
+      "IDN",
+      "LAO",
+      "MYS",
+      "MMR",
+      "PHL",
+      "SGP",
+      "THA",
+      "VNM"
+    ],
+    "confusable_colors": [
+      "BEL",
+      "BLZ",
+      "BEN",
+      "BMU",
+      "BTN",
+      "BOL",
+      "BES",
+      "BIH",
+      "BWA",
+      "BRA"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "BGR",
+    "name": "Bulgaria",
+    "difficulty": 3,
+    "region": "Europe",
+    "sub_region": "Eastern Europe",
+    "intermediate_region": "Eastern Europe",
+    "tags": {
+      "colors": [
+        "white",
+        "green",
+        "red"
+      ],
+      "design": "tricolor_horizontal"
+    },
+    "confusable_region": [
+      "BLR",
+      "CZE",
+      "MDA",
+      "ROU",
+      "RUS",
+      "SVK",
+      "UKR"
+    ],
+    "confusable_colors": [
+      "BLZ",
+      "BEN",
+      "BMU",
+      "BTN",
+      "BOL",
+      "BES",
+      "BIH",
+      "BWA",
+      "BRA",
+      "VGB"
+    ],
+    "confusable_design": [
+      "HUN",
+      "SLE"
+    ]
+  },
+  {
+    "alpha3": "BFA",
+    "name": "Burkina Faso",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Western Africa",
+    "tags": {
+      "colors": [
+        "red",
+        "green",
+        "yellow"
+      ],
+      "design": "tricolor_horizontal_star"
+    },
+    "confusable_region": [
+      "BEN",
+      "CPV",
+      "CIV",
+      "GMB",
+      "GHA",
+      "GIN",
+      "GNB",
+      "LBR",
+      "MLI",
+      "MRT"
+    ],
+    "confusable_colors": [
+      "BEN",
+      "BMU",
+      "BTN",
+      "BOL",
+      "BES",
+      "BIH",
+      "BWA",
+      "BRA",
+      "VGB",
+      "BRN"
+    ],
+    "confusable_design": [
+      "CMR",
+      "GHA",
+      "GIN",
+      "GNB",
+      "MLI",
+      "SEN",
+      "TGO"
+    ]
+  },
+  {
+    "alpha3": "BDI",
+    "name": "Burundi",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "red",
+        "green",
+        "white"
+      ],
+      "design": "saltire_stars"
+    },
+    "confusable_region": [
+      "IOT",
+      "COM",
+      "DJI",
+      "ERI",
+      "ETH",
+      "ATF",
+      "KEN",
+      "MDG",
+      "MWI",
+      "MUS"
+    ],
+    "confusable_colors": [
+      "BMU",
+      "BTN",
+      "BOL",
+      "BES",
+      "BIH",
+      "BWA",
+      "BRA",
+      "VGB",
+      "BRN",
+      "BGR"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "CPV",
+    "name": "Cabo Verde",
+    "difficulty": 5,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Western Africa",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "red",
+        "yellow"
+      ],
+      "design": "stripes_stars"
+    },
+    "confusable_region": [
+      "BEN",
+      "BFA",
+      "CIV",
+      "GMB",
+      "GHA",
+      "GIN",
+      "GNB",
+      "LBR",
+      "MLI",
+      "MRT"
+    ],
+    "confusable_colors": [
+      "BTN",
+      "BOL",
+      "BES",
+      "BIH",
+      "BWA",
+      "BRA",
+      "VGB",
+      "BRN",
+      "BGR",
+      "BFA"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "KHM",
+    "name": "Cambodia",
+    "difficulty": 3,
+    "region": "Asia",
+    "sub_region": "South-eastern Asia",
+    "intermediate_region": "South-eastern Asia",
+    "tags": {
+      "colors": [
+        "blue",
+        "red",
+        "white"
+      ],
+      "design": "stripes_emblem"
+    },
+    "confusable_region": [
+      "BRN",
+      "IDN",
+      "LAO",
+      "MYS",
+      "MMR",
+      "PHL",
+      "SGP",
+      "THA",
+      "VNM"
+    ],
+    "confusable_colors": [
+      "BOL",
+      "BES",
+      "BIH",
+      "BWA",
+      "BRA",
+      "VGB",
+      "BRN",
+      "BGR",
+      "BFA",
+      "BDI"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "CMR",
+    "name": "Cameroon",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Middle Africa",
+    "tags": {
+      "colors": [
+        "green",
+        "red",
+        "yellow"
+      ],
+      "design": "tricolor_vertical_star"
+    },
+    "confusable_region": [
+      "AGO",
+      "CAF",
+      "TCD",
+      "COG",
+      "COD",
+      "GNQ",
+      "GAB",
+      "STP",
+      "BEN",
+      "BWA"
+    ],
+    "confusable_colors": [
+      "BES",
+      "BIH",
+      "BWA",
+      "BRA",
+      "VGB",
+      "BRN",
+      "BGR",
+      "BFA",
+      "BDI",
+      "CPV"
+    ],
+    "confusable_design": [
+      "BFA",
+      "GHA",
+      "GIN",
+      "GNB",
+      "MLI",
+      "SEN",
+      "TGO"
+    ]
+  },
+  {
+    "alpha3": "CAN",
+    "name": "Canada",
+    "difficulty": 1,
+    "region": "Americas",
+    "sub_region": "Northern America",
+    "intermediate_region": "Northern America",
+    "tags": {
+      "colors": [
+        "red",
+        "white"
+      ],
+      "design": "leaf_centered"
+    },
+    "confusable_region": [
+      "BMU",
+      "GRL",
+      "SPM",
+      "USA"
+    ],
+    "confusable_colors": [
+      "AFG",
+      "ALB",
+      "DZA",
+      "AND",
+      "ARG",
+      "AUS",
+      "AUT",
+      "BGD",
+      "BEL",
+      "BRA"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "CYM",
+    "name": "Cayman Islands",
+    "difficulty": 6,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "unknown"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CUB",
+      "CUW",
+      "DMA",
+      "DOM"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "CAF",
+    "name": "Central African Republic",
+    "difficulty": 5,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Middle Africa",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "green",
+        "yellow",
+        "red"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "AGO",
+      "CMR",
+      "TCD",
+      "COG",
+      "COD",
+      "GNQ",
+      "GAB",
+      "STP",
+      "BEN",
+      "BWA"
+    ],
+    "confusable_colors": [
+      "BIH",
+      "BWA",
+      "BRA",
+      "VGB",
+      "BRN",
+      "BGR",
+      "BFA",
+      "BDI",
+      "CPV",
+      "KHM"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "TCD",
+    "name": "Chad",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Middle Africa",
+    "tags": {
+      "colors": [
+        "blue",
+        "yellow",
+        "red"
+      ],
+      "design": "tricolor_vertical"
+    },
+    "confusable_region": [
+      "AGO",
+      "CMR",
+      "CAF",
+      "COG",
+      "COD",
+      "GNQ",
+      "GAB",
+      "STP",
+      "BEN",
+      "BWA"
+    ],
+    "confusable_colors": [
+      "AFG",
+      "ALB",
+      "DZA",
+      "AND",
+      "AGO",
+      "ATG",
+      "ARG",
+      "ARM",
+      "ABW",
+      "AUS"
+    ],
+    "confusable_design": [
+      "AND",
+      "BEL",
+      "MDA",
+      "ROU"
+    ]
+  },
+  {
+    "alpha3": "CHL",
+    "name": "Chile",
+    "difficulty": 2,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "South America",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "red"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "ARG",
+      "BRA",
+      "BOL",
+      "BVT",
+      "COL",
+      "ECU",
+      "FLK",
+      "GUF",
+      "GUY",
+      "PRY"
+    ],
+    "confusable_colors": [
+      "AFG",
+      "ALB",
+      "DZA",
+      "AND",
+      "ARG",
+      "AUS",
+      "AUT",
+      "BGD",
+      "BEL",
+      "BRA"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "CHN",
+    "name": "China",
+    "difficulty": 1,
+    "region": "Asia",
+    "sub_region": "Eastern Asia",
+    "intermediate_region": "Eastern Asia",
+    "tags": {
+      "colors": [
+        "red",
+        "yellow"
+      ],
+      "design": "stars_corner"
+    },
+    "confusable_region": [
+      "HKG",
+      "JPN",
+      "PRK",
+      "KOR",
+      "MAC",
+      "MNG",
+      "TWN"
+    ],
+    "confusable_colors": [
+      "BWA",
+      "BRA",
+      "VGB",
+      "BRN",
+      "BGR",
+      "BFA",
+      "BDI",
+      "CPV",
+      "KHM",
+      "CMR"
+    ],
+    "confusable_design": [
+      "VNM"
+    ]
+  },
+  {
+    "alpha3": "CXR",
+    "name": "Christmas Island",
+    "difficulty": 7,
+    "region": "Oceania",
+    "sub_region": "Australia and New Zealand",
+    "intermediate_region": "Australia and New Zealand",
+    "tags": {
+      "colors": [
+        "unknown"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "AUS",
+      "CCK",
+      "HMD",
+      "NZL",
+      "NFK"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "CCK",
+    "name": "Cocos (Keeling) Islands",
+    "difficulty": 7,
+    "region": "Oceania",
+    "sub_region": "Australia and New Zealand",
+    "intermediate_region": "Australia and New Zealand",
+    "tags": {
+      "colors": [
+        "unknown"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "AUS",
+      "CXR",
+      "HMD",
+      "NZL",
+      "NFK"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "COL",
+    "name": "Colombia",
+    "difficulty": 2,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "South America",
+    "tags": {
+      "colors": [
+        "yellow",
+        "blue",
+        "red"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "ARG",
+      "BRA",
+      "BOL",
+      "BVT",
+      "CHL",
+      "ECU",
+      "FLK",
+      "GUF",
+      "GUY",
+      "PRY"
+    ],
+    "confusable_colors": [
+      "AFG",
+      "DZA",
+      "AND",
+      "ARG",
+      "AUS",
+      "AUT",
+      "BGD",
+      "BEL",
+      "BRA",
+      "CAN"
+    ],
+    "confusable_design": [
+      "ECU",
+      "VEN"
+    ]
+  },
+  {
+    "alpha3": "COM",
+    "name": "Comoros",
+    "difficulty": 5,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "yellow",
+        "white",
+        "red",
+        "blue",
+        "green"
+      ],
+      "design": "triangle_stripes_crescent"
+    },
+    "confusable_region": [
+      "IOT",
+      "BDI",
+      "DJI",
+      "ERI",
+      "ETH",
+      "ATF",
+      "KEN",
+      "MDG",
+      "MWI",
+      "MUS"
+    ],
+    "confusable_colors": [
+      "BRA",
+      "VGB",
+      "BRN",
+      "BGR",
+      "BFA",
+      "BDI",
+      "CPV",
+      "KHM",
+      "CMR",
+      "CHN"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "COG",
+    "name": "Congo",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Middle Africa",
+    "tags": {
+      "colors": [
+        "green",
+        "yellow",
+        "red"
+      ],
+      "design": "diagonal_tricolor"
+    },
+    "confusable_region": [
+      "AGO",
+      "CMR",
+      "CAF",
+      "TCD",
+      "COD",
+      "GNQ",
+      "GAB",
+      "STP",
+      "BEN",
+      "BWA"
+    ],
+    "confusable_colors": [
+      "VGB",
+      "BRN",
+      "BGR",
+      "BFA",
+      "BDI",
+      "CPV",
+      "KHM",
+      "CMR",
+      "CHN",
+      "CAF"
+    ],
+    "confusable_design": [
+      "KNA"
+    ]
+  },
+  {
+    "alpha3": "COD",
+    "name": "Congo (Democratic Republic of the)",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Middle Africa",
+    "tags": {
+      "colors": [
+        "blue",
+        "yellow",
+        "red"
+      ],
+      "design": "diagonal_stripe_star"
+    },
+    "confusable_region": [
+      "AGO",
+      "CMR",
+      "CAF",
+      "TCD",
+      "COG",
+      "GNQ",
+      "GAB",
+      "STP",
+      "BEN",
+      "BWA"
+    ],
+    "confusable_colors": [
+      "BRN",
+      "BGR",
+      "BFA",
+      "BDI",
+      "CPV",
+      "KHM",
+      "CMR",
+      "CHN",
+      "CAF",
+      "TCD"
+    ],
+    "confusable_design": [
+      "NAM"
+    ]
+  },
+  {
+    "alpha3": "COK",
+    "name": "Cook Islands",
+    "difficulty": 6,
+    "region": "Oceania",
+    "sub_region": "Polynesia",
+    "intermediate_region": "Polynesia",
+    "tags": {
+      "colors": [
+        "blue",
+        "white"
+      ],
+      "design": "union_jack_star_circle"
+    },
+    "confusable_region": [
+      "ASM",
+      "PYF",
+      "NIU",
+      "PCN",
+      "WSM",
+      "TON",
+      "TUV"
+    ],
+    "confusable_colors": [
+      "BGR",
+      "BFA",
+      "BDI",
+      "CPV",
+      "KHM",
+      "CMR",
+      "CHN",
+      "CAF",
+      "TCD",
+      "COG"
+    ],
+    "confusable_design": [
+      "AUS",
+      "NZL",
+      "TUV"
+    ]
+  },
+  {
+    "alpha3": "CRI",
+    "name": "Costa Rica",
+    "difficulty": 4,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Central America",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "red"
+      ],
+      "design": "stripes_horizontal"
+    },
+    "confusable_region": [
+      "BLZ",
+      "SLV",
+      "GTM",
+      "HND",
+      "MEX",
+      "NIC",
+      "PAN",
+      "AIA",
+      "ATG",
+      "ARG"
+    ],
+    "confusable_colors": [
+      "BFA",
+      "BDI",
+      "CPV",
+      "KHM",
+      "CMR",
+      "CHN",
+      "CAF",
+      "TCD",
+      "COG",
+      "COD"
+    ],
+    "confusable_design": [
+      "THA"
+    ]
+  },
+  {
+    "alpha3": "CIV",
+    "name": "Côte d'Ivoire",
+    "difficulty": 3,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Western Africa",
+    "tags": {
+      "colors": [
+        "orange",
+        "white",
+        "green"
+      ],
+      "design": "tricolor_vertical"
+    },
+    "confusable_region": [
+      "BEN",
+      "BFA",
+      "CPV",
+      "GMB",
+      "GHA",
+      "GIN",
+      "GNB",
+      "LBR",
+      "MLI",
+      "MRT"
+    ],
+    "confusable_colors": [
+      "BDI",
+      "CPV",
+      "KHM",
+      "CMR",
+      "CHN",
+      "CAF",
+      "TCD",
+      "COG",
+      "COD",
+      "COK"
+    ],
+    "confusable_design": [
+      "IRL"
+    ]
+  },
+  {
+    "alpha3": "HRV",
+    "name": "Croatia",
+    "difficulty": 3,
+    "region": "Europe",
+    "sub_region": "Southern Europe",
+    "intermediate_region": "Southern Europe",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "blue"
+      ],
+      "design": "tricolor_horizontal_emblem"
+    },
+    "confusable_region": [
+      "ALB",
+      "AND",
+      "BIH",
+      "GIB",
+      "GRC",
+      "VAT",
+      "ITA",
+      "MKD",
+      "MLT",
+      "MNE"
+    ],
+    "confusable_colors": [
+      "CPV",
+      "KHM",
+      "CMR",
+      "CHN",
+      "CAF",
+      "TCD",
+      "COG",
+      "COD",
+      "COK",
+      "CRI"
+    ],
+    "confusable_design": [
+      "NLD",
+      "LUX",
+      "PRY",
+      "SRB",
+      "SVK",
+      "SVN"
+    ]
+  },
+  {
+    "alpha3": "CUB",
+    "name": "Cuba",
+    "difficulty": 3,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "red"
+      ],
+      "design": "triangle_horizontal_stripes"
+    },
+    "confusable_region": [
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUW",
+      "DMA",
+      "DOM"
+    ],
+    "confusable_colors": [
+      "AFG",
+      "ALB",
+      "DZA",
+      "AND",
+      "ARG",
+      "AUS",
+      "AUT",
+      "BGD",
+      "BEL",
+      "BRA"
+    ],
+    "confusable_design": [
+      "PHL",
+      "PRI"
+    ]
+  },
+  {
+    "alpha3": "CUW",
+    "name": "Curaçao",
+    "difficulty": 6,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "unknown"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUB",
+      "DMA",
+      "DOM"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "CYP",
+    "name": "Cyprus",
+    "difficulty": 3,
+    "region": "Asia",
+    "sub_region": "Western Asia",
+    "intermediate_region": "Western Asia",
+    "tags": {
+      "colors": [
+        "white",
+        "orange",
+        "green"
+      ],
+      "design": "map_branches"
+    },
+    "confusable_region": [
+      "ARM",
+      "AZE",
+      "BHR",
+      "GEO",
+      "IRQ",
+      "ISR",
+      "JOR",
+      "KWT",
+      "LBN",
+      "OMN"
+    ],
+    "confusable_colors": [
+      "KHM",
+      "CMR",
+      "CHN",
+      "CAF",
+      "TCD",
+      "COG",
+      "COD",
+      "COK",
+      "CRI",
+      "CIV"
+    ],
+    "confusable_design": [
+      "ARM"
+    ]
+  },
+  {
+    "alpha3": "CZE",
+    "name": "Czechia",
+    "difficulty": 2,
+    "region": "Europe",
+    "sub_region": "Eastern Europe",
+    "intermediate_region": "Eastern Europe",
+    "tags": {
+      "colors": [
+        "white",
+        "red",
+        "blue"
+      ],
+      "design": "triangle_horizontal"
+    },
+    "confusable_region": [
+      "BLR",
+      "BGR",
+      "MDA",
+      "ROU",
+      "RUS",
+      "SVK",
+      "UKR"
+    ],
+    "confusable_colors": [
+      "CMR",
+      "CHN",
+      "CAF",
+      "TCD",
+      "COG",
+      "COD",
+      "COK",
+      "CRI",
+      "CIV",
+      "HRV"
+    ],
+    "confusable_design": [
+      "PHL",
+      "PRI"
+    ]
+  },
+  {
+    "alpha3": "DNK",
+    "name": "Denmark",
+    "difficulty": 1,
+    "region": "Europe",
+    "sub_region": "Northern Europe",
+    "intermediate_region": "Northern Europe",
+    "tags": {
+      "colors": [
+        "red",
+        "white"
+      ],
+      "design": "nordic_cross"
+    },
+    "confusable_region": [
+      "ALA",
+      "EST",
+      "FRO",
+      "FIN",
+      "GGY",
+      "ISL",
+      "IRL",
+      "IMN",
+      "JEY",
+      "LVA"
+    ],
+    "confusable_colors": [
+      "CHN",
+      "CAF",
+      "TCD",
+      "COG",
+      "COD",
+      "COK",
+      "CRI",
+      "CIV",
+      "HRV",
+      "CYP"
+    ],
+    "confusable_design": [
+      "FIN",
+      "ISL",
+      "NOR",
+      "SWE",
+      "FRO"
+    ]
+  },
+  {
+    "alpha3": "DJI",
+    "name": "Djibouti",
+    "difficulty": 5,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "blue",
+        "green",
+        "white",
+        "red"
+      ],
+      "design": "triangle_horizontal"
+    },
+    "confusable_region": [
+      "IOT",
+      "BDI",
+      "COM",
+      "ERI",
+      "ETH",
+      "ATF",
+      "KEN",
+      "MDG",
+      "MWI",
+      "MUS"
+    ],
+    "confusable_colors": [
+      "CAF",
+      "TCD",
+      "COG",
+      "COD",
+      "COK",
+      "CRI",
+      "CIV",
+      "HRV",
+      "CYP",
+      "CZE"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "DMA",
+    "name": "Dominica",
+    "difficulty": 5,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "green",
+        "yellow",
+        "black",
+        "white",
+        "red"
+      ],
+      "design": "cross_emblem"
+    },
+    "confusable_region": [
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUB",
+      "CUW",
+      "DOM"
+    ],
+    "confusable_colors": [
+      "TCD",
+      "COG",
+      "COD",
+      "COK",
+      "CRI",
+      "CIV",
+      "HRV",
+      "CYP",
+      "CZE",
+      "DNK"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "DOM",
+    "name": "Dominican Republic",
+    "difficulty": 4,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "blue",
+        "red",
+        "white"
+      ],
+      "design": "cross_emblem"
+    },
+    "confusable_region": [
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUB",
+      "CUW",
+      "DMA"
+    ],
+    "confusable_colors": [
+      "COG",
+      "COD",
+      "COK",
+      "CRI",
+      "CIV",
+      "HRV",
+      "CYP",
+      "CZE",
+      "DNK",
+      "DJI"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "ECU",
+    "name": "Ecuador",
+    "difficulty": 3,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "South America",
+    "tags": {
+      "colors": [
+        "yellow",
+        "blue",
+        "red"
+      ],
+      "design": "tricolor_horizontal_emblem"
+    },
+    "confusable_region": [
+      "ARG",
+      "BRA",
+      "BOL",
+      "BVT",
+      "CHL",
+      "COL",
+      "FLK",
+      "GUF",
+      "GUY",
+      "PRY"
+    ],
+    "confusable_colors": [
+      "COD",
+      "COK",
+      "CRI",
+      "CIV",
+      "HRV",
+      "CYP",
+      "CZE",
+      "DNK",
+      "DJI",
+      "DMA"
+    ],
+    "confusable_design": [
+      "COL",
+      "VEN"
+    ]
+  },
+  {
+    "alpha3": "EGY",
+    "name": "Egypt",
+    "difficulty": 2,
+    "region": "Africa",
+    "sub_region": "Northern Africa",
+    "intermediate_region": "Northern Africa",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "black",
+        "yellow"
+      ],
+      "design": "tricolor_horizontal_emblem"
+    },
+    "confusable_region": [
+      "DZA",
+      "LBY",
+      "MAR",
+      "SDN",
+      "TUN",
+      "ESH"
+    ],
+    "confusable_colors": [
+      "COK",
+      "CRI",
+      "CIV",
+      "HRV",
+      "CYP",
+      "CZE",
+      "DNK",
+      "DJI",
+      "DMA",
+      "DOM"
+    ],
+    "confusable_design": [
+      "IRQ",
+      "SYR",
+      "YEM"
+    ]
+  },
+  {
+    "alpha3": "SLV",
+    "name": "El Salvador",
+    "difficulty": 4,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Central America",
+    "tags": {
+      "colors": [
+        "blue",
+        "white"
+      ],
+      "design": "tricolor_horizontal_emblem"
+    },
+    "confusable_region": [
+      "BLZ",
+      "CRI",
+      "GTM",
+      "HND",
+      "MEX",
+      "NIC",
+      "PAN",
+      "AIA",
+      "ATG",
+      "ARG"
+    ],
+    "confusable_colors": [
+      "CRI",
+      "CIV",
+      "HRV",
+      "CYP",
+      "CZE",
+      "DNK",
+      "DJI",
+      "DMA",
+      "DOM",
+      "ECU"
+    ],
+    "confusable_design": [
+      "ARG",
+      "GTM",
+      "HND",
+      "NIC"
+    ]
+  },
+  {
+    "alpha3": "GNQ",
+    "name": "Equatorial Guinea",
+    "difficulty": 5,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Middle Africa",
+    "tags": {
+      "colors": [
+        "green",
+        "white",
+        "red",
+        "blue"
+      ],
+      "design": "triangle_horizontal_emblem"
+    },
+    "confusable_region": [
+      "AGO",
+      "CMR",
+      "CAF",
+      "TCD",
+      "COG",
+      "COD",
+      "GAB",
+      "STP",
+      "BEN",
+      "BWA"
+    ],
+    "confusable_colors": [
+      "CIV",
+      "HRV",
+      "CYP",
+      "CZE",
+      "DNK",
+      "DJI",
+      "DMA",
+      "DOM",
+      "ECU",
+      "EGY"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "ERI",
+    "name": "Eritrea",
+    "difficulty": 5,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "green",
+        "red",
+        "blue",
+        "yellow"
+      ],
+      "design": "triangle_emblem"
+    },
+    "confusable_region": [
+      "IOT",
+      "BDI",
+      "COM",
+      "DJI",
+      "ETH",
+      "ATF",
+      "KEN",
+      "MDG",
+      "MWI",
+      "MUS"
+    ],
+    "confusable_colors": [
+      "HRV",
+      "CYP",
+      "CZE",
+      "DNK",
+      "DJI",
+      "DMA",
+      "DOM",
+      "ECU",
+      "EGY",
+      "SLV"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "EST",
+    "name": "Estonia",
+    "difficulty": 3,
+    "region": "Europe",
+    "sub_region": "Northern Europe",
+    "intermediate_region": "Northern Europe",
+    "tags": {
+      "colors": [
+        "blue",
+        "black",
+        "white"
+      ],
+      "design": "tricolor_horizontal"
+    },
+    "confusable_region": [
+      "ALA",
+      "DNK",
+      "FRO",
+      "FIN",
+      "GGY",
+      "ISL",
+      "IRL",
+      "IMN",
+      "JEY",
+      "LVA"
+    ],
+    "confusable_colors": [
+      "CYP",
+      "CZE",
+      "DNK",
+      "DJI",
+      "DMA",
+      "DOM",
+      "ECU",
+      "EGY",
+      "SLV",
+      "GNQ"
+    ],
+    "confusable_design": [
+      "BWA"
+    ]
+  },
+  {
+    "alpha3": "SWZ",
+    "name": "Eswatini",
+    "difficulty": 5,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Southern Africa",
+    "tags": {
+      "colors": [
+        "blue",
+        "yellow",
+        "red",
+        "black",
+        "white"
+      ],
+      "design": "shield_stripes"
+    },
+    "confusable_region": [
+      "BWA",
+      "LSO",
+      "NAM",
+      "ZAF",
+      "AGO",
+      "BEN",
+      "IOT",
+      "BFA",
+      "BDI",
+      "CPV"
+    ],
+    "confusable_colors": [
+      "CZE",
+      "DNK",
+      "DJI",
+      "DMA",
+      "DOM",
+      "ECU",
+      "EGY",
+      "SLV",
+      "GNQ",
+      "ERI"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "ETH",
+    "name": "Ethiopia",
+    "difficulty": 3,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "green",
+        "yellow",
+        "red",
+        "blue"
+      ],
+      "design": "tricolor_horizontal_emblem"
+    },
+    "confusable_region": [
+      "IOT",
+      "BDI",
+      "COM",
+      "DJI",
+      "ERI",
+      "ATF",
+      "KEN",
+      "MDG",
+      "MWI",
+      "MUS"
+    ],
+    "confusable_colors": [
+      "DNK",
+      "DJI",
+      "DMA",
+      "DOM",
+      "ECU",
+      "EGY",
+      "SLV",
+      "GNQ",
+      "ERI",
+      "EST"
+    ],
+    "confusable_design": [
+      "BOL",
+      "GHA",
+      "GIN",
+      "LTU",
+      "MLI",
+      "MMR",
+      "SEN"
+    ]
+  },
+  {
+    "alpha3": "FLK",
+    "name": "Falkland Islands (Malvinas)",
+    "difficulty": 7,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "South America",
+    "tags": {
+      "colors": [
+        "unknown"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "ARG",
+      "BOL",
+      "BVT",
+      "BRA",
+      "CHL",
+      "COL",
+      "ECU",
+      "GUF",
+      "GUY",
+      "PRY"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "FRO",
+    "name": "Faroe Islands",
+    "difficulty": 5,
+    "region": "Europe",
+    "sub_region": "Northern Europe",
+    "intermediate_region": "Northern Europe",
+    "tags": {
+      "colors": [
+        "white",
+        "blue",
+        "red"
+      ],
+      "design": "nordic_cross"
+    },
+    "confusable_region": [
+      "ALA",
+      "DNK",
+      "EST",
+      "FIN",
+      "GGY",
+      "ISL",
+      "IRL",
+      "IMN",
+      "JEY",
+      "LVA"
+    ],
+    "confusable_colors": [
+      "DJI",
+      "DMA",
+      "DOM",
+      "ECU",
+      "EGY",
+      "SLV",
+      "GNQ",
+      "ERI",
+      "EST",
+      "SWZ"
+    ],
+    "confusable_design": [
+      "DNK",
+      "FIN",
+      "ISL",
+      "NOR",
+      "SWE"
+    ]
+  },
+  {
+    "alpha3": "FJI",
+    "name": "Fiji",
+    "difficulty": 4,
+    "region": "Oceania",
+    "sub_region": "Melanesia",
+    "intermediate_region": "Melanesia",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "red",
+        "green",
+        "yellow"
+      ],
+      "design": "union_jack_emblem"
+    },
+    "confusable_region": [
+      "NCL",
+      "PNG",
+      "VUT"
+    ],
+    "confusable_colors": [
+      "DMA",
+      "DOM",
+      "ECU",
+      "EGY",
+      "SLV",
+      "GNQ",
+      "ERI",
+      "EST",
+      "SWZ",
+      "ETH"
+    ],
+    "confusable_design": [
+      "AUS",
+      "COK",
+      "NZL",
+      "TUV"
+    ]
+  },
+  {
+    "alpha3": "FIN",
+    "name": "Finland",
+    "difficulty": 1,
+    "region": "Europe",
+    "sub_region": "Northern Europe",
+    "intermediate_region": "Northern Europe",
+    "tags": {
+      "colors": [
+        "white",
+        "blue"
+      ],
+      "design": "nordic_cross"
+    },
+    "confusable_region": [
+      "ALA",
+      "DNK",
+      "EST",
+      "FRO",
+      "GGY",
+      "ISL",
+      "IRL",
+      "IMN",
+      "JEY",
+      "LVA"
+    ],
+    "confusable_colors": [
+      "DOM",
+      "ECU",
+      "EGY",
+      "SLV",
+      "GNQ",
+      "ERI",
+      "EST",
+      "SWZ",
+      "ETH",
+      "FLK"
+    ],
+    "confusable_design": [
+      "DNK",
+      "ISL",
+      "NOR",
+      "SWE",
+      "FRO"
+    ]
+  },
+  {
+    "alpha3": "FRA",
+    "name": "France",
+    "difficulty": 1,
+    "region": "Europe",
+    "sub_region": "Western Europe",
+    "intermediate_region": "Western Europe",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "red"
+      ],
+      "design": "tricolor_vertical"
+    },
+    "confusable_region": [
+      "AUT",
+      "BEL",
+      "DEU",
+      "LIE",
+      "LUX",
+      "MCO",
+      "NLD",
+      "CHE"
+    ],
+    "confusable_colors": [
+      "ECU",
+      "EGY",
+      "SLV",
+      "GNQ",
+      "ERI",
+      "EST",
+      "SWZ",
+      "ETH",
+      "FLK",
+      "FRO"
+    ],
+    "confusable_design": [
+      "ITA",
+      "LUX",
+      "NLD",
+      "ROU"
+    ]
+  },
+  {
+    "alpha3": "GUF",
+    "name": "French Guiana",
+    "difficulty": 7,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "South America",
+    "tags": {
+      "colors": [
+        "unknown"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "ARG",
+      "BOL",
+      "BVT",
+      "BRA",
+      "CHL",
+      "COL",
+      "ECU",
+      "FLK",
+      "GUY",
+      "PRY"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "PYF",
+    "name": "French Polynesia",
+    "difficulty": 6,
+    "region": "Oceania",
+    "sub_region": "Polynesia",
+    "intermediate_region": "Polynesia",
+    "tags": {
+      "colors": [
+        "red",
+        "white"
+      ],
+      "design": "tricolor_horizontal_emblem"
+    },
+    "confusable_region": [
+      "ASM",
+      "COK",
+      "NIU",
+      "PCN",
+      "WSM",
+      "TON",
+      "TUV"
+    ],
+    "confusable_colors": [
+      "EGY",
+      "SLV",
+      "GNQ",
+      "ERI",
+      "EST",
+      "SWZ",
+      "ETH",
+      "FLK",
+      "FRO",
+      "FJI"
+    ],
+    "confusable_design": [
+      "AUT"
+    ]
+  },
+  {
+    "alpha3": "ATF",
+    "name": "French Southern Territories",
+    "difficulty": 7,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "unknown"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "IOT",
+      "BDI",
+      "COM",
+      "DJI",
+      "ERI",
+      "ETH",
+      "KEN",
+      "MDG",
+      "MWI",
+      "MUS"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "GAB",
+    "name": "Gabon",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Middle Africa",
+    "tags": {
+      "colors": [
+        "green",
+        "yellow",
+        "blue"
+      ],
+      "design": "tricolor_horizontal"
+    },
+    "confusable_region": [
+      "AGO",
+      "CMR",
+      "CAF",
+      "TCD",
+      "COG",
+      "COD",
+      "GNQ",
+      "STP",
+      "BEN",
+      "BWA"
+    ],
+    "confusable_colors": [
+      "SLV",
+      "GNQ",
+      "ERI",
+      "EST",
+      "SWZ",
+      "ETH",
+      "FLK",
+      "FRO",
+      "FJI",
+      "FIN"
+    ],
+    "confusable_design": [
+      "SLE"
+    ]
+  },
+  {
+    "alpha3": "GMB",
+    "name": "Gambia",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Western Africa",
+    "tags": {
+      "colors": [
+        "red",
+        "blue",
+        "green",
+        "white"
+      ],
+      "design": "stripes_horizontal"
+    },
+    "confusable_region": [
+      "BEN",
+      "BFA",
+      "CPV",
+      "CIV",
+      "GHA",
+      "GIN",
+      "GNB",
+      "LBR",
+      "MLI",
+      "MRT"
+    ],
+    "confusable_colors": [
+      "GNQ",
+      "ERI",
+      "EST",
+      "SWZ",
+      "ETH",
+      "FLK",
+      "FRO",
+      "FJI",
+      "FIN",
+      "FRA"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "GEO",
+    "name": "Georgia",
+    "difficulty": 3,
+    "region": "Asia",
+    "sub_region": "Western Asia",
+    "intermediate_region": "Western Asia",
+    "tags": {
+      "colors": [
+        "white",
+        "red"
+      ],
+      "design": "crosses_five"
+    },
+    "confusable_region": [
+      "ARM",
+      "AZE",
+      "BHR",
+      "CYP",
+      "IRQ",
+      "ISR",
+      "JOR",
+      "KWT",
+      "LBN",
+      "OMN"
+    ],
+    "confusable_colors": [
+      "ERI",
+      "EST",
+      "SWZ",
+      "ETH",
+      "FLK",
+      "FRO",
+      "FJI",
+      "FIN",
+      "FRA",
+      "GUF"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "DEU",
+    "name": "Germany",
+    "difficulty": 1,
+    "region": "Europe",
+    "sub_region": "Western Europe",
+    "intermediate_region": "Western Europe",
+    "tags": {
+      "colors": [
+        "black",
+        "red",
+        "yellow"
+      ],
+      "design": "tricolor_horizontal"
+    },
+    "confusable_region": [
+      "AUT",
+      "BEL",
+      "FRA",
+      "LIE",
+      "LUX",
+      "MCO",
+      "NLD",
+      "CHE"
+    ],
+    "confusable_colors": [
+      "EST",
+      "SWZ",
+      "ETH",
+      "FLK",
+      "FRO",
+      "FJI",
+      "FIN",
+      "FRA",
+      "GUF",
+      "PYF"
+    ],
+    "confusable_design": [
+      "BEL"
+    ]
+  },
+  {
+    "alpha3": "GHA",
+    "name": "Ghana",
+    "difficulty": 3,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Western Africa",
+    "tags": {
+      "colors": [
+        "red",
+        "yellow",
+        "green",
+        "black"
+      ],
+      "design": "tricolor_horizontal_star"
+    },
+    "confusable_region": [
+      "BEN",
+      "BFA",
+      "CPV",
+      "CIV",
+      "GMB",
+      "GIN",
+      "GNB",
+      "LBR",
+      "MLI",
+      "MRT"
+    ],
+    "confusable_colors": [
+      "SWZ",
+      "ETH",
+      "FLK",
+      "FRO",
+      "FJI",
+      "FIN",
+      "FRA",
+      "GUF",
+      "PYF",
+      "ATF"
+    ],
+    "confusable_design": [
+      "BOL",
+      "BFA",
+      "CMR",
+      "ETH",
+      "GIN",
+      "GNB",
+      "MLI",
+      "SEN",
+      "TGO"
+    ]
+  },
+  {
+    "alpha3": "GIB",
+    "name": "Gibraltar",
+    "difficulty": 6,
+    "region": "Europe",
+    "sub_region": "Southern Europe",
+    "intermediate_region": "Southern Europe",
+    "tags": {
+      "colors": [
+        "unknown"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "ALB",
+      "AND",
+      "BIH",
+      "HRV",
+      "GRC",
+      "VAT",
+      "ITA",
+      "MKD",
+      "MLT",
+      "MNE"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "GRC",
+    "name": "Greece",
+    "difficulty": 1,
+    "region": "Europe",
+    "sub_region": "Southern Europe",
+    "intermediate_region": "Southern Europe",
+    "tags": {
+      "colors": [
+        "blue",
+        "white"
+      ],
+      "design": "cross_corner_stripes"
+    },
+    "confusable_region": [
+      "ALB",
+      "AND",
+      "BIH",
+      "HRV",
+      "GIB",
+      "VAT",
+      "ITA",
+      "MKD",
+      "MLT",
+      "MNE"
+    ],
+    "confusable_colors": [
+      "ETH",
+      "FLK",
+      "FRO",
+      "FJI",
+      "FIN",
+      "FRA",
+      "GUF",
+      "PYF",
+      "ATF",
+      "GAB"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "GRL",
+    "name": "Greenland",
+    "difficulty": 5,
+    "region": "Americas",
+    "sub_region": "Northern America",
+    "intermediate_region": "Northern America",
+    "tags": {
+      "colors": [
+        "white",
+        "red"
+      ],
+      "design": "disk_horizontal_split"
+    },
+    "confusable_region": [
+      "BMU",
+      "CAN",
+      "SPM",
+      "USA"
+    ],
+    "confusable_colors": [
+      "FLK",
+      "FRO",
+      "FJI",
+      "FIN",
+      "FRA",
+      "GUF",
+      "PYF",
+      "ATF",
+      "GAB",
+      "GMB"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "GRD",
+    "name": "Grenada",
+    "difficulty": 5,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "red",
+        "yellow",
+        "green"
+      ],
+      "design": "stars_border_disk"
+    },
+    "confusable_region": [
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUB",
+      "CUW",
+      "DMA"
+    ],
+    "confusable_colors": [
+      "FRO",
+      "FJI",
+      "FIN",
+      "FRA",
+      "GUF",
+      "PYF",
+      "ATF",
+      "GAB",
+      "GMB",
+      "GEO"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "GLP",
+    "name": "Guadeloupe",
+    "difficulty": 7,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "unknown"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUB",
+      "CUW",
+      "DMA"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "GUM",
+    "name": "Guam",
+    "difficulty": 6,
+    "region": "Oceania",
+    "sub_region": "Micronesia",
+    "intermediate_region": "Micronesia",
+    "tags": {
+      "colors": [
+        "blue",
+        "red",
+        "white"
+      ],
+      "design": "border_emblem"
+    },
+    "confusable_region": [
+      "KIR",
+      "MHL",
+      "FSM",
+      "NRU",
+      "MNP",
+      "PLW"
+    ],
+    "confusable_colors": [
+      "FJI",
+      "FIN",
+      "FRA",
+      "GUF",
+      "PYF",
+      "ATF",
+      "GAB",
+      "GMB",
+      "GEO",
+      "DEU"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "GTM",
+    "name": "Guatemala",
+    "difficulty": 4,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Central America",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "green",
+        "red",
+        "yellow"
+      ],
+      "design": "tricolor_vertical_emblem"
+    },
+    "confusable_region": [
+      "BLZ",
+      "CRI",
+      "SLV",
+      "HND",
+      "MEX",
+      "NIC",
+      "PAN",
+      "AIA",
+      "ATG",
+      "ARG"
+    ],
+    "confusable_colors": [
+      "FIN",
+      "FRA",
+      "GUF",
+      "PYF",
+      "ATF",
+      "GAB",
+      "GMB",
+      "GEO",
+      "DEU",
+      "GHA"
+    ],
+    "confusable_design": [
+      "ARG",
+      "SLV",
+      "HND",
+      "NIC"
+    ]
+  },
+  {
+    "alpha3": "GGY",
+    "name": "Guernsey",
+    "difficulty": 6,
+    "region": "Europe",
+    "sub_region": "Northern Europe",
+    "intermediate_region": "Channel Islands",
+    "tags": {
+      "colors": [
+        "unknown"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "ALA",
+      "DNK",
+      "EST",
+      "FRO",
+      "FIN",
+      "ISL",
+      "IRL",
+      "IMN",
+      "JEY",
+      "LVA"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "GIN",
+    "name": "Guinea",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Western Africa",
+    "tags": {
+      "colors": [
+        "red",
+        "yellow",
+        "green"
+      ],
+      "design": "tricolor_vertical"
+    },
+    "confusable_region": [
+      "BEN",
+      "BFA",
+      "CPV",
+      "CIV",
+      "GMB",
+      "GHA",
+      "GNB",
+      "LBR",
+      "MLI",
+      "MRT"
+    ],
+    "confusable_colors": [
+      "FRA",
+      "GUF",
+      "PYF",
+      "ATF",
+      "GAB",
+      "GMB",
+      "GEO",
+      "DEU",
+      "GHA",
+      "GIB"
+    ],
+    "confusable_design": [
+      "BOL",
+      "BFA",
+      "CMR",
+      "ETH",
+      "GHA",
+      "GNB",
+      "MLI",
+      "SEN",
+      "TGO"
+    ]
+  },
+  {
+    "alpha3": "GNB",
+    "name": "Guinea-Bissau",
+    "difficulty": 5,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Western Africa",
+    "tags": {
+      "colors": [
+        "red",
+        "yellow",
+        "green",
+        "black"
+      ],
+      "design": "tricolor_vertical_star"
+    },
+    "confusable_region": [
+      "BEN",
+      "BFA",
+      "CPV",
+      "CIV",
+      "GMB",
+      "GHA",
+      "GIN",
+      "LBR",
+      "MLI",
+      "MRT"
+    ],
+    "confusable_colors": [
+      "GUF",
+      "PYF",
+      "ATF",
+      "GAB",
+      "GMB",
+      "GEO",
+      "DEU",
+      "GHA",
+      "GIB",
+      "GRC"
+    ],
+    "confusable_design": [
+      "BFA",
+      "CMR",
+      "GHA",
+      "GIN",
+      "MLI",
+      "SEN",
+      "TGO"
+    ]
+  },
+  {
+    "alpha3": "GUY",
+    "name": "Guyana",
+    "difficulty": 4,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "South America",
+    "tags": {
+      "colors": [
+        "green",
+        "yellow",
+        "red",
+        "black",
+        "white"
+      ],
+      "design": "arrow_shapes"
+    },
+    "confusable_region": [
+      "ARG",
+      "BRA",
+      "BOL",
+      "BVT",
+      "CHL",
+      "COL",
+      "ECU",
+      "FLK",
+      "GUF",
+      "PRY"
+    ],
+    "confusable_colors": [
+      "PYF",
+      "ATF",
+      "GAB",
+      "GMB",
+      "GEO",
+      "DEU",
+      "GHA",
+      "GIB",
+      "GRC",
+      "GRL"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "HTI",
+    "name": "Haiti",
+    "difficulty": 4,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "blue",
+        "red",
+        "white",
+        "green"
+      ],
+      "design": "horizontal_bicolor_emblem"
+    },
+    "confusable_region": [
+      "DOM",
+      "CUB",
+      "JAM",
+      "PRI",
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES"
+    ],
+    "confusable_colors": [
+      "LIE",
+      "PHL"
+    ],
+    "confusable_design": [
+      "LIE"
+    ]
+  },
+  {
+    "alpha3": "HMD",
+    "name": "Heard Island and McDonald Islands",
+    "difficulty": 7,
+    "region": "Oceania",
+    "sub_region": "Australia and New Zealand",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "red"
+      ],
+      "design": "union_jack_emblem"
+    },
+    "confusable_region": [
+      "NZL",
+      "AUS",
+      "CXR",
+      "CCK",
+      "NFK"
+    ],
+    "confusable_colors": [
+      "AUS",
+      "GBR"
+    ],
+    "confusable_design": [
+      "AUS",
+      "FJI"
+    ]
+  },
+  {
+    "alpha3": "VAT",
+    "name": "Holy See",
+    "difficulty": 5,
+    "region": "Europe",
+    "sub_region": "Southern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "yellow",
+        "white"
+      ],
+      "design": "vertical_bicolor_emblem"
+    },
+    "confusable_region": [
+      "ITA",
+      "SMR",
+      "MLT",
+      "ALB",
+      "AND",
+      "BIH",
+      "HRV",
+      "GIB",
+      "GRC",
+      "MKD"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "HND",
+    "name": "Honduras",
+    "difficulty": 3,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Central America",
+    "tags": {
+      "colors": [
+        "blue",
+        "white"
+      ],
+      "design": "triband_horizontal_stars"
+    },
+    "confusable_region": [
+      "SLV",
+      "GTM",
+      "NIC",
+      "CRI",
+      "BLZ",
+      "MEX",
+      "PAN",
+      "AIA",
+      "ATG",
+      "ARG"
+    ],
+    "confusable_colors": [
+      "NIC",
+      "SLV",
+      "ARG"
+    ],
+    "confusable_design": [
+      "NIC",
+      "SLV"
+    ]
+  },
+  {
+    "alpha3": "HKG",
+    "name": "Hong Kong",
+    "difficulty": 2,
+    "region": "Asia",
+    "sub_region": "Eastern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white"
+      ],
+      "design": "flower_centered"
+    },
+    "confusable_region": [
+      "MAC",
+      "TWN",
+      "CHN",
+      "JPN",
+      "PRK",
+      "KOR",
+      "MNG"
+    ],
+    "confusable_colors": [
+      "CAN",
+      "TUR",
+      "CHE"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "HUN",
+    "name": "Hungary",
+    "difficulty": 2,
+    "region": "Europe",
+    "sub_region": "Central Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "green"
+      ],
+      "design": "tricolor_horizontal"
+    },
+    "confusable_region": [
+      "POL"
+    ],
+    "confusable_colors": [
+      "ITA",
+      "BGR",
+      "TJK"
+    ],
+    "confusable_design": [
+      "ITA",
+      "BGR",
+      "IRN"
+    ]
+  },
+  {
+    "alpha3": "ISL",
+    "name": "Iceland",
+    "difficulty": 2,
+    "region": "Europe",
+    "sub_region": "Northern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "red"
+      ],
+      "design": "nordic_cross"
+    },
+    "confusable_region": [
+      "NOR",
+      "SWE",
+      "ALA",
+      "DNK",
+      "EST",
+      "FRO",
+      "FIN",
+      "GGY",
+      "IRL",
+      "IMN"
+    ],
+    "confusable_colors": [
+      "NOR",
+      "GBR",
+      "FRA"
+    ],
+    "confusable_design": [
+      "NOR",
+      "DNK",
+      "FRO"
+    ]
+  },
+  {
+    "alpha3": "IND",
+    "name": "India",
+    "difficulty": 1,
+    "region": "Asia",
+    "sub_region": "Southern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "orange",
+        "white",
+        "green",
+        "blue"
+      ],
+      "design": "tricolor_horizontal_wheel"
+    },
+    "confusable_region": [
+      "PAK",
+      "NPL",
+      "IRN",
+      "AFG",
+      "BGD",
+      "BTN",
+      "MDV"
+    ],
+    "confusable_colors": [
+      "IRL",
+      "CIV",
+      "NER"
+    ],
+    "confusable_design": [
+      "NER"
+    ]
+  },
+  {
+    "alpha3": "IDN",
+    "name": "Indonesia",
+    "difficulty": 2,
+    "region": "Asia",
+    "sub_region": "South-eastern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white"
+      ],
+      "design": "horizontal_bicolor"
+    },
+    "confusable_region": [
+      "MYS",
+      "SGP",
+      "PHL",
+      "THA",
+      "BRN",
+      "KHM",
+      "LAO",
+      "MMR",
+      "VNM"
+    ],
+    "confusable_colors": [
+      "MCO",
+      "POL",
+      "AUT"
+    ],
+    "confusable_design": [
+      "MCO",
+      "POL"
+    ]
+  },
+  {
+    "alpha3": "IRN",
+    "name": "Iran (Islamic Republic of)",
+    "difficulty": 4,
+    "region": "Asia",
+    "sub_region": "Southern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "green",
+        "white",
+        "red"
+      ],
+      "design": "tricolor_horizontal_emblem"
+    },
+    "confusable_region": [
+      "PAK",
+      "IND",
+      "AFG",
+      "BGD",
+      "BTN",
+      "MDV",
+      "NPL"
+    ],
+    "confusable_colors": [
+      "HUN",
+      "ITA",
+      "TJK",
+      "IND"
+    ],
+    "confusable_design": [
+      "IRQ",
+      "TJK",
+      "IND"
+    ]
+  },
+  {
+    "alpha3": "IRQ",
+    "name": "Iraq",
+    "difficulty": 3,
+    "region": "Asia",
+    "sub_region": "Western Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "black",
+        "green"
+      ],
+      "design": "tricolor_horizontal_text"
+    },
+    "confusable_region": [
+      "SYR",
+      "JOR",
+      "SAU",
+      "KWT",
+      "ARM",
+      "AZE",
+      "BHR",
+      "CYP",
+      "GEO",
+      "ISR"
+    ],
+    "confusable_colors": [
+      "SYR",
+      "YEM",
+      "EGY"
+    ],
+    "confusable_design": [
+      "SYR",
+      "YEM",
+      "EGY"
+    ]
+  },
+  {
+    "alpha3": "IRL",
+    "name": "Ireland",
+    "difficulty": 2,
+    "region": "Europe",
+    "sub_region": "Northern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "green",
+        "white",
+        "orange"
+      ],
+      "design": "tricolor_vertical"
+    },
+    "confusable_region": [
+      "GBR",
+      "ISL",
+      "ALA",
+      "DNK",
+      "EST",
+      "FRO",
+      "FIN",
+      "GGY",
+      "IMN",
+      "JEY"
+    ],
+    "confusable_colors": [
+      "CIV",
+      "ITA",
+      "IND"
+    ],
+    "confusable_design": [
+      "CIV",
+      "ITA",
+      "FRA",
+      "BEL"
+    ]
+  },
+  {
+    "alpha3": "IMN",
+    "name": "Isle of Man",
+    "difficulty": 6,
+    "region": "Europe",
+    "sub_region": "Northern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "yellow"
+      ],
+      "design": "triskelion"
+    },
+    "confusable_region": [
+      "GBR",
+      "IRL",
+      "ISL",
+      "ALA",
+      "DNK",
+      "EST",
+      "FRO",
+      "FIN",
+      "GGY",
+      "JEY"
+    ],
+    "confusable_colors": [
+      "GBR"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "ISR",
+    "name": "Israel",
+    "difficulty": 2,
+    "region": "Asia",
+    "sub_region": "Western Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "white"
+      ],
+      "design": "stripes_star"
+    },
+    "confusable_region": [
+      "JOR",
+      "LBN",
+      "PSE",
+      "SYR",
+      "ARM",
+      "AZE",
+      "BHR",
+      "CYP",
+      "GEO",
+      "IRQ"
+    ],
+    "confusable_colors": [
+      "GRC",
+      "HND",
+      "FIN"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "ITA",
+    "name": "Italy",
+    "difficulty": 1,
+    "region": "Europe",
+    "sub_region": "Southern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "green",
+        "white",
+        "red"
+      ],
+      "design": "tricolor_vertical"
+    },
+    "confusable_region": [
+      "ESP",
+      "VAT",
+      "ALB",
+      "AND",
+      "BIH",
+      "HRV",
+      "GIB",
+      "GRC",
+      "MKD",
+      "MLT"
+    ],
+    "confusable_colors": [
+      "IRL",
+      "MEX",
+      "HUN"
+    ],
+    "confusable_design": [
+      "FRA",
+      "IRL",
+      "BEL",
+      "ROU"
+    ]
+  },
+  {
+    "alpha3": "JAM",
+    "name": "Jamaica",
+    "difficulty": 2,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "green",
+        "yellow",
+        "black"
+      ],
+      "design": "saltire"
+    },
+    "confusable_region": [
+      "CUB",
+      "HTI",
+      "DOM",
+      "TTO",
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES"
+    ],
+    "confusable_colors": [
+      "ZAF",
+      "TZA",
+      "BRA"
+    ],
+    "confusable_design": [
+      "CUB"
+    ]
+  },
+  {
+    "alpha3": "JPN",
+    "name": "Japan",
+    "difficulty": 1,
+    "region": "Asia",
+    "sub_region": "Eastern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "white",
+        "red"
+      ],
+      "design": "disk_centered"
+    },
+    "confusable_region": [
+      "KOR",
+      "TWN",
+      "HKG",
+      "CHN",
+      "PRK",
+      "MAC",
+      "MNG"
+    ],
+    "confusable_colors": [
+      "PLW",
+      "BGD",
+      "KOR"
+    ],
+    "confusable_design": [
+      "BGD",
+      "PLW"
+    ]
+  },
+  {
+    "alpha3": "JEY",
+    "name": "Jersey",
+    "difficulty": 6,
+    "region": "Europe",
+    "sub_region": "Northern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "white",
+        "red",
+        "yellow"
+      ],
+      "design": "saltire_emblem"
+    },
+    "confusable_region": [
+      "GBR",
+      "ISL",
+      "ALA",
+      "DNK",
+      "EST",
+      "FRO",
+      "FIN",
+      "GGY",
+      "IRL",
+      "IMN"
+    ],
+    "confusable_colors": [
+      "GBR",
+      "ALB"
+    ],
+    "confusable_design": [
+      "GBR"
+    ]
+  },
+  {
+    "alpha3": "JOR",
+    "name": "Jordan",
+    "difficulty": 4,
+    "region": "Asia",
+    "sub_region": "Western Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "black",
+        "white",
+        "green",
+        "red"
+      ],
+      "design": "pan_arab_triangle"
+    },
+    "confusable_region": [
+      "PSE",
+      "SYR",
+      "IRQ",
+      "SAU",
+      "ARM",
+      "AZE",
+      "BHR",
+      "CYP",
+      "GEO",
+      "ISR"
+    ],
+    "confusable_colors": [
+      "PSE",
+      "ARE",
+      "KWT",
+      "SDN"
+    ],
+    "confusable_design": [
+      "PSE",
+      "ARE",
+      "KWT",
+      "ESH"
+    ]
+  },
+  {
+    "alpha3": "KAZ",
+    "name": "Kazakhstan",
+    "difficulty": 3,
+    "region": "Asia",
+    "sub_region": "Central Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "yellow"
+      ],
+      "design": "emblem_side_pattern"
+    },
+    "confusable_region": [
+      "UZB",
+      "KGZ",
+      "TKM",
+      "TJK"
+    ],
+    "confusable_colors": [
+      "UKR",
+      "SWE",
+      "PLW"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "KEN",
+    "name": "Kenya",
+    "difficulty": 2,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "black",
+        "red",
+        "green",
+        "white"
+      ],
+      "design": "tricolor_horizontal_emblem"
+    },
+    "confusable_region": [
+      "TZA",
+      "UGA",
+      "ETH",
+      "SOM",
+      "IOT",
+      "BDI",
+      "COM",
+      "DJI",
+      "ERI",
+      "ATF"
+    ],
+    "confusable_colors": [
+      "SSD",
+      "MWI"
+    ],
+    "confusable_design": [
+      "SSD",
+      "MWI"
+    ]
+  },
+  {
+    "alpha3": "KIR",
+    "name": "Kiribati",
+    "difficulty": 5,
+    "region": "Oceania",
+    "sub_region": "Micronesia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "blue",
+        "white",
+        "yellow"
+      ],
+      "design": "landscape_emblem"
+    },
+    "confusable_region": [
+      "MHL",
+      "GUM",
+      "FSM",
+      "NRU",
+      "MNP",
+      "PLW"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "PRK",
+    "name": "Korea (Democratic People's Republic of)",
+    "difficulty": 3,
+    "region": "Asia",
+    "sub_region": "Eastern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "red"
+      ],
+      "design": "triband_horizontal_star_disk"
+    },
+    "confusable_region": [
+      "KOR",
+      "JPN",
+      "HKG",
+      "CHN",
+      "MAC",
+      "MNG",
+      "TWN"
+    ],
+    "confusable_colors": [
+      "LAO",
+      "THA"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "KOR",
+    "name": "Korea (Republic of)",
+    "difficulty": 1,
+    "region": "Asia",
+    "sub_region": "Eastern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "white",
+        "red",
+        "blue",
+        "black"
+      ],
+      "design": "disk_trigrams"
+    },
+    "confusable_region": [
+      "JPN",
+      "PRK",
+      "TWN",
+      "HKG",
+      "CHN",
+      "MAC",
+      "MNG"
+    ],
+    "confusable_colors": [
+      "JPN",
+      "PRK"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "KWT",
+    "name": "Kuwait",
+    "difficulty": 4,
+    "region": "Asia",
+    "sub_region": "Western Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "green",
+        "white",
+        "red",
+        "black"
+      ],
+      "design": "pan_arab_trapezoid"
+    },
+    "confusable_region": [
+      "IRQ",
+      "SAU",
+      "ARE",
+      "ARM",
+      "AZE",
+      "BHR",
+      "CYP",
+      "GEO",
+      "ISR",
+      "JOR"
+    ],
+    "confusable_colors": [
+      "ARE",
+      "JOR",
+      "PSE",
+      "SDN"
+    ],
+    "confusable_design": [
+      "ARE",
+      "JOR",
+      "PSE"
+    ]
+  },
+  {
+    "alpha3": "KGZ",
+    "name": "Kyrgyzstan",
+    "difficulty": 4,
+    "region": "Asia",
+    "sub_region": "Central Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "yellow"
+      ],
+      "design": "emblem_centered"
+    },
+    "confusable_region": [
+      "KAZ",
+      "UZB",
+      "TJK",
+      "TKM"
+    ],
+    "confusable_colors": [
+      "CHN",
+      "VNM",
+      "TUR"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "LAO",
+    "name": "Lao People's Democratic Republic",
+    "difficulty": 4,
+    "region": "Asia",
+    "sub_region": "South-eastern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "blue",
+        "white"
+      ],
+      "design": "triband_horizontal_disk"
+    },
+    "confusable_region": [
+      "THA",
+      "VNM",
+      "MMR",
+      "IDN",
+      "BRN",
+      "KHM",
+      "MYS",
+      "PHL",
+      "SGP"
+    ],
+    "confusable_colors": [
+      "THA",
+      "KHM",
+      "BLZ"
+    ],
+    "confusable_design": [
+      "THA",
+      "BLZ"
+    ]
+  },
+  {
+    "alpha3": "LVA",
+    "name": "Latvia",
+    "difficulty": 4,
+    "region": "Europe",
+    "sub_region": "Northern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "maroon",
+        "white"
+      ],
+      "design": "triband_horizontal"
+    },
+    "confusable_region": [
+      "LTU",
+      "ISL",
+      "ALA",
+      "DNK",
+      "EST",
+      "FRO",
+      "FIN",
+      "GGY",
+      "IRL",
+      "IMN"
+    ],
+    "confusable_colors": [
+      "AUT",
+      "PER"
+    ],
+    "confusable_design": [
+      "AUT"
+    ]
+  },
+  {
+    "alpha3": "LBN",
+    "name": "Lebanon",
+    "difficulty": 3,
+    "region": "Asia",
+    "sub_region": "Western Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "green"
+      ],
+      "design": "triband_horizontal_tree"
+    },
+    "confusable_region": [
+      "ISR",
+      "SYR",
+      "JOR",
+      "ARM",
+      "AZE",
+      "BHR",
+      "CYP",
+      "GEO",
+      "IRQ",
+      "KWT"
+    ],
+    "confusable_colors": [
+      "AUT",
+      "PER",
+      "CAN"
+    ],
+    "confusable_design": [
+      "AUT",
+      "PER"
+    ]
+  },
+  {
+    "alpha3": "LSO",
+    "name": "Lesotho",
+    "difficulty": 5,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Southern Africa",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "green",
+        "black"
+      ],
+      "design": "tricolor_horizontal_emblem"
+    },
+    "confusable_region": [
+      "ZAF",
+      "SWZ",
+      "BWA",
+      "NAM",
+      "AGO",
+      "BEN",
+      "IOT",
+      "BFA",
+      "BDI",
+      "CPV"
+    ],
+    "confusable_colors": [
+      "SLE",
+      "UZB"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "LBR",
+    "name": "Liberia",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Western Africa",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "blue"
+      ],
+      "design": "stars_stripes"
+    },
+    "confusable_region": [
+      "SLE",
+      "GIN",
+      "CIV",
+      "GHA",
+      "BEN",
+      "BFA",
+      "CPV",
+      "GMB",
+      "GNB",
+      "MLI"
+    ],
+    "confusable_colors": [
+      "USA",
+      "MYS",
+      "CHL"
+    ],
+    "confusable_design": [
+      "USA",
+      "MYS"
+    ]
+  },
+  {
+    "alpha3": "LBY",
+    "name": "Libya",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Northern Africa",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "black",
+        "green",
+        "white"
+      ],
+      "design": "tricolor_horizontal_crescent"
+    },
+    "confusable_region": [
+      "TUN",
+      "SDN",
+      "DZA",
+      "EGY",
+      "MAR",
+      "ESH"
+    ],
+    "confusable_colors": [
+      "AZE",
+      "MRT",
+      "TUR"
+    ],
+    "confusable_design": [
+      "AZE",
+      "MRT"
+    ]
+  },
+  {
+    "alpha3": "LIE",
+    "name": "Liechtenstein",
+    "difficulty": 5,
+    "region": "Europe",
+    "sub_region": "Western Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "red",
+        "yellow"
+      ],
+      "design": "horizontal_bicolor_emblem"
+    },
+    "confusable_region": [
+      "CHE",
+      "AUT",
+      "BEL",
+      "FRA",
+      "DEU",
+      "LUX",
+      "MCO",
+      "NLD"
+    ],
+    "confusable_colors": [
+      "HTI",
+      "PHL"
+    ],
+    "confusable_design": [
+      "HTI"
+    ]
+  },
+  {
+    "alpha3": "LTU",
+    "name": "Lithuania",
+    "difficulty": 4,
+    "region": "Europe",
+    "sub_region": "Northern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "yellow",
+        "green",
+        "red"
+      ],
+      "design": "tricolor_horizontal"
+    },
+    "confusable_region": [
+      "LVA",
+      "ISL",
+      "ALA",
+      "DNK",
+      "EST",
+      "FRO",
+      "FIN",
+      "GGY",
+      "IRL",
+      "IMN"
+    ],
+    "confusable_colors": [
+      "MMR",
+      "BOL",
+      "ETH"
+    ],
+    "confusable_design": [
+      "MMR",
+      "BOL",
+      "ETH"
+    ]
+  },
+  {
+    "alpha3": "LUX",
+    "name": "Luxembourg",
+    "difficulty": 3,
+    "region": "Europe",
+    "sub_region": "Western Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "blue"
+      ],
+      "design": "tricolor_horizontal"
+    },
+    "confusable_region": [
+      "NLD",
+      "AUT",
+      "BEL",
+      "FRA",
+      "DEU",
+      "LIE",
+      "MCO",
+      "CHE"
+    ],
+    "confusable_colors": [
+      "NLD",
+      "FRA",
+      "RUS"
+    ],
+    "confusable_design": [
+      "NLD",
+      "RUS",
+      "HUN"
+    ]
+  },
+  {
+    "alpha3": "MAC",
+    "name": "Macao",
+    "difficulty": 5,
+    "region": "Asia",
+    "sub_region": "Eastern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "green",
+        "white",
+        "yellow"
+      ],
+      "design": "flower_stars"
+    },
+    "confusable_region": [
+      "HKG",
+      "TWN",
+      "CHN",
+      "JPN",
+      "PRK",
+      "KOR",
+      "MNG"
+    ],
+    "confusable_colors": [
+      "BRA",
+      "SAU",
+      "DMA"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "MKD",
+    "name": "North Macedonia",
+    "difficulty": 4,
+    "region": "Europe",
+    "sub_region": "Southern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "yellow"
+      ],
+      "design": "sun_rays"
+    },
+    "confusable_region": [
+      "SRB",
+      "VAT",
+      "ALB",
+      "AND",
+      "BIH",
+      "HRV",
+      "GIB",
+      "GRC",
+      "ITA",
+      "MLT"
+    ],
+    "confusable_colors": [
+      "MNG",
+      "CHN",
+      "VNM"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "MDG",
+    "name": "Madagascar",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "white",
+        "red",
+        "green"
+      ],
+      "design": "vertical_horizontal_split"
+    },
+    "confusable_region": [
+      "MUS",
+      "COM",
+      "MOZ",
+      "IOT",
+      "BDI",
+      "DJI",
+      "ERI",
+      "ETH",
+      "ATF",
+      "KEN"
+    ],
+    "confusable_colors": [
+      "BEN",
+      "BLR",
+      "OMN"
+    ],
+    "confusable_design": [
+      "BEN",
+      "OMN"
+    ]
+  },
+  {
+    "alpha3": "MWI",
+    "name": "Malawi",
+    "difficulty": 5,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "black",
+        "red",
+        "green"
+      ],
+      "design": "tricolor_horizontal_sun"
+    },
+    "confusable_region": [
+      "MOZ",
+      "ZMB",
+      "TZA",
+      "IOT",
+      "BDI",
+      "COM",
+      "DJI",
+      "ERI",
+      "ETH",
+      "ATF"
+    ],
+    "confusable_colors": [
+      "KEN",
+      "SSD"
+    ],
+    "confusable_design": [
+      "KEN",
+      "SSD"
+    ]
+  },
+  {
+    "alpha3": "MYS",
+    "name": "Malaysia",
+    "difficulty": 2,
+    "region": "Asia",
+    "sub_region": "South-eastern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "blue",
+        "yellow"
+      ],
+      "design": "stars_stripes_crescent"
+    },
+    "confusable_region": [
+      "IDN",
+      "SGP",
+      "THA",
+      "PHL",
+      "BRN",
+      "KHM",
+      "LAO",
+      "MMR",
+      "VNM"
+    ],
+    "confusable_colors": [
+      "USA",
+      "LBR"
+    ],
+    "confusable_design": [
+      "USA",
+      "LBR"
+    ]
+  },
+  {
+    "alpha3": "MDV",
+    "name": "Maldives",
+    "difficulty": 5,
+    "region": "Asia",
+    "sub_region": "Southern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "green",
+        "white"
+      ],
+      "design": "framed_crescent"
+    },
+    "confusable_region": [
+      "IND",
+      "IRN",
+      "AFG",
+      "BGD",
+      "BTN",
+      "NPL",
+      "PAK"
+    ],
+    "confusable_colors": [
+      "TUR",
+      "TUN",
+      "DZA"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "MLI",
+    "name": "Mali",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Western Africa",
+    "tags": {
+      "colors": [
+        "green",
+        "yellow",
+        "red"
+      ],
+      "design": "tricolor_vertical"
+    },
+    "confusable_region": [
+      "SEN",
+      "GIN",
+      "NER",
+      "MRT",
+      "BEN",
+      "BFA",
+      "CPV",
+      "CIV",
+      "GMB",
+      "GHA"
+    ],
+    "confusable_colors": [
+      "GIN",
+      "CMR",
+      "SEN"
+    ],
+    "confusable_design": [
+      "GIN",
+      "CMR",
+      "SEN"
+    ]
+  },
+  {
+    "alpha3": "MLT",
+    "name": "Malta",
+    "difficulty": 4,
+    "region": "Europe",
+    "sub_region": "Southern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "white",
+        "red",
+        "grey"
+      ],
+      "design": "vertical_bicolor_emblem"
+    },
+    "confusable_region": [
+      "ITA",
+      "VAT",
+      "ALB",
+      "AND",
+      "BIH",
+      "HRV",
+      "GIB",
+      "GRC",
+      "MKD",
+      "MNE"
+    ],
+    "confusable_colors": [
+      "POL",
+      "IDN",
+      "MCO"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "MHL",
+    "name": "Marshall Islands",
+    "difficulty": 5,
+    "region": "Oceania",
+    "sub_region": "Micronesia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "orange",
+        "white"
+      ],
+      "design": "diagonal_stripes_star"
+    },
+    "confusable_region": [
+      "KIR",
+      "FSM",
+      "PLW",
+      "GUM",
+      "NRU",
+      "MNP"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "MTQ",
+    "name": "Martinique",
+    "difficulty": 7,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "green",
+        "black",
+        "red"
+      ],
+      "design": "triangle_horizontal_bicolor"
+    },
+    "confusable_region": [
+      "GLP",
+      "DMA",
+      "LCA",
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM"
+    ],
+    "confusable_colors": [
+      "CZE",
+      "PHL",
+      "JOR"
+    ],
+    "confusable_design": [
+      "CZE"
+    ]
+  },
+  {
+    "alpha3": "MRT",
+    "name": "Mauritania",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Western Africa",
+    "tags": {
+      "colors": [
+        "green",
+        "yellow",
+        "red"
+      ],
+      "design": "horizontal_bicolor_emblem_stripes"
+    },
+    "confusable_region": [
+      "MLI",
+      "SEN",
+      "BEN",
+      "BFA",
+      "CPV",
+      "CIV",
+      "GMB",
+      "GHA",
+      "GIN",
+      "GNB"
+    ],
+    "confusable_colors": [
+      "PAK",
+      "SAU",
+      "COM"
+    ],
+    "confusable_design": [
+      "PAK"
+    ]
+  },
+  {
+    "alpha3": "MUS",
+    "name": "Mauritius",
+    "difficulty": 5,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "red",
+        "blue",
+        "yellow",
+        "green"
+      ],
+      "design": "four_horizontal_stripes"
+    },
+    "confusable_region": [
+      "MDG",
+      "REU",
+      "SYC",
+      "IOT",
+      "BDI",
+      "COM",
+      "DJI",
+      "ERI",
+      "ETH",
+      "ATF"
+    ],
+    "confusable_colors": [
+      "CAF",
+      "COM"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "MYT",
+    "name": "Mayotte",
+    "difficulty": 7,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "white",
+        "red",
+        "blue",
+        "yellow"
+      ],
+      "design": "emblem_centered"
+    },
+    "confusable_region": [
+      "COM",
+      "MDG",
+      "REU",
+      "IOT",
+      "BDI",
+      "DJI",
+      "ERI",
+      "ETH",
+      "ATF",
+      "KEN"
+    ],
+    "confusable_colors": [
+      "FRA"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "MEX",
+    "name": "Mexico",
+    "difficulty": 1,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Central America",
+    "tags": {
+      "colors": [
+        "green",
+        "white",
+        "red"
+      ],
+      "design": "tricolor_vertical_emblem"
+    },
+    "confusable_region": [
+      "GTM",
+      "BLZ",
+      "CRI",
+      "SLV",
+      "HND",
+      "NIC",
+      "PAN",
+      "AIA",
+      "ATG",
+      "ARG"
+    ],
+    "confusable_colors": [
+      "ITA",
+      "IRL",
+      "FRA"
+    ],
+    "confusable_design": [
+      "ITA",
+      "AFG",
+      "AND"
+    ]
+  },
+  {
+    "alpha3": "FSM",
+    "name": "Micronesia (Federated States of)",
+    "difficulty": 5,
+    "region": "Oceania",
+    "sub_region": "Micronesia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "white"
+      ],
+      "design": "stars_centered"
+    },
+    "confusable_region": [
+      "MHL",
+      "PLW",
+      "GUM",
+      "KIR",
+      "NRU",
+      "MNP"
+    ],
+    "confusable_colors": [
+      "SOM",
+      "VNM"
+    ],
+    "confusable_design": [
+      "SOM"
+    ]
+  },
+  {
+    "alpha3": "MDA",
+    "name": "Moldova (Republic of)",
+    "difficulty": 5,
+    "region": "Europe",
+    "sub_region": "Eastern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "yellow",
+        "red"
+      ],
+      "design": "tricolor_vertical_emblem"
+    },
+    "confusable_region": [
+      "ROU",
+      "UKR",
+      "BLR",
+      "BGR",
+      "CZE",
+      "RUS",
+      "SVK"
+    ],
+    "confusable_colors": [
+      "ROU",
+      "TCD",
+      "AND"
+    ],
+    "confusable_design": [
+      "ROU",
+      "TCD",
+      "AND"
+    ]
+  },
+  {
+    "alpha3": "MCO",
+    "name": "Monaco",
+    "difficulty": 4,
+    "region": "Europe",
+    "sub_region": "Western Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white"
+      ],
+      "design": "horizontal_bicolor"
+    },
+    "confusable_region": [
+      "AUT",
+      "BEL",
+      "FRA",
+      "DEU",
+      "LIE",
+      "LUX",
+      "NLD",
+      "CHE"
+    ],
+    "confusable_colors": [
+      "IDN",
+      "POL",
+      "AUT"
+    ],
+    "confusable_design": [
+      "IDN",
+      "POL"
+    ]
+  },
+  {
+    "alpha3": "MNG",
+    "name": "Mongolia",
+    "difficulty": 3,
+    "region": "Asia",
+    "sub_region": "Eastern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "blue",
+        "yellow"
+      ],
+      "design": "tricolor_vertical_emblem"
+    },
+    "confusable_region": [
+      "HKG",
+      "CHN",
+      "JPN",
+      "PRK",
+      "KOR",
+      "MAC",
+      "TWN"
+    ],
+    "confusable_colors": [
+      "ROU",
+      "TCD",
+      "AND"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "MNE",
+    "name": "Montenegro",
+    "difficulty": 5,
+    "region": "Europe",
+    "sub_region": "Southern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "yellow"
+      ],
+      "design": "framed_emblem"
+    },
+    "confusable_region": [
+      "SRB",
+      "VAT",
+      "ALB",
+      "AND",
+      "BIH",
+      "HRV",
+      "GIB",
+      "GRC",
+      "ITA",
+      "MKD"
+    ],
+    "confusable_colors": [
+      "ALB",
+      "CHN",
+      "VNM"
+    ],
+    "confusable_design": [
+      "ALB"
+    ]
+  },
+  {
+    "alpha3": "MSR",
+    "name": "Montserrat",
+    "difficulty": 7,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "red",
+        "green"
+      ],
+      "design": "union_jack_emblem"
+    },
+    "confusable_region": [
+      "AIA",
+      "KNA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUB",
+      "CUW"
+    ],
+    "confusable_colors": [
+      "GBR",
+      "AUS",
+      "NZL"
+    ],
+    "confusable_design": [
+      "AIA",
+      "VGB",
+      "TCA",
+      "FLK"
+    ]
+  },
+  {
+    "alpha3": "MAR",
+    "name": "Morocco",
+    "difficulty": 2,
+    "region": "Africa",
+    "sub_region": "Northern Africa",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "green"
+      ],
+      "design": "star_centered"
+    },
+    "confusable_region": [
+      "TUN",
+      "DZA",
+      "EGY",
+      "LBY",
+      "SDN",
+      "ESH"
+    ],
+    "confusable_colors": [
+      "VNM",
+      "TUR",
+      "CHN"
+    ],
+    "confusable_design": [
+      "VNM"
+    ]
+  },
+  {
+    "alpha3": "MOZ",
+    "name": "Mozambique",
+    "difficulty": 5,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "green",
+        "black",
+        "yellow",
+        "red",
+        "white"
+      ],
+      "design": "triangle_horizontal_stripes_emblem"
+    },
+    "confusable_region": [
+      "ZWE",
+      "MWI",
+      "ZMB",
+      "IOT",
+      "BDI",
+      "COM",
+      "DJI",
+      "ERI",
+      "ETH",
+      "ATF"
+    ],
+    "confusable_colors": [
+      "ZWE",
+      "ETH",
+      "GHA"
+    ],
+    "confusable_design": [
+      "ZWE"
+    ]
+  },
+  {
+    "alpha3": "MMR",
+    "name": "Myanmar",
+    "difficulty": 3,
+    "region": "Asia",
+    "sub_region": "South-eastern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "yellow",
+        "green",
+        "red",
+        "white"
+      ],
+      "design": "tricolor_horizontal_star"
+    },
+    "confusable_region": [
+      "THA",
+      "LAO",
+      "IDN",
+      "BRN",
+      "KHM",
+      "MYS",
+      "PHL",
+      "SGP",
+      "VNM"
+    ],
+    "confusable_colors": [
+      "LTU",
+      "BOL",
+      "ETH"
+    ],
+    "confusable_design": [
+      "LTU",
+      "BOL",
+      "ETH",
+      "GHA"
+    ]
+  },
+  {
+    "alpha3": "NAM",
+    "name": "Namibia",
+    "difficulty": 5,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Southern Africa",
+    "tags": {
+      "colors": [
+        "blue",
+        "red",
+        "green",
+        "white",
+        "yellow"
+      ],
+      "design": "diagonal_stripes_sun"
+    },
+    "confusable_region": [
+      "ZAF",
+      "BWA",
+      "SWZ",
+      "LSO",
+      "AGO",
+      "BEN",
+      "IOT",
+      "BFA",
+      "BDI",
+      "CPV"
+    ],
+    "confusable_colors": [
+      "COD",
+      "TZA"
+    ],
+    "confusable_design": [
+      "COD"
+    ]
+  },
+  {
+    "alpha3": "NRU",
+    "name": "Nauru",
+    "difficulty": 6,
+    "region": "Oceania",
+    "sub_region": "Micronesia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "yellow",
+        "white"
+      ],
+      "design": "horizontal_stripe_star"
+    },
+    "confusable_region": [
+      "KIR",
+      "MHL",
+      "FSM",
+      "GUM",
+      "MNP",
+      "PLW"
+    ],
+    "confusable_colors": [
+      "CUW"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "NPL",
+    "name": "Nepal",
+    "difficulty": 2,
+    "region": "Asia",
+    "sub_region": "Southern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "blue",
+        "white"
+      ],
+      "design": "non_quadrilateral"
+    },
+    "confusable_region": [
+      "IND",
+      "IRN",
+      "AFG",
+      "BGD",
+      "BTN",
+      "MDV",
+      "PAK"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "NLD",
+    "name": "Netherlands",
+    "difficulty": 2,
+    "region": "Europe",
+    "sub_region": "Western Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "blue"
+      ],
+      "design": "tricolor_horizontal"
+    },
+    "confusable_region": [
+      "LUX",
+      "AUT",
+      "BEL",
+      "FRA",
+      "DEU",
+      "LIE",
+      "MCO",
+      "CHE"
+    ],
+    "confusable_colors": [
+      "LUX",
+      "FRA",
+      "RUS"
+    ],
+    "confusable_design": [
+      "LUX",
+      "RUS",
+      "AUT"
+    ]
+  },
+  {
+    "alpha3": "NCL",
+    "name": "New Caledonia",
+    "difficulty": 7,
+    "region": "Oceania",
+    "sub_region": "Melanesia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "red",
+        "yellow",
+        "green",
+        "black"
+      ],
+      "design": "tricolor_horizontal_emblem"
+    },
+    "confusable_region": [
+      "VUT",
+      "FJI",
+      "PNG"
+    ],
+    "confusable_colors": [
+      "FRA"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "NZL",
+    "name": "New Zealand",
+    "difficulty": 2,
+    "region": "Oceania",
+    "sub_region": "Australia and New Zealand",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "red"
+      ],
+      "design": "union_jack_stars"
+    },
+    "confusable_region": [
+      "HMD",
+      "AUS",
+      "CXR",
+      "CCK",
+      "NFK"
+    ],
+    "confusable_colors": [
+      "AUS",
+      "GBR",
+      "COK"
+    ],
+    "confusable_design": [
+      "AUS",
+      "COK",
+      "TUV"
+    ]
+  },
+  {
+    "alpha3": "NIC",
+    "name": "Nicaragua",
+    "difficulty": 4,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Central America",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "emblem_colors"
+      ],
+      "design": "triband_horizontal_emblem"
+    },
+    "confusable_region": [
+      "HND",
+      "SLV",
+      "CRI",
+      "PAN",
+      "BLZ",
+      "GTM",
+      "MEX",
+      "AIA",
+      "ATG",
+      "ARG"
+    ],
+    "confusable_colors": [
+      "SLV",
+      "HND",
+      "ARG"
+    ],
+    "confusable_design": [
+      "SLV",
+      "HND",
+      "ARG"
+    ]
+  },
+  {
+    "alpha3": "NER",
+    "name": "Niger",
+    "difficulty": 5,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Western Africa",
+    "tags": {
+      "colors": [
+        "orange",
+        "white",
+        "green"
+      ],
+      "design": "tricolor_horizontal_disk"
+    },
+    "confusable_region": [
+      "NGA",
+      "MLI",
+      "BEN",
+      "BFA",
+      "CPV",
+      "CIV",
+      "GMB",
+      "GHA",
+      "GIN",
+      "GNB"
+    ],
+    "confusable_colors": [
+      "IND",
+      "IRL",
+      "CIV"
+    ],
+    "confusable_design": [
+      "IND"
+    ]
+  },
+  {
+    "alpha3": "NGA",
+    "name": "Nigeria",
+    "difficulty": 2,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Western Africa",
+    "tags": {
+      "colors": [
+        "green",
+        "white"
+      ],
+      "design": "tricolor_vertical"
+    },
+    "confusable_region": [
+      "NER",
+      "BEN",
+      "GHA",
+      "BFA",
+      "CPV",
+      "CIV",
+      "GMB",
+      "GIN",
+      "GNB",
+      "LBR"
+    ],
+    "confusable_colors": [
+      "PAK",
+      "SAU",
+      "NFK"
+    ],
+    "confusable_design": [
+      "FRA",
+      "ITA",
+      "BEL"
+    ]
+  },
+  {
+    "alpha3": "NIU",
+    "name": "Niue",
+    "difficulty": 7,
+    "region": "Oceania",
+    "sub_region": "Polynesia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "yellow",
+        "blue",
+        "white",
+        "red"
+      ],
+      "design": "union_jack_yellow_stars"
+    },
+    "confusable_region": [
+      "ASM",
+      "COK",
+      "PYF",
+      "PCN",
+      "WSM",
+      "TON",
+      "TUV"
+    ],
+    "confusable_colors": [
+      "GBR",
+      "AUS"
+    ],
+    "confusable_design": [
+      "GBR",
+      "AUS"
+    ]
+  },
+  {
+    "alpha3": "NFK",
+    "name": "Norfolk Island",
+    "difficulty": 7,
+    "region": "Oceania",
+    "sub_region": "Australia and New Zealand",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "green",
+        "white"
+      ],
+      "design": "tricolor_vertical_emblem"
+    },
+    "confusable_region": [
+      "NZL",
+      "HMD",
+      "AUS",
+      "CXR",
+      "CCK"
+    ],
+    "confusable_colors": [
+      "NGA",
+      "PAK"
+    ],
+    "confusable_design": [
+      "NGA"
+    ]
+  },
+  {
+    "alpha3": "MNP",
+    "name": "Northern Mariana Islands",
+    "difficulty": 7,
+    "region": "Oceania",
+    "sub_region": "Micronesia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "green",
+        "red"
+      ],
+      "design": "emblem_centered"
+    },
+    "confusable_region": [
+      "PLW",
+      "FSM",
+      "GUM",
+      "KIR",
+      "MHL",
+      "NRU"
+    ],
+    "confusable_colors": [
+      "SOM",
+      "VNM"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "NOR",
+    "name": "Norway",
+    "difficulty": 2,
+    "region": "Europe",
+    "sub_region": "Northern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "blue"
+      ],
+      "design": "nordic_cross"
+    },
+    "confusable_region": [
+      "SWE",
+      "ISL",
+      "ALA",
+      "DNK",
+      "EST",
+      "FRO",
+      "FIN",
+      "GGY",
+      "IRL",
+      "IMN"
+    ],
+    "confusable_colors": [
+      "ISL",
+      "GBR",
+      "FRA"
+    ],
+    "confusable_design": [
+      "ISL",
+      "DNK",
+      "FRO"
+    ]
+  },
+  {
+    "alpha3": "OMN",
+    "name": "Oman",
+    "difficulty": 5,
+    "region": "Asia",
+    "sub_region": "Western Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "green"
+      ],
+      "design": "vertical_horizontal_split_emblem"
+    },
+    "confusable_region": [
+      "ARE",
+      "YEM",
+      "SAU",
+      "ARM",
+      "AZE",
+      "BHR",
+      "CYP",
+      "GEO",
+      "IRQ",
+      "ISR"
+    ],
+    "confusable_colors": [
+      "BLR",
+      "MDG",
+      "BEN"
+    ],
+    "confusable_design": [
+      "MDG",
+      "BEN"
+    ]
+  },
+  {
+    "alpha3": "PAK",
+    "name": "Pakistan",
+    "difficulty": 2,
+    "region": "Asia",
+    "sub_region": "Southern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "green",
+        "white"
+      ],
+      "design": "vertical_horizontal_split_crescent"
+    },
+    "confusable_region": [
+      "IND",
+      "IRN",
+      "AFG",
+      "BGD",
+      "BTN",
+      "MDV",
+      "NPL"
+    ],
+    "confusable_colors": [
+      "TUR",
+      "DZA",
+      "MRT"
+    ],
+    "confusable_design": [
+      "MRT",
+      "TUR"
+    ]
+  },
+  {
+    "alpha3": "PLW",
+    "name": "Palau",
+    "difficulty": 5,
+    "region": "Oceania",
+    "sub_region": "Micronesia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "yellow"
+      ],
+      "design": "disk_off_centered"
+    },
+    "confusable_region": [
+      "FSM",
+      "MHL",
+      "GUM",
+      "KIR",
+      "NRU",
+      "MNP"
+    ],
+    "confusable_colors": [
+      "KAZ",
+      "SWE",
+      "UKR"
+    ],
+    "confusable_design": [
+      "JPN",
+      "BGD"
+    ]
+  },
+  {
+    "alpha3": "PSE",
+    "name": "Palestine, State of",
+    "difficulty": 5,
+    "region": "Asia",
+    "sub_region": "Western Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "black",
+        "white",
+        "green",
+        "red"
+      ],
+      "design": "pan_arab_triangle"
+    },
+    "confusable_region": [
+      "ISR",
+      "JOR",
+      "SYR",
+      "LBN",
+      "ARM",
+      "AZE",
+      "BHR",
+      "CYP",
+      "GEO",
+      "IRQ"
+    ],
+    "confusable_colors": [
+      "JOR",
+      "ARE",
+      "KWT",
+      "SDN"
+    ],
+    "confusable_design": [
+      "JOR",
+      "ARE",
+      "KWT",
+      "ESH",
+      "ISR"
+    ]
+  },
+  {
+    "alpha3": "PAN",
+    "name": "Panama",
+    "difficulty": 3,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Central America",
+    "tags": {
+      "colors": [
+        "white",
+        "red",
+        "blue"
+      ],
+      "design": "quadrants_stars"
+    },
+    "confusable_region": [
+      "CRI",
+      "NIC",
+      "BLZ",
+      "SLV",
+      "GTM",
+      "HND",
+      "MEX",
+      "AIA",
+      "ATG",
+      "ARG"
+    ],
+    "confusable_colors": [
+      "USA",
+      "CHL",
+      "DOM"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "PNG",
+    "name": "Papua New Guinea",
+    "difficulty": 4,
+    "region": "Oceania",
+    "sub_region": "Melanesia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "black",
+        "red",
+        "yellow",
+        "white"
+      ],
+      "design": "diagonal_split_emblem"
+    },
+    "confusable_region": [
+      "VUT",
+      "FJI",
+      "NCL"
+    ],
+    "confusable_colors": [
+      "AGO",
+      "TTO",
+      "DEU"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "PRY",
+    "name": "Paraguay",
+    "difficulty": 4,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "South America",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "blue"
+      ],
+      "design": "tricolor_horizontal_emblem"
+    },
+    "confusable_region": [
+      "ARG",
+      "BRA",
+      "BOL",
+      "BVT",
+      "CHL",
+      "COL",
+      "ECU",
+      "FLK",
+      "GUF",
+      "GUY"
+    ],
+    "confusable_colors": [
+      "NLD",
+      "LUX",
+      "RUS",
+      "HRV"
+    ],
+    "confusable_design": [
+      "NLD",
+      "LUX"
+    ]
+  },
+  {
+    "alpha3": "PER",
+    "name": "Peru",
+    "difficulty": 3,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "South America",
+    "tags": {
+      "colors": [
+        "red",
+        "white"
+      ],
+      "design": "tricolor_vertical"
+    },
+    "confusable_region": [
+      "COL",
+      "BRA",
+      "CHL",
+      "BOL",
+      "ARG",
+      "BVT",
+      "ECU",
+      "FLK",
+      "GUF",
+      "GUY"
+    ],
+    "confusable_colors": [
+      "AUT",
+      "CAN",
+      "LBN"
+    ],
+    "confusable_design": [
+      "AUT",
+      "FRA",
+      "ITA"
+    ]
+  },
+  {
+    "alpha3": "PHL",
+    "name": "Philippines",
+    "difficulty": 2,
+    "region": "Asia",
+    "sub_region": "South-eastern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "red",
+        "white",
+        "yellow"
+      ],
+      "design": "horizontal_bicolor_triangle_emblem"
+    },
+    "confusable_region": [
+      "IDN",
+      "MYS",
+      "VNM",
+      "BRN",
+      "KHM",
+      "LAO",
+      "MMR",
+      "SGP",
+      "THA"
+    ],
+    "confusable_colors": [
+      "CZE",
+      "CUB",
+      "PRI"
+    ],
+    "confusable_design": [
+      "CZE",
+      "CUB",
+      "PRI"
+    ]
+  },
+  {
+    "alpha3": "PCN",
+    "name": "Pitcairn",
+    "difficulty": 7,
+    "region": "Oceania",
+    "sub_region": "Polynesia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "red",
+        "green",
+        "yellow"
+      ],
+      "design": "union_jack_emblem"
+    },
+    "confusable_region": [
+      "ASM",
+      "COK",
+      "PYF",
+      "NIU",
+      "WSM",
+      "TON",
+      "TUV"
+    ],
+    "confusable_colors": [
+      "GBR",
+      "AUS"
+    ],
+    "confusable_design": [
+      "FLK",
+      "SHN",
+      "MSR",
+      "TCA",
+      "VGB"
+    ]
+  },
+  {
+    "alpha3": "POL",
+    "name": "Poland",
+    "difficulty": 2,
+    "region": "Europe",
+    "sub_region": "Central Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "white",
+        "red"
+      ],
+      "design": "horizontal_bicolor"
+    },
+    "confusable_region": [
+      "HUN"
+    ],
+    "confusable_colors": [
+      "IDN",
+      "MCO",
+      "AUT"
+    ],
+    "confusable_design": [
+      "IDN",
+      "MCO"
+    ]
+  },
+  {
+    "alpha3": "PRT",
+    "name": "Portugal",
+    "difficulty": 2,
+    "region": "Europe",
+    "sub_region": "Southern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "green",
+        "red",
+        "yellow",
+        "blue",
+        "white"
+      ],
+      "design": "vertical_bicolor_emblem"
+    },
+    "confusable_region": [
+      "ESP",
+      "VAT",
+      "ALB",
+      "AND",
+      "BIH",
+      "HRV",
+      "GIB",
+      "GRC",
+      "ITA",
+      "MKD"
+    ],
+    "confusable_colors": [
+      "MAR",
+      "BGD"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "PRI",
+    "name": "Puerto Rico",
+    "difficulty": 4,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "blue"
+      ],
+      "design": "stripes_triangle_star"
+    },
+    "confusable_region": [
+      "DOM",
+      "CUB",
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUW"
+    ],
+    "confusable_colors": [
+      "CUB",
+      "PHL",
+      "CZE"
+    ],
+    "confusable_design": [
+      "CUB"
+    ]
+  },
+  {
+    "alpha3": "QAT",
+    "name": "Qatar",
+    "difficulty": 4,
+    "region": "Asia",
+    "sub_region": "Western Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "maroon",
+        "white"
+      ],
+      "design": "serrated_vertical"
+    },
+    "confusable_region": [
+      "KWT",
+      "OMN",
+      "ARE",
+      "SAU",
+      "ARM",
+      "AZE",
+      "BHR",
+      "CYP",
+      "GEO",
+      "IRQ"
+    ],
+    "confusable_colors": [
+      "BHR"
+    ],
+    "confusable_design": [
+      "BHR"
+    ]
+  },
+  {
+    "alpha3": "REU",
+    "name": "Réunion",
+    "difficulty": 7,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "unknown"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "MUS",
+      "MDG",
+      "SYC",
+      "IOT",
+      "BDI",
+      "COM",
+      "DJI",
+      "ERI",
+      "ETH",
+      "ATF"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "ROU",
+    "name": "Romania",
+    "difficulty": 3,
+    "region": "Europe",
+    "sub_region": "Eastern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "yellow",
+        "red"
+      ],
+      "design": "tricolor_vertical"
+    },
+    "confusable_region": [
+      "MDA",
+      "UKR",
+      "BLR",
+      "BGR",
+      "CZE",
+      "RUS",
+      "SVK"
+    ],
+    "confusable_colors": [
+      "TCD",
+      "AND",
+      "MDA"
+    ],
+    "confusable_design": [
+      "TCD",
+      "AND",
+      "MDA"
+    ]
+  },
+  {
+    "alpha3": "RUS",
+    "name": "Russian Federation",
+    "difficulty": 1,
+    "region": "Europe",
+    "sub_region": "Eastern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "white",
+        "blue",
+        "red"
+      ],
+      "design": "tricolor_horizontal"
+    },
+    "confusable_region": [
+      "UKR",
+      "BLR",
+      "BGR",
+      "CZE",
+      "MDA",
+      "ROU",
+      "SVK"
+    ],
+    "confusable_colors": [
+      "FRA",
+      "NLD",
+      "SRB",
+      "SVK",
+      "SVN"
+    ],
+    "confusable_design": [
+      "NLD",
+      "LUX",
+      "SRB"
+    ]
+  },
+  {
+    "alpha3": "RWA",
+    "name": "Rwanda",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "blue",
+        "yellow",
+        "green"
+      ],
+      "design": "triband_horizontal_emblem"
+    },
+    "confusable_region": [
+      "BDI",
+      "UGA",
+      "TZA",
+      "IOT",
+      "COM",
+      "DJI",
+      "ERI",
+      "ETH",
+      "ATF",
+      "KEN"
+    ],
+    "confusable_colors": [
+      "GAB",
+      "SLE"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "KNA",
+    "name": "Saint Kitts and Nevis",
+    "difficulty": 5,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "green",
+        "black",
+        "red",
+        "yellow",
+        "white"
+      ],
+      "design": "diagonal_stripe_stars"
+    },
+    "confusable_region": [
+      "ATG",
+      "AIA",
+      "MSR",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUB",
+      "CUW"
+    ],
+    "confusable_colors": [
+      "TGO",
+      "COG"
+    ],
+    "confusable_design": [
+      "TGO",
+      "COG"
+    ]
+  },
+  {
+    "alpha3": "LCA",
+    "name": "Saint Lucia",
+    "difficulty": 5,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "blue",
+        "yellow",
+        "black",
+        "white"
+      ],
+      "design": "triangle_centered"
+    },
+    "confusable_region": [
+      "VCT",
+      "BRB",
+      "MTQ",
+      "DMA",
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BES",
+      "CYM"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "SPM",
+    "name": "Saint Pierre and Miquelon",
+    "difficulty": 7,
+    "region": "Americas",
+    "sub_region": "Northern America",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "unknown"
+      ],
+      "design": "generic"
+    },
+    "confusable_region": [
+      "BMU",
+      "CAN",
+      "GRL",
+      "USA"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "VCT",
+    "name": "Saint Vincent and the Grenadines",
+    "difficulty": 5,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "blue",
+        "yellow",
+        "green"
+      ],
+      "design": "tricolor_vertical_diamonds"
+    },
+    "confusable_region": [
+      "LCA",
+      "GRD",
+      "BRB",
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BES",
+      "CYM",
+      "CUB"
+    ],
+    "confusable_colors": [
+      "RWA",
+      "GAB"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "WSM",
+    "name": "Samoa",
+    "difficulty": 4,
+    "region": "Oceania",
+    "sub_region": "Polynesia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "blue",
+        "white"
+      ],
+      "design": "canton_stars"
+    },
+    "confusable_region": [
+      "TON",
+      "TUV",
+      "ASM",
+      "COK",
+      "PYF",
+      "NIU",
+      "PCN"
+    ],
+    "confusable_colors": [
+      "TWN",
+      "MMR"
+    ],
+    "confusable_design": [
+      "TWN",
+      "MMR"
+    ]
+  },
+  {
+    "alpha3": "SMR",
+    "name": "San Marino",
+    "difficulty": 4,
+    "region": "Europe",
+    "sub_region": "Southern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "white",
+        "blue"
+      ],
+      "design": "bicolor_horizontal_emblem"
+    },
+    "confusable_region": [
+      "ITA",
+      "VAT",
+      "ALB",
+      "AND",
+      "BIH",
+      "HRV",
+      "GIB",
+      "GRC",
+      "MKD",
+      "MLT"
+    ],
+    "confusable_colors": [
+      "GRC",
+      "ITA"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "STP",
+    "name": "Sao Tome and Principe",
+    "difficulty": 5,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Middle Africa",
+    "tags": {
+      "colors": [
+        "green",
+        "yellow",
+        "red",
+        "black"
+      ],
+      "design": "pan_african_stars"
+    },
+    "confusable_region": [
+      "GNQ",
+      "GAB",
+      "CMR",
+      "AGO",
+      "CAF",
+      "TCD",
+      "COG",
+      "COD",
+      "BEN",
+      "BWA"
+    ],
+    "confusable_colors": [
+      "GNB",
+      "SEN"
+    ],
+    "confusable_design": [
+      "GNB"
+    ]
+  },
+  {
+    "alpha3": "SAU",
+    "name": "Saudi Arabia",
+    "difficulty": 2,
+    "region": "Asia",
+    "sub_region": "Western Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "green",
+        "white"
+      ],
+      "design": "emblem_centered"
+    },
+    "confusable_region": [
+      "KWT",
+      "OMN",
+      "QAT",
+      "ARE",
+      "ARM",
+      "AZE",
+      "BHR",
+      "CYP",
+      "GEO",
+      "IRQ"
+    ],
+    "confusable_colors": [
+      "PAK",
+      "NGA"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "SEN",
+    "name": "Senegal",
+    "difficulty": 3,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Western Africa",
+    "tags": {
+      "colors": [
+        "green",
+        "yellow",
+        "red"
+      ],
+      "design": "tricolor_vertical_star"
+    },
+    "confusable_region": [
+      "GMB",
+      "GIN",
+      "GNB",
+      "MLI",
+      "BEN",
+      "BFA",
+      "CPV",
+      "CIV",
+      "GHA",
+      "LBR"
+    ],
+    "confusable_colors": [
+      "MLI",
+      "GIN",
+      "CMR"
+    ],
+    "confusable_design": [
+      "MLI",
+      "CMR"
+    ]
+  },
+  {
+    "alpha3": "SRB",
+    "name": "Serbia",
+    "difficulty": 3,
+    "region": "Europe",
+    "sub_region": "Southern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "blue",
+        "white"
+      ],
+      "design": "tricolor_horizontal_emblem"
+    },
+    "confusable_region": [
+      "MNE",
+      "MKD",
+      "VAT",
+      "ALB",
+      "AND",
+      "BIH",
+      "HRV",
+      "GIB",
+      "GRC",
+      "ITA"
+    ],
+    "confusable_colors": [
+      "RUS",
+      "SVK",
+      "SVN"
+    ],
+    "confusable_design": [
+      "SVK",
+      "SVN"
+    ]
+  },
+  {
+    "alpha3": "SYC",
+    "name": "Seychelles",
+    "difficulty": 3,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "blue",
+        "yellow",
+        "red",
+        "white",
+        "green"
+      ],
+      "design": "radiating_stripes"
+    },
+    "confusable_region": [
+      "MUS",
+      "MDG",
+      "REU",
+      "IOT",
+      "BDI",
+      "COM",
+      "DJI",
+      "ERI",
+      "ETH",
+      "ATF"
+    ],
+    "confusable_colors": [],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "SLE",
+    "name": "Sierra Leone",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Western Africa",
+    "tags": {
+      "colors": [
+        "green",
+        "white",
+        "blue"
+      ],
+      "design": "tricolor_horizontal"
+    },
+    "confusable_region": [
+      "LBR",
+      "GIN",
+      "CIV",
+      "BEN",
+      "BFA",
+      "CPV",
+      "GMB",
+      "GHA",
+      "GNB",
+      "MLI"
+    ],
+    "confusable_colors": [
+      "UZB",
+      "GAB"
+    ],
+    "confusable_design": [
+      "GAB",
+      "UZB"
+    ]
+  },
+  {
+    "alpha3": "SGP",
+    "name": "Singapore",
+    "difficulty": 2,
+    "region": "Asia",
+    "sub_region": "South-eastern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white"
+      ],
+      "design": "bicolor_horizontal_emblem"
+    },
+    "confusable_region": [
+      "MYS",
+      "IDN",
+      "BRN",
+      "KHM",
+      "LAO",
+      "MMR",
+      "PHL",
+      "THA",
+      "VNM"
+    ],
+    "confusable_colors": [
+      "IDN",
+      "MCO",
+      "POL"
+    ],
+    "confusable_design": [
+      "IDN",
+      "MCO"
+    ]
+  },
+  {
+    "alpha3": "SVK",
+    "name": "Slovakia",
+    "difficulty": 3,
+    "region": "Europe",
+    "sub_region": "Eastern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "white",
+        "blue",
+        "red"
+      ],
+      "design": "tricolor_horizontal_emblem"
+    },
+    "confusable_region": [
+      "BLR",
+      "BGR",
+      "CZE",
+      "MDA",
+      "ROU",
+      "RUS",
+      "UKR"
+    ],
+    "confusable_colors": [
+      "RUS",
+      "SRB",
+      "SVN"
+    ],
+    "confusable_design": [
+      "SRB",
+      "SVN"
+    ]
+  },
+  {
+    "alpha3": "SVN",
+    "name": "Slovenia",
+    "difficulty": 3,
+    "region": "Europe",
+    "sub_region": "Southern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "white",
+        "blue",
+        "red"
+      ],
+      "design": "tricolor_horizontal_emblem"
+    },
+    "confusable_region": [
+      "ITA",
+      "VAT",
+      "ALB",
+      "AND",
+      "BIH",
+      "HRV",
+      "GIB",
+      "GRC",
+      "MKD",
+      "MLT"
+    ],
+    "confusable_colors": [
+      "RUS",
+      "SRB",
+      "SVK"
+    ],
+    "confusable_design": [
+      "SRB",
+      "SVK"
+    ]
+  },
+  {
+    "alpha3": "SOM",
+    "name": "Somalia",
+    "difficulty": 3,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "blue",
+        "white"
+      ],
+      "design": "star_centered"
+    },
+    "confusable_region": [
+      "ETH",
+      "DJI",
+      "KEN",
+      "IOT",
+      "BDI",
+      "COM",
+      "ERI",
+      "ATF",
+      "MDG",
+      "MWI"
+    ],
+    "confusable_colors": [
+      "FSM",
+      "VNM"
+    ],
+    "confusable_design": [
+      "FSM",
+      "VNM"
+    ]
+  },
+  {
+    "alpha3": "ZAF",
+    "name": "South Africa",
+    "difficulty": 2,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Southern Africa",
+    "tags": {
+      "colors": [
+        "black",
+        "yellow",
+        "green",
+        "white",
+        "red",
+        "blue"
+      ],
+      "design": "complex_y_shape"
+    },
+    "confusable_region": [
+      "NAM",
+      "BWA",
+      "SWZ",
+      "LSO",
+      "AGO",
+      "BEN",
+      "IOT",
+      "BFA",
+      "BDI",
+      "CPV"
+    ],
+    "confusable_colors": [
+      "SSD",
+      "VUT"
+    ],
+    "confusable_design": [
+      "VUT",
+      "SSD"
+    ]
+  },
+  {
+    "alpha3": "SSD",
+    "name": "South Sudan",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "black",
+        "red",
+        "green",
+        "blue",
+        "yellow",
+        "white"
+      ],
+      "design": "stripes_triangle_star"
+    },
+    "confusable_region": [
+      "ETH",
+      "UGA",
+      "IOT",
+      "BDI",
+      "COM",
+      "DJI",
+      "ERI",
+      "ATF",
+      "KEN",
+      "MDG"
+    ],
+    "confusable_colors": [
+      "KEN",
+      "ZAF"
+    ],
+    "confusable_design": [
+      "SDN",
+      "KEN"
+    ]
+  },
+  {
+    "alpha3": "ESP",
+    "name": "Spain",
+    "difficulty": 1,
+    "region": "Europe",
+    "sub_region": "Southern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "yellow"
+      ],
+      "design": "triband_horizontal_emblem"
+    },
+    "confusable_region": [
+      "PRT",
+      "VAT",
+      "ALB",
+      "AND",
+      "BIH",
+      "HRV",
+      "GIB",
+      "GRC",
+      "ITA",
+      "MKD"
+    ],
+    "confusable_colors": [
+      "DEU",
+      "BEL"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "SDN",
+    "name": "Sudan",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Northern Africa",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "black",
+        "green"
+      ],
+      "design": "tricolor_horizontal_triangle"
+    },
+    "confusable_region": [
+      "LBY",
+      "DZA",
+      "EGY",
+      "MAR",
+      "TUN",
+      "ESH"
+    ],
+    "confusable_colors": [
+      "JOR",
+      "PSE",
+      "KWT",
+      "ARE"
+    ],
+    "confusable_design": [
+      "JOR",
+      "PSE"
+    ]
+  },
+  {
+    "alpha3": "SUR",
+    "name": "Suriname",
+    "difficulty": 4,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "South America",
+    "tags": {
+      "colors": [
+        "green",
+        "white",
+        "red",
+        "yellow"
+      ],
+      "design": "stripes_star"
+    },
+    "confusable_region": [
+      "GUY",
+      "GUF",
+      "BRA",
+      "ARG",
+      "BOL",
+      "BVT",
+      "CHL",
+      "COL",
+      "ECU",
+      "FLK"
+    ],
+    "confusable_colors": [
+      "PRY",
+      "GHA"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "SWE",
+    "name": "Sweden",
+    "difficulty": 1,
+    "region": "Europe",
+    "sub_region": "Northern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "yellow"
+      ],
+      "design": "nordic_cross"
+    },
+    "confusable_region": [
+      "NOR",
+      "ISL",
+      "ALA",
+      "DNK",
+      "EST",
+      "FRO",
+      "FIN",
+      "GGY",
+      "IRL",
+      "IMN"
+    ],
+    "confusable_colors": [
+      "UKR",
+      "KAZ"
+    ],
+    "confusable_design": [
+      "NOR",
+      "DNK",
+      "FIN",
+      "ISL",
+      "ALA"
+    ]
+  },
+  {
+    "alpha3": "CHE",
+    "name": "Switzerland",
+    "difficulty": 1,
+    "region": "Europe",
+    "sub_region": "Western Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white"
+      ],
+      "design": "square_cross"
+    },
+    "confusable_region": [
+      "LIE",
+      "AUT",
+      "BEL",
+      "FRA",
+      "DEU",
+      "LUX",
+      "MCO",
+      "NLD"
+    ],
+    "confusable_colors": [
+      "AUT",
+      "DNK",
+      "TUR"
+    ],
+    "confusable_design": [
+      "TKL"
+    ]
+  },
+  {
+    "alpha3": "SYR",
+    "name": "Syrian Arab Republic",
+    "difficulty": 3,
+    "region": "Asia",
+    "sub_region": "Western Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "black",
+        "green"
+      ],
+      "design": "tricolor_horizontal_stars"
+    },
+    "confusable_region": [
+      "IRQ",
+      "JOR",
+      "LBN",
+      "TUR",
+      "ARM",
+      "AZE",
+      "BHR",
+      "CYP",
+      "GEO",
+      "ISR"
+    ],
+    "confusable_colors": [
+      "EGY",
+      "IRQ",
+      "YEM",
+      "SDN"
+    ],
+    "confusable_design": [
+      "EGY",
+      "IRQ",
+      "YEM"
+    ]
+  },
+  {
+    "alpha3": "TWN",
+    "name": "Taiwan, Province of China",
+    "difficulty": 2,
+    "region": "Asia",
+    "sub_region": "Eastern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "blue",
+        "white"
+      ],
+      "design": "canton_sun"
+    },
+    "confusable_region": [
+      "JPN",
+      "HKG",
+      "CHN",
+      "PRK",
+      "KOR",
+      "MAC",
+      "MNG"
+    ],
+    "confusable_colors": [
+      "WSM",
+      "MMR"
+    ],
+    "confusable_design": [
+      "WSM",
+      "MMR"
+    ]
+  },
+  {
+    "alpha3": "TJK",
+    "name": "Tajikistan",
+    "difficulty": 4,
+    "region": "Asia",
+    "sub_region": "Central Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "green",
+        "yellow"
+      ],
+      "design": "tricolor_horizontal_emblem"
+    },
+    "confusable_region": [
+      "UZB",
+      "KGZ",
+      "KAZ",
+      "TKM"
+    ],
+    "confusable_colors": [
+      "HUN",
+      "IRN"
+    ],
+    "confusable_design": [
+      "IRN",
+      "HUN"
+    ]
+  },
+  {
+    "alpha3": "TZA",
+    "name": "Tanzania, United Republic of",
+    "difficulty": 3,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "green",
+        "yellow",
+        "black",
+        "blue"
+      ],
+      "design": "diagonal_stripes"
+    },
+    "confusable_region": [
+      "KEN",
+      "UGA",
+      "RWA",
+      "BDI",
+      "MWI",
+      "MOZ",
+      "IOT",
+      "COM",
+      "DJI",
+      "ERI"
+    ],
+    "confusable_colors": [
+      "ZMB",
+      "NAM"
+    ],
+    "confusable_design": [
+      "NAM"
+    ]
+  },
+  {
+    "alpha3": "THA",
+    "name": "Thailand",
+    "difficulty": 2,
+    "region": "Asia",
+    "sub_region": "South-eastern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "blue"
+      ],
+      "design": "stripes_horizontal"
+    },
+    "confusable_region": [
+      "LAO",
+      "MMR",
+      "MYS",
+      "IDN",
+      "BRN",
+      "KHM",
+      "PHL",
+      "SGP",
+      "VNM"
+    ],
+    "confusable_colors": [
+      "CRI"
+    ],
+    "confusable_design": [
+      "CRI"
+    ]
+  },
+  {
+    "alpha3": "TGO",
+    "name": "Togo",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Western Africa",
+    "tags": {
+      "colors": [
+        "green",
+        "yellow",
+        "red",
+        "white"
+      ],
+      "design": "stripes_canton_star"
+    },
+    "confusable_region": [
+      "GHA",
+      "BEN",
+      "BFA",
+      "CPV",
+      "CIV",
+      "GMB",
+      "GIN",
+      "GNB",
+      "LBR",
+      "MLI"
+    ],
+    "confusable_colors": [
+      "LBR",
+      "USA"
+    ],
+    "confusable_design": [
+      "LBR"
+    ]
+  },
+  {
+    "alpha3": "TON",
+    "name": "Tonga",
+    "difficulty": 4,
+    "region": "Oceania",
+    "sub_region": "Polynesia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white"
+      ],
+      "design": "canton_cross"
+    },
+    "confusable_region": [
+      "WSM",
+      "NIU",
+      "ASM",
+      "COK",
+      "PYF",
+      "PCN",
+      "TUV"
+    ],
+    "confusable_colors": [
+      "CHE",
+      "TUR"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "TTO",
+    "name": "Trinidad and Tobago",
+    "difficulty": 4,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "red",
+        "black",
+        "white"
+      ],
+      "design": "diagonal_stripe"
+    },
+    "confusable_region": [
+      "GRD",
+      "VCT",
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUB"
+    ],
+    "confusable_colors": [
+      "AGO"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "TUN",
+    "name": "Tunisia",
+    "difficulty": 3,
+    "region": "Africa",
+    "sub_region": "Northern Africa",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white"
+      ],
+      "design": "crescent_star_disk"
+    },
+    "confusable_region": [
+      "LBY",
+      "DZA",
+      "EGY",
+      "MAR",
+      "SDN",
+      "ESH"
+    ],
+    "confusable_colors": [
+      "TUR"
+    ],
+    "confusable_design": [
+      "TUR"
+    ]
+  },
+  {
+    "alpha3": "TUR",
+    "name": "Turkey",
+    "difficulty": 1,
+    "region": "Asia",
+    "sub_region": "Western Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white"
+      ],
+      "design": "crescent_star"
+    },
+    "confusable_region": [
+      "SYR",
+      "IRQ",
+      "ARM",
+      "AZE",
+      "BHR",
+      "CYP",
+      "GEO",
+      "ISR",
+      "JOR",
+      "KWT"
+    ],
+    "confusable_colors": [
+      "TUN",
+      "DZA",
+      "PAK"
+    ],
+    "confusable_design": [
+      "TUN"
+    ]
+  },
+  {
+    "alpha3": "TKM",
+    "name": "Turkmenistan",
+    "difficulty": 5,
+    "region": "Asia",
+    "sub_region": "Central Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "green",
+        "red",
+        "white",
+        "yellow"
+      ],
+      "design": "emblem_side_crescent"
+    },
+    "confusable_region": [
+      "UZB",
+      "KAZ",
+      "KGZ",
+      "TJK"
+    ],
+    "confusable_colors": [
+      "PAK",
+      "SAU"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "TUV",
+    "name": "Tuvalu",
+    "difficulty": 5,
+    "region": "Oceania",
+    "sub_region": "Polynesia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "red",
+        "yellow"
+      ],
+      "design": "union_jack_stars"
+    },
+    "confusable_region": [
+      "WSM",
+      "ASM",
+      "COK",
+      "PYF",
+      "NIU",
+      "PCN",
+      "TON"
+    ],
+    "confusable_colors": [
+      "AUS",
+      "NZL",
+      "FJI"
+    ],
+    "confusable_design": [
+      "FJI",
+      "AUS",
+      "NZL"
+    ]
+  },
+  {
+    "alpha3": "UGA",
+    "name": "Uganda",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "black",
+        "yellow",
+        "red",
+        "white"
+      ],
+      "design": "stripes_emblem"
+    },
+    "confusable_region": [
+      "KEN",
+      "TZA",
+      "RWA",
+      "SSD",
+      "IOT",
+      "BDI",
+      "COM",
+      "DJI",
+      "ERI",
+      "ETH"
+    ],
+    "confusable_colors": [
+      "DEU",
+      "BEL"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "UKR",
+    "name": "Ukraine",
+    "difficulty": 1,
+    "region": "Europe",
+    "sub_region": "Eastern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "yellow"
+      ],
+      "design": "bicolor_horizontal"
+    },
+    "confusable_region": [
+      "RUS",
+      "ROU",
+      "MDA",
+      "BLR",
+      "BGR",
+      "CZE",
+      "SVK"
+    ],
+    "confusable_colors": [
+      "SWE",
+      "PLW"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "ARE",
+    "name": "United Arab Emirates",
+    "difficulty": 3,
+    "region": "Asia",
+    "sub_region": "Western Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "green",
+        "white",
+        "black"
+      ],
+      "design": "pan_arab_vertical"
+    },
+    "confusable_region": [
+      "OMN",
+      "SAU",
+      "QAT",
+      "KWT",
+      "ARM",
+      "AZE",
+      "BHR",
+      "CYP",
+      "GEO",
+      "IRQ"
+    ],
+    "confusable_colors": [
+      "JOR",
+      "KWT",
+      "PSE"
+    ],
+    "confusable_design": [
+      "KWT",
+      "JOR",
+      "PSE"
+    ]
+  },
+  {
+    "alpha3": "GBR",
+    "name": "United Kingdom of Great Britain and Northern Ireland",
+    "difficulty": 1,
+    "region": "Europe",
+    "sub_region": "Northern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "red"
+      ],
+      "design": "union_jack"
+    },
+    "confusable_region": [
+      "IRL",
+      "ISL",
+      "ALA",
+      "DNK",
+      "EST",
+      "FRO",
+      "FIN",
+      "GGY",
+      "IMN",
+      "JEY"
+    ],
+    "confusable_colors": [
+      "USA",
+      "FRA",
+      "AUS",
+      "NZL"
+    ],
+    "confusable_design": [
+      "AUS",
+      "NZL",
+      "FJI",
+      "TUV"
+    ]
+  },
+  {
+    "alpha3": "USA",
+    "name": "United States of America",
+    "difficulty": 1,
+    "region": "Americas",
+    "sub_region": "Northern America",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "blue"
+      ],
+      "design": "stars_stripes"
+    },
+    "confusable_region": [
+      "BMU",
+      "CAN",
+      "GRL",
+      "SPM"
+    ],
+    "confusable_colors": [
+      "LBR",
+      "MYS",
+      "CHL"
+    ],
+    "confusable_design": [
+      "LBR",
+      "MYS"
+    ]
+  },
+  {
+    "alpha3": "URY",
+    "name": "Uruguay",
+    "difficulty": 3,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "South America",
+    "tags": {
+      "colors": [
+        "white",
+        "blue",
+        "yellow"
+      ],
+      "design": "stripes_sun"
+    },
+    "confusable_region": [
+      "ARG",
+      "BRA",
+      "PRY",
+      "BOL",
+      "BVT",
+      "CHL",
+      "COL",
+      "ECU",
+      "FLK",
+      "GUF"
+    ],
+    "confusable_colors": [
+      "ARG",
+      "GRC",
+      "SLV"
+    ],
+    "confusable_design": [
+      "GRC",
+      "LBR"
+    ]
+  },
+  {
+    "alpha3": "UZB",
+    "name": "Uzbekistan",
+    "difficulty": 4,
+    "region": "Asia",
+    "sub_region": "Central Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "green",
+        "red"
+      ],
+      "design": "stripes_crescent_stars"
+    },
+    "confusable_region": [
+      "TJK",
+      "KGZ",
+      "TKM",
+      "KAZ"
+    ],
+    "confusable_colors": [
+      "SLE",
+      "GAB"
+    ],
+    "confusable_design": [
+      "SLE"
+    ]
+  },
+  {
+    "alpha3": "VUT",
+    "name": "Vanuatu",
+    "difficulty": 5,
+    "region": "Oceania",
+    "sub_region": "Melanesia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "green",
+        "black",
+        "yellow"
+      ],
+      "design": "y_shape_emblem"
+    },
+    "confusable_region": [
+      "NCL",
+      "FJI",
+      "PNG"
+    ],
+    "confusable_colors": [
+      "ZAF",
+      "SSD"
+    ],
+    "confusable_design": [
+      "ZAF",
+      "SSD"
+    ]
+  },
+  {
+    "alpha3": "VEN",
+    "name": "Venezuela (Bolivarian Republic of)",
+    "difficulty": 3,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "South America",
+    "tags": {
+      "colors": [
+        "yellow",
+        "blue",
+        "red",
+        "white"
+      ],
+      "design": "tricolor_horizontal_stars"
+    },
+    "confusable_region": [
+      "COL",
+      "GUY",
+      "BRA",
+      "ARG",
+      "BOL",
+      "BVT",
+      "CHL",
+      "ECU",
+      "FLK",
+      "GUF"
+    ],
+    "confusable_colors": [
+      "COL",
+      "ECU"
+    ],
+    "confusable_design": [
+      "COL",
+      "ECU"
+    ]
+  },
+  {
+    "alpha3": "VNM",
+    "name": "Viet Nam",
+    "difficulty": 2,
+    "region": "Asia",
+    "sub_region": "South-eastern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "yellow"
+      ],
+      "design": "star_centered"
+    },
+    "confusable_region": [
+      "LAO",
+      "THA",
+      "IDN",
+      "BRN",
+      "KHM",
+      "MYS",
+      "MMR",
+      "PHL",
+      "SGP"
+    ],
+    "confusable_colors": [
+      "CHN",
+      "MAR",
+      "TUR"
+    ],
+    "confusable_design": [
+      "MAR",
+      "SOM"
+    ]
+  },
+  {
+    "alpha3": "ESH",
+    "name": "Western Sahara",
+    "difficulty": 5,
+    "region": "Africa",
+    "sub_region": "Northern Africa",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "black",
+        "white",
+        "green",
+        "red"
+      ],
+      "design": "tricolor_horizontal_triangle_crescent"
+    },
+    "confusable_region": [
+      "MAR",
+      "DZA",
+      "EGY",
+      "LBY",
+      "SDN",
+      "TUN"
+    ],
+    "confusable_colors": [
+      "JOR",
+      "PSE",
+      "SAU"
+    ],
+    "confusable_design": [
+      "PSE",
+      "JOR"
+    ]
+  },
+  {
+    "alpha3": "YEM",
+    "name": "Yemen",
+    "difficulty": 3,
+    "region": "Asia",
+    "sub_region": "Western Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "black"
+      ],
+      "design": "tricolor_horizontal"
+    },
+    "confusable_region": [
+      "SAU",
+      "OMN",
+      "ARM",
+      "AZE",
+      "BHR",
+      "CYP",
+      "GEO",
+      "IRQ",
+      "ISR",
+      "JOR"
+    ],
+    "confusable_colors": [
+      "EGY",
+      "IRQ",
+      "SYR",
+      "SDN"
+    ],
+    "confusable_design": [
+      "EGY",
+      "IRQ",
+      "SYR"
+    ]
+  },
+  {
+    "alpha3": "ZMB",
+    "name": "Zambia",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "green",
+        "orange",
+        "black",
+        "red"
+      ],
+      "design": "unique_corner_emblem"
+    },
+    "confusable_region": [
+      "MWI",
+      "MOZ",
+      "ZWE",
+      "IOT",
+      "BDI",
+      "COM",
+      "DJI",
+      "ERI",
+      "ETH",
+      "ATF"
+    ],
+    "confusable_colors": [
+      "RWA",
+      "TZA"
+    ],
+    "confusable_design": []
+  },
+  {
+    "alpha3": "ZWE",
+    "name": "Zimbabwe",
+    "difficulty": 4,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Eastern Africa",
+    "tags": {
+      "colors": [
+        "green",
+        "yellow",
+        "red",
+        "black",
+        "white"
+      ],
+      "design": "stripes_triangle_emblem"
+    },
+    "confusable_region": [
+      "MOZ",
+      "ZMB",
+      "IOT",
+      "BDI",
+      "COM",
+      "DJI",
+      "ERI",
+      "ETH",
+      "ATF",
+      "KEN"
+    ],
+    "confusable_colors": [
+      "MOZ",
+      "ETH",
+      "GHA"
+    ],
+    "confusable_design": [
+      "MOZ"
+    ]
+  },
+  {
+    "alpha3": "ATA",
+    "name": "Antarctica",
+    "difficulty": 8,
+    "region": "",
+    "sub_region": "",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "white"
+      ],
+      "design": "map_branches"
+    },
+    "confusable_region": [],
+    "confusable_colors": [
+      "ABW",
+      "ARG",
+      "ATG",
+      "AUS",
+      "AZE",
+      "BIH",
+      "BLZ",
+      "BMU",
+      "BRA",
+      "BWA"
+    ],
+    "confusable_design": [
+      "CYP"
+    ]
+  },
+  {
+    "alpha3": "BLM",
+    "name": "Saint Barthélemy",
+    "difficulty": 8,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "red",
+        "yellow"
+      ],
+      "design": "tricolor_vertical_emblem"
+    },
+    "confusable_region": [
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUB",
+      "CUW",
+      "DMA"
+    ],
+    "confusable_colors": [
+      "ABW",
+      "ATG",
+      "GTM",
+      "VEN",
+      "CAF",
+      "COM",
+      "CPV",
+      "FJI",
+      "KIR",
+      "MYS"
+    ],
+    "confusable_design": [
+      "AFG",
+      "AND",
+      "BRB",
+      "GTM",
+      "MEX",
+      "MDA",
+      "MNG",
+      "NFK",
+      "AIA",
+      "ATG"
+    ]
+  },
+  {
+    "alpha3": "SHN",
+    "name": "Saint Helena, Ascension and Tristan da Cunha",
+    "difficulty": 8,
+    "region": "Africa",
+    "sub_region": "Sub-Saharan Africa",
+    "intermediate_region": "Western Africa",
+    "tags": {
+      "colors": [
+        "blue",
+        "red",
+        "white",
+        "yellow",
+        "green"
+      ],
+      "design": "union_jack_emblem"
+    },
+    "confusable_region": [
+      "BEN",
+      "BFA",
+      "CPV",
+      "CIV",
+      "GMB",
+      "GHA",
+      "GIN",
+      "GNB",
+      "LBR",
+      "MLI"
+    ],
+    "confusable_colors": [
+      "CAF",
+      "COM",
+      "NAM",
+      "SSD",
+      "SYC",
+      "ZAF",
+      "FJI",
+      "GTM",
+      "PCN",
+      "PRT"
+    ],
+    "confusable_design": [
+      "BMU",
+      "FJI",
+      "HMD",
+      "MSR",
+      "PCN",
+      "BEN",
+      "BFA",
+      "CPV",
+      "CIV",
+      "GMB"
+    ]
+  },
+  {
+    "alpha3": "MAF",
+    "name": "Saint Martin (French part)",
+    "difficulty": 8,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "blue",
+        "white",
+        "red"
+      ],
+      "design": "tricolor_vertical"
+    },
+    "confusable_region": [
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUB",
+      "CUW",
+      "DMA"
+    ],
+    "confusable_colors": [
+      "ABW",
+      "ATG",
+      "BLM",
+      "CUB",
+      "DOM",
+      "HTI",
+      "MSR",
+      "PRI",
+      "BLZ",
+      "CHL"
+    ],
+    "confusable_design": [
+      "BEL",
+      "TCD",
+      "CIV",
+      "FRA",
+      "GIN",
+      "IRL",
+      "ITA",
+      "MLI",
+      "NGA",
+      "PER"
+    ]
+  },
+  {
+    "alpha3": "SXM",
+    "name": "Sint Maarten (Dutch part)",
+    "difficulty": 8,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "blue",
+        "red",
+        "white",
+        "yellow"
+      ],
+      "design": "triangle_horizontal_emblem"
+    },
+    "confusable_region": [
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUB",
+      "CUW",
+      "DMA"
+    ],
+    "confusable_colors": [
+      "ABW",
+      "ATG",
+      "BLM",
+      "GTM",
+      "VEN",
+      "CAF",
+      "COM",
+      "CPV",
+      "FJI",
+      "KIR"
+    ],
+    "confusable_design": [
+      "GNQ",
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUB",
+      "CUW"
+    ]
+  },
+  {
+    "alpha3": "SLB",
+    "name": "Solomon Islands",
+    "difficulty": 8,
+    "region": "Oceania",
+    "sub_region": "Melanesia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "green",
+        "yellow",
+        "white"
+      ],
+      "design": "diagonal_stripe_stars"
+    },
+    "confusable_region": [
+      "FJI",
+      "NCL",
+      "PNG",
+      "VUT"
+    ],
+    "confusable_colors": [
+      "FJI",
+      "BRA",
+      "CAF",
+      "COM",
+      "GTM",
+      "NAM",
+      "PCN",
+      "PRT",
+      "SHN",
+      "SSD"
+    ],
+    "confusable_design": [
+      "KNA",
+      "FJI",
+      "NCL",
+      "PNG",
+      "VUT"
+    ]
+  },
+  {
+    "alpha3": "SGS",
+    "name": "South Georgia and the South Sandwich Islands",
+    "difficulty": 8,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "South America",
+    "tags": {
+      "colors": [
+        "blue",
+        "red",
+        "white",
+        "yellow",
+        "green"
+      ],
+      "design": "union_jack_emblem"
+    },
+    "confusable_region": [
+      "ARG",
+      "BOL",
+      "BVT",
+      "BRA",
+      "CHL",
+      "COL",
+      "ECU",
+      "FLK",
+      "GUF",
+      "GUY"
+    ],
+    "confusable_colors": [
+      "GTM",
+      "CAF",
+      "COM",
+      "FJI",
+      "NAM",
+      "PCN",
+      "PRT",
+      "SHN",
+      "SSD",
+      "SYC"
+    ],
+    "confusable_design": [
+      "BMU",
+      "FJI",
+      "HMD",
+      "MSR",
+      "PCN",
+      "SHN",
+      "ARG",
+      "BOL",
+      "BVT",
+      "BRA"
+    ]
+  },
+  {
+    "alpha3": "LKA",
+    "name": "Sri Lanka",
+    "difficulty": 8,
+    "region": "Asia",
+    "sub_region": "Southern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "maroon",
+        "yellow",
+        "green",
+        "orange"
+      ],
+      "design": "border_emblem"
+    },
+    "confusable_region": [
+      "AFG",
+      "BGD",
+      "BTN",
+      "IND",
+      "IRN",
+      "MDV",
+      "NPL",
+      "PAK"
+    ],
+    "confusable_colors": [
+      "BTN",
+      "IND",
+      "BEN",
+      "BFA",
+      "BOL",
+      "BRA",
+      "CAF",
+      "CIV",
+      "CMR",
+      "COG"
+    ],
+    "confusable_design": [
+      "GUM",
+      "AFG",
+      "BGD",
+      "BTN",
+      "IND",
+      "IRN",
+      "MDV",
+      "NPL",
+      "PAK"
+    ]
+  },
+  {
+    "alpha3": "SJM",
+    "name": "Svalbard and Jan Mayen",
+    "difficulty": 8,
+    "region": "Europe",
+    "sub_region": "Northern Europe",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "blue"
+      ],
+      "design": "nordic_cross"
+    },
+    "confusable_region": [
+      "ALA",
+      "DNK",
+      "EST",
+      "FRO",
+      "FIN",
+      "GGY",
+      "ISL",
+      "IRL",
+      "IMN",
+      "JEY"
+    ],
+    "confusable_colors": [
+      "FRO",
+      "GBR",
+      "ISL",
+      "NOR",
+      "ABW",
+      "ATG",
+      "AUS",
+      "AZE",
+      "BLM",
+      "BLZ"
+    ],
+    "confusable_design": [
+      "DNK",
+      "FRO",
+      "FIN",
+      "ISL",
+      "NOR",
+      "SWE",
+      "ALA",
+      "EST",
+      "GGY",
+      "IRL"
+    ]
+  },
+  {
+    "alpha3": "TLS",
+    "name": "Timor-Leste",
+    "difficulty": 8,
+    "region": "Asia",
+    "sub_region": "South-eastern Asia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "black",
+        "yellow",
+        "white"
+      ],
+      "design": "triangle_stars"
+    },
+    "confusable_region": [
+      "BRN",
+      "KHM",
+      "IDN",
+      "LAO",
+      "MYS",
+      "MMR",
+      "PHL",
+      "SGP",
+      "THA",
+      "VNM"
+    ],
+    "confusable_colors": [
+      "BRN",
+      "ATG",
+      "DMA",
+      "EGY",
+      "GUY",
+      "KNA",
+      "MOZ",
+      "PNG",
+      "SSD",
+      "SWZ"
+    ],
+    "confusable_design": [
+      "BIH",
+      "BRN",
+      "KHM",
+      "IDN",
+      "LAO",
+      "MYS",
+      "MMR",
+      "PHL",
+      "SGP",
+      "THA"
+    ]
+  },
+  {
+    "alpha3": "TKL",
+    "name": "Tokelau",
+    "difficulty": 8,
+    "region": "Oceania",
+    "sub_region": "Polynesia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "blue",
+        "yellow",
+        "white"
+      ],
+      "design": "union_jack_stars"
+    },
+    "confusable_region": [
+      "ASM",
+      "COK",
+      "PYF",
+      "NIU",
+      "PCN",
+      "WSM",
+      "TON",
+      "TUV",
+      "WLF"
+    ],
+    "confusable_colors": [
+      "NIU",
+      "PCN",
+      "TUV",
+      "ABW",
+      "ARG",
+      "ATG",
+      "BIH",
+      "BLM",
+      "BRA",
+      "CAF"
+    ],
+    "confusable_design": [
+      "AUS",
+      "NZL",
+      "TUV",
+      "ASM",
+      "COK",
+      "PYF",
+      "NIU",
+      "PCN",
+      "WSM",
+      "TON"
+    ]
+  },
+  {
+    "alpha3": "TCA",
+    "name": "Turks and Caicos Islands",
+    "difficulty": 8,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "blue",
+        "red",
+        "white",
+        "yellow",
+        "green"
+      ],
+      "design": "union_jack_emblem"
+    },
+    "confusable_region": [
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUB",
+      "CUW",
+      "DMA"
+    ],
+    "confusable_colors": [
+      "GTM",
+      "SGS",
+      "CAF",
+      "COM",
+      "FJI",
+      "NAM",
+      "PCN",
+      "PRT",
+      "SHN",
+      "SSD"
+    ],
+    "confusable_design": [
+      "BMU",
+      "FJI",
+      "HMD",
+      "MSR",
+      "PCN",
+      "SHN",
+      "SGS",
+      "AIA",
+      "ATG",
+      "ABW"
+    ]
+  },
+  {
+    "alpha3": "UMI",
+    "name": "United States Minor Outlying Islands",
+    "difficulty": 8,
+    "region": "Oceania",
+    "sub_region": "Micronesia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white",
+        "blue"
+      ],
+      "design": "stars_stripes"
+    },
+    "confusable_region": [
+      "GUM",
+      "KIR",
+      "MHL",
+      "FSM",
+      "NRU",
+      "MNP",
+      "PLW"
+    ],
+    "confusable_colors": [
+      "GUM",
+      "KIR",
+      "MNP",
+      "ABW",
+      "ATG",
+      "AUS",
+      "AZE",
+      "BLM",
+      "BLZ",
+      "BMU"
+    ],
+    "confusable_design": [
+      "LBR",
+      "USA",
+      "GUM",
+      "KIR",
+      "MHL",
+      "FSM",
+      "NRU",
+      "MNP",
+      "PLW"
+    ]
+  },
+  {
+    "alpha3": "VGB",
+    "name": "Virgin Islands (British)",
+    "difficulty": 8,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "blue",
+        "red",
+        "white",
+        "green",
+        "yellow"
+      ],
+      "design": "union_jack_emblem"
+    },
+    "confusable_region": [
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUB",
+      "CUW",
+      "DMA"
+    ],
+    "confusable_colors": [
+      "TCA",
+      "GTM",
+      "SGS",
+      "CAF",
+      "COM",
+      "FJI",
+      "NAM",
+      "PCN",
+      "PRT",
+      "SHN"
+    ],
+    "confusable_design": [
+      "BMU",
+      "FJI",
+      "HMD",
+      "MSR",
+      "PCN",
+      "SHN",
+      "SGS",
+      "TCA",
+      "AIA",
+      "ATG"
+    ]
+  },
+  {
+    "alpha3": "VIR",
+    "name": "Virgin Islands (U.S.)",
+    "difficulty": 8,
+    "region": "Americas",
+    "sub_region": "Latin America and the Caribbean",
+    "intermediate_region": "Caribbean",
+    "tags": {
+      "colors": [
+        "white",
+        "yellow",
+        "blue",
+        "green",
+        "red"
+      ],
+      "design": "emblem_centered"
+    },
+    "confusable_region": [
+      "AIA",
+      "ATG",
+      "ABW",
+      "BHS",
+      "BRB",
+      "BES",
+      "CYM",
+      "CUB",
+      "CUW",
+      "DMA"
+    ],
+    "confusable_colors": [
+      "TCA",
+      "VGB",
+      "GTM",
+      "SGS",
+      "CAF",
+      "COM",
+      "FJI",
+      "NAM",
+      "PCN",
+      "PRT"
+    ],
+    "confusable_design": [
+      "ALB",
+      "AGO",
+      "BLZ",
+      "KGZ",
+      "MYT",
+      "MNP",
+      "SAU",
+      "AIA",
+      "ATG",
+      "ABW"
+    ]
+  },
+  {
+    "alpha3": "WLF",
+    "name": "Wallis and Futuna",
+    "difficulty": 8,
+    "region": "Oceania",
+    "sub_region": "Polynesia",
+    "intermediate_region": "",
+    "tags": {
+      "colors": [
+        "red",
+        "white"
+      ],
+      "design": "tricolor_vertical"
+    },
+    "confusable_region": [
+      "ASM",
+      "COK",
+      "PYF",
+      "NIU",
+      "PCN",
+      "WSM",
+      "TON",
+      "TUV",
+      "TKL"
+    ],
+    "confusable_colors": [
+      "NIU",
+      "PCN",
+      "PYF",
+      "TON",
+      "TUV",
+      "WSM",
+      "ABW",
+      "ARE",
+      "ATG",
+      "AUS"
+    ],
+    "confusable_design": [
+      "BEL",
+      "TCD",
+      "CIV",
+      "FRA",
+      "GIN",
+      "IRL",
+      "ITA",
+      "MLI",
+      "NGA",
+      "PER"
+    ]
+  }
+]
