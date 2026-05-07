@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "sim:pairlink-scores": "node scripts/run-pairlink-score-simulation.mjs",
+    "sync:flags:wikimedia": "node scripts/sync-wikimedia-flags.mjs",
     "bench:pairlink-9k": "node scripts/run-pairlink-benchmark-9k.mjs",
     "bench:pairlink-9k-revised": "node scripts/run-pairlink-benchmark-9k-revised.mjs",
     "sim:pairlink-2026-0324": "node scripts/run-pairlink-simulation-2026-0324.mjs",

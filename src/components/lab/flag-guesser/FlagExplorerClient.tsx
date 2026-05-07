@@ -29,6 +29,7 @@ countries.registerLocale(jaLocale);
 
 const ISO_URL = "/assets/flag-guesser/iso-3166.json";
 const DIFF_URL = "/assets/flag-guesser/flag_difficulty.json";
+const ASPECT_URL = "/assets/flag-guesser/flag_aspect_ratio.json";
 const springPanel = { type: "spring" as const, stiffness: 370, damping: 32 };
 const springItem = { type: "spring" as const, stiffness: 400, damping: 32 };
 
@@ -77,6 +78,7 @@ export function FlagExplorerClient() {
   const [diffMax, setDiffMax] = useState(8);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<ExplorerCountryRow | null>(null);
+  const [aspectMeta, setAspectMeta] = useState<Record<string, { ratio: number }> | null>(null);
 
   const [isDebugMode, setIsDebugMode] = useState(false);
   const [isDebugPanelExpanded, setIsDebugPanelExpanded] = useState(true);
@@ -99,6 +101,21 @@ export function FlagExplorerClient() {
         if (!cancelled) setLoadError(e instanceof Error ? e.message : "読み込みエラー");
       }
     })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(ASPECT_URL)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (!cancelled && j && typeof j === "object") setAspectMeta(j as Record<string, { ratio: number }>);
+      })
+      .catch(() => {
+        if (!cancelled) setAspectMeta(null);
+      });
     return () => {
       cancelled = true;
     };
@@ -199,6 +216,15 @@ export function FlagExplorerClient() {
     return out.sort((a, b) => a.nameJa.localeCompare(b.nameJa, "ja"));
   }, [selected, byAlpha3]);
 
+  const getAspectRatio = useCallback(
+    (alpha2: string): number => {
+      const v = aspectMeta?.[alpha2.toUpperCase()]?.ratio;
+      if (typeof v === "number" && Number.isFinite(v) && v > 0) return v;
+      return 1.5;
+    },
+    [aspectMeta]
+  );
+
   const gridStyle = useMemo(() => ({ gridTemplateColumns: `repeat(auto-fill,minmax(${Math.max(120, Math.round(148 * cardScale))}px,1fr))` } as CSSProperties), [cardScale]);
   const dataReady = isoRows && diffRows && !loadError;
 
@@ -294,7 +320,7 @@ export function FlagExplorerClient() {
               <AnimatePresence mode="popLayout" initial={false}>
                 {filtered.map((c) => (
                   <motion.button key={c.alpha3} type="button" initial={{ opacity: 0, scale: 0.94, y: 6 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.94, y: -4 }} transition={springItem} onClick={() => setSelected(c)} className="group flex flex-col overflow-hidden rounded-2xl border text-left" whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }}>
-                    <div className="flex h-44 w-full items-center justify-center overflow-hidden bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-2"><FlagImage alpha2={c.alpha2} alt={`${c.nameJa}の国旗`} /></div>
+                    <div className="flex h-44 w-full items-center justify-center overflow-hidden bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-2"><div className="max-h-full max-w-full" style={{ aspectRatio: getAspectRatio(c.alpha2) }}><FlagImage alpha2={c.alpha2} alt={`${c.nameJa}の国旗`} /></div></div>
                     <div className="flex flex-col gap-1.5 p-2.5"><span className="line-clamp-2 text-xs font-semibold">{c.nameJa}</span><span className="text-[10px]">{c.alpha3}</span><DifficultyDots value={c.difficulty} /></div>
                   </motion.button>
                 ))}
@@ -313,10 +339,10 @@ export function FlagExplorerClient() {
             <motion.aside role="dialog" aria-modal="true" className="relative z-10 flex max-h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border bg-[var(--color-bg)] shadow-2xl" initial={{ y: 24, scale: 0.98, opacity: 0 }} animate={{ y: 0, scale: 1, opacity: 1 }} exit={{ y: 20, scale: 0.98, opacity: 0 }} transition={springPanel}>
               <div className="flex items-start justify-between gap-3 border-b px-4 py-3"><div className="min-w-0"><h2 className="text-lg font-bold">{selected.nameJa}</h2><p className="text-sm">{selected.nameEn}</p></div><button type="button" onClick={() => setSelected(null)} className="shrink-0 rounded-full p-2"><X className="h-5 w-5" /></button></div>
               <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
-                <div className="mb-4 flex h-64 w-full items-center justify-center overflow-hidden border bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-3"><FlagImage alpha2={selected.alpha2} alt={`${selected.nameJa}の国旗`} /></div>
+                <div className="mb-4 flex h-64 w-full items-center justify-center overflow-hidden border bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-3"><div className="max-h-full max-w-full" style={{ aspectRatio: getAspectRatio(selected.alpha2) }}><FlagImage alpha2={selected.alpha2} alt={`${selected.nameJa}の国旗`} /></div></div>
                 <dl className="space-y-3 text-sm"><div><dt className="text-xs">alpha-3</dt><dd className="font-mono">{selected.alpha3}</dd></div><div><dt className="text-xs">地域</dt><dd>{selected.regionLabel ?? "—"}{selected.subRegionLabel ? ` / ${selected.subRegionLabel}` : ""}{selected.intermediateRegionLabel ? ` / ${selected.intermediateRegionLabel}` : ""}</dd></div></dl>
                 <div className="mt-6"><h3 className="mb-2 text-xs">地図</h3><FlagExplorerMap highlightCountryCode={selected.countryCode} isoRows={isoRows} /></div>
-                <div className="mt-6"><h3 className="mb-2 text-xs">混同しやすい国旗(colors/design)</h3>{similarList.length === 0 ? <p className="text-xs">比較候補なし</p> : <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">{similarList.map((s) => <li key={s.alpha3}><button type="button" onClick={() => setSelected(s)} className="flex w-full flex-col overflow-hidden rounded-xl border text-left"><div className="flex h-24 w-full items-center justify-center bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-1"><FlagImage alpha2={s.alpha2} alt={`${s.nameJa}の国旗`} /></div><span className="line-clamp-2 p-2 text-[11px]">{s.nameJa}</span></button></li>)}</ul>}</div>
+                <div className="mt-6"><h3 className="mb-2 text-xs">混同しやすい国旗(colors/design)</h3>{similarList.length === 0 ? <p className="text-xs">比較候補なし</p> : <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">{similarList.map((s) => <li key={s.alpha3}><button type="button" onClick={() => setSelected(s)} className="flex w-full flex-col overflow-hidden rounded-xl border text-left"><div className="flex h-24 w-full items-center justify-center bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-1"><div className="max-h-full max-w-full" style={{ aspectRatio: getAspectRatio(s.alpha2) }}><FlagImage alpha2={s.alpha2} alt={`${s.nameJa}の国旗`} /></div></div><span className="line-clamp-2 p-2 text-[11px]">{s.nameJa}</span></button></li>)}</ul>}</div>
               </div>
             </motion.aside>
           </motion.div>
