@@ -266,7 +266,7 @@ export function FlagExplorerClient() {
       {dataReady ? (
         <>
           <section className="mb-6 space-y-4 rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] p-4 backdrop-blur sm:p-5">
-            <div className="flex flex-wrap items-center justify-between gap-2 text-sm font-semibold text-[var(--color-text)]"><div className="flex items-center gap-2"><Filter className="h-4 w-4" />絞り込み</div><button type="button" onClick={resetFilters} className="rounded-md border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] px-2 py-1 text-[11px]">入力をリセット</button></div>
+            <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-[var(--color-text)]"><div className="flex items-center gap-2"><Filter className="h-4 w-4" />絞り込み</div><button type="button" onClick={resetFilters} className="rounded-md border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] px-2 py-1 text-[11px] font-medium">入力をリセット</button></div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <label className="flex flex-col gap-1.5 text-xs"><span>地域</span><select value={region} onChange={(e) => { setRegion(e.target.value); setSubRegion(""); setIntermediateRegion(""); }} className="rounded-lg border px-3 py-2 text-sm"><option value="">（すべて）</option>{regionOptions.map((r) => <option key={r} value={r}>{r}</option>)}</select></label>
 
@@ -283,8 +283,8 @@ export function FlagExplorerClient() {
               <div className="flex flex-col gap-1.5"><span className="text-xs">難易度 {clampDiff(diffMin, diffMax).lo}〜{clampDiff(diffMin, diffMax).hi}</span><div className="flex gap-2"><input type="range" min={1} max={8} value={diffMin} onChange={(e) => { const v = Number(e.target.value); setDiffMin(v); setDiffMax((m) => m < v ? v : m); }} className="h-2 w-full" /><input type="range" min={1} max={8} value={diffMax} onChange={(e) => { const v = Number(e.target.value); setDiffMax(v); setDiffMin((m) => m > v ? v : m); }} className="h-2 w-full" /></div></div>
             </div>
 
-            <div className="flex flex-wrap gap-2">{colorOptions.map((c) => { const on = colorFilter.includes(c); return <button key={c} type="button" onClick={() => setColorFilter((prev) => prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c])} className={`rounded-full border px-2.5 py-1 text-xs ${on ? "border-[var(--color-primary)]" : ""}`}>{displayColorTag(c)}</button>; })}</div>
-            <label className="flex items-center gap-2 rounded-xl border px-3 py-2"><Search className="h-4 w-4" /><input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="国名 or alpha-3" className="min-w-0 flex-1 bg-transparent text-sm outline-none" /></label>
+            <label className="flex flex-col gap-1.5 text-xs"><span>色 (AND)</span><div className="flex flex-wrap gap-2">{colorOptions.map((c) => { const on = colorFilter.includes(c); return <button key={c} type="button" onClick={() => setColorFilter((prev) => prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c])} className={`rounded-full border px-2.5 py-1 text-xs ${on ? "border-[var(--color-primary)]" : ""}`}>{displayColorTag(c)}</button>; })}</div></label>
+            <label className="flex flex-col gap-1.5 text-xs"><span>文字列</span><div className="flex items-center gap-2 rounded-xl border px-3 py-2"><Search className="h-4 w-4" /><input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="国名 or alpha-3" className="min-w-0 flex-1 bg-transparent text-sm outline-none" /></div></label>
             <p className="text-xs">該当 {filtered.length} 件 / 全 {merged.length} 件</p>
           </section>
 
@@ -294,7 +294,7 @@ export function FlagExplorerClient() {
               <AnimatePresence mode="popLayout" initial={false}>
                 {filtered.map((c) => (
                   <motion.button key={c.alpha3} type="button" initial={{ opacity: 0, scale: 0.94, y: 6 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.94, y: -4 }} transition={springItem} onClick={() => setSelected(c)} className="group flex flex-col overflow-hidden rounded-2xl border text-left" whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }}>
-                    <div className="flex h-44 w-full items-center justify-center overflow-hidden bg-white p-2"><FlagImage alpha2={c.alpha2} alt={`${c.nameJa}の国旗`} /></div>
+                    <div className="flex h-44 w-full items-center justify-center overflow-hidden bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-2"><FlagImage alpha2={c.alpha2} alt={`${c.nameJa}の国旗`} /></div>
                     <div className="flex flex-col gap-1.5 p-2.5"><span className="line-clamp-2 text-xs font-semibold">{c.nameJa}</span><span className="text-[10px]">{c.alpha3}</span><DifficultyDots value={c.difficulty} /></div>
                   </motion.button>
                 ))}
@@ -313,10 +313,10 @@ export function FlagExplorerClient() {
             <motion.aside role="dialog" aria-modal="true" className="relative z-10 flex max-h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border bg-[var(--color-bg)] shadow-2xl" initial={{ y: 24, scale: 0.98, opacity: 0 }} animate={{ y: 0, scale: 1, opacity: 1 }} exit={{ y: 20, scale: 0.98, opacity: 0 }} transition={springPanel}>
               <div className="flex items-start justify-between gap-3 border-b px-4 py-3"><div className="min-w-0"><h2 className="text-lg font-bold">{selected.nameJa}</h2><p className="text-sm">{selected.nameEn}</p></div><button type="button" onClick={() => setSelected(null)} className="shrink-0 rounded-full p-2"><X className="h-5 w-5" /></button></div>
               <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
-                <div className="mb-4 flex h-64 w-full items-center justify-center overflow-hidden border bg-white p-3"><FlagImage alpha2={selected.alpha2} alt={`${selected.nameJa}の国旗`} /></div>
+                <div className="mb-4 flex h-64 w-full items-center justify-center overflow-hidden border bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-3"><FlagImage alpha2={selected.alpha2} alt={`${selected.nameJa}の国旗`} /></div>
                 <dl className="space-y-3 text-sm"><div><dt className="text-xs">alpha-3</dt><dd className="font-mono">{selected.alpha3}</dd></div><div><dt className="text-xs">地域</dt><dd>{selected.regionLabel ?? "—"}{selected.subRegionLabel ? ` / ${selected.subRegionLabel}` : ""}{selected.intermediateRegionLabel ? ` / ${selected.intermediateRegionLabel}` : ""}</dd></div></dl>
                 <div className="mt-6"><h3 className="mb-2 text-xs">地図</h3><FlagExplorerMap highlightCountryCode={selected.countryCode} isoRows={isoRows} /></div>
-                <div className="mt-6"><h3 className="mb-2 text-xs">混同しやすい国旗(colors/design)</h3>{similarList.length === 0 ? <p className="text-xs">比較候補なし</p> : <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">{similarList.map((s) => <li key={s.alpha3}><button type="button" onClick={() => setSelected(s)} className="flex w-full flex-col overflow-hidden rounded-xl border text-left"><div className="flex h-24 w-full items-center justify-center bg-white p-1"><FlagImage alpha2={s.alpha2} alt={`${s.nameJa}の国旗`} /></div><span className="line-clamp-2 p-2 text-[11px]">{s.nameJa}</span></button></li>)}</ul>}</div>
+                <div className="mt-6"><h3 className="mb-2 text-xs">混同しやすい国旗(colors/design)</h3>{similarList.length === 0 ? <p className="text-xs">比較候補なし</p> : <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">{similarList.map((s) => <li key={s.alpha3}><button type="button" onClick={() => setSelected(s)} className="flex w-full flex-col overflow-hidden rounded-xl border text-left"><div className="flex h-24 w-full items-center justify-center bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-1"><FlagImage alpha2={s.alpha2} alt={`${s.nameJa}の国旗`} /></div><span className="line-clamp-2 p-2 text-[11px]">{s.nameJa}</span></button></li>)}</ul>}</div>
               </div>
             </motion.aside>
           </motion.div>
