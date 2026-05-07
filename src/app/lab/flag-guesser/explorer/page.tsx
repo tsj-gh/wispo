@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { SmartGuardLock } from "@/components/lab/SmartGuardLock";
 import { FlagExplorerClient } from "@/components/lab/flag-guesser/FlagExplorerClient";
 import { gameLabAlternates, gameLabPageSeo } from "@/lib/gameLabPageSeo";
 import { buildBreadcrumbJsonLd } from "@/lib/breadcrumbs";
@@ -26,7 +25,6 @@ export const metadata: Metadata = {
 export default function FlagGuesserExplorerPage() {
   return (
     <>
-      <SmartGuardLock />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <main className="min-h-[100dvh] w-full">
