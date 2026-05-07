@@ -295,7 +295,8 @@
       "colors": [
         "blue",
         "white",
-        "red"
+        "red",
+        "yellow"
       ],
       "design": "union_jack_emblem"
     },
@@ -1080,7 +1081,9 @@
       "colors": [
         "blue",
         "yellow",
-        "red"
+        "white",
+        "red",
+        "black"
       ],
       "design": "stripes_stars"
     },
@@ -1280,7 +1283,8 @@
       "colors": [
         "blue",
         "white",
-        "red"
+        "red",
+        "green"
       ],
       "design": "union_jack_emblem"
     },
@@ -1655,7 +1659,9 @@
       "colors": [
         "blue",
         "white",
-        "red"
+        "red",
+        "green",
+        "yellow"
       ],
       "design": "union_jack_emblem"
     },
@@ -1862,7 +1868,8 @@
       "colors": [
         "blue",
         "green",
-        "yellow"
+        "yellow",
+        "white"
       ],
       "design": "triangle_emblem"
     },
@@ -1894,7 +1901,8 @@
       "colors": [
         "green",
         "yellow",
-        "white"
+        "white",
+        "maroon"
       ],
       "design": "crescent_star"
     },
@@ -3178,8 +3186,8 @@
     "intermediate_region": "South America",
     "tags": {
       "colors": [
-        "blue",
-        "white",
+        "green",
+        "yellow",
         "red"
       ],
       "design": "tricolor_vertical"
@@ -3513,7 +3521,8 @@
       "colors": [
         "white",
         "red",
-        "black"
+        "black",
+        "yellow"
       ],
       "design": "horizontal_bicolor_emblem"
     },
@@ -3664,9 +3673,10 @@
     "intermediate_region": "Caribbean",
     "tags": {
       "colors": [
+        "black",
+        "yellow",
         "blue",
-        "white",
-        "red"
+        "green"
       ],
       "design": "tricolor_vertical"
     },
@@ -3789,7 +3799,7 @@
       "colors": [
         "white",
         "red",
-        "gold"
+        "yellow"
       ],
       "design": "cross_emblem"
     },

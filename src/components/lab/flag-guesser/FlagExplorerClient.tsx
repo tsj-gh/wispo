@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import countries from "i18n-iso-countries";
 import enLocale from "i18n-iso-countries/langs/en.json";
 import jaLocale from "i18n-iso-countries/langs/ja.json";
-import { Filter, Search, SlidersHorizontal, X } from "lucide-react";
+import { Filter, Search, X } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
@@ -14,6 +14,7 @@ import { FlagExplorerMap } from "@/components/lab/flag-guesser/FlagExplorerMap";
 import {
   buildRegionHierarchy,
   collectColorTagOptions,
+  collectCountryCodesForRegionalMapFit,
   displayColorTag,
   displayDesignTag,
   mergeExplorerCountries,
@@ -217,6 +218,12 @@ export function FlagExplorerClient() {
     return out.sort((a, b) => a.nameJa.localeCompare(b.nameJa, "ja"));
   }, [selected, byAlpha3]);
 
+  const mapRegionFitCodes = useMemo(() => {
+    if (!selected || !isoRows?.length) return null;
+    const codes = collectCountryCodesForRegionalMapFit(selected, isoRows);
+    return codes.length > 0 ? codes : null;
+  }, [selected, isoRows]);
+
   const getAspectRatio = useCallback(
     (alpha2: string): number => {
       const v = aspectMeta?.[alpha2.toUpperCase()]?.ratio;
@@ -398,7 +405,7 @@ export function FlagExplorerClient() {
               <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
                 <div className="mb-4 flex h-64 w-full items-center justify-center overflow-hidden border bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-3"><div className="h-full max-w-full" style={{ aspectRatio: getAspectRatio(selected.alpha2) }}><FlagImage alpha2={selected.alpha2} alt={`${selected.nameJa}の国旗`} /></div></div>
                 <dl className="space-y-3 text-sm"><div><dt className="text-xs">alpha-3</dt><dd className="font-mono">{selected.alpha3}</dd></div><div><dt className="text-xs">地域</dt><dd>{selected.regionLabel ?? "—"}{selected.subRegionLabel ? ` / ${selected.subRegionLabel}` : ""}{selected.intermediateRegionLabel ? ` / ${selected.intermediateRegionLabel}` : ""}</dd></div></dl>
-                <div className="mt-6"><h3 className="mb-2 text-xs">地図</h3><FlagExplorerMap highlightCountryCode={selected.countryCode} isoRows={isoRows} /></div>
+                <div className="mt-6"><h3 className="mb-2 text-xs">地図</h3><FlagExplorerMap highlightCountryCode={selected.countryCode} isoRows={isoRows} regionFitCountryCodes={mapRegionFitCodes} /></div>
                 <div className="mt-6"><h3 className="mb-2 text-xs">混同しやすい国旗(colors/design)</h3>{similarList.length === 0 ? <p className="text-xs">比較候補なし</p> : <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">{similarList.map((s) => <li key={s.alpha3}><button type="button" onClick={() => setSelected(s)} className="flex w-full flex-col overflow-hidden rounded-xl border text-left"><div className="flex h-24 w-full items-center justify-center bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-1"><div className="h-full max-w-full" style={{ aspectRatio: getAspectRatio(s.alpha2) }}><FlagImage alpha2={s.alpha2} alt={`${s.nameJa}の国旗`} /></div></div><span className="line-clamp-2 p-2 text-[11px]">{s.nameJa}</span></button></li>)}</ul>}</div>
               </div>
             </motion.aside>

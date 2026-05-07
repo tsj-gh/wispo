@@ -139,7 +139,6 @@ export function collectColorTagOptions(rows: readonly ExplorerCountryRow[]): str
     "purple",
     "brown",
     "maroon",
-    "gold",
     "silver",
     "pink",
     "emblem_colors",
@@ -165,7 +164,6 @@ export function displayColorTag(c: string): string {
     purple: "紫",
     brown: "茶",
     maroon: "赤茶",
-    gold: "金",
     silver: "銀",
     pink: "桃",
     emblem_colors: "紋章色",
@@ -177,4 +175,31 @@ export function displayColorTag(c: string): string {
 export function displayDesignTag(d: string): string {
   if (d === "generic" || d === "（未分類）") return d === "generic" ? "汎用" : d;
   return d;
+}
+
+/**
+ * 詳細地図の表示範囲用：同じ中間リージョンの国（無ければ同じサブリージョン、それも無ければ同じ地域）の ISO numeric country-code 一覧。
+ */
+export function collectCountryCodesForRegionalMapFit(
+  selected: ExplorerCountryRow,
+  isoRows: readonly Iso3166Row[]
+): string[] {
+  const ir = selected.intermediateRegionLabel;
+  const sr = selected.subRegionLabel;
+  const reg = selected.regionLabel;
+  const codes = new Set<string>();
+  for (const row of isoRows) {
+    const cc = row["country-code"]?.trim();
+    if (!cc) continue;
+    if (ir) {
+      if (normalizeBlank(row["intermediate-region"]) === ir) codes.add(cc);
+    } else if (sr) {
+      const msr = normalizeBlank(row["sub-region"]);
+      const mr = normalizeBlank(row.region);
+      if (msr === sr && (!reg || mr === reg)) codes.add(cc);
+    } else if (reg) {
+      if (normalizeBlank(row.region) === reg) codes.add(cc);
+    }
+  }
+  return Array.from(codes);
 }
