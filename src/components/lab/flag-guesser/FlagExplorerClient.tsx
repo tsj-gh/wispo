@@ -5,10 +5,9 @@ import countries from "i18n-iso-countries";
 import enLocale from "i18n-iso-countries/langs/en.json";
 import jaLocale from "i18n-iso-countries/langs/ja.json";
 import { Filter, Search, SlidersHorizontal, X } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { PairLinkAdSlot } from "@/components/PairLinkAdSlots";
 import { GamePageHeader } from "@/components/GamePageHeader";
 import { FlagExplorerMap } from "@/components/lab/flag-guesser/FlagExplorerMap";
@@ -36,7 +35,7 @@ const springItem = { type: "spring" as const, stiffness: 400, damping: 32 };
 function DifficultyDots({ value }: { value: number }) {
   const n = Math.min(8, Math.max(1, Math.round(value)));
   return (
-    <div className="flex items-center gap-0.5" aria-label={`難易度 ${n} / 8`} title={`難易度 ${n} / 8`}>
+    <div className="flex items-center gap-0.5" aria-label={`difficulty ${n} / 8`} title={`difficulty ${n} / 8`}>
       {Array.from({ length: 8 }, (_, i) => (
         <span key={i} className={`h-1.5 w-1.5 rounded-full ${i < n ? "bg-[var(--color-primary)]" : "bg-[color-mix(in_srgb,var(--color-muted)_55%,transparent)]"}`} />
       ))}
@@ -44,9 +43,14 @@ function DifficultyDots({ value }: { value: number }) {
   );
 }
 
+function FlagImage({ alpha2, alt, className }: { alpha2: string; alt: string; className?: string }) {
+  return <img src={flagUrlForAlpha2(alpha2)} alt={alt} loading="lazy" decoding="async" className={className ?? "h-auto w-auto max-h-full max-w-full object-contain"} />;
+}
+
 export function FlagExplorerClient() {
   const searchParams = useSearchParams();
   const isDevTj = searchParams.get("devtj") === "true";
+  const debugOnButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const [isoRows, setIsoRows] = useState<Iso3166Row[] | null>(null);
   const [diffRows, setDiffRows] = useState<FlagDifficultyJsonRow[] | null>(null);
@@ -60,6 +64,7 @@ export function FlagExplorerClient() {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<ExplorerCountryRow | null>(null);
 
+  const [isDebugMode, setIsDebugMode] = useState(false);
   const [isDebugPanelExpanded, setIsDebugPanelExpanded] = useState(true);
   const [cardScale, setCardScale] = useState(1);
 
@@ -68,7 +73,7 @@ export function FlagExplorerClient() {
     (async () => {
       try {
         const [isoRes, diffRes] = await Promise.all([fetch(ISO_URL), fetch(DIFF_URL)]);
-        if (!isoRes.ok || !diffRes.ok) throw new Error("データの取得に失敗しました");
+        if (!isoRes.ok || !diffRes.ok) throw new Error("Failed to load dataset");
         const iso = (await isoRes.json()) as Iso3166Row[];
         const diff = (await diffRes.json()) as FlagDifficultyJsonRow[];
         if (!cancelled) {
@@ -77,7 +82,7 @@ export function FlagExplorerClient() {
           setLoadError(null);
         }
       } catch (e) {
-        if (!cancelled) setLoadError(e instanceof Error ? e.message : "読み込みエラー");
+        if (!cancelled) setLoadError(e instanceof Error ? e.message : "load error");
       }
     })();
     return () => {
@@ -121,6 +126,7 @@ export function FlagExplorerClient() {
   }, [merged, region, subRegion]);
 
   const colorOptions = useMemo(() => collectColorTagOptions(merged), [merged]);
+
   useEffect(() => {
     if (region && subRegion && !subRegionOptions.includes(subRegion)) setSubRegion("");
   }, [region, subRegion, subRegionOptions]);
@@ -189,17 +195,41 @@ export function FlagExplorerClient() {
       />
 
       {isDevTj ? (
-        <section className="mb-3 rounded-xl border border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] px-3 py-2">
-          <div className={`flex items-center ${isDebugPanelExpanded ? "justify-between" : "justify-end"}`}>
-            {isDebugPanelExpanded ? <span className="text-sm font-bold text-[var(--color-primary)]">FLAG EXPLORER DEBUG</span> : null}
-            <button type="button" onClick={() => setIsDebugPanelExpanded((v) => !v)} className="rounded border border-[var(--color-text)]/30 bg-[var(--color-bg)]/80 px-2 py-1 text-xs" aria-expanded={isDebugPanelExpanded}>{isDebugPanelExpanded ? "▲" : "▼"}</button>
+        <>
+          <div className={`fixed right-3 top-14 z-[55] sm:right-4 sm:top-16 ${isDebugMode ? "pointer-events-none" : ""}`}>
+            <button
+              ref={debugOnButtonRef}
+              type="button"
+              disabled={isDebugMode}
+              aria-hidden={isDebugMode}
+              onClick={() => setIsDebugMode(true)}
+              className={`rounded border border-stone-300 bg-white/90 px-2 py-1 font-mono text-xs text-stone-800 shadow-sm ${isDebugMode ? "opacity-0" : ""}`}
+              title="デバッグを開始"
+              aria-label="デバッグを開始"
+            >
+              DEBUG OFF
+            </button>
           </div>
-          {isDebugPanelExpanded ? (
-            <div className="mt-2 rounded-lg border border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] bg-[var(--color-bg)]/60 p-2">
-              <label className="flex items-center gap-2 text-xs text-[var(--color-muted)]">カードサイズ率<input type="range" min={0.7} max={1.35} step={0.05} value={cardScale} onChange={(e) => setCardScale(Number(e.target.value))} className="h-2 w-full cursor-pointer accent-[var(--color-primary)]" /><span className="w-10 text-right tabular-nums text-[var(--color-text)]">{cardScale.toFixed(2)}</span></label>
+          {isDebugMode ? (
+            <div className="fixed right-3 top-14 z-[56] w-[min(100vw-1.5rem,360px)] rounded-2xl border border-amber-300/80 bg-amber-50/95 text-left text-xs text-stone-900 shadow-lg backdrop-blur-sm sm:right-4 sm:top-16">
+              <div className={`flex w-full min-w-0 items-center gap-2 p-2 ${isDebugPanelExpanded ? "justify-between" : "justify-end"}`}>
+                {isDebugPanelExpanded ? <span className="min-w-0 truncate font-bold text-stone-700">Flag Explorer DEBUG</span> : null}
+                <div className="ml-auto flex shrink-0 items-center gap-1">
+                  <button type="button" onClick={() => setIsDebugMode(false)} className="rounded border border-amber-700/40 bg-amber-500 px-2 py-1 text-[10px] font-semibold text-white shadow-sm">DEBUG ON</button>
+                  <button type="button" onClick={() => setIsDebugPanelExpanded((v) => !v)} className="rounded border border-stone-300 p-1 text-stone-500 hover:bg-stone-100" aria-expanded={isDebugPanelExpanded}>{isDebugPanelExpanded ? "▲" : "▼"}</button>
+                </div>
+              </div>
+              {isDebugPanelExpanded ? (
+                <div className="space-y-2 border-t border-stone-200/80 px-3 py-2">
+                  <label className="flex items-center gap-2 text-[11px] text-stone-700">カードサイズ率
+                    <input type="range" min={0.7} max={1.35} step={0.05} value={cardScale} onChange={(e) => setCardScale(Number(e.target.value))} className="h-2 w-full cursor-pointer accent-amber-500" />
+                    <span className="w-10 text-right tabular-nums">{cardScale.toFixed(2)}</span>
+                  </label>
+                </div>
+              ) : null}
             </div>
           ) : null}
-        </section>
+        </>
       ) : null}
 
       <p className="mb-4 text-sm leading-relaxed text-[var(--color-muted)]">
@@ -209,7 +239,7 @@ export function FlagExplorerClient() {
       <div className="relative z-0 mb-4 w-full" style={{ minHeight: GAME_AD_SLOT_MIN_HEIGHT_PX }}><PairLinkAdSlot slotIndex={1} /></div>
 
       {loadError ? <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">{loadError}</div> : null}
-      {!dataReady && !loadError ? <div className="py-16 text-center text-sm text-[var(--color-muted)]">データを読み込み中…</div> : null}
+      {!dataReady && !loadError ? <div className="py-16 text-center text-sm text-[var(--color-muted)]">読み込み中…</div> : null}
 
       {dataReady ? (
         <>
@@ -232,7 +262,7 @@ export function FlagExplorerClient() {
               <AnimatePresence mode="popLayout" initial={false}>
                 {filtered.map((c) => (
                   <motion.button key={c.alpha3} type="button" initial={{ opacity: 0, scale: 0.94, y: 6 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.94, y: -4 }} transition={springItem} onClick={() => setSelected(c)} className="group flex flex-col overflow-hidden rounded-2xl border text-left" whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }}>
-                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-white"><Image src={flagUrlForAlpha2(c.alpha2)} alt={`${c.nameJa}の国旗`} fill sizes="(max-width: 768px) 45vw, 20vw" className="object-contain p-1" loading="lazy" /></div>
+                    <div className="flex h-44 w-full items-center justify-center overflow-hidden bg-white p-2"><FlagImage alpha2={c.alpha2} alt={`${c.nameJa}の国旗`} /></div>
                     <div className="flex flex-col gap-1.5 p-2.5"><span className="line-clamp-2 text-xs font-semibold">{c.nameJa}</span><span className="text-[10px]">{c.alpha3}</span><DifficultyDots value={c.difficulty} /></div>
                   </motion.button>
                 ))}
@@ -251,10 +281,10 @@ export function FlagExplorerClient() {
             <motion.aside role="dialog" aria-modal="true" className="relative z-10 flex max-h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border bg-[var(--color-bg)] shadow-2xl" initial={{ y: 24, scale: 0.98, opacity: 0 }} animate={{ y: 0, scale: 1, opacity: 1 }} exit={{ y: 20, scale: 0.98, opacity: 0 }} transition={springPanel}>
               <div className="flex items-start justify-between gap-3 border-b px-4 py-3"><div className="min-w-0"><h2 className="text-lg font-bold">{selected.nameJa}</h2><p className="text-sm">{selected.nameEn}</p></div><button type="button" onClick={() => setSelected(null)} className="shrink-0 rounded-full p-2"><X className="h-5 w-5" /></button></div>
               <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
-                <div className="relative mb-4 aspect-[5/3] w-full overflow-hidden border bg-white"><Image src={flagUrlForAlpha2(selected.alpha2)} alt={`${selected.nameJa}の国旗`} fill className="object-contain p-2" sizes="900px" priority /></div>
+                <div className="mb-4 flex h-64 w-full items-center justify-center overflow-hidden border bg-white p-3"><FlagImage alpha2={selected.alpha2} alt={`${selected.nameJa}の国旗`} className="h-auto w-auto max-h-full max-w-full object-contain" /></div>
                 <dl className="space-y-3 text-sm"><div><dt className="text-xs">alpha-3</dt><dd className="font-mono">{selected.alpha3}</dd></div><div><dt className="text-xs">地域</dt><dd>{selected.regionLabel ?? "—"}{selected.subRegionLabel ? ` / ${selected.subRegionLabel}` : ""}{selected.intermediateRegionLabel ? ` / ${selected.intermediateRegionLabel}` : ""}</dd></div></dl>
                 <div className="mt-6"><h3 className="mb-2 text-xs">地図</h3><FlagExplorerMap highlightCountryCode={selected.countryCode} isoRows={isoRows} /></div>
-                <div className="mt-6"><h3 className="mb-2 text-xs">混同しやすい国旗(colors/design)</h3>{similarList.length === 0 ? <p className="text-xs">比較候補なし</p> : <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">{similarList.map((s) => <li key={s.alpha3}><button type="button" onClick={() => setSelected(s)} className="flex w-full flex-col overflow-hidden rounded-xl border text-left"><div className="relative aspect-[4/3] w-full bg-white"><Image src={flagUrlForAlpha2(s.alpha2)} alt={`${s.nameJa}の国旗`} fill className="object-contain p-1" sizes="120px" loading="lazy" /></div><span className="line-clamp-2 p-2 text-[11px]">{s.nameJa}</span></button></li>)}</ul>}</div>
+                <div className="mt-6"><h3 className="mb-2 text-xs">混同しやすい国旗(colors/design)</h3>{similarList.length === 0 ? <p className="text-xs">比較候補なし</p> : <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">{similarList.map((s) => <li key={s.alpha3}><button type="button" onClick={() => setSelected(s)} className="flex w-full flex-col overflow-hidden rounded-xl border text-left"><div className="flex h-24 w-full items-center justify-center bg-white p-1"><FlagImage alpha2={s.alpha2} alt={`${s.nameJa}の国旗`} /></div><span className="line-clamp-2 p-2 text-[11px]">{s.nameJa}</span></button></li>)}</ul>}</div>
               </div>
             </motion.aside>
           </motion.div>
