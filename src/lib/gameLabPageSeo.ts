@@ -44,6 +44,11 @@ export const gameLabPageSeo = {
     description:
       "地域にズームした地図へ国旗をドラッグして重ね、国と記号の対応を学ぶ地理クイズのプロトタイプ。位置判断とフィードバックで地理区分の直感を育てます。",
   },
+  flagGuesserExplorer: {
+    title: "国旗エクスプローラー | 探索・学習・管理 | Wispo",
+    description:
+      "地域・色タグ・難易度で国旗を絞り込み、地図上の位置と似た意匠の旗まで一望できるインデックス。知育データと同期したメタ情報で学習と運用を支援します。",
+  },
 } as const;
 
 export function gameLabAlternates(path: `/${string}`): Metadata["alternates"] {
