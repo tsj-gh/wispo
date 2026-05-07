@@ -49,9 +49,11 @@
     "intermediate_region": "Northern Europe",
     "tags": {
       "colors": [
-        "unknown"
+        "blue",
+        "yellow",
+        "red"
       ],
-      "design": "generic"
+      "design": "nordic_cross"
     },
     "confusable_region": [
       "DNK",
@@ -65,8 +67,17 @@
       "JEY",
       "LVA"
     ],
-    "confusable_colors": [],
-    "confusable_design": []
+    "confusable_colors": [
+      "FIN",
+      "SWE",
+      "FRO"
+    ],
+    "confusable_design": [
+      "FIN",
+      "SWE",
+      "DNK",
+      "FRO"
+    ]
   },
   {
     "alpha3": "ALB",
@@ -159,9 +170,11 @@
     "intermediate_region": "Polynesia",
     "tags": {
       "colors": [
-        "unknown"
+        "blue",
+        "white",
+        "red"
       ],
-      "design": "generic"
+      "design": "triangle_horizontal_emblem"
     },
     "confusable_region": [
       "COK",
@@ -172,8 +185,16 @@
       "TON",
       "TUV"
     ],
-    "confusable_colors": [],
-    "confusable_design": []
+    "confusable_colors": [
+      "GNQ",
+      "SXM",
+      "PRI"
+    ],
+    "confusable_design": [
+      "GNQ",
+      "SXM",
+      "ERI"
+    ]
   },
   {
     "alpha3": "AND",
@@ -272,9 +293,11 @@
     "intermediate_region": "Caribbean",
     "tags": {
       "colors": [
-        "unknown"
+        "blue",
+        "white",
+        "red"
       ],
-      "design": "generic"
+      "design": "union_jack_emblem"
     },
     "confusable_region": [
       "ATG",
@@ -288,8 +311,16 @@
       "DMA",
       "DOM"
     ],
-    "confusable_colors": [],
-    "confusable_design": []
+    "confusable_colors": [
+      "CYM",
+      "FLK",
+      "BMU"
+    ],
+    "confusable_design": [
+      "CYM",
+      "FLK",
+      "FJI"
+    ]
   },
   {
     "alpha3": "ATG",
@@ -1047,9 +1078,11 @@
     "intermediate_region": "Caribbean",
     "tags": {
       "colors": [
-        "unknown"
+        "blue",
+        "yellow",
+        "red"
       ],
-      "design": "generic"
+      "design": "stripes_stars"
     },
     "confusable_region": [
       "AIA",
@@ -1064,18 +1097,15 @@
       "DOM"
     ],
     "confusable_colors": [
-      "BRB",
-      "BLR",
-      "BEL",
-      "BLZ",
-      "BEN",
-      "BMU",
-      "BTN",
-      "BOL",
-      "BIH",
-      "BWA"
+      "CPV",
+      "CUW",
+      "ABW"
     ],
-    "confusable_design": []
+    "confusable_design": [
+      "CPV",
+      "HND",
+      "USA"
+    ]
   },
   {
     "alpha3": "BIH",
@@ -1168,9 +1198,11 @@
     "intermediate_region": "South America",
     "tags": {
       "colors": [
-        "unknown"
+        "red",
+        "white",
+        "blue"
       ],
-      "design": "generic"
+      "design": "nordic_cross"
     },
     "confusable_region": [
       "ARG",
@@ -1184,8 +1216,16 @@
       "GUY",
       "PRY"
     ],
-    "confusable_colors": [],
-    "confusable_design": []
+    "confusable_colors": [
+      "NOR",
+      "ISL",
+      "ALA"
+    ],
+    "confusable_design": [
+      "NOR",
+      "ISL",
+      "FIN"
+    ]
   },
   {
     "alpha3": "BRA",
@@ -1238,9 +1278,11 @@
     "intermediate_region": "Eastern Africa",
     "tags": {
       "colors": [
-        "unknown"
+        "blue",
+        "white",
+        "red"
       ],
-      "design": "generic"
+      "design": "union_jack_emblem"
     },
     "confusable_region": [
       "BDI",
@@ -1254,8 +1296,16 @@
       "MWI",
       "MUS"
     ],
-    "confusable_colors": [],
-    "confusable_design": []
+    "confusable_colors": [
+      "CYM",
+      "FLK",
+      "AIA"
+    ],
+    "confusable_design": [
+      "CYM",
+      "FLK",
+      "FJI"
+    ]
   },
   {
     "alpha3": "BRN",
@@ -1603,9 +1653,11 @@
     "intermediate_region": "Caribbean",
     "tags": {
       "colors": [
-        "unknown"
+        "blue",
+        "white",
+        "red"
       ],
-      "design": "generic"
+      "design": "union_jack_emblem"
     },
     "confusable_region": [
       "AIA",
@@ -1619,8 +1671,16 @@
       "DMA",
       "DOM"
     ],
-    "confusable_colors": [],
-    "confusable_design": []
+    "confusable_colors": [
+      "AIA",
+      "FLK",
+      "IOT"
+    ],
+    "confusable_design": [
+      "AIA",
+      "FLK",
+      "FJI"
+    ]
   },
   {
     "alpha3": "CAF",
@@ -1800,9 +1860,11 @@
     "intermediate_region": "Australia and New Zealand",
     "tags": {
       "colors": [
-        "unknown"
+        "blue",
+        "green",
+        "yellow"
       ],
-      "design": "generic"
+      "design": "triangle_emblem"
     },
     "confusable_region": [
       "AUS",
@@ -1811,8 +1873,15 @@
       "NZL",
       "NFK"
     ],
-    "confusable_colors": [],
-    "confusable_design": []
+    "confusable_colors": [
+      "ERI",
+      "GNQ",
+      "NAM"
+    ],
+    "confusable_design": [
+      "ERI",
+      "GNQ"
+    ]
   },
   {
     "alpha3": "CCK",
@@ -1823,9 +1892,11 @@
     "intermediate_region": "Australia and New Zealand",
     "tags": {
       "colors": [
-        "unknown"
+        "green",
+        "yellow",
+        "white"
       ],
-      "design": "generic"
+      "design": "crescent_star"
     },
     "confusable_region": [
       "AUS",
@@ -1834,8 +1905,16 @@
       "NZL",
       "NFK"
     ],
-    "confusable_colors": [],
-    "confusable_design": []
+    "confusable_colors": [
+      "DZA",
+      "TUN",
+      "PAK"
+    ],
+    "confusable_design": [
+      "DZA",
+      "TUN",
+      "PAK"
+    ]
   },
   {
     "alpha3": "COL",
@@ -2238,9 +2317,11 @@
     "intermediate_region": "Caribbean",
     "tags": {
       "colors": [
-        "unknown"
+        "blue",
+        "yellow",
+        "white"
       ],
-      "design": "generic"
+      "design": "triband_horizontal_stars"
     },
     "confusable_region": [
       "AIA",
@@ -2254,8 +2335,16 @@
       "DMA",
       "DOM"
     ],
-    "confusable_colors": [],
-    "confusable_design": []
+    "confusable_colors": [
+      "HND",
+      "ABW",
+      "BES"
+    ],
+    "confusable_design": [
+      "HND",
+      "BES",
+      "CPV"
+    ]
   },
   {
     "alpha3": "CYP",
@@ -2873,9 +2962,11 @@
     "intermediate_region": "South America",
     "tags": {
       "colors": [
-        "unknown"
+        "blue",
+        "white",
+        "red"
       ],
-      "design": "generic"
+      "design": "union_jack_emblem"
     },
     "confusable_region": [
       "ARG",
@@ -2889,8 +2980,16 @@
       "GUY",
       "PRY"
     ],
-    "confusable_colors": [],
-    "confusable_design": []
+    "confusable_colors": [
+      "CYM",
+      "AIA",
+      "IOT"
+    ],
+    "confusable_design": [
+      "CYM",
+      "AIA",
+      "FJI"
+    ]
   },
   {
     "alpha3": "FRO",
@@ -3079,9 +3178,11 @@
     "intermediate_region": "South America",
     "tags": {
       "colors": [
-        "unknown"
+        "blue",
+        "white",
+        "red"
       ],
-      "design": "generic"
+      "design": "tricolor_vertical"
     },
     "confusable_region": [
       "ARG",
@@ -3095,8 +3196,16 @@
       "GUY",
       "PRY"
     ],
-    "confusable_colors": [],
-    "confusable_design": []
+    "confusable_colors": [
+      "FRA",
+      "NLD",
+      "ITA"
+    ],
+    "confusable_design": [
+      "FRA",
+      "NLD",
+      "ITA"
+    ]
   },
   {
     "alpha3": "PYF",
@@ -3146,9 +3255,11 @@
     "intermediate_region": "Eastern Africa",
     "tags": {
       "colors": [
-        "unknown"
+        "blue",
+        "white",
+        "red"
       ],
-      "design": "generic"
+      "design": "emblem_centered"
     },
     "confusable_region": [
       "IOT",
@@ -3162,8 +3273,16 @@
       "MWI",
       "MUS"
     ],
-    "confusable_colors": [],
-    "confusable_design": []
+    "confusable_colors": [
+      "FRA",
+      "GUF",
+      "REU"
+    ],
+    "confusable_design": [
+      "AGO",
+      "ALB",
+      "MNP"
+    ]
   },
   {
     "alpha3": "GAB",
@@ -3392,9 +3511,11 @@
     "intermediate_region": "Southern Europe",
     "tags": {
       "colors": [
-        "unknown"
+        "white",
+        "red",
+        "black"
       ],
-      "design": "generic"
+      "design": "horizontal_bicolor_emblem"
     },
     "confusable_region": [
       "ALB",
@@ -3408,8 +3529,16 @@
       "MLT",
       "MNE"
     ],
-    "confusable_colors": [],
-    "confusable_design": []
+    "confusable_colors": [
+      "MLT",
+      "POL",
+      "CAN"
+    ],
+    "confusable_design": [
+      "MLT",
+      "HTI",
+      "LIE"
+    ]
   },
   {
     "alpha3": "GRC",
@@ -3535,9 +3664,11 @@
     "intermediate_region": "Caribbean",
     "tags": {
       "colors": [
-        "unknown"
+        "blue",
+        "white",
+        "red"
       ],
-      "design": "generic"
+      "design": "tricolor_vertical"
     },
     "confusable_region": [
       "AIA",
@@ -3551,8 +3682,16 @@
       "CUW",
       "DMA"
     ],
-    "confusable_colors": [],
-    "confusable_design": []
+    "confusable_colors": [
+      "FRA",
+      "NLD",
+      "ITA"
+    ],
+    "confusable_design": [
+      "FRA",
+      "ITA",
+      "ROU"
+    ]
   },
   {
     "alpha3": "GUM",
@@ -3648,9 +3787,11 @@
     "intermediate_region": "Channel Islands",
     "tags": {
       "colors": [
-        "unknown"
+        "white",
+        "red",
+        "gold"
       ],
-      "design": "generic"
+      "design": "cross_emblem"
     },
     "confusable_region": [
       "ALA",
@@ -3664,8 +3805,16 @@
       "JEY",
       "LVA"
     ],
-    "confusable_colors": [],
-    "confusable_design": []
+    "confusable_colors": [
+      "JEY",
+      "IMN",
+      "DOM"
+    ],
+    "confusable_design": [
+      "DOM",
+      "DMA",
+      "JEY"
+    ]
   },
   {
     "alpha3": "GIN",
@@ -6729,9 +6878,11 @@
     "intermediate_region": "Eastern Africa",
     "tags": {
       "colors": [
-        "unknown"
+        "blue",
+        "white",
+        "yellow"
       ],
-      "design": "generic"
+      "design": "emblem_centered"
     },
     "confusable_region": [
       "MUS",
@@ -6745,8 +6896,16 @@
       "ETH",
       "ATF"
     ],
-    "confusable_colors": [],
-    "confusable_design": []
+    "confusable_colors": [
+      "ATF",
+      "MYT",
+      "MNP"
+    ],
+    "confusable_design": [
+      "AGO",
+      "ATF",
+      "MNP"
+    ]
   },
   {
     "alpha3": "ROU",
@@ -6931,9 +7090,11 @@
     "intermediate_region": "",
     "tags": {
       "colors": [
-        "unknown"
+        "blue",
+        "white",
+        "red"
       ],
-      "design": "generic"
+      "design": "emblem_centered"
     },
     "confusable_region": [
       "BMU",
@@ -6941,8 +7102,16 @@
       "GRL",
       "USA"
     ],
-    "confusable_colors": [],
-    "confusable_design": []
+    "confusable_colors": [
+      "FRA",
+      "GUF",
+      "ATF"
+    ],
+    "confusable_design": [
+      "AGO",
+      "MYT",
+      "MNP"
+    ]
   },
   {
     "alpha3": "VCT",
