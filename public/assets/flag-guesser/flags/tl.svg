@@ -1,13 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" id="flag-icons-tl" viewBox="0 0 512 512">
-  <defs>
-    <clipPath id="tl-a">
-      <path fill-opacity=".7" d="M0 0h496v496H0z"/>
-    </clipPath>
-  </defs>
-  <g fill-rule="evenodd" clip-path="url(#tl-a)" transform="scale(1.0321)">
-    <path fill="#cb000f" d="M0 0h999v496H0z"/>
-    <path fill="#f8c00c" d="M0 0c3.1 0 496 248.7 496 248.7L0 496.1z"/>
-    <path fill="#000001" d="M0 0c2 0 330 248.7 330 248.7L0 496.1z"/>
-    <path fill="#fff" d="m181.9 288.9-59-13L93 327l-5-57.8-58.8-13 53.1-24-3.2-57.5 39 42 53.6-24.4-28 52.2 38 44.4z"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 36 18">
+	<title>Flag of Timor-Leste</title>
+	<path fill="#da291c" d="m0 0h36v18H0z"/>
+	<path fill="#ffc72c" d="m18 9-18 9V0z"/>
+	<path d="m12 9-12 9V0z"/>
+	<path fill="#fff" d="m2.7816 6.2586 3.8155 4.2431-5.5809-1.1901 5.2145-2.3175-2.8564 4.9399z"/>
 </svg>

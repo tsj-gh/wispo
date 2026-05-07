@@ -23,17 +23,71 @@
     "height": 600,
     "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Antigua%20and%20Barbuda%20(1962%E2%80%931967).svg"
   },
+  "AI": {
+    "ratio": 2,
+    "width": 1200,
+    "height": 600,
+    "source": "https://flagcdn.com/ai.svg"
+  },
+  "AL": {
+    "ratio": 1.4,
+    "width": 700,
+    "height": 500,
+    "source": "https://flagcdn.com/al.svg"
+  },
+  "AM": {
+    "ratio": 2,
+    "width": 1200,
+    "height": 600,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Armenia.svg"
+  },
   "AO": {
     "ratio": 1.5,
     "width": 900,
     "height": 600,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Angola.svg"
+    "source": "https://flagcdn.com/ao.svg"
+  },
+  "AQ": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/aq.svg"
+  },
+  "AR": {
+    "ratio": 1.6,
+    "width": 800,
+    "height": 500,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Argentina.svg"
+  },
+  "AS": {
+    "ratio": 2,
+    "width": 1000,
+    "height": 500,
+    "source": "https://flagcdn.com/as.svg"
   },
   "AT": {
     "ratio": 1.5,
     "width": 900,
     "height": 600,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Austria.svg"
+    "source": "https://flagcdn.com/at.svg"
+  },
+  "AU": {
+    "ratio": 2,
+    "width": 10080,
+    "height": 5040,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Australia%20(converted).svg"
+  },
+  "AW": {
+    "ratio": 1.5,
+    "width": 27,
+    "height": 18,
+    "source": "https://flagcdn.com/aw.svg"
+  },
+  "AX": {
+    "ratio": 1.529412,
+    "width": 52,
+    "height": 34,
+    "source": "https://flagcdn.com/ax.svg"
   },
   "AZ": {
     "ratio": 2,
@@ -41,17 +95,71 @@
     "height": 600,
     "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Azerbaijan.svg"
   },
+  "BA": {
+    "ratio": 2,
+    "width": 16,
+    "height": 8,
+    "source": "https://flagcdn.com/ba.svg"
+  },
+  "BB": {
+    "ratio": 1.5,
+    "width": 24000,
+    "height": 16000,
+    "source": "https://flagcdn.com/bb.svg"
+  },
+  "BD": {
+    "ratio": 1.666667,
+    "width": 10,
+    "height": 6,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Bangladesh.svg"
+  },
   "BE": {
     "ratio": 1.153846,
     "width": 900,
     "height": 780,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Belgium.svg"
+    "source": "https://flagcdn.com/be.svg"
+  },
+  "BF": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/bf.svg"
+  },
+  "BG": {
+    "ratio": 1.666667,
+    "width": 5,
+    "height": 3,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Bulgaria.svg"
+  },
+  "BH": {
+    "ratio": 1.666667,
+    "width": 100,
+    "height": 60,
+    "source": "https://flagcdn.com/bh.svg"
   },
   "BI": {
     "ratio": 1.666667,
     "width": 100,
     "height": 60,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Burundi.svg"
+    "source": "https://flagcdn.com/bi.svg"
+  },
+  "BJ": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Benin.svg"
+  },
+  "BL": {
+    "ratio": 1.5,
+    "width": 937.5,
+    "height": 625,
+    "source": "https://flagcdn.com/bl.svg"
+  },
+  "BM": {
+    "ratio": 2,
+    "width": 1000,
+    "height": 500,
+    "source": "https://flagcdn.com/bm.svg"
   },
   "BN": {
     "ratio": 2,
@@ -59,23 +167,77 @@
     "height": 720,
     "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Brunei.svg"
   },
+  "BO": {
+    "ratio": 1.466665,
+    "width": 291.042,
+    "height": 198.438,
+    "source": "https://flagcdn.com/bo.svg"
+  },
   "BQ": {
     "ratio": 1.5,
     "width": 270,
     "height": 180,
     "source": "https://flagcdn.com/bq.svg"
   },
+  "BR": {
+    "ratio": 1.428571,
+    "width": 4200,
+    "height": 2940,
+    "source": "https://flagcdn.com/br.svg"
+  },
+  "BS": {
+    "ratio": 2,
+    "width": 6,
+    "height": 3,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Bahamas.svg"
+  },
   "BT": {
     "ratio": 1.5,
     "width": 900,
     "height": 600,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Bhutan.svg"
+    "source": "https://flagcdn.com/bt.svg"
+  },
+  "BV": {
+    "ratio": 1.375,
+    "width": 22,
+    "height": 16,
+    "source": "https://flagcdn.com/bv.svg"
+  },
+  "BW": {
+    "ratio": 1.5,
+    "width": 36,
+    "height": 24,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Botswana.svg"
+  },
+  "BY": {
+    "ratio": 2,
+    "width": 378,
+    "height": 189,
+    "source": "https://flagcdn.com/by.svg"
   },
   "BZ": {
     "ratio": 1.666667,
     "width": 1000,
     "height": 600,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Belize.svg"
+    "source": "https://flagcdn.com/bz.svg"
+  },
+  "CA": {
+    "ratio": 2,
+    "width": 9600,
+    "height": 4800,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Canada%20(Pantone).svg"
+  },
+  "CC": {
+    "ratio": 2,
+    "width": 10080,
+    "height": 5040,
+    "source": "https://flagcdn.com/cc.svg"
+  },
+  "CD": {
+    "ratio": 1.333333,
+    "width": 800,
+    "height": 600,
+    "source": "https://flagcdn.com/cd.svg"
   },
   "CF": {
     "ratio": 1.5,
@@ -83,17 +245,71 @@
     "height": 8,
     "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Central%20African%20Republic.svg"
   },
+  "CG": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/cg.svg"
+  },
+  "CH": {
+    "ratio": 1,
+    "width": 32,
+    "height": 32,
+    "source": "https://flagcdn.com/ch.svg"
+  },
+  "CI": {
+    "ratio": 1.5,
+    "width": 90,
+    "height": 60,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20C%C3%B4te%20d'Ivoire.svg"
+  },
   "CK": {
     "ratio": 2,
     "width": 9600,
     "height": 4800,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Cook%20Islands.svg"
+    "source": "https://flagcdn.com/ck.svg"
+  },
+  "CL": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/cl.svg"
+  },
+  "CM": {
+    "ratio": 1.5,
+    "width": 9,
+    "height": 6,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Cameroon.svg"
+  },
+  "CN": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/cn.svg"
   },
   "CO": {
     "ratio": 1.5,
     "width": 900,
     "height": 600,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Colombia.svg"
+    "source": "https://flagcdn.com/co.svg"
+  },
+  "CR": {
+    "ratio": 1.666667,
+    "width": 10,
+    "height": 6,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Costa%20Rica.svg"
+  },
+  "CU": {
+    "ratio": 2,
+    "width": 30,
+    "height": 15,
+    "source": "https://flagcdn.com/cu.svg"
+  },
+  "CV": {
+    "ratio": 1.7,
+    "width": 1020,
+    "height": 600,
+    "source": "https://flagcdn.com/cv.svg"
   },
   "CW": {
     "ratio": 1.5,
@@ -101,23 +317,77 @@
     "height": 36,
     "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Cura%C3%A7ao.svg"
   },
+  "CX": {
+    "ratio": 2,
+    "width": 1000,
+    "height": 500,
+    "source": "https://flagcdn.com/cx.svg"
+  },
+  "CY": {
+    "ratio": 1.5,
+    "width": 1200,
+    "height": 800,
+    "source": "https://flagcdn.com/cy.svg"
+  },
+  "CZ": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Czech%20Republic.svg"
+  },
   "DE": {
     "ratio": 1.666667,
     "width": 5,
     "height": 3,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Germany.svg"
+    "source": "https://flagcdn.com/de.svg"
+  },
+  "DJ": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/dj.svg"
+  },
+  "DK": {
+    "ratio": 1.321429,
+    "width": 37,
+    "height": 28,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Denmark.svg"
+  },
+  "DM": {
+    "ratio": 2,
+    "width": 14400,
+    "height": 7200,
+    "source": "https://flagcdn.com/dm.svg"
   },
   "DO": {
     "ratio": 1.5,
     "width": 900,
     "height": 600,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Dominican%20Republic.svg"
+    "source": "https://flagcdn.com/do.svg"
+  },
+  "DZ": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/dz.svg"
+  },
+  "EC": {
+    "ratio": 1.5,
+    "width": 1440,
+    "height": 960,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Ecuador.svg"
+  },
+  "EE": {
+    "ratio": 1.571429,
+    "width": 990,
+    "height": 630,
+    "source": "https://flagcdn.com/ee.svg"
   },
   "EG": {
     "ratio": 1.5,
     "width": 900,
     "height": 600,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Egypt.svg"
+    "source": "https://flagcdn.com/eg.svg"
   },
   "EH": {
     "ratio": 2,
@@ -125,29 +395,101 @@
     "height": 300,
     "source": "https://flagcdn.com/eh.svg"
   },
+  "ER": {
+    "ratio": 2,
+    "width": 14400,
+    "height": 7200,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Eritrea.svg"
+  },
+  "ES": {
+    "ratio": 1.5,
+    "width": 750,
+    "height": 500,
+    "source": "https://flagcdn.com/es.svg"
+  },
+  "ET": {
+    "ratio": 2,
+    "width": 1200,
+    "height": 600,
+    "source": "https://flagcdn.com/et.svg"
+  },
   "FI": {
     "ratio": 1.636364,
     "width": 18,
     "height": 11,
     "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Finland.svg"
   },
+  "FJ": {
+    "ratio": 2,
+    "width": 1200,
+    "height": 600,
+    "source": "https://flagcdn.com/fj.svg"
+  },
+  "FK": {
+    "ratio": 2,
+    "width": 1200,
+    "height": 600,
+    "source": "https://flagcdn.com/fk.svg"
+  },
+  "FM": {
+    "ratio": 1.9,
+    "width": 38,
+    "height": 20,
+    "source": "https://flagcdn.com/fm.svg"
+  },
   "FO": {
     "ratio": 1.375,
     "width": 22,
     "height": 16,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Faroe%20Islands.svg"
+    "source": "https://flagcdn.com/fo.svg"
+  },
+  "FR": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20France.svg"
+  },
+  "GA": {
+    "ratio": 1.333333,
+    "width": 1000,
+    "height": 750,
+    "source": "https://flagcdn.com/ga.svg"
   },
   "GB": {
-    "ratio": 1.666667,
-    "width": 50,
+    "ratio": 2,
+    "width": 60,
     "height": 30,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20United%20Kingdom%20(3-5).svg"
+    "source": "https://flagcdn.com/gb.svg"
+  },
+  "GD": {
+    "ratio": 1.666667,
+    "width": 500,
+    "height": 300,
+    "source": "https://flagcdn.com/gd.svg"
+  },
+  "GE": {
+    "ratio": 1.5,
+    "width": 30,
+    "height": 20,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Georgia.svg"
   },
   "GF": {
     "ratio": 1.5,
     "width": 900,
     "height": 600,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20France.svg"
+    "source": "https://flagcdn.com/gf.svg"
+  },
+  "GG": {
+    "ratio": 1.5,
+    "width": 36,
+    "height": 24,
+    "source": "https://flagcdn.com/gg.svg"
+  },
+  "GH": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/gh.svg"
   },
   "GI": {
     "ratio": 2,
@@ -155,11 +497,23 @@
     "height": 256,
     "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Gibraltar.svg"
   },
+  "GL": {
+    "ratio": 1.5,
+    "width": 18,
+    "height": 12,
+    "source": "https://flagcdn.com/gl.svg"
+  },
+  "GM": {
+    "ratio": 1.5,
+    "width": 27,
+    "height": 18,
+    "source": "https://flagcdn.com/gm.svg"
+  },
   "GN": {
     "ratio": 1.5,
     "width": 900,
     "height": 600,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Guinea.svg"
+    "source": "https://flagcdn.com/gn.svg"
   },
   "GP": {
     "ratio": 1.5,
@@ -171,7 +525,19 @@
     "ratio": 1.5,
     "width": 3600,
     "height": 2400,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Equatorial%20Guinea.svg"
+    "source": "https://flagcdn.com/gq.svg"
+  },
+  "GR": {
+    "ratio": 1.5,
+    "width": 27,
+    "height": 18,
+    "source": "https://flagcdn.com/gr.svg"
+  },
+  "GS": {
+    "ratio": 2,
+    "width": 750,
+    "height": 375,
+    "source": "https://flagcdn.com/gs.svg"
   },
   "GT": {
     "ratio": 1.6,
@@ -179,23 +545,71 @@
     "height": 600,
     "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Guatemala.svg"
   },
+  "GU": {
+    "ratio": 1.863636,
+    "width": 738,
+    "height": 396,
+    "source": "https://flagcdn.com/gu.svg"
+  },
+  "GW": {
+    "ratio": 2,
+    "width": 12,
+    "height": 6,
+    "source": "https://flagcdn.com/gw.svg"
+  },
   "GY": {
     "ratio": 1.666667,
     "width": 100,
     "height": 60,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Guyana.svg"
+    "source": "https://flagcdn.com/gy.svg"
+  },
+  "HK": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Hong%20Kong.svg"
+  },
+  "HM": {
+    "ratio": 2,
+    "width": 10080,
+    "height": 5040,
+    "source": "https://flagcdn.com/hm.svg"
   },
   "HN": {
     "ratio": 2,
     "width": 72,
     "height": 36,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Honduras%20(1949%E2%80%932022%2C%202026%E2%80%93present).svg"
+    "source": "https://flagcdn.com/hn.svg"
+  },
+  "HR": {
+    "ratio": 2,
+    "width": 1200,
+    "height": 600,
+    "source": "https://flagcdn.com/hr.svg"
+  },
+  "HT": {
+    "ratio": 1.666667,
+    "width": 1000,
+    "height": 600,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Haiti.svg"
   },
   "HU": {
     "ratio": 2,
     "width": 1200,
     "height": 600,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Hungary.svg"
+    "source": "https://flagcdn.com/hu.svg"
+  },
+  "ID": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/id.svg"
+  },
+  "IE": {
+    "ratio": 2,
+    "width": 1200,
+    "height": 600,
+    "source": "https://flagcdn.com/ie.svg"
   },
   "IL": {
     "ratio": 1.375,
@@ -203,35 +617,107 @@
     "height": 800,
     "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Israel.svg"
   },
+  "IM": {
+    "ratio": 2,
+    "width": 600,
+    "height": 300,
+    "source": "https://flagcdn.com/im.svg"
+  },
+  "IN": {
+    "ratio": 1.5,
+    "width": 90,
+    "height": 60,
+    "source": "https://flagcdn.com/in.svg"
+  },
   "IO": {
     "ratio": 2,
     "width": 600,
     "height": 300,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Commissioner%20of%20the%20British%20Indian%20Ocean%20Territory.svg"
+    "source": "https://flagcdn.com/io.svg"
+  },
+  "IQ": {
+    "ratio": 1.5,
+    "width": 11880,
+    "height": 7920,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Iraq.svg"
+  },
+  "IR": {
+    "ratio": 1.75,
+    "width": 630,
+    "height": 360,
+    "source": "https://flagcdn.com/ir.svg"
   },
   "IS": {
     "ratio": 1.388889,
     "width": 25,
     "height": 18,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Iceland.svg"
+    "source": "https://flagcdn.com/is.svg"
+  },
+  "IT": {
+    "ratio": 1.5,
+    "width": 3,
+    "height": 2,
+    "source": "https://flagcdn.com/it.svg"
+  },
+  "JE": {
+    "ratio": 1.666667,
+    "width": 1000,
+    "height": 600,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Jersey.svg"
   },
   "JM": {
     "ratio": 2,
     "width": 12,
     "height": 6,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Jamaica.svg"
+    "source": "https://flagcdn.com/jm.svg"
+  },
+  "JO": {
+    "ratio": 2,
+    "width": 10080,
+    "height": 5040,
+    "source": "https://flagcdn.com/jo.svg"
+  },
+  "JP": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Japan.svg"
   },
   "KE": {
     "ratio": 1.5,
     "width": 240,
     "height": 160,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Kenya.svg"
+    "source": "https://flagcdn.com/ke.svg"
+  },
+  "KG": {
+    "ratio": 1.666669,
+    "width": 550.469,
+    "height": 330.281,
+    "source": "https://flagcdn.com/kg.svg"
+  },
+  "KH": {
+    "ratio": 0.001563,
+    "width": 1,
+    "height": 640,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Cambodia.svg"
   },
   "KI": {
     "ratio": 2,
     "width": 600,
     "height": 300,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Kiribati.svg"
+    "source": "https://flagcdn.com/ki.svg"
+  },
+  "KM": {
+    "ratio": 1.666667,
+    "width": 60,
+    "height": 36,
+    "source": "https://flagcdn.com/km.svg"
+  },
+  "KN": {
+    "ratio": 1.5,
+    "width": 75,
+    "height": 50,
+    "source": "https://flagcdn.com/kn.svg"
   },
   "KP": {
     "ratio": 2,
@@ -239,23 +725,65 @@
     "height": 36,
     "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20North%20Korea.svg"
   },
+  "KR": {
+    "ratio": 1.5,
+    "width": 144,
+    "height": 96,
+    "source": "https://flagcdn.com/kr.svg"
+  },
+  "KW": {
+    "ratio": 2,
+    "width": 12,
+    "height": 6,
+    "source": "https://flagcdn.com/kw.svg"
+  },
   "KY": {
     "ratio": 2,
     "width": 1200,
     "height": 600,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Cayman%20Islands.svg"
+    "source": "https://flagcdn.com/ky.svg"
+  },
+  "KZ": {
+    "ratio": 2,
+    "width": 1000,
+    "height": 500,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Kazakhstan.svg"
+  },
+  "LA": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/la.svg"
   },
   "LB": {
     "ratio": 1.5,
     "width": 2880,
     "height": 1920,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Lebanon.svg"
+    "source": "https://flagcdn.com/lb.svg"
+  },
+  "LC": {
+    "ratio": 2,
+    "width": 12,
+    "height": 6,
+    "source": "https://flagcdn.com/lc.svg"
+  },
+  "LI": {
+    "ratio": 1.666667,
+    "width": 1000,
+    "height": 600,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Liechtenstein.svg"
   },
   "LK": {
     "ratio": 2,
     "width": 1200,
     "height": 600,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Sri%20Lanka.svg"
+    "source": "https://flagcdn.com/lk.svg"
+  },
+  "LR": {
+    "ratio": 1.9,
+    "width": 209,
+    "height": 110,
+    "source": "https://flagcdn.com/lr.svg"
   },
   "LS": {
     "ratio": 1.5,
@@ -263,17 +791,131 @@
     "height": 56000,
     "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Lesotho.svg"
   },
+  "LT": {
+    "ratio": 1.666667,
+    "width": 1000,
+    "height": 600,
+    "source": "https://flagcdn.com/lt.svg"
+  },
+  "LU": {
+    "ratio": 1.666667,
+    "width": 1000,
+    "height": 600,
+    "source": "https://flagcdn.com/lu.svg"
+  },
   "LV": {
     "ratio": 2,
     "width": 1200,
     "height": 600,
     "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Latvia.svg"
   },
+  "LY": {
+    "ratio": 2,
+    "width": 960,
+    "height": 480,
+    "source": "https://flagcdn.com/ly.svg"
+  },
+  "MA": {
+    "ratio": 1.5,
+    "width": 90000,
+    "height": 60000,
+    "source": "https://flagcdn.com/ma.svg"
+  },
+  "MC": {
+    "ratio": 1.25,
+    "width": 1000,
+    "height": 800,
+    "source": "https://flagcdn.com/mc.svg"
+  },
+  "MD": {
+    "ratio": 2,
+    "width": 1800,
+    "height": 900,
+    "source": "https://flagcdn.com/md.svg"
+  },
+  "ME": {
+    "ratio": 2,
+    "width": 1200,
+    "height": 600,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Montenegro.svg"
+  },
   "MF": {
     "ratio": 1.5,
     "width": 900,
     "height": 600,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20France.svg"
+    "source": "https://flagcdn.com/mf.svg"
+  },
+  "MG": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/mg.svg"
+  },
+  "MH": {
+    "ratio": 1.9,
+    "width": 475,
+    "height": 250,
+    "source": "https://flagcdn.com/mh.svg"
+  },
+  "MK": {
+    "ratio": 2,
+    "width": 280,
+    "height": 140,
+    "source": "https://flagcdn.com/mk.svg"
+  },
+  "ML": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/ml.svg"
+  },
+  "MM": {
+    "ratio": 1.5,
+    "width": 18,
+    "height": 12,
+    "source": "https://flagcdn.com/mm.svg"
+  },
+  "MN": {
+    "ratio": 2,
+    "width": 1200,
+    "height": 600,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Mongolia.svg"
+  },
+  "MO": {
+    "ratio": 1.5,
+    "width": 2880,
+    "height": 1920,
+    "source": "https://flagcdn.com/mo.svg"
+  },
+  "MP": {
+    "ratio": 2,
+    "width": 291.04,
+    "height": 145.52,
+    "source": "https://flagcdn.com/mp.svg"
+  },
+  "MQ": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/mq.svg"
+  },
+  "MR": {
+    "ratio": 1.5,
+    "width": 3000,
+    "height": 2000,
+    "source": "https://flagcdn.com/mr.svg"
+  },
+  "MS": {
+    "ratio": 2,
+    "width": 1200,
+    "height": 600,
+    "source": "https://flagcdn.com/ms.svg"
+  },
+  "MT": {
+    "ratio": 1.5,
+    "width": 82944,
+    "height": 55296,
+    "source": "https://flagcdn.com/mt.svg"
   },
   "MU": {
     "ratio": 1.5,
@@ -281,22 +923,574 @@
     "height": 600,
     "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Mauritius.svg"
   },
+  "MV": {
+    "ratio": 1.5,
+    "width": 720,
+    "height": 480,
+    "source": "https://flagcdn.com/mv.svg"
+  },
+  "MW": {
+    "ratio": 1.5,
+    "width": 450,
+    "height": 300,
+    "source": "https://flagcdn.com/mw.svg"
+  },
+  "MX": {
+    "ratio": 1.75,
+    "width": 980,
+    "height": 560,
+    "source": "https://flagcdn.com/mx.svg"
+  },
+  "MY": {
+    "ratio": 2,
+    "width": 13440,
+    "height": 6720,
+    "source": "https://flagcdn.com/my.svg"
+  },
+  "MZ": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/mz.svg"
+  },
+  "NA": {
+    "ratio": 1.5,
+    "width": 90,
+    "height": 60,
+    "source": "https://flagcdn.com/na.svg"
+  },
+  "NC": {
+    "ratio": 2,
+    "width": 600,
+    "height": 300,
+    "source": "https://flagcdn.com/nc.svg"
+  },
+  "NE": {
+    "ratio": 1.166667,
+    "width": 700,
+    "height": 600,
+    "source": "https://flagcdn.com/ne.svg"
+  },
+  "NF": {
+    "ratio": 2,
+    "width": 920,
+    "height": 460,
+    "source": "https://flagcdn.com/nf.svg"
+  },
+  "NG": {
+    "ratio": 2,
+    "width": 6,
+    "height": 3,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Nigeria.svg"
+  },
+  "NI": {
+    "ratio": 1.666667,
+    "width": 1000,
+    "height": 600,
+    "source": "https://flagcdn.com/ni.svg"
+  },
+  "NL": {
+    "ratio": 1.5,
+    "width": 9,
+    "height": 6,
+    "source": "https://flagcdn.com/nl.svg"
+  },
   "NO": {
     "ratio": 1.375,
     "width": 22,
     "height": 16,
     "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Norway.svg"
   },
+  "NP": {
+    "ratio": 0.820336,
+    "width": 71.571,
+    "height": 87.246,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Nepal.svg"
+  },
+  "NR": {
+    "ratio": 2,
+    "width": 600,
+    "height": 300,
+    "source": "https://flagcdn.com/nr.svg"
+  },
+  "NU": {
+    "ratio": 2,
+    "width": 120,
+    "height": 60,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Niue.svg"
+  },
+  "NZ": {
+    "ratio": 2,
+    "width": 1200,
+    "height": 600,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20New%20Zealand.svg"
+  },
+  "OM": {
+    "ratio": 1.75,
+    "width": 1050,
+    "height": 600,
+    "source": "https://flagcdn.com/om.svg"
+  },
+  "PA": {
+    "ratio": 1.5,
+    "width": 12,
+    "height": 8,
+    "source": "https://flagcdn.com/pa.svg"
+  },
+  "PE": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/pe.svg"
+  },
+  "PF": {
+    "ratio": 1.5,
+    "width": 600,
+    "height": 400,
+    "source": "https://flagcdn.com/pf.svg"
+  },
+  "PG": {
+    "ratio": 1.333333,
+    "width": 768,
+    "height": 576,
+    "source": "https://flagcdn.com/pg.svg"
+  },
+  "PH": {
+    "ratio": 2,
+    "width": 180,
+    "height": 90,
+    "source": "https://flagcdn.com/ph.svg"
+  },
+  "PK": {
+    "ratio": 1.5,
+    "width": 120,
+    "height": 80,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Pakistan.svg"
+  },
+  "PL": {
+    "ratio": 1.6,
+    "width": 8,
+    "height": 5,
+    "source": "https://flagcdn.com/pl.svg"
+  },
+  "PM": {
+    "ratio": 1.5,
+    "width": 1050,
+    "height": 700,
+    "source": "https://flagcdn.com/pm.svg"
+  },
+  "PN": {
+    "ratio": 2,
+    "width": 30,
+    "height": 15,
+    "source": "https://flagcdn.com/pn.svg"
+  },
+  "PR": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/pr.svg"
+  },
+  "PS": {
+    "ratio": 2,
+    "width": 6,
+    "height": 3,
+    "source": "https://flagcdn.com/ps.svg"
+  },
+  "PT": {
+    "ratio": 1.5,
+    "width": 676.782,
+    "height": 451.188,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Portugal%20(official).svg"
+  },
+  "PW": {
+    "ratio": 1.6,
+    "width": 800,
+    "height": 500,
+    "source": "https://flagcdn.com/pw.svg"
+  },
+  "PY": {
+    "ratio": 1.818182,
+    "width": 1200,
+    "height": 660,
+    "source": "https://flagcdn.com/py.svg"
+  },
+  "QA": {
+    "ratio": 4.166667,
+    "width": 75,
+    "height": 18,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Qatar.svg"
+  },
+  "RE": {
+    "ratio": 1.5,
+    "width": 120,
+    "height": 80,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Proposed%20flag%20of%20R%C3%A9union%20(VAR).svg"
+  },
+  "RO": {
+    "ratio": 1.5,
+    "width": 3,
+    "height": 2,
+    "source": "https://flagcdn.com/ro.svg"
+  },
+  "RS": {
+    "ratio": 1.5,
+    "width": 1350,
+    "height": 900,
+    "source": "https://flagcdn.com/rs.svg"
+  },
+  "RU": {
+    "ratio": 1.5,
+    "width": 9,
+    "height": 6,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Russia.svg"
+  },
+  "RW": {
+    "ratio": 1.5,
+    "width": 1560,
+    "height": 1040,
+    "source": "https://flagcdn.com/rw.svg"
+  },
+  "SA": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/sa.svg"
+  },
+  "SB": {
+    "ratio": 2,
+    "width": 200,
+    "height": 100,
+    "source": "https://flagcdn.com/sb.svg"
+  },
+  "SC": {
+    "ratio": 2,
+    "width": 6,
+    "height": 3,
+    "source": "https://flagcdn.com/sc.svg"
+  },
+  "SD": {
+    "ratio": 2,
+    "width": 1200,
+    "height": 600,
+    "source": "https://flagcdn.com/sd.svg"
+  },
+  "SE": {
+    "ratio": 1.6,
+    "width": 8,
+    "height": 5,
+    "source": "https://flagcdn.com/se.svg"
+  },
+  "SG": {
+    "ratio": 1.5,
+    "width": 54,
+    "height": 36,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Singapore.svg"
+  },
+  "SH": {
+    "ratio": 2,
+    "width": 60,
+    "height": 30,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20United%20Kingdom%20(1-2).svg"
+  },
+  "SI": {
+    "ratio": 2,
+    "width": 240,
+    "height": 120,
+    "source": "https://flagcdn.com/si.svg"
+  },
   "SJ": {
     "ratio": 1.375,
     "width": 22,
     "height": 16,
-    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Norway.svg"
+    "source": "https://flagcdn.com/sj.svg"
+  },
+  "SK": {
+    "ratio": 1.5,
+    "width": 10800,
+    "height": 7200,
+    "source": "https://flagcdn.com/sk.svg"
+  },
+  "SL": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/sl.svg"
+  },
+  "SM": {
+    "ratio": 1.333333,
+    "width": 800,
+    "height": 600,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20San%20Marino.svg"
+  },
+  "SN": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/sn.svg"
+  },
+  "SO": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Somalia.svg"
+  },
+  "SR": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/sr.svg"
+  },
+  "SS": {
+    "ratio": 2,
+    "width": 1140,
+    "height": 570,
+    "source": "https://flagcdn.com/ss.svg"
+  },
+  "ST": {
+    "ratio": 2,
+    "width": 168,
+    "height": 84,
+    "source": "https://flagcdn.com/st.svg"
+  },
+  "SV": {
+    "ratio": 1.772487,
+    "width": 1005,
+    "height": 567,
+    "source": "https://flagcdn.com/sv.svg"
   },
   "SX": {
     "ratio": 1.5,
     "width": 675,
     "height": 450,
     "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Sint%20Maarten.svg"
+  },
+  "SY": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/sy.svg"
+  },
+  "SZ": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/sz.svg"
+  },
+  "TC": {
+    "ratio": 2,
+    "width": 9600,
+    "height": 4800,
+    "source": "https://flagcdn.com/tc.svg"
+  },
+  "TD": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/td.svg"
+  },
+  "TF": {
+    "ratio": 1.499998,
+    "width": 425.197,
+    "height": 283.465,
+    "source": "https://flagcdn.com/tf.svg"
+  },
+  "TG": {
+    "ratio": 1.618032,
+    "width": 809.016,
+    "height": 500,
+    "source": "https://flagcdn.com/tg.svg"
+  },
+  "TH": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/th.svg"
+  },
+  "TJ": {
+    "ratio": 2,
+    "width": 560,
+    "height": 280,
+    "source": "https://flagcdn.com/tj.svg"
+  },
+  "TK": {
+    "ratio": 2,
+    "width": 1800,
+    "height": 900,
+    "source": "https://flagcdn.com/tk.svg"
+  },
+  "TL": {
+    "ratio": 2,
+    "width": 36,
+    "height": 18,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20East%20Timor.svg"
+  },
+  "TM": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Turkmenistan.svg"
+  },
+  "TN": {
+    "ratio": 1.5,
+    "width": 120,
+    "height": 80,
+    "source": "https://flagcdn.com/tn.svg"
+  },
+  "TO": {
+    "ratio": 2,
+    "width": 96,
+    "height": 48,
+    "source": "https://flagcdn.com/to.svg"
+  },
+  "TR": {
+    "ratio": 1.5,
+    "width": 90000,
+    "height": 60000,
+    "source": "https://flagcdn.com/tr.svg"
+  },
+  "TT": {
+    "ratio": 1.666667,
+    "width": 30,
+    "height": 18,
+    "source": "https://flagcdn.com/tt.svg"
+  },
+  "TV": {
+    "ratio": 2,
+    "width": 120,
+    "height": 60,
+    "source": "https://flagcdn.com/tv.svg"
+  },
+  "TW": {
+    "ratio": 1.5,
+    "width": 120,
+    "height": 80,
+    "source": "https://flagcdn.com/tw.svg"
+  },
+  "TZ": {
+    "ratio": 1.5,
+    "width": 72,
+    "height": 48,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Tanzania.svg"
+  },
+  "UA": {
+    "ratio": 1.5,
+    "width": 1200,
+    "height": 800,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Ukraine.svg"
+  },
+  "UG": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Uganda.svg"
+  },
+  "UM": {
+    "ratio": 1.9,
+    "width": 7410,
+    "height": 3900,
+    "source": "https://flagcdn.com/um.svg"
+  },
+  "US": {
+    "ratio": 1.9,
+    "width": 7410,
+    "height": 3900,
+    "source": "https://flagcdn.com/us.svg"
+  },
+  "UY": {
+    "ratio": 1.5,
+    "width": 945,
+    "height": 630,
+    "source": "https://flagcdn.com/uy.svg"
+  },
+  "UZ": {
+    "ratio": 2,
+    "width": 1000,
+    "height": 500,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Uzbekistan.svg"
+  },
+  "VA": {
+    "ratio": 1,
+    "width": 1000,
+    "height": 1000,
+    "source": "https://flagcdn.com/va.svg"
+  },
+  "VC": {
+    "ratio": 1.5,
+    "width": 240,
+    "height": 160,
+    "source": "https://flagcdn.com/vc.svg"
+  },
+  "VE": {
+    "ratio": 1.5,
+    "width": 180,
+    "height": 120,
+    "source": "https://flagcdn.com/ve.svg"
+  },
+  "VG": {
+    "ratio": 2,
+    "width": 1200,
+    "height": 600,
+    "source": "https://flagcdn.com/vg.svg"
+  },
+  "VI": {
+    "ratio": 1.5,
+    "width": 1275,
+    "height": 850,
+    "source": "https://flagcdn.com/vi.svg"
+  },
+  "VN": {
+    "ratio": 1.5,
+    "width": 30,
+    "height": 20,
+    "source": "https://flagcdn.com/vn.svg"
+  },
+  "VU": {
+    "ratio": 1.666667,
+    "width": 950,
+    "height": 570,
+    "source": "https://flagcdn.com/vu.svg"
+  },
+  "WF": {
+    "ratio": 1.5,
+    "width": 150,
+    "height": 100,
+    "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Wallis%20and%20Futuna.svg"
+  },
+  "WS": {
+    "ratio": 2,
+    "width": 288,
+    "height": 144,
+    "source": "https://flagcdn.com/ws.svg"
+  },
+  "YE": {
+    "ratio": 1.5,
+    "width": 900,
+    "height": 600,
+    "source": "https://flagcdn.com/ye.svg"
+  },
+  "YT": {
+    "ratio": 1.5,
+    "width": 750,
+    "height": 500,
+    "source": "https://flagcdn.com/yt.svg"
+  },
+  "ZA": {
+    "ratio": 1.5,
+    "width": 90,
+    "height": 60,
+    "source": "https://flagcdn.com/za.svg"
+  },
+  "ZM": {
+    "ratio": 1.5,
+    "width": 83328,
+    "height": 55552,
+    "source": "https://flagcdn.com/zm.svg"
+  },
+  "ZW": {
+    "ratio": 2,
+    "width": 25200,
+    "height": 12600,
+    "source": "https://flagcdn.com/zw.svg"
   }
 }

@@ -9,6 +9,7 @@ const META_PATH = path.join(ROOT, "public/assets/flag-guesser/flag_aspect_ratio.
 const USER_AGENT = "WispoFlagSync/1.0 (educational use)";
 const WIKIDATA_ENDPOINT = "https://query.wikidata.org/sparql";
 const RESTCOUNTRIES_ALPHA = "https://restcountries.com/v3.1/alpha";
+const COMMONS_API = "https://commons.wikimedia.org/w/api.php";
 
 const SPARQL = `
 SELECT ?code ?flag WHERE {
@@ -60,6 +61,18 @@ function toRawFileUrl(flagValueUrl) {
   }
 }
 
+function toCommonsTitle(flagValueUrl) {
+  try {
+    const u = new URL(flagValueUrl);
+    const title = decodeURIComponent(u.pathname.split("/").pop() || "");
+    if (!title) return null;
+    if (title.startsWith("File:")) return title;
+    return `File:${title}`;
+  } catch {
+    return null;
+  }
+}
+
 async function fetchJson(url, accept = "application/json") {
   const r = await fetch(url, { headers: { "User-Agent": USER_AGENT, Accept: accept } });
   if (!r.ok) throw new Error(`Failed to fetch JSON: ${r.status} ${url}`);
@@ -79,6 +92,21 @@ async function fetchRestcountriesSvg(code) {
   const j = await r.json();
   const svg = String(j?.flags?.svg || "").trim();
   return svg.endsWith(".svg") ? svg : null;
+}
+
+async function fetchCommonsSvgByApi(title) {
+  if (!title) return null;
+  const url =
+    `${COMMONS_API}?action=query&format=json&formatversion=2&prop=imageinfo` +
+    `&iiprop=url|mime&titles=${encodeURIComponent(title)}`;
+  const data = await fetchJson(url);
+  const page = data?.query?.pages?.[0];
+  const info = page?.imageinfo?.[0];
+  const mime = String(info?.mime || "");
+  const outUrl = String(info?.url || "");
+  if (mime !== "image/svg+xml") return null;
+  if (!outUrl.endsWith(".svg")) return null;
+  return outUrl;
 }
 
 async function main() {
@@ -101,41 +129,60 @@ async function main() {
   }
 
   await fs.mkdir(FLAGS_DIR, { recursive: true });
+  let emergencySvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2"><rect width="3" height="2" fill="#d1d5db"/></svg>';
+  try {
+    const xxPath = path.join(FLAGS_DIR, "xx.svg");
+    emergencySvg = await fs.readFile(xxPath, "utf8");
+  } catch {
+    // keep inline default
+  }
 
   const out = {};
   let updated = 0;
   let skipped = 0;
+  let reusedLocal = 0;
+  let usedEmergency = 0;
   for (const code of alpha2List) {
     const flagValueUrl = byCode.get(code);
+    const commonsTitle = flagValueUrl ? toCommonsTitle(flagValueUrl) : null;
     const primaryUrl = flagValueUrl ? toRawFileUrl(flagValueUrl) : null;
-    const fallbackUrl = await fetchRestcountriesSvg(code);
-    const candidates = [primaryUrl, fallbackUrl].filter(Boolean);
-    if (candidates.length === 0) {
-      skipped++;
-      continue;
-    }
+    const commonsApiUrl = commonsTitle ? await fetchCommonsSvgByApi(commonsTitle).catch(() => null) : null;
+    const restcountriesUrl = await fetchRestcountriesSvg(code).catch(() => null);
+    const candidates = [primaryUrl, commonsApiUrl, restcountriesUrl].filter(Boolean);
 
     try {
       let svg = null;
       let source = "";
       for (const url of candidates) {
-        const text = await fetchText(url);
-        if (!text.includes("<svg")) continue;
-        const aspect = parseSvgAspect(text);
-        if (!aspect) continue;
-        svg = text;
-        source = url;
-        break;
+        try {
+          const text = await fetchText(url);
+          if (!text.includes("<svg")) continue;
+          const aspect = parseSvgAspect(text);
+          if (!aspect) continue;
+          svg = text;
+          source = url;
+          break;
+        } catch {
+          // try next candidate URL
+        }
       }
       if (!svg) {
-        skipped++;
-        continue;
+        const localPath = path.join(FLAGS_DIR, `${code}.svg`);
+        try {
+          const localSvg = await fs.readFile(localPath, "utf8");
+          svg = localSvg;
+          source = `local:${localPath}`;
+          reusedLocal++;
+        } catch {
+          // no local fallback
+        }
       }
-      const aspect = parseSvgAspect(svg);
-      if (!aspect) {
-        skipped++;
-        continue;
+      if (!svg) {
+        svg = emergencySvg;
+        source = "fallback:xx";
+        usedEmergency++;
       }
+      const aspect = parseSvgAspect(svg) ?? { width: 3, height: 2, ratio: 1.5 };
 
       const filePath = path.join(FLAGS_DIR, `${code}.svg`);
       await fs.writeFile(filePath, svg, "utf8");
@@ -155,7 +202,7 @@ async function main() {
   for (const code of Object.keys(out).sort()) ordered[code] = out[code];
   await fs.writeFile(META_PATH, JSON.stringify(ordered, null, 2), "utf8");
 
-  console.log(`updated: ${updated}, skipped: ${skipped}, meta: ${META_PATH}`);
+  console.log(`updated: ${updated}, reusedLocal: ${reusedLocal}, emergency: ${usedEmergency}, skipped: ${skipped}, meta: ${META_PATH}`);
 }
 
 main().catch((e) => {
