@@ -13,9 +13,9 @@ function DebugThemeSelectorInner() {
   const { t } = useI18n();
   const id = useId();
 
-  if (searchParams.get("devtj") !== "true") return null;
+  if (searchParams.get("devtj") !== "true" || pathname !== "/") return null;
 
-  /** トップのみ左下。ラボ等は左上でゲーム用デバッグパネルと干渉しにくくする */
+  /** ??????????????????????????????????? */
   const cornerClass = pathname === "/" ? "bottom-3 left-3" : "top-3 left-3";
 
   return (
@@ -43,7 +43,7 @@ function DebugThemeSelectorInner() {
   );
 }
 
-/** `?devtj=true` のときのみ表示。全ページ共通（Root Layout 配下） */
+/** `?devtj=true` ???????????????Root Layout ??? */
 export function DebugThemeSelector() {
   return (
     <Suspense fallback={null}>
