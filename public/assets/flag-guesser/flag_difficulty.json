@@ -5262,8 +5262,7 @@
     "tags": {
       "colors": [
         "white",
-        "red",
-        "grey"
+        "red"
       ],
       "design": "vertical_bicolor_emblem"
     },
@@ -5280,6 +5279,7 @@
       "MNE"
     ],
     "confusable_colors": [
+      "AUT",
       "POL",
       "IDN",
       "MCO"
@@ -6000,8 +6000,7 @@
     "tags": {
       "colors": [
         "blue",
-        "white",
-        "emblem_colors"
+        "white"
       ],
       "design": "triband_horizontal_emblem"
     },
@@ -6020,7 +6019,8 @@
     "confusable_colors": [
       "SLV",
       "HND",
-      "ARG"
+      "ARG",
+      "GRC"
     ],
     "confusable_design": [
       "SLV",

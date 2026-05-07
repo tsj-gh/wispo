@@ -83,6 +83,7 @@ export function FlagExplorerClient() {
   const [isDebugMode, setIsDebugMode] = useState(false);
   const [isDebugPanelExpanded, setIsDebugPanelExpanded] = useState(true);
   const [cardScale, setCardScale] = useState(1);
+  const [flagFrameRatio, setFlagFrameRatio] = useState(1.6);
 
   useEffect(() => {
     let cancelled = false;
@@ -219,7 +220,7 @@ export function FlagExplorerClient() {
   const getAspectRatio = useCallback(
     (alpha2: string): number => {
       const v = aspectMeta?.[alpha2.toUpperCase()]?.ratio;
-      if (typeof v === "number" && Number.isFinite(v) && v > 0) return v;
+      if (typeof v === "number" && Number.isFinite(v) && v > 0) return Math.min(3, Math.max(0.5, v));
       return 1.5;
     },
     [aspectMeta]
@@ -273,6 +274,19 @@ export function FlagExplorerClient() {
                     <input type="range" min={0.7} max={1.35} step={0.05} value={cardScale} onChange={(e) => setCardScale(Number(e.target.value))} className="h-2 w-full cursor-pointer accent-amber-500" />
                     <span className="w-10 text-right tabular-nums">{cardScale.toFixed(2)}</span>
                   </label>
+                  <label className="flex items-center gap-2 text-[11px] text-stone-700">
+                    国旗表示枠比率
+                    <input
+                      type="range"
+                      min={1.1}
+                      max={2.2}
+                      step={0.05}
+                      value={flagFrameRatio}
+                      onChange={(e) => setFlagFrameRatio(Number(e.target.value))}
+                      className="h-2 w-full cursor-pointer accent-amber-500"
+                    />
+                    <span className="w-10 text-right tabular-nums">{flagFrameRatio.toFixed(2)}</span>
+                  </label>
                 </div>
               ) : null}
             </div>
@@ -306,7 +320,43 @@ export function FlagExplorerClient() {
             </div>
 
             <div className="pt-1">
-              <div className="flex flex-col gap-1.5"><span className="text-xs">難易度 {clampDiff(diffMin, diffMax).lo}〜{clampDiff(diffMin, diffMax).hi}</span><div className="flex gap-2"><input type="range" min={1} max={8} value={diffMin} onChange={(e) => { const v = Number(e.target.value); setDiffMin(v); setDiffMax((m) => m < v ? v : m); }} className="h-2 w-full" /><input type="range" min={1} max={8} value={diffMax} onChange={(e) => { const v = Number(e.target.value); setDiffMax(v); setDiffMin((m) => m > v ? v : m); }} className="h-2 w-full" /></div></div>
+              <div className="flex flex-col gap-1.5">
+                <span className="text-xs">難易度 {clampDiff(diffMin, diffMax).lo}〜{clampDiff(diffMin, diffMax).hi}</span>
+                <div className="relative h-6">
+                  <div className="pointer-events-none absolute left-0 right-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-[color-mix(in_srgb,var(--color-text)_12%,transparent)]" />
+                  <div
+                    className="pointer-events-none absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-[var(--color-primary)]"
+                    style={{
+                      left: `${((clampDiff(diffMin, diffMax).lo - 1) / 7) * 100}%`,
+                      width: `${((clampDiff(diffMin, diffMax).hi - clampDiff(diffMin, diffMax).lo) / 7) * 100}%`,
+                    }}
+                  />
+                  <input
+                    type="range"
+                    min={1}
+                    max={8}
+                    value={diffMin}
+                    onChange={(e) => {
+                      const v = Number(e.target.value);
+                      setDiffMin(v);
+                      setDiffMax((m) => (m < v ? v : m));
+                    }}
+                    className="absolute inset-0 h-6 w-full cursor-pointer appearance-none bg-transparent [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--color-primary)] [&::-webkit-slider-thumb]:shadow [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[var(--color-primary)]"
+                  />
+                  <input
+                    type="range"
+                    min={1}
+                    max={8}
+                    value={diffMax}
+                    onChange={(e) => {
+                      const v = Number(e.target.value);
+                      setDiffMax(v);
+                      setDiffMin((m) => (m > v ? v : m));
+                    }}
+                    className="absolute inset-0 h-6 w-full cursor-pointer appearance-none bg-transparent [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--color-primary)] [&::-webkit-slider-thumb]:shadow [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[var(--color-primary)]"
+                  />
+                </div>
+              </div>
             </div>
 
             <label className="flex flex-col gap-1.5 text-xs"><span>色 (AND)</span><div className="flex flex-wrap gap-2">{colorOptions.map((c) => { const on = colorFilter.includes(c); return <button key={c} type="button" onClick={() => setColorFilter((prev) => prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c])} className={`rounded-full border px-2.5 py-1 text-xs ${on ? "border-[var(--color-primary)]" : ""}`}>{displayColorTag(c)}</button>; })}</div></label>
@@ -320,7 +370,14 @@ export function FlagExplorerClient() {
               <AnimatePresence mode="popLayout" initial={false}>
                 {filtered.map((c) => (
                   <motion.button key={c.alpha3} type="button" initial={{ opacity: 0, scale: 0.94, y: 6 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.94, y: -4 }} transition={springItem} onClick={() => setSelected(c)} className="group flex flex-col overflow-hidden rounded-2xl border text-left" whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }}>
-                    <div className="flex h-44 w-full items-center justify-center overflow-hidden bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-2"><div className="max-h-full max-w-full" style={{ aspectRatio: getAspectRatio(c.alpha2) }}><FlagImage alpha2={c.alpha2} alt={`${c.nameJa}の国旗`} /></div></div>
+                    <div
+                      className="flex w-full items-center justify-center overflow-hidden bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-2"
+                      style={{ aspectRatio: flagFrameRatio }}
+                    >
+                      <div className="h-full max-w-full" style={{ aspectRatio: getAspectRatio(c.alpha2) }}>
+                        <FlagImage alpha2={c.alpha2} alt={`${c.nameJa}の国旗`} />
+                      </div>
+                    </div>
                     <div className="flex flex-col gap-1.5 p-2.5"><span className="line-clamp-2 text-xs font-semibold">{c.nameJa}</span><span className="text-[10px]">{c.alpha3}</span><DifficultyDots value={c.difficulty} /></div>
                   </motion.button>
                 ))}
@@ -339,10 +396,10 @@ export function FlagExplorerClient() {
             <motion.aside role="dialog" aria-modal="true" className="relative z-10 flex max-h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border bg-[var(--color-bg)] shadow-2xl" initial={{ y: 24, scale: 0.98, opacity: 0 }} animate={{ y: 0, scale: 1, opacity: 1 }} exit={{ y: 20, scale: 0.98, opacity: 0 }} transition={springPanel}>
               <div className="flex items-start justify-between gap-3 border-b px-4 py-3"><div className="min-w-0"><h2 className="text-lg font-bold">{selected.nameJa}</h2><p className="text-sm">{selected.nameEn}</p></div><button type="button" onClick={() => setSelected(null)} className="shrink-0 rounded-full p-2"><X className="h-5 w-5" /></button></div>
               <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
-                <div className="mb-4 flex h-64 w-full items-center justify-center overflow-hidden border bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-3"><div className="max-h-full max-w-full" style={{ aspectRatio: getAspectRatio(selected.alpha2) }}><FlagImage alpha2={selected.alpha2} alt={`${selected.nameJa}の国旗`} /></div></div>
+                <div className="mb-4 flex h-64 w-full items-center justify-center overflow-hidden border bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-3"><div className="h-full max-w-full" style={{ aspectRatio: getAspectRatio(selected.alpha2) }}><FlagImage alpha2={selected.alpha2} alt={`${selected.nameJa}の国旗`} /></div></div>
                 <dl className="space-y-3 text-sm"><div><dt className="text-xs">alpha-3</dt><dd className="font-mono">{selected.alpha3}</dd></div><div><dt className="text-xs">地域</dt><dd>{selected.regionLabel ?? "—"}{selected.subRegionLabel ? ` / ${selected.subRegionLabel}` : ""}{selected.intermediateRegionLabel ? ` / ${selected.intermediateRegionLabel}` : ""}</dd></div></dl>
                 <div className="mt-6"><h3 className="mb-2 text-xs">地図</h3><FlagExplorerMap highlightCountryCode={selected.countryCode} isoRows={isoRows} /></div>
-                <div className="mt-6"><h3 className="mb-2 text-xs">混同しやすい国旗(colors/design)</h3>{similarList.length === 0 ? <p className="text-xs">比較候補なし</p> : <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">{similarList.map((s) => <li key={s.alpha3}><button type="button" onClick={() => setSelected(s)} className="flex w-full flex-col overflow-hidden rounded-xl border text-left"><div className="flex h-24 w-full items-center justify-center bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-1"><div className="max-h-full max-w-full" style={{ aspectRatio: getAspectRatio(s.alpha2) }}><FlagImage alpha2={s.alpha2} alt={`${s.nameJa}の国旗`} /></div></div><span className="line-clamp-2 p-2 text-[11px]">{s.nameJa}</span></button></li>)}</ul>}</div>
+                <div className="mt-6"><h3 className="mb-2 text-xs">混同しやすい国旗(colors/design)</h3>{similarList.length === 0 ? <p className="text-xs">比較候補なし</p> : <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">{similarList.map((s) => <li key={s.alpha3}><button type="button" onClick={() => setSelected(s)} className="flex w-full flex-col overflow-hidden rounded-xl border text-left"><div className="flex h-24 w-full items-center justify-center bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-1"><div className="h-full max-w-full" style={{ aspectRatio: getAspectRatio(s.alpha2) }}><FlagImage alpha2={s.alpha2} alt={`${s.nameJa}の国旗`} /></div></div><span className="line-clamp-2 p-2 text-[11px]">{s.nameJa}</span></button></li>)}</ul>}</div>
               </div>
             </motion.aside>
           </motion.div>

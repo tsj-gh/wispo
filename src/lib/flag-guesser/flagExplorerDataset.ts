@@ -128,16 +128,48 @@ export function collectColorTagOptions(rows: readonly ExplorerCountryRow[]): str
   for (const row of rows) {
     for (const c of row.colors) s.add(c);
   }
-  const rest = Array.from(s)
-    .filter((c) => c !== "unknown")
+  const preferredOrder = [
+    "red",
+    "blue",
+    "yellow",
+    "white",
+    "black",
+    "green",
+    "orange",
+    "purple",
+    "brown",
+    "gold",
+    "silver",
+    "pink",
+    "emblem_colors",
+  ];
+  const ordered = preferredOrder.filter((c) => s.has(c));
+  const extra = Array.from(s)
+    .filter((c) => c !== "unknown" && !preferredOrder.includes(c))
     .sort((a, b) => a.localeCompare(b));
-  if (s.has("unknown")) rest.push("unknown");
-  return rest;
+  const out = [...ordered, ...extra];
+  if (s.has("unknown")) out.push("unknown");
+  return out;
 }
 
 export function displayColorTag(c: string): string {
-  if (c === "unknown") return "不明";
-  return c;
+  const m: Record<string, string> = {
+    red: "赤",
+    blue: "青",
+    yellow: "黄",
+    white: "白",
+    black: "黒",
+    green: "緑",
+    orange: "橙",
+    purple: "紫",
+    brown: "茶",
+    gold: "金",
+    silver: "銀",
+    pink: "桃",
+    emblem_colors: "紋章色",
+    unknown: "不明",
+  };
+  return m[c] ?? c;
 }
 
 export function displayDesignTag(d: string): string {

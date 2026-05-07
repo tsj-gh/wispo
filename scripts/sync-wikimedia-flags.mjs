@@ -21,7 +21,9 @@ SELECT ?code ?flag WHERE {
 
 function parseNumericLike(raw) {
   if (!raw) return null;
-  const m = String(raw).trim().match(/^([0-9]+(?:\.[0-9]+)?)/);
+  const m = String(raw)
+    .trim()
+    .match(/^([+-]?(?:\d+(?:\.\d+)?|\.\d+)(?:e[+-]?\d+)?)/i);
   if (!m) return null;
   const v = Number(m[1]);
   return Number.isFinite(v) && v > 0 ? v : null;
@@ -90,7 +92,8 @@ async function fetchRestcountriesSvg(code) {
   const r = await fetch(url, { headers: { "User-Agent": USER_AGENT, Accept: "application/json" } });
   if (!r.ok) return null;
   const j = await r.json();
-  const svg = String(j?.flags?.svg || "").trim();
+  const row = Array.isArray(j) ? j[0] : j;
+  const svg = String(row?.flags?.svg || "").trim();
   return svg.endsWith(".svg") ? svg : null;
 }
 
