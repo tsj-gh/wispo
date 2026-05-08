@@ -10,6 +10,11 @@ const USER_AGENT = "WispoFlagSync/1.0 (educational use)";
 const WIKIDATA_ENDPOINT = "https://query.wikidata.org/sparql";
 const RESTCOUNTRIES_ALPHA = "https://restcountries.com/v3.1/alpha";
 const COMMONS_API = "https://commons.wikimedia.org/w/api.php";
+/** Wikidata P41 が旧版を指すケースの手動上書き（Commons title） */
+const MANUAL_FLAG_TITLE_OVERRIDES = {
+  // Antigua and Barbuda: P41 が 1962-1967 版へ向く場合があるため現行旗へ固定
+  ag: "File:Flag of Antigua and Barbuda.svg",
+};
 
 const SPARQL = `
 SELECT ?code ?flag WHERE {
@@ -146,12 +151,18 @@ async function main() {
   let reusedLocal = 0;
   let usedEmergency = 0;
   for (const code of alpha2List) {
+    const manualTitle = MANUAL_FLAG_TITLE_OVERRIDES[code] ?? null;
     const flagValueUrl = byCode.get(code);
-    const commonsTitle = flagValueUrl ? toCommonsTitle(flagValueUrl) : null;
+    const commonsTitle = manualTitle ?? (flagValueUrl ? toCommonsTitle(flagValueUrl) : null);
     const primaryUrl = flagValueUrl ? toRawFileUrl(flagValueUrl) : null;
+    const overrideUrl = manualTitle
+      ? `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(
+          manualTitle.replace(/^File:/, "")
+        )}`
+      : null;
     const commonsApiUrl = commonsTitle ? await fetchCommonsSvgByApi(commonsTitle).catch(() => null) : null;
     const restcountriesUrl = await fetchRestcountriesSvg(code).catch(() => null);
-    const candidates = [primaryUrl, commonsApiUrl, restcountriesUrl].filter(Boolean);
+    const candidates = [overrideUrl, primaryUrl, commonsApiUrl, restcountriesUrl].filter(Boolean);
 
     try {
       let svg = null;
