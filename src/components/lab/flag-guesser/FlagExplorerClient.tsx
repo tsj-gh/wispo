@@ -15,8 +15,9 @@ import {
   buildRegionHierarchy,
   collectColorTagOptions,
   collectCountryCodesForRegionalMapFit,
+  collectDesignTagOptions,
   displayColorTag,
-  displayDesignTag,
+  displayDesignTagByLocale,
   mergeExplorerCountries,
   type ExplorerCountryRow,
   type FlagDifficultyJsonRow,
@@ -24,6 +25,7 @@ import {
 import { flagUrlForAlpha2 } from "@/lib/flag-guesser/selectRound";
 import type { Iso3166Row } from "@/lib/flag-guesser/types";
 import { GAME_AD_GAP_BEFORE_SLOT_2_PX, GAME_AD_SLOT_MIN_HEIGHT_PX } from "@/lib/gameLayout";
+import { useI18n } from "@/lib/i18n-context";
 
 countries.registerLocale(enLocale);
 countries.registerLocale(jaLocale);
@@ -63,6 +65,7 @@ function FlagImage({ alpha2, alt, className = "" }: { alpha2: string; alt: strin
 }
 
 export function FlagExplorerClient() {
+  const { locale } = useI18n();
   const searchParams = useSearchParams();
   const isDevTj = searchParams.get("devtj") === "true";
   const debugOnButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -78,6 +81,7 @@ export function FlagExplorerClient() {
   const [diffMin, setDiffMin] = useState(1);
   const [diffMax, setDiffMax] = useState(8);
   const [query, setQuery] = useState("");
+  const [designFilter, setDesignFilter] = useState("");
   const [selected, setSelected] = useState<ExplorerCountryRow | null>(null);
   const [aspectMeta, setAspectMeta] = useState<Record<string, { ratio: number }> | null>(null);
 
@@ -161,6 +165,7 @@ export function FlagExplorerClient() {
   }, [merged, region, subRegion]);
 
   const colorOptions = useMemo(() => collectColorTagOptions(merged), [merged]);
+  const designOptions = useMemo(() => collectDesignTagOptions(merged), [merged]);
   useEffect(() => {
     if (region && subRegion && !subRegionOptions.includes(subRegion)) setSubRegion("");
   }, [region, subRegion, subRegionOptions]);
@@ -181,6 +186,7 @@ export function FlagExplorerClient() {
     setColorFilter([]);
     setDiffMin(1);
     setDiffMax(8);
+    setDesignFilter("");
     setQuery("");
   }, []);
 
@@ -195,9 +201,12 @@ export function FlagExplorerClient() {
       // 色タグは OR ではなく AND（選択した色をすべて含む）
       list = list.filter((r) => colorFilter.every((c) => r.colors.includes(c)));
     }
+    if (isDevTj && isDebugMode && designFilter) {
+      list = list.filter((r) => r.designLabel === designFilter);
+    }
     const { lo, hi } = clampDiff(diffMin, diffMax);
     return Array.from(list).filter((r) => r.difficulty >= lo && r.difficulty <= hi).sort((a, b) => a.nameJa.localeCompare(b.nameJa, "ja"));
-  }, [merged, query, region, subRegion, intermediateRegion, colorFilter, diffMin, diffMax, clampDiff]);
+  }, [merged, query, region, subRegion, intermediateRegion, colorFilter, diffMin, diffMax, clampDiff, isDevTj, isDebugMode, designFilter]);
 
   useEffect(() => {
     if (!selected) return;
@@ -340,7 +349,7 @@ export function FlagExplorerClient() {
                           </div>
                           <div>
                             <dt className="text-stone-600">design</dt>
-                            <dd className="break-all">{displayDesignTag(selectedDifficultyJsonRow.tags?.design ?? "") || "—"}</dd>
+                            <dd className="break-all">{displayDesignTagByLocale(selectedDifficultyJsonRow.tags?.design ?? "", locale) || "—"}</dd>
                           </div>
                           <div>
                             <dt className="text-stone-600">confusable_region（alpha-3）</dt>
@@ -441,6 +450,19 @@ export function FlagExplorerClient() {
             </div>
 
             <label className="flex flex-col gap-1.5 text-xs"><span>色 (AND)</span><div className="flex flex-wrap gap-2">{colorOptions.map((c) => { const on = colorFilter.includes(c); return <button key={c} type="button" onClick={() => setColorFilter((prev) => prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c])} className={`rounded-full border px-2.5 py-1 text-xs ${on ? "border-[var(--color-primary)]" : ""}`}>{displayColorTag(c)}</button>; })}</div></label>
+            {isDevTj && isDebugMode ? (
+              <label className="flex flex-col gap-1.5 text-xs">
+                <span>{locale === "ja" ? "意匠" : "Design"}</span>
+                <select value={designFilter} onChange={(e) => setDesignFilter(e.target.value)} className="rounded-lg border px-3 py-2 text-sm">
+                  <option value="">{locale === "ja" ? "（すべて）" : "(All)"}</option>
+                  {designOptions.map((d) => (
+                    <option key={d} value={d}>
+                      {displayDesignTagByLocale(d, locale)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
             <label className="flex flex-col gap-1.5 text-xs"><span>文字列</span><div className="flex items-center gap-2 rounded-xl border px-3 py-2"><Search className="h-4 w-4" /><input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="国名 or alpha-3" className="min-w-0 flex-1 bg-transparent text-sm outline-none" /></div></label>
             <p className="text-xs">該当 {filtered.length} 件 / 全 {merged.length} 件</p>
           </section>

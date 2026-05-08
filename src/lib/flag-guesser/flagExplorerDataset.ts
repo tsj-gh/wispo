@@ -173,8 +173,93 @@ export function displayColorTag(c: string): string {
 }
 
 export function displayDesignTag(d: string): string {
-  if (d === "generic" || d === "（未分類）") return d === "generic" ? "汎用" : d;
-  return d;
+  return displayDesignTagByLocale(d, "ja");
+}
+
+export function collectDesignTagOptions(rows: readonly ExplorerCountryRow[]): string[] {
+  return Array.from(new Set(rows.map((r) => r.designLabel))).sort((a, b) => a.localeCompare(b));
+}
+
+export function displayDesignTagByLocale(d: string, locale: "ja" | "en"): string {
+  const raw = (d ?? "").trim();
+  if (!raw) return locale === "ja" ? "（未分類）" : "";
+  if (locale === "en") return raw === "（未分類）" ? "" : raw;
+  if (raw === "generic") return "汎用";
+  if (raw === "（未分類）") return raw;
+
+  const tokenJa: Record<string, string> = {
+    arrow: "矢印",
+    shapes: "図形",
+    bicolor: "二色",
+    tricolor: "三色",
+    triband: "三分割帯",
+    quadrants: "四分割",
+    horizontal: "横帯",
+    vertical: "縦帯",
+    stripe: "ストライプ",
+    stripes: "ストライプ",
+    split: "分割",
+    diagonal: "斜め",
+    triangle: "三角",
+    triangles: "三角",
+    diamond: "菱形",
+    diamonds: "菱形",
+    disk: "円盤",
+    centered: "中央",
+    center: "中央",
+    side: "側面",
+    off: "オフ",
+    offcentered: "オフ中心",
+    emblem: "紋章",
+    cross: "十字",
+    crosses: "十字",
+    nordic: "北欧",
+    square: "正方",
+    corner: "隅",
+    corners: "隅",
+    canton: "カントン",
+    stars: "星",
+    star: "星",
+    sun: "太陽",
+    rays: "光線",
+    crescent: "三日月",
+    wheel: "輪",
+    flower: "花",
+    leaf: "葉",
+    branches: "枝",
+    map: "地図",
+    border: "縁取り",
+    framed: "額縁",
+    radiating: "放射",
+    saltire: "斜め十字",
+    serrated: "ギザギザ",
+    shield: "盾",
+    union: "ユニオン",
+    jack: "ジャック",
+    yellow: "黄色",
+    pan: "パン",
+    african: "アフリカ",
+    arab: "アラブ",
+    trapezoid: "台形",
+    y: "Y字",
+    v: "V字",
+    zigzag: "ジグザグ",
+    non: "非",
+    quadrilateral: "四角形",
+    unique: "独特",
+    text: "文字",
+    tree: "木",
+    trigrams: "八卦",
+    dragon: "龍",
+    pattern: "模様",
+    five: "5つ",
+    landscape: "横長",
+  };
+  const translated = raw
+    .split("_")
+    .map((token) => tokenJa[token] ?? token)
+    .join("・");
+  return translated;
 }
 
 /**
