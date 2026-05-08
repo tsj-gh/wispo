@@ -12,7 +12,7 @@
         "red",
         "green"
       ],
-      "design": "縦分割",
+      "design": "その他",
       "symbol": [
         "その他"
       ]
@@ -141,7 +141,7 @@
         "white",
         "red"
       ],
-      "design": "その他",
+      "design": "縦分割",
       "symbol": [
         "太陽/月",
         "星"
@@ -187,7 +187,7 @@
         "white",
         "red"
       ],
-      "design": "T字",
+      "design": "その他",
       "symbol": [
         "その他"
       ]
@@ -275,7 +275,7 @@
         "black",
         "yellow"
       ],
-      "design": "その他",
+      "design": "横分割",
       "symbol": [
         "その他"
       ]
@@ -363,7 +363,7 @@
         "red",
         "yellow"
       ],
-      "design": "その他",
+      "design": "カントン",
       "symbol": [
         "太陽/月",
         "その他"
@@ -679,7 +679,7 @@
         "yellow",
         "black"
       ],
-      "design": "T字",
+      "design": "Y字",
       "symbol": [
         "その他"
       ]
@@ -722,7 +722,7 @@
         "red",
         "white"
       ],
-      "design": "斜め分割",
+      "design": "縦分割",
       "symbol": [
         "なし"
       ]
@@ -987,7 +987,7 @@
         "yellow",
         "red"
       ],
-      "design": "その他",
+      "design": "T字",
       "symbol": [
         "なし"
       ]
@@ -1165,7 +1165,7 @@
         "red",
         "black"
       ],
-      "design": "その他",
+      "design": "斜め分割",
       "symbol": [
         "星"
       ]
@@ -1609,7 +1609,7 @@
         "red",
         "yellow"
       ],
-      "design": "その他",
+      "design": "横分割",
       "symbol": [
         "星"
       ]
@@ -1653,7 +1653,7 @@
         "red",
         "white"
       ],
-      "design": "その他",
+      "design": "横分割",
       "symbol": [
         "その他"
       ]
@@ -1747,7 +1747,7 @@
         "red",
         "white"
       ],
-      "design": "その他",
+      "design": "縦分割",
       "symbol": [
         "生物"
       ]
@@ -1923,7 +1923,7 @@
         "white",
         "red"
       ],
-      "design": "その他",
+      "design": "カントン",
       "symbol": [
         "なし"
       ]
@@ -2010,7 +2010,7 @@
         "yellow",
         "white"
       ],
-      "design": "その他",
+      "design": "斜め分割",
       "symbol": [
         "その他"
       ]
@@ -2083,7 +2083,7 @@
         "blue",
         "red"
       ],
-      "design": "その他",
+      "design": "横分割",
       "symbol": [
         "なし"
       ]
@@ -2132,7 +2132,7 @@
         "blue",
         "green"
       ],
-      "design": "その他",
+      "design": "Y字",
       "symbol": [
         "太陽/月",
         "その他"
@@ -2456,7 +2456,7 @@
         "white",
         "red"
       ],
-      "design": "T字",
+      "design": "Y字",
       "symbol": [
         "その他"
       ]
@@ -2591,7 +2591,7 @@
         "red",
         "blue"
       ],
-      "design": "T字",
+      "design": "Y字",
       "symbol": [
         "その他"
       ]
@@ -2685,7 +2685,7 @@
         "white",
         "red"
       ],
-      "design": "T字",
+      "design": "Y字",
       "symbol": [
         "その他"
       ]
@@ -2962,7 +2962,7 @@
         "red",
         "blue"
       ],
-      "design": "T字",
+      "design": "Y字",
       "symbol": [
         "その他"
       ]
@@ -3099,7 +3099,7 @@
         "black",
         "white"
       ],
-      "design": "その他",
+      "design": "横分割",
       "symbol": [
         "その他"
       ]
@@ -3427,7 +3427,7 @@
         "yellow",
         "red"
       ],
-      "design": "縦分割",
+      "design": "斜め分割",
       "symbol": [
         "なし"
       ]
@@ -3510,7 +3510,7 @@
         "white",
         "red"
       ],
-      "design": "その他",
+      "design": "カントン",
       "symbol": [
         "その他"
       ]
@@ -3825,7 +3825,7 @@
         "blue",
         "white"
       ],
-      "design": "十字四分割",
+      "design": "カントン",
       "symbol": [
         "十字"
       ]
@@ -3952,7 +3952,7 @@
         "blue",
         "green"
       ],
-      "design": "縦分割",
+      "design": "横分割",
       "symbol": [
         "なし"
       ]
@@ -4181,7 +4181,7 @@
         "green",
         "black"
       ],
-      "design": "縦分割",
+      "design": "T字",
       "symbol": [
         "星"
       ]
@@ -4235,7 +4235,7 @@
         "black",
         "white"
       ],
-      "design": "その他",
+      "design": "Y字",
       "symbol": [
         "その他"
       ]
@@ -4761,7 +4761,7 @@
         "blue",
         "white"
       ],
-      "design": "その他",
+      "design": "横分割",
       "symbol": [
         "星"
       ]
@@ -4915,7 +4915,7 @@
         "red",
         "yellow"
       ],
-      "design": "十字四分割",
+      "design": "対角",
       "symbol": [
         "十字",
         "その他"
@@ -4955,7 +4955,7 @@
         "green",
         "red"
       ],
-      "design": "T字",
+      "design": "Y字",
       "symbol": [
         "その他"
       ]
@@ -5168,7 +5168,7 @@
         "red",
         "black"
       ],
-      "design": "T字",
+      "design": "Y字",
       "symbol": [
         "その他"
       ]
@@ -5393,7 +5393,7 @@
         "white",
         "blue"
       ],
-      "design": "その他",
+      "design": "カントン",
       "symbol": [
         "星"
       ]
@@ -5737,7 +5737,7 @@
         "blue",
         "yellow"
       ],
-      "design": "その他",
+      "design": "カントン",
       "symbol": [
         "太陽/月",
         "星"
@@ -5918,7 +5918,7 @@
         "black",
         "red"
       ],
-      "design": "T字",
+      "design": "Y字",
       "symbol": [
         "その他"
       ]
@@ -6369,7 +6369,7 @@
         "red",
         "white"
       ],
-      "design": "T字",
+      "design": "Y字",
       "symbol": [
         "その他"
       ]
@@ -6958,7 +6958,7 @@
         "green",
         "white"
       ],
-      "design": "T字",
+      "design": "縦分割",
       "symbol": [
         "太陽/月"
       ]
@@ -7031,7 +7031,7 @@
         "green",
         "red"
       ],
-      "design": "T字",
+      "design": "Y字",
       "symbol": [
         "その他"
       ]
@@ -7225,7 +7225,7 @@
         "white",
         "yellow"
       ],
-      "design": "横分割",
+      "design": "Y字",
       "symbol": [
         "その他"
       ]
@@ -7374,7 +7374,7 @@
         "white",
         "blue"
       ],
-      "design": "その他",
+      "design": "Y字",
       "symbol": [
         "星",
         "その他"
@@ -7450,7 +7450,7 @@
         "white",
         "yellow"
       ],
-      "design": "その他",
+      "design": "対角",
       "symbol": [
         "その他"
       ]
@@ -7823,7 +7823,7 @@
         "red",
         "black"
       ],
-      "design": "その他",
+      "design": "Y字",
       "symbol": [
         "星",
         "その他"
@@ -8249,7 +8249,7 @@
         "yellow",
         "white"
       ],
-      "design": "その他",
+      "design": "Y字",
       "symbol": [
         "星",
         "その他"
@@ -8325,7 +8325,7 @@
         "black",
         "green"
       ],
-      "design": "T字",
+      "design": "Y字",
       "symbol": [
         "その他"
       ]
@@ -8363,7 +8363,7 @@
         "red",
         "yellow"
       ],
-      "design": "その他",
+      "design": "横分割",
       "symbol": [
         "星"
       ]
@@ -8439,7 +8439,7 @@
         "red",
         "white"
       ],
-      "design": "十字四分割",
+      "design": "その他",
       "symbol": [
         "十字"
       ]
@@ -8915,7 +8915,7 @@
         "red",
         "white"
       ],
-      "design": "その他",
+      "design": "横分割",
       "symbol": [
         "その他"
       ]
@@ -8984,7 +8984,7 @@
         "white",
         "black"
       ],
-      "design": "縦分割",
+      "design": "T字",
       "symbol": [
         "その他"
       ]
@@ -9068,7 +9068,7 @@
         "white",
         "blue"
       ],
-      "design": "その他",
+      "design": "カントン",
       "symbol": [
         "星"
       ]
@@ -9102,7 +9102,7 @@
         "blue",
         "yellow"
       ],
-      "design": "その他",
+      "design": "カントン",
       "symbol": [
         "太陽/月"
       ]
@@ -9143,7 +9143,7 @@
         "green",
         "red"
       ],
-      "design": "その他",
+      "design": "横分割",
       "symbol": [
         "太陽/月",
         "星"
@@ -9288,7 +9288,7 @@
         "green",
         "red"
       ],
-      "design": "T字",
+      "design": "Y字",
       "symbol": [
         "太陽/月",
         "その他"
@@ -9406,7 +9406,7 @@
         "black",
         "white"
       ],
-      "design": "その他",
+      "design": "Y字",
       "symbol": [
         "その他"
       ]
@@ -9481,7 +9481,7 @@
         "red",
         "yellow"
       ],
-      "design": "縦分割",
+      "design": "その他",
       "symbol": [
         "その他"
       ]
@@ -9649,7 +9649,7 @@
         "white",
         "yellow"
       ],
-      "design": "T字",
+      "design": "Y字",
       "symbol": [
         "その他"
       ]
@@ -9915,7 +9915,7 @@
         "yellow",
         "white"
       ],
-      "design": "その他",
+      "design": "Y字",
       "symbol": [
         "星",
         "その他"
@@ -9971,7 +9971,7 @@
         "yellow",
         "white"
       ],
-      "design": "カントン",
+      "design": "その他",
       "symbol": [
         "星"
       ]
@@ -10082,7 +10082,7 @@
         "white",
         "blue"
       ],
-      "design": "その他",
+      "design": "カントン",
       "symbol": [
         "星"
       ]
@@ -10246,7 +10246,7 @@
         "red",
         "white"
       ],
-      "design": "縦分割",
+      "design": "カントン",
       "symbol": [
         "なし"
       ]
