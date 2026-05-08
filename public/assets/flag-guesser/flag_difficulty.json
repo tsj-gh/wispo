@@ -12,7 +12,10 @@
         "red",
         "green"
       ],
-      "design": "tricolor_vertical_emblem"
+      "design": "縦分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "BGD",
@@ -53,7 +56,10 @@
         "yellow",
         "red"
       ],
-      "design": "nordic_cross"
+      "design": "十字四分割",
+      "symbol": [
+        "十字"
+      ]
     },
     "confusable_region": [
       "DNK",
@@ -91,7 +97,10 @@
         "red",
         "black"
       ],
-      "design": "emblem_centered"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "AND",
@@ -132,7 +141,11 @@
         "white",
         "red"
       ],
-      "design": "crescent_star"
+      "design": "その他",
+      "symbol": [
+        "太陽/月",
+        "星"
+      ]
     },
     "confusable_region": [
       "EGY",
@@ -174,7 +187,10 @@
         "white",
         "red"
       ],
-      "design": "triangle_horizontal_emblem"
+      "design": "T字",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "COK",
@@ -209,7 +225,10 @@
         "yellow",
         "red"
       ],
-      "design": "tricolor_vertical_emblem"
+      "design": "縦分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ALB",
@@ -256,7 +275,10 @@
         "black",
         "yellow"
       ],
-      "design": "emblem_centered"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "CMR",
@@ -298,7 +320,10 @@
         "red",
         "yellow"
       ],
-      "design": "union_jack_emblem"
+      "design": "カントン",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ATG",
@@ -338,7 +363,11 @@
         "red",
         "yellow"
       ],
-      "design": "v_shape_sun"
+      "design": "その他",
+      "symbol": [
+        "太陽/月",
+        "その他"
+      ]
     },
     "confusable_region": [
       "AIA",
@@ -379,7 +408,10 @@
         "white",
         "yellow"
       ],
-      "design": "tricolor_horizontal_sun"
+      "design": "横分割",
+      "symbol": [
+        "太陽/月"
+      ]
     },
     "confusable_region": [
       "BRA",
@@ -425,7 +457,10 @@
         "blue",
         "orange"
       ],
-      "design": "tricolor_horizontal"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "AZE",
@@ -467,7 +502,10 @@
         "red",
         "white"
       ],
-      "design": "generic"
+      "design": "その他",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "AIA",
@@ -508,7 +546,10 @@
         "white",
         "red"
       ],
-      "design": "union_jack_stars"
+      "design": "カントン",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "CXR",
@@ -548,7 +589,10 @@
         "red",
         "white"
       ],
-      "design": "tricolor_horizontal"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "BEL",
@@ -591,7 +635,10 @@
         "green",
         "white"
       ],
-      "design": "tricolor_horizontal_crescent"
+      "design": "横分割",
+      "symbol": [
+        "太陽/月"
+      ]
     },
     "confusable_region": [
       "ARM",
@@ -632,7 +679,10 @@
         "yellow",
         "black"
       ],
-      "design": "triangle_horizontal_stripes"
+      "design": "T字",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "AIA",
@@ -672,7 +722,10 @@
         "red",
         "white"
       ],
-      "design": "zigzag_vertical"
+      "design": "斜め分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "ARM",
@@ -714,7 +767,10 @@
         "green",
         "red"
       ],
-      "design": "disk_offcentered"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "AFG",
@@ -755,7 +811,10 @@
         "yellow",
         "black"
       ],
-      "design": "tricolor_vertical_emblem"
+      "design": "縦分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "AIA",
@@ -796,7 +855,10 @@
         "green",
         "white"
       ],
-      "design": "generic"
+      "design": "その他",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "BGR",
@@ -834,7 +896,10 @@
         "yellow",
         "red"
       ],
-      "design": "tricolor_vertical"
+      "design": "縦分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "AUT",
@@ -878,7 +943,10 @@
         "white",
         "green"
       ],
-      "design": "emblem_centered"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "CRI",
@@ -919,7 +987,10 @@
         "yellow",
         "red"
       ],
-      "design": "generic"
+      "design": "その他",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "BFA",
@@ -960,7 +1031,10 @@
         "white",
         "blue"
       ],
-      "design": "union_jack_emblem"
+      "design": "カントン",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "CAN",
@@ -996,7 +1070,10 @@
         "white",
         "black"
       ],
-      "design": "diagonal_dragon"
+      "design": "斜め分割",
+      "symbol": [
+        "生物"
+      ]
     },
     "confusable_region": [
       "AFG",
@@ -1034,7 +1111,10 @@
         "yellow",
         "green"
       ],
-      "design": "tricolor_horizontal"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "ARG",
@@ -1085,7 +1165,10 @@
         "red",
         "black"
       ],
-      "design": "stripes_stars"
+      "design": "その他",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "AIA",
@@ -1123,7 +1206,11 @@
         "yellow",
         "white"
       ],
-      "design": "triangle_stars"
+      "design": "その他",
+      "symbol": [
+        "星",
+        "その他"
+      ]
     },
     "confusable_region": [
       "ALB",
@@ -1164,7 +1251,10 @@
         "black",
         "white"
       ],
-      "design": "stripes_horizontal"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "SWZ",
@@ -1205,7 +1295,10 @@
         "white",
         "blue"
       ],
-      "design": "nordic_cross"
+      "design": "十字四分割",
+      "symbol": [
+        "十字"
+      ]
     },
     "confusable_region": [
       "ARG",
@@ -1244,7 +1337,10 @@
         "blue",
         "white"
       ],
-      "design": "diamond_disk"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ARG",
@@ -1286,7 +1382,10 @@
         "red",
         "green"
       ],
-      "design": "union_jack_emblem"
+      "design": "カントン",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "BDI",
@@ -1325,7 +1424,10 @@
         "black",
         "red"
       ],
-      "design": "diagonal_stripes_emblem"
+      "design": "斜め分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "KHM",
@@ -1365,7 +1467,10 @@
         "green",
         "red"
       ],
-      "design": "tricolor_horizontal"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "BLR",
@@ -1406,7 +1511,10 @@
         "green",
         "yellow"
       ],
-      "design": "tricolor_horizontal_star"
+      "design": "横分割",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "BEN",
@@ -1455,7 +1563,11 @@
         "green",
         "white"
       ],
-      "design": "saltire_stars"
+      "design": "十字四分割",
+      "symbol": [
+        "十字",
+        "星"
+      ]
     },
     "confusable_region": [
       "IOT",
@@ -1497,7 +1609,10 @@
         "red",
         "yellow"
       ],
-      "design": "stripes_stars"
+      "design": "その他",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "BEN",
@@ -1538,7 +1653,10 @@
         "red",
         "white"
       ],
-      "design": "stripes_emblem"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "BRN",
@@ -1578,7 +1696,10 @@
         "red",
         "yellow"
       ],
-      "design": "tricolor_vertical_star"
+      "design": "縦分割",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "AGO",
@@ -1626,7 +1747,10 @@
         "red",
         "white"
       ],
-      "design": "leaf_centered"
+      "design": "その他",
+      "symbol": [
+        "生物"
+      ]
     },
     "confusable_region": [
       "BMU",
@@ -1663,7 +1787,10 @@
         "green",
         "yellow"
       ],
-      "design": "union_jack_emblem"
+      "design": "カントン",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "AIA",
@@ -1703,7 +1830,10 @@
         "yellow",
         "red"
       ],
-      "design": "generic"
+      "design": "その他",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "AGO",
@@ -1744,7 +1874,10 @@
         "yellow",
         "red"
       ],
-      "design": "tricolor_vertical"
+      "design": "縦分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "AGO",
@@ -1790,7 +1923,10 @@
         "white",
         "red"
       ],
-      "design": "generic"
+      "design": "その他",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "ARG",
@@ -1830,7 +1966,10 @@
         "red",
         "yellow"
       ],
-      "design": "stars_corner"
+      "design": "その他",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "HKG",
@@ -1871,7 +2010,10 @@
         "yellow",
         "white"
       ],
-      "design": "triangle_emblem"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "AUS",
@@ -1904,7 +2046,11 @@
         "white",
         "maroon"
       ],
-      "design": "crescent_star"
+      "design": "その他",
+      "symbol": [
+        "太陽/月",
+        "星"
+      ]
     },
     "confusable_region": [
       "AUS",
@@ -1937,7 +2083,10 @@
         "blue",
         "red"
       ],
-      "design": "generic"
+      "design": "その他",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "ARG",
@@ -1983,7 +2132,11 @@
         "blue",
         "green"
       ],
-      "design": "triangle_stripes_crescent"
+      "design": "その他",
+      "symbol": [
+        "太陽/月",
+        "その他"
+      ]
     },
     "confusable_region": [
       "IOT",
@@ -2024,7 +2177,10 @@
         "yellow",
         "red"
       ],
-      "design": "diagonal_tricolor"
+      "design": "対角",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "AGO",
@@ -2067,7 +2223,10 @@
         "yellow",
         "red"
       ],
-      "design": "diagonal_stripe_star"
+      "design": "対角",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "AGO",
@@ -2109,7 +2268,10 @@
         "blue",
         "white"
       ],
-      "design": "union_jack_star_circle"
+      "design": "カントン",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "ASM",
@@ -2151,7 +2313,10 @@
         "white",
         "red"
       ],
-      "design": "stripes_horizontal"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "BLZ",
@@ -2194,7 +2359,10 @@
         "white",
         "green"
       ],
-      "design": "tricolor_vertical"
+      "design": "縦分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "BEN",
@@ -2237,7 +2405,10 @@
         "white",
         "blue"
       ],
-      "design": "tricolor_horizontal_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ALB",
@@ -2285,7 +2456,10 @@
         "white",
         "red"
       ],
-      "design": "triangle_horizontal_stripes"
+      "design": "T字",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "AIA",
@@ -2329,7 +2503,10 @@
         "yellow",
         "white"
       ],
-      "design": "triband_horizontal_stars"
+      "design": "横分割",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "AIA",
@@ -2367,7 +2544,11 @@
         "orange",
         "green"
       ],
-      "design": "map_branches"
+      "design": "その他",
+      "symbol": [
+        "生物",
+        "景色/建物"
+      ]
     },
     "confusable_region": [
       "ARM",
@@ -2410,7 +2591,10 @@
         "red",
         "blue"
       ],
-      "design": "triangle_horizontal"
+      "design": "T字",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "BLR",
@@ -2450,7 +2634,10 @@
         "red",
         "white"
       ],
-      "design": "nordic_cross"
+      "design": "十字四分割",
+      "symbol": [
+        "十字"
+      ]
     },
     "confusable_region": [
       "ALA",
@@ -2498,7 +2685,10 @@
         "white",
         "red"
       ],
-      "design": "triangle_horizontal"
+      "design": "T字",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "IOT",
@@ -2541,7 +2731,11 @@
         "white",
         "red"
       ],
-      "design": "cross_emblem"
+      "design": "十字四分割",
+      "symbol": [
+        "十字",
+        "その他"
+      ]
     },
     "confusable_region": [
       "AIA",
@@ -2582,7 +2776,11 @@
         "red",
         "white"
       ],
-      "design": "cross_emblem"
+      "design": "十字四分割",
+      "symbol": [
+        "十字",
+        "その他"
+      ]
     },
     "confusable_region": [
       "AIA",
@@ -2623,7 +2821,10 @@
         "blue",
         "red"
       ],
-      "design": "tricolor_horizontal_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ARG",
@@ -2668,7 +2869,10 @@
         "black",
         "yellow"
       ],
-      "design": "tricolor_horizontal_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "DZA",
@@ -2708,7 +2912,10 @@
         "blue",
         "white"
       ],
-      "design": "tricolor_horizontal_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "BLZ",
@@ -2755,7 +2962,10 @@
         "red",
         "blue"
       ],
-      "design": "triangle_horizontal_emblem"
+      "design": "T字",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "AGO",
@@ -2797,7 +3007,10 @@
         "blue",
         "yellow"
       ],
-      "design": "triangle_emblem"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "IOT",
@@ -2838,7 +3051,10 @@
         "black",
         "white"
       ],
-      "design": "tricolor_horizontal"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "ALA",
@@ -2883,7 +3099,10 @@
         "black",
         "white"
       ],
-      "design": "shield_stripes"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "BWA",
@@ -2925,7 +3144,10 @@
         "red",
         "blue"
       ],
-      "design": "tricolor_horizontal_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "IOT",
@@ -2974,7 +3196,10 @@
         "white",
         "red"
       ],
-      "design": "union_jack_emblem"
+      "design": "カントン",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ARG",
@@ -3012,7 +3237,10 @@
         "blue",
         "red"
       ],
-      "design": "nordic_cross"
+      "design": "十字四分割",
+      "symbol": [
+        "十字"
+      ]
     },
     "confusable_region": [
       "ALA",
@@ -3061,7 +3289,10 @@
         "green",
         "yellow"
       ],
-      "design": "union_jack_emblem"
+      "design": "カントン",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "NCL",
@@ -3099,7 +3330,10 @@
         "white",
         "blue"
       ],
-      "design": "nordic_cross"
+      "design": "十字四分割",
+      "symbol": [
+        "十字"
+      ]
     },
     "confusable_region": [
       "ALA",
@@ -3146,7 +3380,10 @@
         "white",
         "red"
       ],
-      "design": "tricolor_vertical"
+      "design": "縦分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "AUT",
@@ -3190,7 +3427,10 @@
         "yellow",
         "red"
       ],
-      "design": "tricolor_vertical"
+      "design": "縦分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "ARG",
@@ -3227,7 +3467,10 @@
         "red",
         "white"
       ],
-      "design": "tricolor_horizontal_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ASM",
@@ -3267,7 +3510,10 @@
         "white",
         "red"
       ],
-      "design": "emblem_centered"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "IOT",
@@ -3305,7 +3551,10 @@
         "yellow",
         "blue"
       ],
-      "design": "tricolor_horizontal"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "AGO",
@@ -3349,7 +3598,10 @@
         "green",
         "white"
       ],
-      "design": "stripes_horizontal"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "BEN",
@@ -3389,7 +3641,10 @@
         "white",
         "red"
       ],
-      "design": "crosses_five"
+      "design": "十字四分割",
+      "symbol": [
+        "十字"
+      ]
     },
     "confusable_region": [
       "ARM",
@@ -3430,7 +3685,10 @@
         "red",
         "yellow"
       ],
-      "design": "tricolor_horizontal"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "AUT",
@@ -3472,7 +3730,10 @@
         "green",
         "black"
       ],
-      "design": "tricolor_horizontal_star"
+      "design": "横分割",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "BEN",
@@ -3524,7 +3785,10 @@
         "black",
         "yellow"
       ],
-      "design": "horizontal_bicolor_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ALB",
@@ -3561,7 +3825,10 @@
         "blue",
         "white"
       ],
-      "design": "cross_corner_stripes"
+      "design": "十字四分割",
+      "symbol": [
+        "十字"
+      ]
     },
     "confusable_region": [
       "ALB",
@@ -3601,7 +3868,10 @@
         "white",
         "red"
       ],
-      "design": "disk_horizontal_split"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "BMU",
@@ -3636,7 +3906,11 @@
         "yellow",
         "green"
       ],
-      "design": "stars_border_disk"
+      "design": "その他",
+      "symbol": [
+        "星",
+        "その他"
+      ]
     },
     "confusable_region": [
       "AIA",
@@ -3678,7 +3952,10 @@
         "blue",
         "green"
       ],
-      "design": "tricolor_vertical"
+      "design": "縦分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "AIA",
@@ -3716,7 +3993,10 @@
         "red",
         "white"
       ],
-      "design": "border_emblem"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "KIR",
@@ -3755,7 +4035,10 @@
         "red",
         "yellow"
       ],
-      "design": "tricolor_vertical_emblem"
+      "design": "縦分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "BLZ",
@@ -3801,7 +4084,11 @@
         "red",
         "yellow"
       ],
-      "design": "cross_emblem"
+      "design": "十字四分割",
+      "symbol": [
+        "十字",
+        "その他"
+      ]
     },
     "confusable_region": [
       "ALA",
@@ -3839,7 +4126,10 @@
         "yellow",
         "green"
       ],
-      "design": "tricolor_vertical"
+      "design": "縦分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "BEN",
@@ -3891,7 +4181,10 @@
         "green",
         "black"
       ],
-      "design": "tricolor_vertical_star"
+      "design": "縦分割",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "BEN",
@@ -3942,7 +4235,10 @@
         "black",
         "white"
       ],
-      "design": "arrow_shapes"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ARG",
@@ -3984,7 +4280,10 @@
         "white",
         "green"
       ],
-      "design": "horizontal_bicolor_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "DOM",
@@ -4019,7 +4318,10 @@
         "white",
         "red"
       ],
-      "design": "union_jack_emblem"
+      "design": "カントン",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "NZL",
@@ -4049,7 +4351,10 @@
         "yellow",
         "white"
       ],
-      "design": "vertical_bicolor_emblem"
+      "design": "縦分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ITA",
@@ -4078,7 +4383,10 @@
         "blue",
         "white"
       ],
-      "design": "triband_horizontal_stars"
+      "design": "横分割",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "SLV",
@@ -4114,7 +4422,10 @@
         "red",
         "white"
       ],
-      "design": "flower_centered"
+      "design": "その他",
+      "symbol": [
+        "生物"
+      ]
     },
     "confusable_region": [
       "MAC",
@@ -4145,7 +4456,10 @@
         "white",
         "green"
       ],
-      "design": "tricolor_horizontal"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "POL"
@@ -4174,7 +4488,10 @@
         "white",
         "red"
       ],
-      "design": "nordic_cross"
+      "design": "十字四分割",
+      "symbol": [
+        "十字"
+      ]
     },
     "confusable_region": [
       "NOR",
@@ -4213,7 +4530,10 @@
         "green",
         "blue"
       ],
-      "design": "tricolor_horizontal_wheel"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "PAK",
@@ -4245,7 +4565,10 @@
         "red",
         "white"
       ],
-      "design": "horizontal_bicolor"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "MYS",
@@ -4281,7 +4604,10 @@
         "white",
         "red"
       ],
-      "design": "tricolor_horizontal_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "PAK",
@@ -4318,7 +4644,10 @@
         "black",
         "green"
       ],
-      "design": "tricolor_horizontal_text"
+      "design": "横分割",
+      "symbol": [
+        "文字"
+      ]
     },
     "confusable_region": [
       "SYR",
@@ -4356,7 +4685,10 @@
         "white",
         "orange"
       ],
-      "design": "tricolor_vertical"
+      "design": "縦分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "GBR",
@@ -4395,7 +4727,10 @@
         "white",
         "yellow"
       ],
-      "design": "triskelion"
+      "design": "その他",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "GBR",
@@ -4426,7 +4761,10 @@
         "blue",
         "white"
       ],
-      "design": "stripes_star"
+      "design": "その他",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "JOR",
@@ -4460,7 +4798,10 @@
         "white",
         "red"
       ],
-      "design": "tricolor_vertical"
+      "design": "縦分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "ESP",
@@ -4499,7 +4840,10 @@
         "yellow",
         "black"
       ],
-      "design": "saltire"
+      "design": "十字四分割",
+      "symbol": [
+        "十字"
+      ]
     },
     "confusable_region": [
       "CUB",
@@ -4534,7 +4878,10 @@
         "white",
         "red"
       ],
-      "design": "disk_centered"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "KOR",
@@ -4568,7 +4915,11 @@
         "red",
         "yellow"
       ],
-      "design": "saltire_emblem"
+      "design": "十字四分割",
+      "symbol": [
+        "十字",
+        "その他"
+      ]
     },
     "confusable_region": [
       "GBR",
@@ -4604,7 +4955,10 @@
         "green",
         "red"
       ],
-      "design": "pan_arab_triangle"
+      "design": "T字",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "PSE",
@@ -4643,7 +4997,10 @@
         "blue",
         "yellow"
       ],
-      "design": "emblem_side_pattern"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "UZB",
@@ -4672,7 +5029,10 @@
         "green",
         "white"
       ],
-      "design": "tricolor_horizontal_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "TZA",
@@ -4709,7 +5069,11 @@
         "white",
         "yellow"
       ],
-      "design": "landscape_emblem"
+      "design": "その他",
+      "symbol": [
+        "景色/建物",
+        "その他"
+      ]
     },
     "confusable_region": [
       "MHL",
@@ -4735,7 +5099,11 @@
         "white",
         "red"
       ],
-      "design": "triband_horizontal_star_disk"
+      "design": "横分割",
+      "symbol": [
+        "星",
+        "その他"
+      ]
     },
     "confusable_region": [
       "KOR",
@@ -4766,7 +5134,10 @@
         "blue",
         "black"
       ],
-      "design": "disk_trigrams"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "JPN",
@@ -4797,7 +5168,10 @@
         "red",
         "black"
       ],
-      "design": "pan_arab_trapezoid"
+      "design": "T字",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "IRQ",
@@ -4835,7 +5209,10 @@
         "red",
         "yellow"
       ],
-      "design": "emblem_centered"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "KAZ",
@@ -4863,7 +5240,10 @@
         "blue",
         "white"
       ],
-      "design": "triband_horizontal_disk"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "THA",
@@ -4898,7 +5278,10 @@
         "maroon",
         "white"
       ],
-      "design": "triband_horizontal"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "LTU",
@@ -4933,7 +5316,10 @@
         "white",
         "green"
       ],
-      "design": "triband_horizontal_tree"
+      "design": "横分割",
+      "symbol": [
+        "生物"
+      ]
     },
     "confusable_region": [
       "ISR",
@@ -4971,7 +5357,10 @@
         "green",
         "black"
       ],
-      "design": "tricolor_horizontal_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ZAF",
@@ -5004,7 +5393,10 @@
         "white",
         "blue"
       ],
-      "design": "stars_stripes"
+      "design": "その他",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "SLE",
@@ -5042,7 +5434,10 @@
         "green",
         "white"
       ],
-      "design": "tricolor_horizontal_crescent"
+      "design": "横分割",
+      "symbol": [
+        "太陽/月"
+      ]
     },
     "confusable_region": [
       "TUN",
@@ -5075,7 +5470,10 @@
         "red",
         "yellow"
       ],
-      "design": "horizontal_bicolor_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "CHE",
@@ -5108,7 +5506,10 @@
         "green",
         "red"
       ],
-      "design": "tricolor_horizontal"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "LVA",
@@ -5146,7 +5547,10 @@
         "white",
         "blue"
       ],
-      "design": "tricolor_horizontal"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "NLD",
@@ -5182,7 +5586,11 @@
         "white",
         "yellow"
       ],
-      "design": "flower_stars"
+      "design": "その他",
+      "symbol": [
+        "星",
+        "生物"
+      ]
     },
     "confusable_region": [
       "HKG",
@@ -5212,7 +5620,10 @@
         "red",
         "yellow"
       ],
-      "design": "sun_rays"
+      "design": "その他",
+      "symbol": [
+        "太陽/月"
+      ]
     },
     "confusable_region": [
       "SRB",
@@ -5246,7 +5657,10 @@
         "red",
         "green"
       ],
-      "design": "vertical_horizontal_split"
+      "design": "T字",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "MUS",
@@ -5283,7 +5697,10 @@
         "red",
         "green"
       ],
-      "design": "tricolor_horizontal_sun"
+      "design": "横分割",
+      "symbol": [
+        "太陽/月"
+      ]
     },
     "confusable_region": [
       "MOZ",
@@ -5320,7 +5737,11 @@
         "blue",
         "yellow"
       ],
-      "design": "stars_stripes_crescent"
+      "design": "その他",
+      "symbol": [
+        "太陽/月",
+        "星"
+      ]
     },
     "confusable_region": [
       "IDN",
@@ -5355,7 +5776,11 @@
         "green",
         "white"
       ],
-      "design": "framed_crescent"
+      "design": "その他",
+      "symbol": [
+        "太陽/月",
+        "その他"
+      ]
     },
     "confusable_region": [
       "IND",
@@ -5386,7 +5811,10 @@
         "yellow",
         "red"
       ],
-      "design": "tricolor_vertical"
+      "design": "縦分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "SEN",
@@ -5423,7 +5851,10 @@
         "white",
         "red"
       ],
-      "design": "vertical_bicolor_emblem"
+      "design": "縦分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ITA",
@@ -5458,7 +5889,10 @@
         "orange",
         "white"
       ],
-      "design": "diagonal_stripes_star"
+      "design": "斜め分割",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "KIR",
@@ -5484,7 +5918,10 @@
         "black",
         "red"
       ],
-      "design": "triangle_horizontal_bicolor"
+      "design": "T字",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "GLP",
@@ -5520,7 +5957,10 @@
         "yellow",
         "red"
       ],
-      "design": "horizontal_bicolor_emblem_stripes"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "MLI",
@@ -5557,7 +5997,10 @@
         "yellow",
         "green"
       ],
-      "design": "four_horizontal_stripes"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "MDG",
@@ -5591,7 +6034,10 @@
         "blue",
         "yellow"
       ],
-      "design": "emblem_centered"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "COM",
@@ -5623,7 +6069,10 @@
         "white",
         "red"
       ],
-      "design": "tricolor_vertical_emblem"
+      "design": "縦分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "GTM",
@@ -5660,7 +6109,10 @@
         "blue",
         "white"
       ],
-      "design": "stars_centered"
+      "design": "その他",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "MHL",
@@ -5691,7 +6143,10 @@
         "yellow",
         "red"
       ],
-      "design": "tricolor_vertical_emblem"
+      "design": "縦分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ROU",
@@ -5725,7 +6180,10 @@
         "red",
         "white"
       ],
-      "design": "horizontal_bicolor"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "AUT",
@@ -5760,7 +6218,10 @@
         "blue",
         "yellow"
       ],
-      "design": "tricolor_vertical_emblem"
+      "design": "縦分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "HKG",
@@ -5790,7 +6251,10 @@
         "red",
         "yellow"
       ],
-      "design": "framed_emblem"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "SRB",
@@ -5827,7 +6291,10 @@
         "red",
         "green"
       ],
-      "design": "union_jack_emblem"
+      "design": "カントン",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "AIA",
@@ -5865,7 +6332,10 @@
         "red",
         "green"
       ],
-      "design": "star_centered"
+      "design": "その他",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "TUN",
@@ -5899,7 +6369,10 @@
         "red",
         "white"
       ],
-      "design": "triangle_horizontal_stripes_emblem"
+      "design": "T字",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ZWE",
@@ -5936,7 +6409,10 @@
         "red",
         "white"
       ],
-      "design": "tricolor_horizontal_star"
+      "design": "横分割",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "THA",
@@ -5976,7 +6452,10 @@
         "white",
         "yellow"
       ],
-      "design": "diagonal_stripes_sun"
+      "design": "斜め分割",
+      "symbol": [
+        "太陽/月"
+      ]
     },
     "confusable_region": [
       "ZAF",
@@ -6011,7 +6490,10 @@
         "yellow",
         "white"
       ],
-      "design": "horizontal_stripe_star"
+      "design": "横分割",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "KIR",
@@ -6039,7 +6521,10 @@
         "blue",
         "white"
       ],
-      "design": "non_quadrilateral"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "IND",
@@ -6066,7 +6551,10 @@
         "white",
         "blue"
       ],
-      "design": "tricolor_horizontal"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "LUX",
@@ -6104,7 +6592,10 @@
         "green",
         "black"
       ],
-      "design": "tricolor_horizontal_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "VUT",
@@ -6129,7 +6620,10 @@
         "white",
         "red"
       ],
-      "design": "union_jack_stars"
+      "design": "カントン",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "HMD",
@@ -6161,7 +6655,10 @@
         "blue",
         "white"
       ],
-      "design": "triband_horizontal_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "HND",
@@ -6200,7 +6697,10 @@
         "white",
         "green"
       ],
-      "design": "tricolor_horizontal_disk"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "NGA",
@@ -6235,7 +6735,10 @@
         "green",
         "white"
       ],
-      "design": "tricolor_vertical"
+      "design": "縦分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "NER",
@@ -6274,7 +6777,10 @@
         "white",
         "red"
       ],
-      "design": "union_jack_yellow_stars"
+      "design": "カントン",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "ASM",
@@ -6306,7 +6812,10 @@
         "green",
         "white"
       ],
-      "design": "tricolor_vertical_emblem"
+      "design": "縦分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "NZL",
@@ -6337,7 +6846,10 @@
         "green",
         "red"
       ],
-      "design": "emblem_centered"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "PLW",
@@ -6366,7 +6878,10 @@
         "white",
         "blue"
       ],
-      "design": "nordic_cross"
+      "design": "十字四分割",
+      "symbol": [
+        "十字"
+      ]
     },
     "confusable_region": [
       "SWE",
@@ -6404,7 +6919,10 @@
         "white",
         "green"
       ],
-      "design": "vertical_horizontal_split_emblem"
+      "design": "T字",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ARE",
@@ -6440,7 +6958,10 @@
         "green",
         "white"
       ],
-      "design": "vertical_horizontal_split_crescent"
+      "design": "T字",
+      "symbol": [
+        "太陽/月"
+      ]
     },
     "confusable_region": [
       "IND",
@@ -6473,7 +6994,10 @@
         "blue",
         "yellow"
       ],
-      "design": "disk_off_centered"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "FSM",
@@ -6507,7 +7031,10 @@
         "green",
         "red"
       ],
-      "design": "pan_arab_triangle"
+      "design": "T字",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ISR",
@@ -6548,7 +7075,10 @@
         "red",
         "blue"
       ],
-      "design": "quadrants_stars"
+      "design": "十字四分割",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "CRI",
@@ -6583,7 +7113,10 @@
         "yellow",
         "white"
       ],
-      "design": "diagonal_split_emblem"
+      "design": "対角",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "VUT",
@@ -6610,7 +7143,10 @@
         "white",
         "blue"
       ],
-      "design": "tricolor_horizontal_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ARG",
@@ -6647,7 +7183,10 @@
         "red",
         "white"
       ],
-      "design": "tricolor_vertical"
+      "design": "縦分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "COL",
@@ -6686,7 +7225,10 @@
         "white",
         "yellow"
       ],
-      "design": "horizontal_bicolor_triangle_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "IDN",
@@ -6725,7 +7267,10 @@
         "green",
         "yellow"
       ],
-      "design": "union_jack_emblem"
+      "design": "カントン",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ASM",
@@ -6760,7 +7305,10 @@
         "white",
         "red"
       ],
-      "design": "horizontal_bicolor"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "HUN"
@@ -6790,7 +7338,10 @@
         "blue",
         "white"
       ],
-      "design": "vertical_bicolor_emblem"
+      "design": "縦分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ESP",
@@ -6823,7 +7374,11 @@
         "white",
         "blue"
       ],
-      "design": "stripes_triangle_star"
+      "design": "その他",
+      "symbol": [
+        "星",
+        "その他"
+      ]
     },
     "confusable_region": [
       "DOM",
@@ -6858,7 +7413,10 @@
         "maroon",
         "white"
       ],
-      "design": "serrated_vertical"
+      "design": "縦分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "KWT",
@@ -6892,7 +7450,10 @@
         "white",
         "yellow"
       ],
-      "design": "emblem_centered"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "MUS",
@@ -6930,7 +7491,10 @@
         "yellow",
         "red"
       ],
-      "design": "tricolor_vertical"
+      "design": "縦分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "MDA",
@@ -6965,7 +7529,10 @@
         "blue",
         "red"
       ],
-      "design": "tricolor_horizontal"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "UKR",
@@ -7002,7 +7569,10 @@
         "yellow",
         "green"
       ],
-      "design": "triband_horizontal_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "BDI",
@@ -7037,7 +7607,10 @@
         "yellow",
         "white"
       ],
-      "design": "diagonal_stripe_stars"
+      "design": "対角",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "ATG",
@@ -7074,7 +7647,10 @@
         "black",
         "white"
       ],
-      "design": "triangle_centered"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "VCT",
@@ -7104,7 +7680,10 @@
         "white",
         "red"
       ],
-      "design": "emblem_centered"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "BMU",
@@ -7136,7 +7715,10 @@
         "yellow",
         "green"
       ],
-      "design": "tricolor_vertical_diamonds"
+      "design": "縦分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "LCA",
@@ -7169,7 +7751,10 @@
         "blue",
         "white"
       ],
-      "design": "canton_stars"
+      "design": "カントン",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "TON",
@@ -7201,7 +7786,10 @@
         "white",
         "blue"
       ],
-      "design": "bicolor_horizontal_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ITA",
@@ -7235,7 +7823,11 @@
         "red",
         "black"
       ],
-      "design": "pan_african_stars"
+      "design": "その他",
+      "symbol": [
+        "星",
+        "その他"
+      ]
     },
     "confusable_region": [
       "GNQ",
@@ -7269,7 +7861,10 @@
         "green",
         "white"
       ],
-      "design": "emblem_centered"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "KWT",
@@ -7302,7 +7897,10 @@
         "yellow",
         "red"
       ],
-      "design": "tricolor_vertical_star"
+      "design": "縦分割",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "GMB",
@@ -7339,7 +7937,10 @@
         "blue",
         "white"
       ],
-      "design": "tricolor_horizontal_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "MNE",
@@ -7378,7 +7979,10 @@
         "white",
         "green"
       ],
-      "design": "radiating_stripes"
+      "design": "その他",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "MUS",
@@ -7408,7 +8012,10 @@
         "white",
         "blue"
       ],
-      "design": "tricolor_horizontal"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "LBR",
@@ -7443,7 +8050,10 @@
         "red",
         "white"
       ],
-      "design": "bicolor_horizontal_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "MYS",
@@ -7479,7 +8089,10 @@
         "blue",
         "red"
       ],
-      "design": "tricolor_horizontal_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "BLR",
@@ -7513,7 +8126,10 @@
         "blue",
         "red"
       ],
-      "design": "tricolor_horizontal_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ITA",
@@ -7549,7 +8165,10 @@
         "blue",
         "white"
       ],
-      "design": "star_centered"
+      "design": "その他",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "ETH",
@@ -7588,7 +8207,10 @@
         "red",
         "blue"
       ],
-      "design": "complex_y_shape"
+      "design": "Y字",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "NAM",
@@ -7627,7 +8249,11 @@
         "yellow",
         "white"
       ],
-      "design": "stripes_triangle_star"
+      "design": "その他",
+      "symbol": [
+        "星",
+        "その他"
+      ]
     },
     "confusable_region": [
       "ETH",
@@ -7662,7 +8288,10 @@
         "red",
         "yellow"
       ],
-      "design": "triband_horizontal_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "PRT",
@@ -7696,7 +8325,10 @@
         "black",
         "green"
       ],
-      "design": "tricolor_horizontal_triangle"
+      "design": "T字",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "LBY",
@@ -7731,7 +8363,10 @@
         "red",
         "yellow"
       ],
-      "design": "stripes_star"
+      "design": "その他",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "GUY",
@@ -7763,7 +8398,10 @@
         "blue",
         "yellow"
       ],
-      "design": "nordic_cross"
+      "design": "十字四分割",
+      "symbol": [
+        "十字"
+      ]
     },
     "confusable_region": [
       "NOR",
@@ -7801,7 +8439,10 @@
         "red",
         "white"
       ],
-      "design": "square_cross"
+      "design": "十字四分割",
+      "symbol": [
+        "十字"
+      ]
     },
     "confusable_region": [
       "LIE",
@@ -7836,7 +8477,10 @@
         "black",
         "green"
       ],
-      "design": "tricolor_horizontal_stars"
+      "design": "横分割",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "IRQ",
@@ -7875,7 +8519,10 @@
         "blue",
         "white"
       ],
-      "design": "canton_sun"
+      "design": "カントン",
+      "symbol": [
+        "太陽/月"
+      ]
     },
     "confusable_region": [
       "JPN",
@@ -7909,7 +8556,10 @@
         "green",
         "yellow"
       ],
-      "design": "tricolor_horizontal_emblem"
+      "design": "横分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "UZB",
@@ -7940,7 +8590,10 @@
         "black",
         "blue"
       ],
-      "design": "diagonal_stripes"
+      "design": "斜め分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "KEN",
@@ -7975,7 +8628,10 @@
         "white",
         "blue"
       ],
-      "design": "stripes_horizontal"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "LAO",
@@ -8009,7 +8665,10 @@
         "red",
         "white"
       ],
-      "design": "stripes_canton_star"
+      "design": "カントン",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "GHA",
@@ -8043,7 +8702,10 @@
         "red",
         "white"
       ],
-      "design": "canton_cross"
+      "design": "カントン",
+      "symbol": [
+        "十字"
+      ]
     },
     "confusable_region": [
       "WSM",
@@ -8073,7 +8735,10 @@
         "black",
         "white"
       ],
-      "design": "diagonal_stripe"
+      "design": "対角",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "GRD",
@@ -8104,7 +8769,12 @@
         "red",
         "white"
       ],
-      "design": "crescent_star_disk"
+      "design": "その他",
+      "symbol": [
+        "太陽/月",
+        "星",
+        "その他"
+      ]
     },
     "confusable_region": [
       "LBY",
@@ -8133,7 +8803,11 @@
         "red",
         "white"
       ],
-      "design": "crescent_star"
+      "design": "その他",
+      "symbol": [
+        "太陽/月",
+        "星"
+      ]
     },
     "confusable_region": [
       "SYR",
@@ -8170,7 +8844,11 @@
         "white",
         "yellow"
       ],
-      "design": "emblem_side_crescent"
+      "design": "その他",
+      "symbol": [
+        "太陽/月",
+        "その他"
+      ]
     },
     "confusable_region": [
       "UZB",
@@ -8198,7 +8876,10 @@
         "red",
         "yellow"
       ],
-      "design": "union_jack_stars"
+      "design": "カントン",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "WSM",
@@ -8234,7 +8915,10 @@
         "red",
         "white"
       ],
-      "design": "stripes_emblem"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "KEN",
@@ -8266,7 +8950,10 @@
         "blue",
         "yellow"
       ],
-      "design": "bicolor_horizontal"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "RUS",
@@ -8297,7 +8984,10 @@
         "white",
         "black"
       ],
-      "design": "pan_arab_vertical"
+      "design": "縦分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "OMN",
@@ -8335,7 +9025,10 @@
         "white",
         "red"
       ],
-      "design": "union_jack"
+      "design": "カントン",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "IRL",
@@ -8375,7 +9068,10 @@
         "white",
         "blue"
       ],
-      "design": "stars_stripes"
+      "design": "その他",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "BMU",
@@ -8406,7 +9102,10 @@
         "blue",
         "yellow"
       ],
-      "design": "stripes_sun"
+      "design": "その他",
+      "symbol": [
+        "太陽/月"
+      ]
     },
     "confusable_region": [
       "ARG",
@@ -8444,7 +9143,11 @@
         "green",
         "red"
       ],
-      "design": "stripes_crescent_stars"
+      "design": "その他",
+      "symbol": [
+        "太陽/月",
+        "星"
+      ]
     },
     "confusable_region": [
       "TJK",
@@ -8474,7 +9177,10 @@
         "black",
         "yellow"
       ],
-      "design": "y_shape_emblem"
+      "design": "Y字",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "NCL",
@@ -8504,7 +9210,10 @@
         "red",
         "white"
       ],
-      "design": "tricolor_horizontal_stars"
+      "design": "横分割",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "COL",
@@ -8539,7 +9248,10 @@
         "red",
         "yellow"
       ],
-      "design": "star_centered"
+      "design": "その他",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "LAO",
@@ -8576,7 +9288,11 @@
         "green",
         "red"
       ],
-      "design": "tricolor_horizontal_triangle_crescent"
+      "design": "T字",
+      "symbol": [
+        "太陽/月",
+        "その他"
+      ]
     },
     "confusable_region": [
       "MAR",
@@ -8609,7 +9325,10 @@
         "white",
         "black"
       ],
-      "design": "tricolor_horizontal"
+      "design": "横分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "SAU",
@@ -8649,7 +9368,10 @@
         "black",
         "red"
       ],
-      "design": "unique_corner_emblem"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "MWI",
@@ -8684,7 +9406,10 @@
         "black",
         "white"
       ],
-      "design": "stripes_triangle_emblem"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "MOZ",
@@ -8719,7 +9444,11 @@
         "blue",
         "white"
       ],
-      "design": "map_branches"
+      "design": "その他",
+      "symbol": [
+        "生物",
+        "景色/建物"
+      ]
     },
     "confusable_region": [],
     "confusable_colors": [
@@ -8752,7 +9481,10 @@
         "red",
         "yellow"
       ],
-      "design": "tricolor_vertical_emblem"
+      "design": "縦分割",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "AIA",
@@ -8806,7 +9538,10 @@
         "yellow",
         "green"
       ],
-      "design": "union_jack_emblem"
+      "design": "カントン",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "BEN",
@@ -8858,7 +9593,10 @@
         "white",
         "red"
       ],
-      "design": "tricolor_vertical"
+      "design": "縦分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "AIA",
@@ -8911,7 +9649,10 @@
         "white",
         "yellow"
       ],
-      "design": "triangle_horizontal_emblem"
+      "design": "T字",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "AIA",
@@ -8964,7 +9705,10 @@
         "yellow",
         "white"
       ],
-      "design": "diagonal_stripe_stars"
+      "design": "対角",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "FJI",
@@ -9007,7 +9751,10 @@
         "yellow",
         "green"
       ],
-      "design": "union_jack_emblem"
+      "design": "カントン",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "ARG",
@@ -9060,7 +9807,10 @@
         "green",
         "orange"
       ],
-      "design": "border_emblem"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "AFG",
@@ -9109,7 +9859,10 @@
         "white",
         "blue"
       ],
-      "design": "nordic_cross"
+      "design": "十字四分割",
+      "symbol": [
+        "十字"
+      ]
     },
     "confusable_region": [
       "ALA",
@@ -9162,7 +9915,11 @@
         "yellow",
         "white"
       ],
-      "design": "triangle_stars"
+      "design": "その他",
+      "symbol": [
+        "星",
+        "その他"
+      ]
     },
     "confusable_region": [
       "BRN",
@@ -9214,7 +9971,10 @@
         "yellow",
         "white"
       ],
-      "design": "union_jack_stars"
+      "design": "カントン",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "ASM",
@@ -9267,7 +10027,10 @@
         "yellow",
         "green"
       ],
-      "design": "union_jack_emblem"
+      "design": "カントン",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "AIA",
@@ -9319,7 +10082,10 @@
         "white",
         "blue"
       ],
-      "design": "stars_stripes"
+      "design": "その他",
+      "symbol": [
+        "星"
+      ]
     },
     "confusable_region": [
       "GUM",
@@ -9369,7 +10135,10 @@
         "green",
         "yellow"
       ],
-      "design": "union_jack_emblem"
+      "design": "カントン",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "AIA",
@@ -9423,7 +10192,10 @@
         "green",
         "red"
       ],
-      "design": "emblem_centered"
+      "design": "その他",
+      "symbol": [
+        "その他"
+      ]
     },
     "confusable_region": [
       "AIA",
@@ -9474,7 +10246,10 @@
         "red",
         "white"
       ],
-      "design": "tricolor_vertical"
+      "design": "縦分割",
+      "symbol": [
+        "なし"
+      ]
     },
     "confusable_region": [
       "ASM",
