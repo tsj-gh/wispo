@@ -220,6 +220,13 @@ export function FlagExplorerClient() {
     return out.sort((a, b) => a.nameJa.localeCompare(b.nameJa, "ja"));
   }, [selected, byAlpha3]);
 
+  /** 詳細オーバーレイ表示中の `flag_difficulty.json` 行（デバッグパネル用） */
+  const selectedDifficultyJsonRow = useMemo(() => {
+    if (!selected || !diffRows) return null;
+    const a3 = selected.alpha3.trim().toUpperCase();
+    return diffRows.find((d) => d.alpha3?.trim().toUpperCase() === a3) ?? null;
+  }, [selected, diffRows]);
+
   const mapRegionFitCodes = useMemo(() => {
     if (!selected || !isoRows?.length) return null;
     const codes = collectCountryCodesForRegionalMapFit(selected, isoRows);
@@ -309,6 +316,58 @@ export function FlagExplorerClient() {
                     />
                     <span className="w-10 text-right tabular-nums">{mapAreaInverseZoom.toFixed(2)}</span>
                   </label>
+                  {selected ? (
+                    <div className="mt-2 border-t border-amber-200/90 pt-2 text-[10px] leading-snug text-stone-800">
+                      <div className="mb-1 font-semibold text-stone-800">詳細オーバーレイ（flag_difficulty.json）</div>
+                      {selectedDifficultyJsonRow ? (
+                        <dl className="space-y-1">
+                          <div>
+                            <dt className="text-stone-600">国名（JP）</dt>
+                            <dd className="font-mono">{selected.nameJa}</dd>
+                          </div>
+                          <div>
+                            <dt className="text-stone-600">difficulty</dt>
+                            <dd className="tabular-nums">{selectedDifficultyJsonRow.difficulty}</dd>
+                          </div>
+                          <div>
+                            <dt className="text-stone-600">colors（日本語）</dt>
+                            <dd className="break-all">
+                              {(selectedDifficultyJsonRow.tags?.colors ?? [])
+                                .map((c) => displayColorTag(String(c).trim().toLowerCase()))
+                                .filter(Boolean)
+                                .join("、") || "—"}
+                            </dd>
+                          </div>
+                          <div>
+                            <dt className="text-stone-600">design</dt>
+                            <dd className="break-all">{displayDesignTag(selectedDifficultyJsonRow.tags?.design ?? "") || "—"}</dd>
+                          </div>
+                          <div>
+                            <dt className="text-stone-600">confusable_region（alpha-3）</dt>
+                            <dd className="break-all font-mono text-[9px]">
+                              {(selectedDifficultyJsonRow.confusable_region ?? []).join(", ") || "—"}
+                            </dd>
+                          </div>
+                          <div>
+                            <dt className="text-stone-600">confusable_colors（alpha-3）</dt>
+                            <dd className="break-all font-mono text-[9px]">
+                              {(selectedDifficultyJsonRow.confusable_colors ?? []).join(", ") || "—"}
+                            </dd>
+                          </div>
+                          <div>
+                            <dt className="text-stone-600">confusable_design（alpha-3）</dt>
+                            <dd className="break-all font-mono text-[9px]">
+                              {(selectedDifficultyJsonRow.confusable_design ?? []).join(", ") || "—"}
+                            </dd>
+                          </div>
+                        </dl>
+                      ) : (
+                        <p className="text-stone-600">
+                          <span className="font-mono">{selected.alpha3}</span> は flag_difficulty.json に該当行がありません。
+                        </p>
+                      )}
+                    </div>
+                  ) : null}
                 </div>
               ) : null}
             </div>
@@ -429,7 +488,7 @@ export function FlagExplorerClient() {
                     areaInverseZoom={isDevTj ? mapAreaInverseZoom : 1}
                   />
                 </div>
-                <div className="mt-6"><h3 className="mb-2 text-xs">混同しやすい国旗(colors/design)</h3>{similarList.length === 0 ? <p className="text-xs">比較候補なし</p> : <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">{similarList.map((s) => <li key={s.alpha3}><button type="button" onClick={() => setSelected(s)} className="flex w-full flex-col overflow-hidden rounded-xl border text-left"><div className="flex h-24 w-full items-center justify-center bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-1"><div className="h-full max-w-full" style={{ aspectRatio: getAspectRatio(s.alpha2) }}><FlagImage alpha2={s.alpha2} alt={`${s.nameJa}の国旗`} /></div></div><span className="line-clamp-2 p-2 text-[11px]">{s.nameJa}</span></button></li>)}</ul>}</div>
+                <div className="mt-6"><h3 className="mb-2 text-xs">色使いや形が似ている国旗</h3>{similarList.length === 0 ? <p className="text-xs">比較候補なし</p> : <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">{similarList.map((s) => <li key={s.alpha3}><button type="button" onClick={() => setSelected(s)} className="flex w-full flex-col overflow-hidden rounded-xl border text-left"><div className="flex h-24 w-full items-center justify-center bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-1"><div className="h-full max-w-full" style={{ aspectRatio: getAspectRatio(s.alpha2) }}><FlagImage alpha2={s.alpha2} alt={`${s.nameJa}の国旗`} /></div></div><span className="line-clamp-2 p-2 text-[11px]">{s.nameJa}</span></button></li>)}</ul>}</div>
               </div>
             </motion.aside>
           </motion.div>
