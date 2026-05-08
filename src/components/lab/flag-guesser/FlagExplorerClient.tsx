@@ -85,6 +85,8 @@ export function FlagExplorerClient() {
   const [isDebugPanelExpanded, setIsDebugPanelExpanded] = useState(true);
   const [cardScale, setCardScale] = useState(1);
   const [flagFrameRatio, setFlagFrameRatio] = useState(1.6);
+  /** devtj 時のみ：1.0 で無効、大きいほど小国ほど地域フィット後に追加ズーム */
+  const [mapAreaInverseZoom, setMapAreaInverseZoom] = useState(1);
 
   useEffect(() => {
     let cancelled = false;
@@ -294,6 +296,19 @@ export function FlagExplorerClient() {
                     />
                     <span className="w-10 text-right tabular-nums">{flagFrameRatio.toFixed(2)}</span>
                   </label>
+                  <label className="flex items-center gap-2 text-[11px] text-stone-700">
+                    地図 面積逆比ズーム率（1.0＝無効）
+                    <input
+                      type="range"
+                      min={1}
+                      max={4}
+                      step={0.05}
+                      value={mapAreaInverseZoom}
+                      onChange={(e) => setMapAreaInverseZoom(Number(e.target.value))}
+                      className="h-2 w-full cursor-pointer accent-amber-500"
+                    />
+                    <span className="w-10 text-right tabular-nums">{mapAreaInverseZoom.toFixed(2)}</span>
+                  </label>
                 </div>
               ) : null}
             </div>
@@ -405,7 +420,15 @@ export function FlagExplorerClient() {
               <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
                 <div className="mb-4 flex h-64 w-full items-center justify-center overflow-hidden border bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-3"><div className="h-full max-w-full" style={{ aspectRatio: getAspectRatio(selected.alpha2) }}><FlagImage alpha2={selected.alpha2} alt={`${selected.nameJa}の国旗`} /></div></div>
                 <dl className="space-y-3 text-sm"><div><dt className="text-xs">alpha-3</dt><dd className="font-mono">{selected.alpha3}</dd></div><div><dt className="text-xs">地域</dt><dd>{selected.regionLabel ?? "—"}{selected.subRegionLabel ? ` / ${selected.subRegionLabel}` : ""}{selected.intermediateRegionLabel ? ` / ${selected.intermediateRegionLabel}` : ""}</dd></div></dl>
-                <div className="mt-6"><h3 className="mb-2 text-xs">地図</h3><FlagExplorerMap highlightCountryCode={selected.countryCode} isoRows={isoRows} regionFitCountryCodes={mapRegionFitCodes} /></div>
+                <div className="mt-6">
+                  <h3 className="mb-2 text-xs">地図</h3>
+                  <FlagExplorerMap
+                    highlightCountryCode={selected.countryCode}
+                    isoRows={isoRows}
+                    regionFitCountryCodes={mapRegionFitCodes}
+                    areaInverseZoom={isDevTj ? mapAreaInverseZoom : 1}
+                  />
+                </div>
                 <div className="mt-6"><h3 className="mb-2 text-xs">混同しやすい国旗(colors/design)</h3>{similarList.length === 0 ? <p className="text-xs">比較候補なし</p> : <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">{similarList.map((s) => <li key={s.alpha3}><button type="button" onClick={() => setSelected(s)} className="flex w-full flex-col overflow-hidden rounded-xl border text-left"><div className="flex h-24 w-full items-center justify-center bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-1"><div className="h-full max-w-full" style={{ aspectRatio: getAspectRatio(s.alpha2) }}><FlagImage alpha2={s.alpha2} alt={`${s.nameJa}の国旗`} /></div></div><span className="line-clamp-2 p-2 text-[11px]">{s.nameJa}</span></button></li>)}</ul>}</div>
               </div>
             </motion.aside>

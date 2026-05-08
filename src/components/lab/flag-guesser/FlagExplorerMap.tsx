@@ -1,6 +1,6 @@
 "use client";
 
-import { geoArea, geoCentroid } from "d3-geo";
+import { geoArea, geoCentroid, geoPath } from "d3-geo";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Feature, FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 import type { Topology } from "topojson-specification";
@@ -22,6 +22,9 @@ const PIN_FALLBACK_URL = "/assets/flag-guesser/country_map_pin_fallback.json";
 /** 小国ポリゴンが画面上で判別しにくいときにピンを重ねる（球面面積・おおよそ steradians） */
 const SMALL_FEATURE_AREA_STERADIANS = 6e-9;
 const MIN_PATH_STRING_LENGTH = 72;
+/** 画面上のハイライト bbox 面積がこの割合を下回ると「小さい」とみなす（対キャンバス面積比） */
+const HIGHLIGHT_OCCUPANCY_REF = 0.002;
+const MAX_AREA_INVERSE_ZOOM_MULT = 5;
 
 const SEA = "color-mix(in srgb, var(--color-bg) 92%, #1e3a5f 8%)";
 const LAND = "color-mix(in srgb, var(--color-muted) 18%, transparent)";
@@ -35,6 +38,10 @@ export type FlagExplorerMapProps = {
   isoRows: readonly Iso3166Row[];
   /** 同じ中間リージョン（またはサブリージョン）に属する ISO numeric の一覧 — 地図はこの集合の外接矩形にフィット */
   regionFitCountryCodes?: readonly string[] | null;
+  /**
+   * デバッグ用：1.0 で無効。大きいほど、中間リージョン全体表示に対してハイライト国の画面上占有率が小さいときに该国中心へ追加ズームする。
+   */
+  areaInverseZoom?: number;
   className?: string;
 };
 
@@ -42,6 +49,7 @@ export function FlagExplorerMap({
   highlightCountryCode,
   isoRows,
   regionFitCountryCodes,
+  areaInverseZoom = 1,
   className = "",
 }: FlagExplorerMapProps) {
   const [topo, setTopo] = useState<Topology | null>(null);
@@ -141,7 +149,49 @@ export function FlagExplorerMap({
       type: "FeatureCollection",
       features: unwrappedFit as Feature<Geometry, GeoJsonProperties>[],
     };
-    const projection = buildMercatorForCollection(fcFitUnwrapped, w, h, 12, meridian);
+    let projection = buildMercatorForCollection(fcFitUnwrapped, w, h, 12, meridian);
+
+    /** Natural Earth に無い地域（例: MTQ=474）はフォールバック座標へピン。面積逆比ズームの中心にも使う */
+    let centerLonLat: [number, number] | null = null;
+    if (hi) {
+      const hiFeat0 = unwrappedAll.find((f) => featureIdString(f) === hi);
+      if (hiFeat0) {
+        const c = geoCentroid(hiFeat0 as Feature<Geometry, GeoJsonProperties>);
+        centerLonLat = [c[0] as number, c[1] as number];
+      } else if (pinFallback?.[hi]) {
+        centerLonLat = pinFallback[hi]!;
+      }
+    }
+
+    if (areaInverseZoom > 1.001 && hi && centerLonLat) {
+      const hiFeat = unwrappedAll.find((f) => featureIdString(f) === hi);
+      const path0 = geoPath(projection);
+      let stress = 1;
+      if (hiFeat) {
+        try {
+          const b = path0.bounds(hiFeat as Parameters<typeof path0.bounds>[0]);
+          const bw = Math.max(1e-9, b[1][0]! - b[0][0]!);
+          const bh = Math.max(1e-9, b[1][1]! - b[0][1]!);
+          const occ = (bw * bh) / Math.max(1, w * h);
+          stress = Math.min(1, Math.max(0, (HIGHLIGHT_OCCUPANCY_REF - occ) / HIGHLIGHT_OCCUPANCY_REF));
+        } catch {
+          stress = 1;
+        }
+      }
+      let zoomMult = 1 + (areaInverseZoom - 1) * stress;
+      zoomMult = Math.min(MAX_AREA_INVERSE_ZOOM_MULT, zoomMult);
+      if (zoomMult > 1.001) {
+        const [λ, φ] = centerLonLat;
+        const t0 = projection.translate();
+        const s0 = projection.scale();
+        projection.scale(s0 * zoomMult);
+        const p = projection([λ, φ]);
+        if (p && Number.isFinite(p[0]) && Number.isFinite(p[1])) {
+          projection.translate([t0[0]! + w / 2 - p[0]!, t0[1]! + h / 2 - p[1]!]);
+        }
+      }
+    }
+
     const pathDById = buildPathStrings(projection, unwrappedAll);
 
     const entries: { id: string; d: string; hi: boolean }[] = [];
@@ -187,7 +237,7 @@ export function FlagExplorerMap({
     const missing = Boolean(hi) && !filtered.some((f) => featureIdString(f) === hi);
 
     return { w, h, entries, missing, marker };
-  }, [topo, isoRows, size, highlightCountryCode, regionFitCountryCodes, pinFallback]);
+  }, [topo, isoRows, size, highlightCountryCode, regionFitCountryCodes, pinFallback, areaInverseZoom]);
 
   return (
     <div ref={containerRef} className={`relative w-full min-h-[160px] ${className}`.trim()}>
