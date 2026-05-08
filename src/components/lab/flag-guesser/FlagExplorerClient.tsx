@@ -16,8 +16,10 @@ import {
   collectColorTagOptions,
   collectCountryCodesForRegionalMapFit,
   collectDesignTagOptions,
+  collectSymbolTagOptions,
   displayColorTag,
   displayDesignTagByLocale,
+  displaySymbolTagByLocale,
   mergeExplorerCountries,
   type ExplorerCountryRow,
   type FlagDifficultyJsonRow,
@@ -82,6 +84,7 @@ export function FlagExplorerClient() {
   const [diffMax, setDiffMax] = useState(8);
   const [query, setQuery] = useState("");
   const [designFilter, setDesignFilter] = useState("");
+  const [symbolFilter, setSymbolFilter] = useState<string[]>([]);
   const [selected, setSelected] = useState<ExplorerCountryRow | null>(null);
   const [aspectMeta, setAspectMeta] = useState<Record<string, { ratio: number }> | null>(null);
 
@@ -166,6 +169,7 @@ export function FlagExplorerClient() {
 
   const colorOptions = useMemo(() => collectColorTagOptions(merged), [merged]);
   const designOptions = useMemo(() => collectDesignTagOptions(merged), [merged]);
+  const symbolOptions = useMemo(() => collectSymbolTagOptions(merged), [merged]);
   useEffect(() => {
     if (region && subRegion && !subRegionOptions.includes(subRegion)) setSubRegion("");
   }, [region, subRegion, subRegionOptions]);
@@ -187,6 +191,7 @@ export function FlagExplorerClient() {
     setDiffMin(1);
     setDiffMax(8);
     setDesignFilter("");
+    setSymbolFilter([]);
     setQuery("");
   }, []);
 
@@ -204,9 +209,12 @@ export function FlagExplorerClient() {
     if (isDevTj && isDebugMode && designFilter) {
       list = list.filter((r) => r.designLabel === designFilter);
     }
+    if (isDevTj && isDebugMode && symbolFilter.length > 0) {
+      list = list.filter((r) => symbolFilter.every((s) => r.symbolTags.includes(s)));
+    }
     const { lo, hi } = clampDiff(diffMin, diffMax);
     return Array.from(list).filter((r) => r.difficulty >= lo && r.difficulty <= hi).sort((a, b) => a.nameJa.localeCompare(b.nameJa, "ja"));
-  }, [merged, query, region, subRegion, intermediateRegion, colorFilter, diffMin, diffMax, clampDiff, isDevTj, isDebugMode, designFilter]);
+  }, [merged, query, region, subRegion, intermediateRegion, colorFilter, diffMin, diffMax, clampDiff, isDevTj, isDebugMode, designFilter, symbolFilter]);
 
   useEffect(() => {
     if (!selected) return;
@@ -452,7 +460,7 @@ export function FlagExplorerClient() {
             <label className="flex flex-col gap-1.5 text-xs"><span>色 (AND)</span><div className="flex flex-wrap gap-2">{colorOptions.map((c) => { const on = colorFilter.includes(c); return <button key={c} type="button" onClick={() => setColorFilter((prev) => prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c])} className={`rounded-full border px-2.5 py-1 text-xs ${on ? "border-[var(--color-primary)]" : ""}`}>{displayColorTag(c)}</button>; })}</div></label>
             {isDevTj && isDebugMode ? (
               <label className="flex flex-col gap-1.5 text-xs">
-                <span>{locale === "ja" ? "意匠" : "Design"}</span>
+                <span>{locale === "ja" ? "デザイン" : "Design"}</span>
                 <select value={designFilter} onChange={(e) => setDesignFilter(e.target.value)} className="rounded-lg border px-3 py-2 text-sm">
                   <option value="">{locale === "ja" ? "（すべて）" : "(All)"}</option>
                   {designOptions.map((d) => (
@@ -461,6 +469,30 @@ export function FlagExplorerClient() {
                     </option>
                   ))}
                 </select>
+              </label>
+            ) : null}
+            {isDevTj && isDebugMode ? (
+              <label className="flex flex-col gap-1.5 text-xs">
+                <span>{locale === "ja" ? "シンボル (AND)" : "Symbol (AND)"}</span>
+                <div className="flex flex-wrap gap-2">
+                  {symbolOptions.map((s) => {
+                    const on = symbolFilter.includes(s);
+                    return (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() =>
+                          setSymbolFilter((prev) =>
+                            prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]
+                          )
+                        }
+                        className={`rounded-full border px-2.5 py-1 text-xs ${on ? "border-[var(--color-primary)]" : ""}`}
+                      >
+                        {displaySymbolTagByLocale(s, locale)}
+                      </button>
+                    );
+                  })}
+                </div>
               </label>
             ) : null}
             <label className="flex flex-col gap-1.5 text-xs"><span>文字列</span><div className="flex items-center gap-2 rounded-xl border px-3 py-2"><Search className="h-4 w-4" /><input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="国名 or alpha-3" className="min-w-0 flex-1 bg-transparent text-sm outline-none" /></div></label>

@@ -8,7 +8,7 @@ export type FlagDifficultyJsonRow = {
   region: string;
   sub_region: string;
   intermediate_region: string;
-  tags: { colors: string[]; design: string };
+  tags: { colors: string[]; design: string; symbol?: string[] };
   confusable_region: string[];
   confusable_colors: string[];
   confusable_design: string[];
@@ -28,6 +28,7 @@ export type ExplorerCountryRow = {
   difficulty: number;
   colors: string[];
   designLabel: string;
+  symbolTags: string[];
   confusableColors: string[];
   confusableDesign: string[];
   /** 難易度・タグが `flag_difficulty` に存在したか */
@@ -83,6 +84,10 @@ export function mergeExplorerCountries(
         ? designRaw.trim()
         : "（未分類）";
 
+    const symbolTags = (d?.tags?.symbol ?? [])
+      .map((s) => String(s).trim())
+      .filter(Boolean);
+
     out.push({
       alpha3,
       alpha2,
@@ -95,6 +100,7 @@ export function mergeExplorerCountries(
       difficulty,
       colors,
       designLabel,
+      symbolTags,
       confusableColors: Array.from(
         new Set((d?.confusable_colors ?? []).map((x) => String(x).toUpperCase()))
       ).filter(Boolean),
@@ -180,10 +186,37 @@ export function collectDesignTagOptions(rows: readonly ExplorerCountryRow[]): st
   return Array.from(new Set(rows.map((r) => r.designLabel))).sort((a, b) => a.localeCompare(b));
 }
 
+export function collectSymbolTagOptions(rows: readonly ExplorerCountryRow[]): string[] {
+  const preferredOrder = ["太陽/月", "十字", "星", "生物", "文字", "景色/建物", "その他", "なし"];
+  const present = new Set<string>();
+  for (const r of rows) {
+    for (const s of r.symbolTags) present.add(s);
+  }
+  const ordered = preferredOrder.filter((s) => present.has(s));
+  const extra = Array.from(present)
+    .filter((s) => !preferredOrder.includes(s))
+    .sort((a, b) => a.localeCompare(b));
+  return [...ordered, ...extra];
+}
+
 export function displayDesignTagByLocale(d: string, locale: "ja" | "en"): string {
   const raw = (d ?? "").trim();
   if (!raw) return locale === "ja" ? "（未分類）" : "";
-  if (locale === "en") return raw === "（未分類）" ? "" : raw;
+  if (locale === "en") {
+    const enMap: Record<string, string> = {
+      横分割: "Horizontal Split",
+      縦分割: "Vertical Split",
+      十字四分割: "Cross / Quadrants",
+      斜め分割: "Diagonal Split",
+      対角: "Radiating / Angular",
+      T字: "T-shape",
+      Y字: "Y-shape",
+      カントン: "Canton",
+      その他: "Other",
+    };
+    if (raw === "（未分類）") return "";
+    return enMap[raw] ?? raw;
+  }
   if (raw === "generic") return "汎用";
   if (raw === "（未分類）") return raw;
 
@@ -260,6 +293,23 @@ export function displayDesignTagByLocale(d: string, locale: "ja" | "en"): string
     .map((token) => tokenJa[token] ?? token)
     .join("・");
   return translated;
+}
+
+export function displaySymbolTagByLocale(s: string, locale: "ja" | "en"): string {
+  const raw = (s ?? "").trim();
+  if (!raw) return "";
+  if (locale === "ja") return raw;
+  const enMap: Record<string, string> = {
+    "太陽/月": "Sun / Moon",
+    十字: "Cross",
+    星: "Star",
+    生物: "Creature",
+    文字: "Text",
+    "景色/建物": "Scenery / Building",
+    その他: "Other",
+    なし: "None",
+  };
+  return enMap[raw] ?? raw;
 }
 
 /**

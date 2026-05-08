@@ -1563,7 +1563,7 @@
         "green",
         "white"
       ],
-      "design": "十字四分割",
+      "design": "対角",
       "symbol": [
         "十字",
         "星"
@@ -2177,7 +2177,7 @@
         "yellow",
         "red"
       ],
-      "design": "対角",
+      "design": "斜め分割",
       "symbol": [
         "なし"
       ]
@@ -2223,7 +2223,7 @@
         "yellow",
         "red"
       ],
-      "design": "対角",
+      "design": "斜め分割",
       "symbol": [
         "星"
       ]
@@ -3906,7 +3906,7 @@
         "yellow",
         "green"
       ],
-      "design": "その他",
+      "design": "対角",
       "symbol": [
         "星",
         "その他"
@@ -4840,7 +4840,7 @@
         "yellow",
         "black"
       ],
-      "design": "十字四分割",
+      "design": "対角",
       "symbol": [
         "十字"
       ]
@@ -5620,7 +5620,7 @@
         "red",
         "yellow"
       ],
-      "design": "その他",
+      "design": "対角",
       "symbol": [
         "太陽/月"
       ]
@@ -7113,7 +7113,7 @@
         "yellow",
         "white"
       ],
-      "design": "対角",
+      "design": "斜め分割",
       "symbol": [
         "その他"
       ]
@@ -7607,7 +7607,7 @@
         "yellow",
         "white"
       ],
-      "design": "対角",
+      "design": "斜め分割",
       "symbol": [
         "星"
       ]
@@ -8735,7 +8735,7 @@
         "black",
         "white"
       ],
-      "design": "対角",
+      "design": "斜め分割",
       "symbol": [
         "なし"
       ]
@@ -9025,7 +9025,7 @@
         "white",
         "red"
       ],
-      "design": "カントン",
+      "design": "対角",
       "symbol": [
         "なし"
       ]
@@ -9705,7 +9705,7 @@
         "yellow",
         "white"
       ],
-      "design": "対角",
+      "design": "斜め分割",
       "symbol": [
         "星"
       ]
