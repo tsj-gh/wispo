@@ -26,6 +26,13 @@ const MIN_PATH_STRING_LENGTH = 72;
 const HIGHLIGHT_OCCUPANCY_REF = 0.002;
 const MAX_AREA_INVERSE_ZOOM_MULT = 5;
 
+/**
+ * 投影キャンバスの縦横比（高さ = 幅 × この値）。
+ * ResizeObserver で「コンテナの高さ」を読むと、SVG（w-full + 内在縦横比）の描画高と再帰し、
+ * 縦方向にサイズが増幅するループになり得るため、幅だけ観測して高さはここから決める。
+ */
+const MAP_VIEW_HEIGHT_OVER_WIDTH = 220 / 320;
+
 const SEA = "color-mix(in srgb, var(--color-bg) 92%, #1e3a5f 8%)";
 const LAND = "color-mix(in srgb, var(--color-muted) 18%, transparent)";
 const LAND_HI = "color-mix(in srgb, var(--color-primary) 45%, transparent)";
@@ -92,10 +99,9 @@ export function FlagExplorerMap({
     if (!el) return;
     const apply = () => {
       const r = el.getBoundingClientRect();
-      setSize({
-        w: Math.max(200, Math.floor(r.width)),
-        h: Math.max(160, Math.floor(r.height)),
-      });
+      const w = Math.max(200, Math.floor(r.width));
+      const h = Math.max(160, Math.round(w * MAP_VIEW_HEIGHT_OVER_WIDTH));
+      setSize({ w, h });
     };
     apply();
     const ro = new ResizeObserver(apply);
@@ -240,7 +246,7 @@ export function FlagExplorerMap({
   }, [topo, isoRows, size, highlightCountryCode, regionFitCountryCodes, pinFallback, areaInverseZoom]);
 
   return (
-    <div ref={containerRef} className={`relative w-full min-h-[160px] ${className}`.trim()}>
+    <div ref={containerRef} className={`relative w-full overflow-hidden ${className}`.trim()}>
       {!topo ? (
         <div className="flex h-48 items-center justify-center text-xs text-[var(--color-muted)]">地図データを読み込み中…</div>
       ) : paths && paths.entries.length === 0 ? (
@@ -269,17 +275,6 @@ export function FlagExplorerMap({
             {paths.marker ? (
               <g transform={`translate(${paths.marker.x},${paths.marker.y})`} aria-hidden>
                 <circle r={6} fill="var(--color-primary)" stroke="white" strokeWidth={2} />
-                <text
-                  x={10}
-                  y={4}
-                  fontSize={13}
-                  fill="var(--color-primary)"
-                  fontFamily="system-ui, sans-serif"
-                  fontWeight={700}
-                  transform="rotate(45 10 4)"
-                >
-                  →
-                </text>
               </g>
             ) : null}
           </svg>
