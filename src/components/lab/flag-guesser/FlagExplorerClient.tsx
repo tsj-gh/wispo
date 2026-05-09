@@ -4,16 +4,18 @@ import { AnimatePresence, motion } from "framer-motion";
 import countries from "i18n-iso-countries";
 import enLocale from "i18n-iso-countries/langs/en.json";
 import jaLocale from "i18n-iso-countries/langs/ja.json";
-import { Filter, Search, X } from "lucide-react";
+import { Filter, Map as MapIcon, Search, X } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { PairLinkAdSlot } from "@/components/PairLinkAdSlots";
 import { GamePageHeader } from "@/components/GamePageHeader";
 import { FlagExplorerMap } from "@/components/lab/flag-guesser/FlagExplorerMap";
+import { FlagExplorerMapSelect } from "@/components/lab/flag-guesser/FlagExplorerMapSelect";
 import {
   buildRegionHierarchy,
   collectColorTagOptions,
+  collectCountryCodesForMapMode,
   collectCountryCodesForRegionalMapFit,
   collectDesignTagOptions,
   collectSymbolTagOptions,
@@ -75,6 +77,9 @@ export function FlagExplorerClient() {
   const [isoRows, setIsoRows] = useState<Iso3166Row[] | null>(null);
   const [diffRows, setDiffRows] = useState<FlagDifficultyJsonRow[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+
+  /** "filter" = 絞り込みモード, "map" = 地図から選ぶモード */
+  const [explorerMode, setExplorerMode] = useState<"filter" | "map">("filter");
 
   const [region, setRegion] = useState("");
   const [subRegion, setSubRegion] = useState("");
@@ -250,6 +255,12 @@ export function FlagExplorerClient() {
     return codes.length > 0 ? codes : null;
   }, [selected, isoRows]);
 
+  /** 地図から選ぶモードのズーム対象 country-codes（null = 全世界） */
+  const mapSelectRegionCodes = useMemo(() => {
+    if (!isoRows?.length) return null;
+    return collectCountryCodesForMapMode(isoRows, region, subRegion, intermediateRegion);
+  }, [isoRows, region, subRegion, intermediateRegion]);
+
   const getAspectRatio = useCallback(
     (alpha2: string): number => {
       const v = aspectMeta?.[alpha2.toUpperCase()]?.ratio;
@@ -261,6 +272,14 @@ export function FlagExplorerClient() {
 
   const gridStyle = useMemo(() => ({ gridTemplateColumns: `repeat(auto-fill,minmax(${Math.max(120, Math.round(148 * cardScale))}px,1fr))` } as CSSProperties), [cardScale]);
   const dataReady = isoRows && diffRows && !loadError;
+
+  /** 地図から選ぶモードで国をクリックしたとき */
+  const handleMapSelectCountry = useCallback((row: Iso3166Row) => {
+    const a2 = row["alpha-2"]?.trim().toUpperCase();
+    if (!a2) return;
+    const found = merged.find((r) => r.alpha2.toUpperCase() === a2);
+    if (found) setSelected(found);
+  }, [merged]);
 
   return (
     <div className="mx-auto flex w-full max-w-[1400px] flex-col px-4 py-4 md:py-6">
@@ -403,122 +422,215 @@ export function FlagExplorerClient() {
 
       {dataReady ? (
         <>
-          <section className="mb-6 space-y-4 rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] p-4 backdrop-blur sm:p-5">
-            <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-[var(--color-text)]"><div className="flex items-center gap-2"><Filter className="h-4 w-4" />絞り込み</div><button type="button" onClick={resetFilters} className="rounded-md border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] px-2 py-1 text-[11px] font-medium">入力をリセット</button></div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <label className="flex flex-col gap-1.5 text-xs"><span>地域</span><select value={region} onChange={(e) => { setRegion(e.target.value); setSubRegion(""); setIntermediateRegion(""); }} className="rounded-lg border px-3 py-2 text-sm"><option value="">（すべて）</option>{regionOptions.map((r) => <option key={r} value={r}>{r}</option>)}</select></label>
+          {/* タブ切り替え */}
+          <div className="mb-4 flex gap-2">
+            <button
+              type="button"
+              onClick={() => setExplorerMode("filter")}
+              className={`flex items-center gap-1.5 rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                explorerMode === "filter"
+                  ? "border-[var(--color-primary)] bg-[color-mix(in_srgb,var(--color-primary)_12%,transparent)] text-[var(--color-primary)]"
+                  : "border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] text-[var(--color-muted)] hover:bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)]"
+              }`}
+            >
+              <Filter className="h-4 w-4" />
+              絞り込み
+            </button>
+            <button
+              type="button"
+              onClick={() => setExplorerMode("map")}
+              className={`flex items-center gap-1.5 rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                explorerMode === "map"
+                  ? "border-[var(--color-primary)] bg-[color-mix(in_srgb,var(--color-primary)_12%,transparent)] text-[var(--color-primary)]"
+                  : "border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] text-[var(--color-muted)] hover:bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)]"
+              }`}
+            >
+              <MapIcon className="h-4 w-4" />
+              地図から選ぶ
+            </button>
+          </div>
 
-              {region ? (
-                <label className="flex flex-col gap-1.5 text-xs"><span>サブリージョン</span><select value={subRegion} onChange={(e) => { setSubRegion(e.target.value); setIntermediateRegion(""); }} className="rounded-lg border px-3 py-2 text-sm"><option value="">（すべて）</option>{subRegionOptions.map((s) => <option key={s} value={s}>{s}</option>)}</select></label>
-              ) : null}
+          {/* 絞り込みモード */}
+          {explorerMode === "filter" ? (
+            <>
+              <section className="mb-6 space-y-4 rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] p-4 backdrop-blur sm:p-5">
+                <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-[var(--color-text)]"><div className="flex items-center gap-2"><Filter className="h-4 w-4" />絞り込み</div><button type="button" onClick={resetFilters} className="rounded-md border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] px-2 py-1 text-[11px] font-medium">入力をリセット</button></div>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  <label className="flex flex-col gap-1.5 text-xs"><span>地域</span><select value={region} onChange={(e) => { setRegion(e.target.value); setSubRegion(""); setIntermediateRegion(""); }} className="rounded-lg border px-3 py-2 text-sm"><option value="">（すべて）</option>{regionOptions.map((r) => <option key={r} value={r}>{r}</option>)}</select></label>
 
-              {region && subRegion ? (
-                <label className="flex flex-col gap-1.5 text-xs"><span>中間リージョン</span><select value={intermediateRegion} disabled={intermediateOptions.length === 0} onChange={(e) => setIntermediateRegion(e.target.value)} className="rounded-lg border px-3 py-2 text-sm"><option value="">{intermediateOptions.length === 0 ? "（なし）" : "（すべて）"}</option>{intermediateOptions.map((s) => <option key={s} value={s}>{s}</option>)}</select></label>
-              ) : null}
-            </div>
+                  {region ? (
+                    <label className="flex flex-col gap-1.5 text-xs"><span>サブリージョン</span><select value={subRegion} onChange={(e) => { setSubRegion(e.target.value); setIntermediateRegion(""); }} className="rounded-lg border px-3 py-2 text-sm"><option value="">（すべて）</option>{subRegionOptions.map((s) => <option key={s} value={s}>{s}</option>)}</select></label>
+                  ) : null}
 
-            <div className="pt-1">
-              <div className="flex flex-col gap-1.5">
-                <span className="text-xs">難易度 {clampDiff(diffMin, diffMax).lo}〜{clampDiff(diffMin, diffMax).hi}</span>
-                <div className="relative h-6">
-                  <div className="pointer-events-none absolute left-0 right-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-[color-mix(in_srgb,var(--color-text)_12%,transparent)]" />
-                  <div
-                    className="pointer-events-none absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-[var(--color-primary)]"
-                    style={{
-                      left: `${((clampDiff(diffMin, diffMax).lo - 1) / 7) * 100}%`,
-                      width: `${((clampDiff(diffMin, diffMax).hi - clampDiff(diffMin, diffMax).lo) / 7) * 100}%`,
-                    }}
-                  />
-                  <input
-                    type="range"
-                    min={1}
-                    max={8}
-                    value={diffMin}
-                    onChange={(e) => {
-                      const v = Number(e.target.value);
-                      setDiffMin(v);
-                      setDiffMax((m) => (m < v ? v : m));
-                    }}
-                    className="absolute inset-0 h-6 w-full cursor-pointer appearance-none bg-transparent [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--color-primary)] [&::-webkit-slider-thumb]:shadow [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[var(--color-primary)]"
-                  />
-                  <input
-                    type="range"
-                    min={1}
-                    max={8}
-                    value={diffMax}
-                    onChange={(e) => {
-                      const v = Number(e.target.value);
-                      setDiffMax(v);
-                      setDiffMin((m) => (m > v ? v : m));
-                    }}
-                    className="absolute inset-0 h-6 w-full cursor-pointer appearance-none bg-transparent [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--color-primary)] [&::-webkit-slider-thumb]:shadow [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[var(--color-primary)]"
-                  />
+                  {region && subRegion ? (
+                    <label className="flex flex-col gap-1.5 text-xs"><span>中間リージョン</span><select value={intermediateRegion} disabled={intermediateOptions.length === 0} onChange={(e) => setIntermediateRegion(e.target.value)} className="rounded-lg border px-3 py-2 text-sm"><option value="">{intermediateOptions.length === 0 ? "（なし）" : "（すべて）"}</option>{intermediateOptions.map((s) => <option key={s} value={s}>{s}</option>)}</select></label>
+                  ) : null}
+                </div>
+
+                <div className="pt-1">
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-xs">難易度 {clampDiff(diffMin, diffMax).lo}〜{clampDiff(diffMin, diffMax).hi}</span>
+                    <div className="relative h-6">
+                      <div className="pointer-events-none absolute left-0 right-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-[color-mix(in_srgb,var(--color-text)_12%,transparent)]" />
+                      <div
+                        className="pointer-events-none absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-[var(--color-primary)]"
+                        style={{
+                          left: `${((clampDiff(diffMin, diffMax).lo - 1) / 7) * 100}%`,
+                          width: `${((clampDiff(diffMin, diffMax).hi - clampDiff(diffMin, diffMax).lo) / 7) * 100}%`,
+                        }}
+                      />
+                      <input
+                        type="range"
+                        min={1}
+                        max={8}
+                        value={diffMin}
+                        onChange={(e) => {
+                          const v = Number(e.target.value);
+                          setDiffMin(v);
+                          setDiffMax((m) => (m < v ? v : m));
+                        }}
+                        className="absolute inset-0 h-6 w-full cursor-pointer appearance-none bg-transparent [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--color-primary)] [&::-webkit-slider-thumb]:shadow [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[var(--color-primary)]"
+                      />
+                      <input
+                        type="range"
+                        min={1}
+                        max={8}
+                        value={diffMax}
+                        onChange={(e) => {
+                          const v = Number(e.target.value);
+                          setDiffMax(v);
+                          setDiffMin((m) => (m > v ? v : m));
+                        }}
+                        className="absolute inset-0 h-6 w-full cursor-pointer appearance-none bg-transparent [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--color-primary)] [&::-webkit-slider-thumb]:shadow [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[var(--color-primary)]"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <label className="flex flex-col gap-1.5 text-xs"><span>色 (AND)</span><div className="flex flex-wrap gap-2">{colorOptions.map((c) => { const on = colorFilter.includes(c); return <button key={c} type="button" onClick={() => setColorFilter((prev) => prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c])} className={`rounded-full border px-2.5 py-1 text-xs ${on ? "border-[var(--color-primary)]" : ""}`}>{displayColorTag(c)}</button>; })}</div></label>
+                {isDevTj && isDebugMode ? (
+                  <label className="flex flex-col gap-1.5 text-xs">
+                    <span>{locale === "ja" ? "デザイン" : "Design"}</span>
+                    <select value={designFilter} onChange={(e) => setDesignFilter(e.target.value)} className="rounded-lg border px-3 py-2 text-sm">
+                      <option value="">{locale === "ja" ? "（すべて）" : "(All)"}</option>
+                      {designOptions.map((d) => (
+                        <option key={d} value={d}>
+                          {displayDesignTagByLocale(d, locale)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ) : null}
+                {isDevTj && isDebugMode ? (
+                  <label className="flex flex-col gap-1.5 text-xs">
+                    <span>{locale === "ja" ? "シンボル (AND)" : "Symbol (AND)"}</span>
+                    <div className="flex flex-wrap gap-2">
+                      {symbolOptions.map((s) => {
+                        const on = symbolFilter.includes(s);
+                        return (
+                          <button
+                            key={s}
+                            type="button"
+                            onClick={() =>
+                              setSymbolFilter((prev) =>
+                                prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]
+                              )
+                            }
+                            className={`rounded-full border px-2.5 py-1 text-xs ${on ? "border-[var(--color-primary)]" : ""}`}
+                          >
+                            {displaySymbolTagByLocale(s, locale)}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </label>
+                ) : null}
+                <label className="flex flex-col gap-1.5 text-xs"><span>文字列</span><div className="flex items-center gap-2 rounded-xl border px-3 py-2"><Search className="h-4 w-4" /><input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="国名 or alpha-3" className="min-w-0 flex-1 bg-transparent text-sm outline-none" /></div></label>
+                <p className="text-xs">該当 {filtered.length} 件 / 全 {merged.length} 件</p>
+              </section>
+
+              <section>
+                <h2 className="mb-3 text-sm font-semibold">国旗一覧</h2>
+                <div className="grid gap-3" style={gridStyle}>
+                  <AnimatePresence mode="popLayout" initial={false}>
+                    {filtered.map((c) => (
+                      <motion.button key={c.alpha3} type="button" initial={{ opacity: 0, scale: 0.94, y: 6 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.94, y: -4 }} transition={springItem} onClick={() => setSelected(c)} className="group flex flex-col overflow-hidden rounded-2xl border text-left" whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }}>
+                        <div
+                          className="flex w-full items-center justify-center overflow-hidden bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-2"
+                          style={{ aspectRatio: flagFrameRatio }}
+                        >
+                          <div className="h-full max-w-full" style={{ aspectRatio: getAspectRatio(c.alpha2) }}>
+                            <FlagImage alpha2={c.alpha2} alt={`${c.nameJa}の国旗`} />
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-1.5 p-2.5"><span className="line-clamp-2 text-xs font-semibold">{c.nameJa}</span><span className="text-[10px]">{c.alpha3}</span><DifficultyDots value={c.difficulty} /></div>
+                      </motion.button>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </section>
+            </>
+          ) : null}
+
+          {/* 地図から選ぶモード */}
+          {explorerMode === "map" ? (
+            <section className="space-y-4">
+              <div className="rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] p-4 backdrop-blur sm:p-5">
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  <label className="flex flex-col gap-1.5 text-xs">
+                    <span>地域</span>
+                    <select
+                      value={region}
+                      onChange={(e) => { setRegion(e.target.value); setSubRegion(""); setIntermediateRegion(""); }}
+                      className="rounded-lg border px-3 py-2 text-sm"
+                    >
+                      <option value="">（世界全体）</option>
+                      {regionOptions.map((r) => <option key={r} value={r}>{r}</option>)}
+                    </select>
+                  </label>
+
+                  {region ? (
+                    <label className="flex flex-col gap-1.5 text-xs">
+                      <span>サブリージョン</span>
+                      <select
+                        value={subRegion}
+                        onChange={(e) => { setSubRegion(e.target.value); setIntermediateRegion(""); }}
+                        className="rounded-lg border px-3 py-2 text-sm"
+                      >
+                        <option value="">（すべて）</option>
+                        {subRegionOptions.map((s) => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    </label>
+                  ) : null}
+
+                  {region && subRegion ? (
+                    <label className="flex flex-col gap-1.5 text-xs">
+                      <span>中間リージョン</span>
+                      <select
+                        value={intermediateRegion}
+                        disabled={intermediateOptions.length === 0}
+                        onChange={(e) => setIntermediateRegion(e.target.value)}
+                        className="rounded-lg border px-3 py-2 text-sm"
+                      >
+                        <option value="">{intermediateOptions.length === 0 ? "（なし）" : "（すべて）"}</option>
+                        {intermediateOptions.map((s) => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    </label>
+                  ) : null}
                 </div>
               </div>
-            </div>
 
-            <label className="flex flex-col gap-1.5 text-xs"><span>色 (AND)</span><div className="flex flex-wrap gap-2">{colorOptions.map((c) => { const on = colorFilter.includes(c); return <button key={c} type="button" onClick={() => setColorFilter((prev) => prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c])} className={`rounded-full border px-2.5 py-1 text-xs ${on ? "border-[var(--color-primary)]" : ""}`}>{displayColorTag(c)}</button>; })}</div></label>
-            {isDevTj && isDebugMode ? (
-              <label className="flex flex-col gap-1.5 text-xs">
-                <span>{locale === "ja" ? "デザイン" : "Design"}</span>
-                <select value={designFilter} onChange={(e) => setDesignFilter(e.target.value)} className="rounded-lg border px-3 py-2 text-sm">
-                  <option value="">{locale === "ja" ? "（すべて）" : "(All)"}</option>
-                  {designOptions.map((d) => (
-                    <option key={d} value={d}>
-                      {displayDesignTagByLocale(d, locale)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            ) : null}
-            {isDevTj && isDebugMode ? (
-              <label className="flex flex-col gap-1.5 text-xs">
-                <span>{locale === "ja" ? "シンボル (AND)" : "Symbol (AND)"}</span>
-                <div className="flex flex-wrap gap-2">
-                  {symbolOptions.map((s) => {
-                    const on = symbolFilter.includes(s);
-                    return (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={() =>
-                          setSymbolFilter((prev) =>
-                            prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]
-                          )
-                        }
-                        className={`rounded-full border px-2.5 py-1 text-xs ${on ? "border-[var(--color-primary)]" : ""}`}
-                      >
-                        {displaySymbolTagByLocale(s, locale)}
-                      </button>
-                    );
-                  })}
-                </div>
-              </label>
-            ) : null}
-            <label className="flex flex-col gap-1.5 text-xs"><span>文字列</span><div className="flex items-center gap-2 rounded-xl border px-3 py-2"><Search className="h-4 w-4" /><input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="国名 or alpha-3" className="min-w-0 flex-1 bg-transparent text-sm outline-none" /></div></label>
-            <p className="text-xs">該当 {filtered.length} 件 / 全 {merged.length} 件</p>
-          </section>
+              <FlagExplorerMapSelect
+                isoRows={isoRows}
+                regionFitCountryCodes={mapSelectRegionCodes}
+                onSelectCountry={handleMapSelectCountry}
+              />
 
-          <section>
-            <h2 className="mb-3 text-sm font-semibold">国旗一覧</h2>
-            <div className="grid gap-3" style={gridStyle}>
-              <AnimatePresence mode="popLayout" initial={false}>
-                {filtered.map((c) => (
-                  <motion.button key={c.alpha3} type="button" initial={{ opacity: 0, scale: 0.94, y: 6 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.94, y: -4 }} transition={springItem} onClick={() => setSelected(c)} className="group flex flex-col overflow-hidden rounded-2xl border text-left" whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }}>
-                    <div
-                      className="flex w-full items-center justify-center overflow-hidden bg-[color-mix(in_srgb,var(--color-accent)_16%,var(--color-bg))] p-2"
-                      style={{ aspectRatio: flagFrameRatio }}
-                    >
-                      <div className="h-full max-w-full" style={{ aspectRatio: getAspectRatio(c.alpha2) }}>
-                        <FlagImage alpha2={c.alpha2} alt={`${c.nameJa}の国旗`} />
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-1.5 p-2.5"><span className="line-clamp-2 text-xs font-semibold">{c.nameJa}</span><span className="text-[10px]">{c.alpha3}</span><DifficultyDots value={c.difficulty} /></div>
-                  </motion.button>
-                ))}
-              </AnimatePresence>
-            </div>
-          </section>
+              <p className="text-xs text-[var(--color-muted)]">
+                地図上の国をクリックすると国旗詳細を表示します。
+              </p>
+            </section>
+          ) : null}
 
           <div className="relative z-0 w-full" style={{ minHeight: GAME_AD_SLOT_MIN_HEIGHT_PX, marginTop: GAME_AD_GAP_BEFORE_SLOT_2_PX }}><PairLinkAdSlot slotIndex={2} /></div>
         </>

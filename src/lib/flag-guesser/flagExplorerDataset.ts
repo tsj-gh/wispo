@@ -135,16 +135,14 @@ export function collectColorTagOptions(rows: readonly ExplorerCountryRow[]): str
     for (const c of row.colors) s.add(c);
   }
   const preferredOrder = [
-    "red",
+    "red_brown",
     "blue",
-    "yellow",
+    "yellow_orange",
     "white",
     "black",
     "green",
-    "orange",
     "purple",
     "brown",
-    "maroon",
     "silver",
     "pink",
     "emblem_colors",
@@ -160,16 +158,19 @@ export function collectColorTagOptions(rows: readonly ExplorerCountryRow[]): str
 
 export function displayColorTag(c: string): string {
   const m: Record<string, string> = {
-    red: "赤",
+    red_brown: "赤/茶",
     blue: "青",
-    yellow: "黄",
+    yellow_orange: "黄/橙",
     white: "白",
     black: "黒",
     green: "緑",
-    orange: "橙",
+    // backward compatibility for pre-migration tags
+    red: "赤/茶",
+    maroon: "赤/茶",
+    yellow: "黄/橙",
+    orange: "黄/橙",
     purple: "紫",
     brown: "茶",
-    maroon: "赤茶",
     silver: "銀",
     pink: "桃",
     emblem_colors: "紋章色",
@@ -211,6 +212,7 @@ export function displayDesignTagByLocale(d: string, locale: "ja" | "en"): string
       対角: "Radiating / Angular",
       T字: "T-shape",
       Y字: "Y-shape",
+      "Y字/V字": "Y/V-shape",
       カントン: "Canton",
       その他: "Other",
     };
@@ -310,6 +312,32 @@ export function displaySymbolTagByLocale(s: string, locale: "ja" | "en"): string
     なし: "None",
   };
   return enMap[raw] ?? raw;
+}
+
+/**
+ * 地図から選ぶモード用：region / subRegion / intermediateRegion フィルタに合致する国コード一覧。
+ * region が空なら全世界（null 相当）。
+ */
+export function collectCountryCodesForMapMode(
+  isoRows: readonly Iso3166Row[],
+  region: string,
+  subRegion: string,
+  intermediateRegion: string
+): string[] | null {
+  if (!region) return null;
+  const codes: string[] = [];
+  for (const row of isoRows) {
+    const cc = row["country-code"]?.trim();
+    if (!cc) continue;
+    const mr = normalizeBlank(row.region);
+    const msr = normalizeBlank(row["sub-region"]);
+    const mir = normalizeBlank(row["intermediate-region"]);
+    if (mr !== region) continue;
+    if (subRegion && msr !== subRegion) continue;
+    if (intermediateRegion && mir !== intermediateRegion) continue;
+    codes.push(cc);
+  }
+  return codes.length > 0 ? codes : null;
 }
 
 /**
