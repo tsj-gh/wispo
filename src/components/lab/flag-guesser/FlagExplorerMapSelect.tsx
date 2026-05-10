@@ -75,6 +75,13 @@ export function FlagExplorerMapSelect({
 
   const [size, setSize] = useState({ w: 800, h: Math.round(800 * MAP_ASPECT) });
   const [zoomTransform, setZoomTransform] = useState<ZoomPlain>(ZOOM_IDENTITY);
+  /**
+   * d3-zoom の "zoom" イベントで同期的に更新する ref。
+   * React の batched state update より先に書かれるため、
+   * 同一ネイティブイベント内で onPointerMove が走っても最新値を参照できる。
+   * （FlagGuesserPlayfield と同じ対処）
+   */
+  const zoomTransformLatestRef = useRef<ZoomPlain>(ZOOM_IDENTITY);
 
   const [featuresCache, setFeaturesCache] = useState<Partial<Record<TopoLodId, CountryFeature[]>>>({});
   const featuresCacheRef = useRef(featuresCache);
@@ -113,49 +120,63 @@ export function FlagExplorerMapSelect({
     return () => { cancelled = true; };
   }, []);
 
-  // Filtered & displayed features for current LOD
+  // Filtered features for current LOD (original, non-unwrapped)
   const filteredFeatures = useMemo<CountryFeature[]>(() => {
     const raw = featuresCache[displayedLod];
     if (!raw?.length) return [];
     return filterWorldTopoFeatures(raw, byCountryCode);
   }, [featuresCache, displayedLod, byCountryCode]);
 
-  // Derive projection from filteredFeatures + size
-  const projection = useMemo(() => {
-    if (!filteredFeatures.length || size.w < 32 || size.h < 32) return null;
+  /**
+   * アンラップ済み features + projection を同時に計算。
+   * FlagGuesserPlayfield の buildRegionRoundModel と同様、
+   * unwrappedFeatures から pathDById を構築してヒットテストの正確性を保つ。
+   */
+  const { projection, unwrappedFeatures } = useMemo(() => {
+    if (!filteredFeatures.length || size.w < 32 || size.h < 32) {
+      return { projection: null, unwrappedFeatures: [] as CountryFeature[] };
+    }
     const fc: FeatureCollection<Geometry, GeoJsonProperties> = {
       type: "FeatureCollection",
       features: filteredFeatures as any,
     };
     const meridian = computeUnwrapCenterMeridian(fc);
-    const unwrapped: FeatureCollection<Geometry, GeoJsonProperties> = {
+    const unwrapped: CountryFeature[] = filteredFeatures.map((f) =>
+      cloneCountryFeatureUnwrapped(f, meridian)
+    );
+    const fcUnwrapped: FeatureCollection<Geometry, GeoJsonProperties> = {
       type: "FeatureCollection",
-      features: filteredFeatures.map((f) => cloneCountryFeatureUnwrapped(f, meridian)) as any,
+      features: unwrapped as any,
     };
-    return buildMercatorForCollection(unwrapped, size.w, size.h, 8, meridian);
+    const proj = buildMercatorForCollection(fcUnwrapped, size.w, size.h, 8, meridian);
+    return { projection: proj, unwrappedFeatures: unwrapped };
   }, [filteredFeatures, size.w, size.h]);
 
-  // Path strings
+  /**
+   * pathDById はアンラップ済み features から構築。
+   * FlagGuesserPlayfield と同様、SVG に描画されたパスと一致させることで
+   * geoContains の winding 問題（海域がモルディブ判定される等）を回避する。
+   */
   const pathDById = useMemo(() => {
-    if (!projection || !filteredFeatures.length) return new Map<string, string>();
-    return buildPathStrings(projection, filteredFeatures);
-  }, [projection, filteredFeatures]);
+    if (!projection || !unwrappedFeatures.length) return new Map<string, string>();
+    return buildPathStrings(projection, unwrappedFeatures);
+  }, [projection, unwrappedFeatures]);
 
-  const hitFeatures = useMemo(() => sortFeaturesForHitTest(filteredFeatures), [filteredFeatures]);
+  /** ヒットテスト用ソート済み features（アンラップ済み、面積昇順） */
+  const hitFeatures = useMemo(() => sortFeaturesForHitTest(unwrappedFeatures), [unwrappedFeatures]);
 
   // LOD upgrade based on zoom metric
-  const lodMetric = useMemo(() => (projection ? projection.scale() * zoomTransform.k : 0), [projection, zoomTransform.k]);
+  const lodMetric = useMemo(
+    () => (projection ? projection.scale() * zoomTransform.k : 0),
+    [projection, zoomTransform.k]
+  );
 
   useEffect(() => {
-    const lodLow = DEFAULT_LOD_THRESHOLD_LOW;
-    const lodHigh = DEFAULT_LOD_THRESHOLD_HIGH;
-    const desired = lodTierForMetric(lodMetric, lodLow, lodHigh);
-    // Update displayed if available
+    const desired = lodTierForMetric(lodMetric, DEFAULT_LOD_THRESHOLD_LOW, DEFAULT_LOD_THRESHOLD_HIGH);
     if (featuresCache[desired]?.length) {
       setDisplayedLod(desired);
       return;
     }
-    // Fetch desired if not cached
     if (!featuresCacheRef.current[desired]) {
       let cancelled = false;
       fetch(TOPO_LOD_URL[desired])
@@ -168,13 +189,15 @@ export function FlagExplorerMapSelect({
     }
   }, [lodMetric, featuresCache]);
 
-  // Border stroke width
-  const borderStrokeWidth = useMemo(() => Math.max(0.35, Math.min(1.15, 1 / Math.sqrt(zoomTransform.k))), [zoomTransform.k]);
+  const borderStrokeWidth = useMemo(
+    () => Math.max(0.35, Math.min(1.15, 1 / Math.sqrt(zoomTransform.k))),
+    [zoomTransform.k]
+  );
 
-  // SVG transform
-  const gTransform = useMemo(() =>
-    zoomIdentity.translate(zoomTransform.x, zoomTransform.y).scale(zoomTransform.k).toString(),
-    [zoomTransform]);
+  const gTransform = useMemo(
+    () => zoomIdentity.translate(zoomTransform.x, zoomTransform.y).scale(zoomTransform.k).toString(),
+    [zoomTransform]
+  );
 
   // d3-zoom setup
   useEffect(() => {
@@ -184,15 +207,28 @@ export function FlagExplorerMapSelect({
     const z = d3zoom<HTMLDivElement, unknown>()
       .scaleExtent([ZOOM_MIN, ZOOM_MAX])
       .on("start", () => {
-        if (canvasRefineTimerRef.current) { clearTimeout(canvasRefineTimerRef.current); canvasRefineTimerRef.current = null; }
+        if (canvasRefineTimerRef.current) {
+          clearTimeout(canvasRefineTimerRef.current);
+          canvasRefineTimerRef.current = null;
+        }
       })
-      .on("zoom", (ev) => setZoomTransform({ x: ev.transform.x, y: ev.transform.y, k: ev.transform.k }))
+      .on("zoom", (ev) => {
+        const next: ZoomPlain = { x: ev.transform.x, y: ev.transform.y, k: ev.transform.k };
+        // ref を同期的に更新（React batched update より先に確定させる）
+        zoomTransformLatestRef.current = next;
+        setZoomTransform(next);
+      })
       .on("end", () => {
-        canvasRefineTimerRef.current = setTimeout(() => { canvasRefineTimerRef.current = null; }, 200);
+        canvasRefineTimerRef.current = setTimeout(() => {
+          canvasRefineTimerRef.current = null;
+        }, 200);
       });
     zoomBehaviorRef.current = z;
     sel.call(z);
-    sel.call(z.transform, zoomIdentity.translate(zoomTransform.x, zoomTransform.y).scale(zoomTransform.k));
+    sel.call(
+      z.transform,
+      zoomIdentity.translate(zoomTransform.x, zoomTransform.y).scale(zoomTransform.k)
+    );
     return () => {
       zoomBehaviorRef.current = null;
       sel.on(".zoom", null);
@@ -200,37 +236,58 @@ export function FlagExplorerMapSelect({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [size.w, size.h]);
 
-  const applyZoomTransform = useCallback((next: ZoomPlain, smooth: boolean) => {
-    const host = zoomHostRef.current;
-    const behavior = zoomBehaviorRef.current;
-    if (!host || !behavior) { setZoomTransform(next); return; }
-    const sel = select(host);
-    sel.interrupt();
-    const t = zoomIdentity.translate(next.x, next.y).scale(clampK(next.k));
-    if (smooth) {
-      sel.transition().duration(600).ease(easeCubicOut).call(behavior.transform, t);
-    } else {
-      sel.call(behavior.transform, t);
-    }
-  }, []);
+  const applyZoomTransform = useCallback(
+    (next: ZoomPlain, smooth: boolean) => {
+      const host = zoomHostRef.current;
+      const behavior = zoomBehaviorRef.current;
+      if (!host || !behavior) {
+        zoomTransformLatestRef.current = next;
+        setZoomTransform(next);
+        return;
+      }
+      const sel = select(host);
+      sel.interrupt();
+      const t = zoomIdentity.translate(next.x, next.y).scale(clampK(next.k));
+      if (smooth) {
+        sel.transition().duration(600).ease(easeCubicOut).call(behavior.transform, t);
+      } else {
+        sel.call(behavior.transform, t);
+      }
+    },
+    []
+  );
 
-  const zoomByFactor = useCallback((factor: number) => {
-    const cx = size.w / 2;
-    const cy = size.h / 2;
-    const nextK = clampK(zoomTransform.k * factor);
-    const scale = nextK / Math.max(zoomTransform.k, 1e-6);
-    applyZoomTransform({ k: nextK, x: cx - (cx - zoomTransform.x) * scale, y: cy - (cy - zoomTransform.y) * scale }, true);
-  }, [size.w, size.h, zoomTransform, applyZoomTransform]);
+  const zoomByFactor = useCallback(
+    (factor: number) => {
+      const cx = size.w / 2;
+      const cy = size.h / 2;
+      const zt = zoomTransformLatestRef.current;
+      const nextK = clampK(zt.k * factor);
+      const scale = nextK / Math.max(zt.k, 1e-6);
+      applyZoomTransform(
+        { k: nextK, x: cx - (cx - zt.x) * scale, y: cy - (cy - zt.y) * scale },
+        true
+      );
+    },
+    [size.w, size.h, applyZoomTransform]
+  );
 
-  const applySliderRatioFromClientY = useCallback((track: HTMLElement, clientY: number, smooth: boolean) => {
-    const rect = track.getBoundingClientRect();
-    const raw = 1 - (clientY - rect.top) / Math.max(rect.height, 1);
-    const cx = size.w / 2;
-    const cy = size.h / 2;
-    const nextK = zoomRatioToK(raw);
-    const scale = nextK / Math.max(zoomTransform.k, 1e-6);
-    applyZoomTransform({ k: nextK, x: cx - (cx - zoomTransform.x) * scale, y: cy - (cy - zoomTransform.y) * scale }, smooth);
-  }, [size.w, size.h, zoomTransform, applyZoomTransform]);
+  const applySliderRatioFromClientY = useCallback(
+    (track: HTMLElement, clientY: number, smooth: boolean) => {
+      const rect = track.getBoundingClientRect();
+      const raw = 1 - (clientY - rect.top) / Math.max(rect.height, 1);
+      const cx = size.w / 2;
+      const cy = size.h / 2;
+      const zt = zoomTransformLatestRef.current;
+      const nextK = zoomRatioToK(raw);
+      const scale = nextK / Math.max(zt.k, 1e-6);
+      applyZoomTransform(
+        { k: nextK, x: cx - (cx - zt.x) * scale, y: cy - (cy - zt.y) * scale },
+        smooth
+      );
+    },
+    [size.w, size.h, applyZoomTransform]
+  );
 
   // Fit to region when regionFitCountryCodes changes
   const prevFitKeyRef = useRef<string>("");
@@ -238,12 +295,12 @@ export function FlagExplorerMapSelect({
     const key = (regionFitCountryCodes ?? []).join(",") + `|${size.w}|${size.h}`;
     if (prevFitKeyRef.current === key) return;
     prevFitKeyRef.current = key;
-    if (!projection || size.w < 32 || size.h < 32) return;
+    if (!projection || size.w < 32 || size.h < 32 || !unwrappedFeatures.length) return;
 
-    let fitFeatures = filteredFeatures;
+    let fitFeatures = unwrappedFeatures;
     if (regionFitCountryCodes && regionFitCountryCodes.length > 0) {
       const codeSet = new Set(regionFitCountryCodes);
-      const subset = filteredFeatures.filter((f) => {
+      const subset = unwrappedFeatures.filter((f) => {
         const id = featureIdString(f);
         return id ? codeSet.has(id) : false;
       });
@@ -269,30 +326,52 @@ export function FlagExplorerMapSelect({
     } catch {}
   });
 
-  // Pointer handlers
-  const getMapPt = useCallback((clientX: number, clientY: number): [number, number] | null => {
-    const el = svgRef.current ?? zoomHostRef.current;
-    if (!el) return null;
-    const rect = el.getBoundingClientRect();
-    if (rect.width <= 0 || rect.height <= 0) return null;
-    const sx = ((clientX - rect.left) / rect.width) * size.w;
-    const sy = ((clientY - rect.top) / rect.height) * size.h;
-    return screenToMapSpace(sx, sy, zoomTransform) as [number, number];
-  }, [size.w, size.h, zoomTransform]);
+  /**
+   * クライアント座標 → map 空間（投影出力座標）。
+   * zoomTransformLatestRef を使って stale closure を回避する。
+   */
+  const getMapPt = useCallback(
+    (clientX: number, clientY: number): [number, number] | null => {
+      const el = svgRef.current ?? zoomHostRef.current;
+      if (!el) return null;
+      const rect = el.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return null;
+      const sx = ((clientX - rect.left) / rect.width) * size.w;
+      const sy = ((clientY - rect.top) / rect.height) * size.h;
+      // 最新の zoom transform を ref から直接取得（React state が stale でも正確）
+      return screenToMapSpace(sx, sy, zoomTransformLatestRef.current) as [number, number];
+    },
+    [size.w, size.h]
+    // zoomTransform を依存に含めない（ref で常に最新値を参照）
+  );
 
-  const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    if (!projection) return;
-    const pt = getMapPt(e.clientX, e.clientY);
-    if (!pt) { setHoverCountryId(null); setTooltipPos(null); return; }
-    const id = countryIdAtPixel(projection, hitFeatures, pt[0], pt[1], pathDById);
-    setHoverCountryId(id);
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (!projection || !pathDById.size) {
+        setHoverCountryId(null);
+        setTooltipPos(null);
+        return;
+      }
+      const pt = getMapPt(e.clientX, e.clientY);
+      if (!pt) {
+        setHoverCountryId(null);
+        setTooltipPos(null);
+        return;
+      }
+      // pathDById を渡すことで Path2D + isPointInPath を使い geoContains fallback を避ける
+      const id = countryIdAtPixel(projection, hitFeatures, pt[0], pt[1], pathDById);
+      setHoverCountryId(id);
 
-    const host = zoomHostRef.current;
-    if (host) {
-      const rect = host.getBoundingClientRect();
-      setTooltipPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-    }
-  }, [projection, hitFeatures, pathDById, getMapPt]);
+      const host = zoomHostRef.current;
+      if (host && id) {
+        const rect = host.getBoundingClientRect();
+        setTooltipPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+      } else {
+        setTooltipPos(null);
+      }
+    },
+    [projection, hitFeatures, pathDById, getMapPt]
+  );
 
   const handlePointerLeave = useCallback(() => {
     setHoverCountryId(null);
@@ -306,15 +385,15 @@ export function FlagExplorerMapSelect({
   }, [hoverCountryId, byCountryCode, onSelectCountry]);
 
   // Tooltip info
-  const tooltipAlpha2 = useMemo(() => {
-    if (!hoverCountryId) return null;
-    return byCountryCode.get(hoverCountryId)?.["alpha-2"] ?? null;
-  }, [hoverCountryId, byCountryCode]);
+  const tooltipAlpha2 = useMemo(
+    () => (hoverCountryId ? (byCountryCode.get(hoverCountryId)?.["alpha-2"] ?? null) : null),
+    [hoverCountryId, byCountryCode]
+  );
 
-  const tooltipName = useMemo(() => {
-    if (!tooltipAlpha2) return null;
-    return getCountryDisplayName(tooltipAlpha2, locale) ?? tooltipAlpha2;
-  }, [tooltipAlpha2, locale]);
+  const tooltipName = useMemo(
+    () => (tooltipAlpha2 ? (getCountryDisplayName(tooltipAlpha2, locale) ?? tooltipAlpha2) : null),
+    [tooltipAlpha2, locale]
+  );
 
   return (
     <div ref={containerRef} className="relative w-full overflow-hidden">
@@ -327,10 +406,9 @@ export function FlagExplorerMapSelect({
           ref={zoomHostRef}
           className="relative cursor-crosshair touch-none"
           style={{ width: size.w, height: size.h }}
-          onPointerMove={handlePointerMove}
-          onPointerLeave={handlePointerLeave}
           onClick={handleClick}
         >
+          {/* SVG にポインタイベントを付ける（FlagGuesserPlayfield と同様） */}
           <svg
             ref={svgRef}
             width={size.w}
@@ -338,10 +416,12 @@ export function FlagExplorerMapSelect({
             className="block select-none"
             role="img"
             aria-label="世界地図"
+            onPointerMove={handlePointerMove}
+            onPointerLeave={handlePointerLeave}
           >
             <rect width={size.w} height={size.h} fill={MAP_SEA} />
             <g transform={gTransform}>
-              {filteredFeatures.map((f) => {
+              {unwrappedFeatures.map((f) => {
                 const id = featureIdString(f);
                 if (!id) return null;
                 const d = pathDById.get(id);
@@ -434,7 +514,10 @@ export function FlagExplorerMapSelect({
             >
               <div
                 className="pointer-events-none absolute left-1/2 h-3 w-3 -translate-x-1/2 rounded-full border border-white/80 bg-[var(--color-primary)] shadow"
-                style={{ top: `${(1 - zoomKToRatio(zoomTransform.k)) * 100}%`, transform: "translate(-50%, -50%)" }}
+                style={{
+                  top: `${(1 - zoomKToRatio(zoomTransform.k)) * 100}%`,
+                  transform: "translate(-50%, -50%)",
+                }}
               />
             </div>
             <button
@@ -448,7 +531,7 @@ export function FlagExplorerMapSelect({
           </div>
         </div>
 
-        {filteredFeatures.length === 0 ? (
+        {unwrappedFeatures.length === 0 ? (
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-xs text-[var(--color-muted)]">
             地図データを読み込み中…
           </div>
