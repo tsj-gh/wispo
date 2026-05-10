@@ -331,10 +331,29 @@ export function FlagExplorerMapSelect({
     [size.w, size.h, applyZoomTransform]
   );
 
-  /** プリセット適用 or 地域外接 fit（LOD・リサイズ時は再計算） */
-  const lastAppliedViewSigRef = useRef<string>("");
+  /**
+   * 初期ビュー／地域変更／プリセット変更／リサイズ時だけ fit またはプリセットを適用するキー。
+   * displayedLod は含めない — TopoJSON 解像度切替（110m→50m は lodMetric≈300 付近）で
+   * ここが変わると外接 fit が走り、d3-zoom の k が 1 付近に上書きされていた（ユーザー体感では ~3.43× 付近でリセット）。
+   */
+  const mapViewResetKey = useMemo(
+    () =>
+      [
+        mapSelectionKey,
+        `${size.w}x${size.h}`,
+        mapPreset ? `p:${mapPreset.lon},${mapPreset.lat},${mapPreset.k}` : "fit",
+        (regionFitCountryCodes ?? []).join(","),
+      ].join("|"),
+    [mapSelectionKey, size.w, size.h, mapPreset, regionFitCountryCodes]
+  );
+
+  const lastMapViewResetKeyRef = useRef<string | null>(null);
+
+  /** プリセット適用 or 地域外接 fit（地域・サイズ・プリセット変更時のみ。LOD 差し替えでは走らせない） */
   useEffect(() => {
     if (!projection || size.w < 32 || size.h < 32 || !unwrappedFeatures.length) return;
+
+    if (lastMapViewResetKeyRef.current === mapViewResetKey) return;
 
     if (mapPreset != null) {
       const next = zoomPlainFromCenterLonLatK(
@@ -346,17 +365,10 @@ export function FlagExplorerMapSelect({
         mapPreset.k
       );
       if (!next) return;
-      const sig = `preset:${mapSelectionKey}:${mapPreset.lon}:${mapPreset.lat}:${mapPreset.k}:${size.w}:${size.h}:${displayedLod}`;
-      if (lastAppliedViewSigRef.current === sig) return;
-      lastAppliedViewSigRef.current = sig;
       applyZoomTransform(next, false);
+      lastMapViewResetKeyRef.current = mapViewResetKey;
       return;
     }
-
-    const codesKey = (regionFitCountryCodes ?? []).join(",");
-    const sig = `fit:${codesKey}:${size.w}:${size.h}:${displayedLod}`;
-    if (lastAppliedViewSigRef.current === sig) return;
-    lastAppliedViewSigRef.current = sig;
 
     let fitFeatures = unwrappedFeatures;
     if (regionFitCountryCodes && regionFitCountryCodes.length > 0) {
@@ -384,14 +396,15 @@ export function FlagExplorerMapSelect({
       const cx = (x0 + x1) / 2;
       const cy = (y0 + y1) / 2;
       applyZoomTransform({ x: size.w / 2 - cx * k, y: size.h / 2 - cy * k, k }, true);
+      lastMapViewResetKeyRef.current = mapViewResetKey;
     } catch {
       /* ignore */
     }
   }, [
     applyZoomTransform,
-    displayedLod,
     mapPreset,
     mapSelectionKey,
+    mapViewResetKey,
     projection,
     regionFitCountryCodes,
     size.h,
