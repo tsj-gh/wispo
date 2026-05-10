@@ -18,7 +18,7 @@ import {
 import { filterWorldTopoFeatures } from "@/lib/flag-guesser/topoFeatureFilter";
 import { countryFeaturesFromTopology, flagUrlForAlpha2 } from "@/lib/flag-guesser/selectRound";
 import { indexIsoByCountryCode } from "@/lib/flag-guesser/isoIndex";
-import { getCountryDisplayName } from "@/components/lab/flag-guesser/MapCanvas";
+import { formatMapDebugSnippet, getCountryDisplayName } from "@/components/lab/flag-guesser/MapCanvas";
 import { screenToMapSpace, type ZoomPlain, ZOOM_IDENTITY } from "@/lib/flag-guesser/viewportGeo";
 import {
   DEFAULT_LOD_THRESHOLD_LOW,
@@ -198,6 +198,25 @@ export function FlagExplorerMapSelect({
     () => zoomIdentity.translate(zoomTransform.x, zoomTransform.y).scale(zoomTransform.k).toString(),
     [zoomTransform]
   );
+
+  /**
+   * 盤面中央ピクセルに対応する経緯度とズーム k（FlagGuesserPlayfield の mapDebugCenterScale と同じ）。
+   * 初期ビュー調整時に値を読み取るためのチューニング用表示。
+   */
+  const mapViewportCenterDebug = useMemo(() => {
+    if (!projection || size.w < 8 || size.h < 8) return null;
+    const midLocal: [number, number] = [size.w / 2, size.h / 2];
+    const mapPt = screenToMapSpace(midLocal[0], midLocal[1], zoomTransform);
+    const inv = projection.invert?.(mapPt);
+    if (!inv || !Number.isFinite(inv[0]) || !Number.isFinite(inv[1])) return null;
+    const [lon, lat] = inv;
+    const snippet = formatMapDebugSnippet([lon, lat], zoomTransform.k);
+    return {
+      centerLonLatText: `${lon.toFixed(4)}°, ${lat.toFixed(4)}°`,
+      scaleText: `${zoomTransform.k.toFixed(4)}×`,
+      snippet,
+    };
+  }, [projection, size.w, size.h, zoomTransform]);
 
   // d3-zoom setup
   useEffect(() => {
@@ -469,6 +488,15 @@ export function FlagExplorerMapSelect({
             </div>
           ) : null}
         </div>
+
+        {/* 画面中央の経緯度・ズーム（フラッグゲッサー debug と同じ計算／右下でチューニング用に表示） */}
+        {mapViewportCenterDebug ? (
+          <div className="pointer-events-none absolute bottom-1 right-1 z-[11] max-w-[min(100%,18rem)] rounded border border-[color-mix(in_srgb,var(--color-text)_20%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_88%,transparent)] px-1.5 py-1 font-mono text-[9px] leading-tight text-[var(--color-text)] backdrop-blur-sm">
+            <div>Center (lon, lat): {mapViewportCenterDebug.centerLonLatText}</div>
+            <div>Scale: {mapViewportCenterDebug.scaleText}</div>
+            <div className="mt-0.5 break-all text-[8px] text-[var(--color-muted)]">{mapViewportCenterDebug.snippet}</div>
+          </div>
+        ) : null}
 
         {/* Zoom bar (same style & position as FlagGuesserPlayfield) */}
         <div className="pointer-events-none absolute right-2 top-2 z-10">
