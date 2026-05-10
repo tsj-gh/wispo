@@ -1,0 +1,6 @@
+{
+  "comment": "Key = region|subRegion|intermediateRegion; use * for an unused level. Example: *|*|* = world. lon/lat = viewport center; k = d3-zoom scale (same as map overlay).",
+  "presets": {
+    "*|*|*": { "lon": 0, "lat": 20, "k": 1 }
+  }
+}

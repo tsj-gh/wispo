@@ -27,6 +27,7 @@ import {
   TOPO_LOD_URL,
   type TopoLodId,
 } from "@/lib/flag-guesser/topoLod";
+import { type ExplorerMapPresetView, zoomPlainFromCenterLonLatK } from "@/lib/flag-guesser/explorerMapPresets";
 import type { CountryFeature, Iso3166Row } from "@/lib/flag-guesser/types";
 import type { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 import { useI18n } from "@/lib/i18n-context";
@@ -58,12 +59,21 @@ export type FlagExplorerMapSelectProps = {
   /** ズームイン対象の ISO numeric country-codes（nullなら全世界） */
   regionFitCountryCodes: string[] | null;
   onSelectCountry: (row: Iso3166Row) => void;
+  /** JSON プリセットがあるときは外接 fit の代わりに適用 */
+  mapPreset?: ExplorerMapPresetView | null;
+  /** 地域フィルタ変更時にプリセット／fit を再適用するキー */
+  mapSelectionKey: string;
+  /** 画面中央の lon/lat とズーム k（デバッグ・コピー用） */
+  onViewportLonLatKChange?: (p: { lon: number; lat: number; k: number } | null) => void;
 };
 
 export function FlagExplorerMapSelect({
   isoRows,
   regionFitCountryCodes,
   onSelectCountry,
+  mapPreset = null,
+  mapSelectionKey,
+  onViewportLonLatKChange,
 }: FlagExplorerMapSelectProps) {
   const { locale } = useI18n();
 
@@ -218,6 +228,19 @@ export function FlagExplorerMapSelect({
     };
   }, [projection, size.w, size.h, zoomTransform]);
 
+  const viewportLonLatK = useMemo(() => {
+    if (!projection || size.w < 8 || size.h < 8) return null;
+    const midLocal: [number, number] = [size.w / 2, size.h / 2];
+    const mapPt = screenToMapSpace(midLocal[0], midLocal[1], zoomTransform);
+    const inv = projection.invert?.(mapPt);
+    if (!inv || !Number.isFinite(inv[0]) || !Number.isFinite(inv[1])) return null;
+    return { lon: inv[0], lat: inv[1], k: zoomTransform.k };
+  }, [projection, size.w, size.h, zoomTransform]);
+
+  useEffect(() => {
+    onViewportLonLatKChange?.(viewportLonLatK);
+  }, [viewportLonLatK, onViewportLonLatKChange]);
+
   // d3-zoom setup
   useEffect(() => {
     const host = zoomHostRef.current;
@@ -308,13 +331,32 @@ export function FlagExplorerMapSelect({
     [size.w, size.h, applyZoomTransform]
   );
 
-  // Fit to region when regionFitCountryCodes changes
-  const prevFitKeyRef = useRef<string>("");
+  /** プリセット適用 or 地域外接 fit（LOD・リサイズ時は再計算） */
+  const lastAppliedViewSigRef = useRef<string>("");
   useEffect(() => {
-    const key = (regionFitCountryCodes ?? []).join(",") + `|${size.w}|${size.h}`;
-    if (prevFitKeyRef.current === key) return;
-    prevFitKeyRef.current = key;
     if (!projection || size.w < 32 || size.h < 32 || !unwrappedFeatures.length) return;
+
+    if (mapPreset != null) {
+      const next = zoomPlainFromCenterLonLatK(
+        projection,
+        size.w,
+        size.h,
+        mapPreset.lon,
+        mapPreset.lat,
+        mapPreset.k
+      );
+      if (!next) return;
+      const sig = `preset:${mapSelectionKey}:${mapPreset.lon}:${mapPreset.lat}:${mapPreset.k}:${size.w}:${size.h}:${displayedLod}`;
+      if (lastAppliedViewSigRef.current === sig) return;
+      lastAppliedViewSigRef.current = sig;
+      applyZoomTransform(next, false);
+      return;
+    }
+
+    const codesKey = (regionFitCountryCodes ?? []).join(",");
+    const sig = `fit:${codesKey}:${size.w}:${size.h}:${displayedLod}`;
+    if (lastAppliedViewSigRef.current === sig) return;
+    lastAppliedViewSigRef.current = sig;
 
     let fitFeatures = unwrappedFeatures;
     if (regionFitCountryCodes && regionFitCountryCodes.length > 0) {
@@ -342,8 +384,20 @@ export function FlagExplorerMapSelect({
       const cx = (x0 + x1) / 2;
       const cy = (y0 + y1) / 2;
       applyZoomTransform({ x: size.w / 2 - cx * k, y: size.h / 2 - cy * k, k }, true);
-    } catch {}
-  });
+    } catch {
+      /* ignore */
+    }
+  }, [
+    applyZoomTransform,
+    displayedLod,
+    mapPreset,
+    mapSelectionKey,
+    projection,
+    regionFitCountryCodes,
+    size.h,
+    size.w,
+    unwrappedFeatures,
+  ]);
 
   /**
    * クライアント座標 → map 空間（投影出力座標）。

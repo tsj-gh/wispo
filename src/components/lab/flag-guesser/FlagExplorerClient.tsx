@@ -26,6 +26,12 @@ import {
   type ExplorerCountryRow,
   type FlagDifficultyJsonRow,
 } from "@/lib/flag-guesser/flagExplorerDataset";
+import {
+  type ExplorerMapPresetsFile,
+  explorerMapPresetKey,
+  formatExplorerMapPresetClipboardEntry,
+  resolveExplorerMapPreset,
+} from "@/lib/flag-guesser/explorerMapPresets";
 import { flagUrlForAlpha2 } from "@/lib/flag-guesser/selectRound";
 import type { Iso3166Row } from "@/lib/flag-guesser/types";
 import { GAME_AD_GAP_BEFORE_SLOT_2_PX, GAME_AD_SLOT_MIN_HEIGHT_PX } from "@/lib/gameLayout";
@@ -37,6 +43,7 @@ countries.registerLocale(jaLocale);
 const ISO_URL = "/assets/flag-guesser/iso-3166.json";
 const DIFF_URL = "/assets/flag-guesser/flag_difficulty.json";
 const ASPECT_URL = "/assets/flag-guesser/flag_aspect_ratio.json";
+const MAP_PRESETS_URL = "/assets/flag-guesser/explorer_map_presets.json";
 const springPanel = { type: "spring" as const, stiffness: 370, damping: 32 };
 const springItem = { type: "spring" as const, stiffness: 400, damping: 32 };
 
@@ -100,6 +107,10 @@ export function FlagExplorerClient() {
   /** devtj 時のみ：1.0 で無効、大きいほど小国ほど地域フィット後に追加ズーム */
   const [mapAreaInverseZoom, setMapAreaInverseZoom] = useState(1);
 
+  const [explorerMapPresetsFile, setExplorerMapPresetsFile] = useState<ExplorerMapPresetsFile | null>(null);
+  /** 「地図から選ぶ」盤面の画面中央 lon/lat と k（デバッグ・JSON コピー用） */
+  const [mapSelectViewport, setMapSelectViewport] = useState<{ lon: number; lat: number; k: number } | null>(null);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -136,6 +147,28 @@ export function FlagExplorerClient() {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(MAP_PRESETS_URL)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (cancelled || !j || typeof j !== "object") return;
+        const p = (j as ExplorerMapPresetsFile).presets;
+        if (p && typeof p === "object") setExplorerMapPresetsFile(j as ExplorerMapPresetsFile);
+        else setExplorerMapPresetsFile(null);
+      })
+      .catch(() => {
+        if (!cancelled) setExplorerMapPresetsFile(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (explorerMode !== "map") setMapSelectViewport(null);
+  }, [explorerMode]);
 
   const merged = useMemo(() => {
     if (!isoRows?.length || !diffRows) return [];
@@ -261,6 +294,16 @@ export function FlagExplorerClient() {
     return collectCountryCodesForMapMode(isoRows, region, subRegion, intermediateRegion);
   }, [isoRows, region, subRegion, intermediateRegion]);
 
+  const mapSelectPresetKey = useMemo(
+    () => explorerMapPresetKey(region, subRegion, intermediateRegion),
+    [region, subRegion, intermediateRegion]
+  );
+
+  const resolvedExplorerMapPreset = useMemo(() => {
+    if (!explorerMapPresetsFile?.presets) return null;
+    return resolveExplorerMapPreset(explorerMapPresetsFile.presets, region, subRegion, intermediateRegion);
+  }, [explorerMapPresetsFile, region, subRegion, intermediateRegion]);
+
   const getAspectRatio = useCallback(
     (alpha2: string): number => {
       const v = aspectMeta?.[alpha2.toUpperCase()]?.ratio;
@@ -280,6 +323,23 @@ export function FlagExplorerClient() {
     const found = merged.find((r) => r.alpha2.toUpperCase() === a2);
     if (found) setSelected(found);
   }, [merged]);
+
+  const copyExplorerMapPresetEntry = useCallback(async () => {
+    if (!mapSelectViewport) return;
+    const text = formatExplorerMapPresetClipboardEntry(
+      region,
+      subRegion,
+      intermediateRegion,
+      mapSelectViewport.lon,
+      mapSelectViewport.lat,
+      mapSelectViewport.k
+    );
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      /* ignore */
+    }
+  }, [mapSelectViewport, region, subRegion, intermediateRegion]);
 
   return (
     <div className="mx-auto flex w-full max-w-[1400px] flex-col px-4 py-4 md:py-6">
@@ -402,6 +462,39 @@ export function FlagExplorerClient() {
                           <span className="font-mono">{selected.alpha3}</span> は flag_difficulty.json に該当行がありません。
                         </p>
                       )}
+                    </div>
+                  ) : null}
+                  {explorerMode === "map" ? (
+                    <div className="mt-2 border-t border-amber-200/90 pt-2 text-[10px] leading-snug text-stone-800">
+                      <div className="mb-1 font-semibold text-stone-800">地図から選ぶ（explorer_map_presets.json）</div>
+                      <p className="mb-1 text-stone-600">
+                        プリセットキー:{" "}
+                        <span className="break-all font-mono text-[9px] text-stone-800">{mapSelectPresetKey}</span>
+                      </p>
+                      {resolvedExplorerMapPreset ? (
+                        <p className="mb-1 text-[9px] text-stone-600">
+                          適用中: lon {resolvedExplorerMapPreset.lon}, lat {resolvedExplorerMapPreset.lat}, k{" "}
+                          {resolvedExplorerMapPreset.k}
+                        </p>
+                      ) : (
+                        <p className="mb-1 text-[9px] text-stone-600">適用中のプリセットなし（外接フィット）</p>
+                      )}
+                      {mapSelectViewport ? (
+                        <p className="mb-1.5 font-mono text-[9px] text-stone-800">
+                          現在: lon {mapSelectViewport.lon.toFixed(6)}, lat {mapSelectViewport.lat.toFixed(6)}, k{" "}
+                          {mapSelectViewport.k.toFixed(6)}
+                        </p>
+                      ) : (
+                        <p className="mb-1.5 text-[9px] text-stone-500">地図表示後に現在値が入ります。</p>
+                      )}
+                      <button
+                        type="button"
+                        disabled={!mapSelectViewport}
+                        onClick={() => void copyExplorerMapPresetEntry()}
+                        className="rounded border border-amber-700/35 bg-white px-2 py-1 text-[10px] font-semibold text-stone-900 shadow-sm hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        現在の {"{lon, lat, k}"} を presets 用にコピー
+                      </button>
                     </div>
                   ) : null}
                 </div>
@@ -623,6 +716,9 @@ export function FlagExplorerClient() {
               <FlagExplorerMapSelect
                 isoRows={isoRows}
                 regionFitCountryCodes={mapSelectRegionCodes}
+                mapPreset={resolvedExplorerMapPreset}
+                mapSelectionKey={mapSelectPresetKey}
+                onViewportLonLatKChange={setMapSelectViewport}
                 onSelectCountry={handleMapSelectCountry}
               />
 
