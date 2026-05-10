@@ -2,6 +2,14 @@ import { geoArea, geoBounds, geoCentroid, geoContains, geoMercator, geoPath, typ
 import type { Feature, FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 import type { CountryFeature, Iso3166Row, RegionRoundModel } from "./types";
 
+/**
+ * ヒットテスト対象とする球面積（steradians）の上限。
+ * Natural Earth `countries-10m` の Maldives (462) だけが ~37.7 と異常に大きく、
+ * Path2D が画面ほぼ全域を内側と判定して海上クリックがモルディブになる不具合がある。
+ * ロシア等の最大級でも ~0.42 未満のため 1.0 で十分に安全。
+ */
+export const MAX_PLAUSIBLE_COUNTRY_GEO_AREA_STERADIANS = 1;
+
 /** 経度を基準子午線まわり 360° 未満の帯に収め、±180° 縫い目での分断を減らす */
 export function unwrapLongitude(lon: number, centerMeridian: number): number {
   let L = lon;
@@ -130,6 +138,8 @@ export function countryIdAtPixel(
       for (const feat of sorted) {
         const id = featureIdString(feat);
         if (!id) continue;
+        const area = geoArea(feat as Feature<Geometry, GeoJsonProperties>);
+        if (area > MAX_PLAUSIBLE_COUNTRY_GEO_AREA_STERADIANS) continue;
         const d = pathDById.get(id);
         if (!d) continue;
         const p = path2DFromPathString(d);
@@ -150,6 +160,8 @@ export function countryIdAtPixel(
   if (!inv) return null;
   const [lon, lat] = inv;
   for (const feat of sorted) {
+    const area = geoArea(feat as Feature<Geometry, GeoJsonProperties>);
+    if (area > MAX_PLAUSIBLE_COUNTRY_GEO_AREA_STERADIANS) continue;
     if (geoContains(feat as Feature<Geometry, GeoJsonProperties>, [lon, lat])) {
       const id = featureIdString(feat);
       if (id) return id;
