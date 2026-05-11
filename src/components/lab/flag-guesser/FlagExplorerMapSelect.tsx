@@ -83,6 +83,9 @@ export function FlagExplorerMapSelect({
   const zoomBehaviorRef = useRef<ZoomBehavior<HTMLDivElement, unknown> | null>(null);
   const canvasRefineTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  /** パン／ズーム操作中は true（終了後 200ms で false → 高精細 Topo に戻す）。FlagGuesserPlayfield の canvasMapInteracting と同じ */
+  const [mapInteracting, setMapInteracting] = useState(false);
+
   const [size, setSize] = useState({ w: 800, h: Math.round(800 * MAP_ASPECT) });
   const [zoomTransform, setZoomTransform] = useState<ZoomPlain>(ZOOM_IDENTITY);
   /**
@@ -130,74 +133,105 @@ export function FlagExplorerMapSelect({
     return () => { cancelled = true; };
   }, []);
 
-  // Filtered features for current LOD (original, non-unwrapped)
-  const filteredFeatures = useMemo<CountryFeature[]>(() => {
+  useEffect(() => {
+    return () => {
+      if (canvasRefineTimerRef.current) {
+        clearTimeout(canvasRefineTimerRef.current);
+        canvasRefineTimerRef.current = null;
+      }
+    };
+  }, []);
+
+  const lodThresholdHighEffective = useMemo(
+    () => Math.max(DEFAULT_LOD_THRESHOLD_HIGH, DEFAULT_LOD_THRESHOLD_LOW + 1),
+    []
+  );
+
+  /** ティア決定・投影は常に displayedLod（操作中最適化でジオメトリだけ入れ替える） */
+  const tierFilteredFeatures = useMemo<CountryFeature[]>(() => {
     const raw = featuresCache[displayedLod];
     if (!raw?.length) return [];
     return filterWorldTopoFeatures(raw, byCountryCode);
   }, [featuresCache, displayedLod, byCountryCode]);
 
-  /**
-   * アンラップ済み features + projection を同時に計算。
-   * FlagGuesserPlayfield の buildRegionRoundModel と同様、
-   * unwrappedFeatures から pathDById を構築してヒットテストの正確性を保つ。
-   */
-  const { projection, unwrappedFeatures } = useMemo(() => {
-    if (!filteredFeatures.length || size.w < 32 || size.h < 32) {
-      return { projection: null, unwrappedFeatures: [] as CountryFeature[] };
+  const { projection, meridian, unwrappedTierFeatures } = useMemo(() => {
+    if (!tierFilteredFeatures.length || size.w < 32 || size.h < 32) {
+      return { projection: null, meridian: 0, unwrappedTierFeatures: [] as CountryFeature[] };
     }
     const fc: FeatureCollection<Geometry, GeoJsonProperties> = {
       type: "FeatureCollection",
-      features: filteredFeatures as any,
+      features: tierFilteredFeatures as any,
     };
-    const meridian = computeUnwrapCenterMeridian(fc);
-    const unwrapped: CountryFeature[] = filteredFeatures.map((f) =>
-      cloneCountryFeatureUnwrapped(f, meridian)
+    const m = computeUnwrapCenterMeridian(fc);
+    const tierUnwrapped: CountryFeature[] = tierFilteredFeatures.map((f) =>
+      cloneCountryFeatureUnwrapped(f, m)
     );
     const fcUnwrapped: FeatureCollection<Geometry, GeoJsonProperties> = {
       type: "FeatureCollection",
-      features: unwrapped as any,
+      features: tierUnwrapped as any,
     };
-    const proj = buildMercatorForCollection(fcUnwrapped, size.w, size.h, 8, meridian);
-    return { projection: proj, unwrappedFeatures: unwrapped };
-  }, [filteredFeatures, size.w, size.h]);
+    const proj = buildMercatorForCollection(fcUnwrapped, size.w, size.h, 8, m);
+    return { projection: proj, meridian: m, unwrappedTierFeatures: tierUnwrapped };
+  }, [tierFilteredFeatures, size.w, size.h]);
 
-  /**
-   * pathDById はアンラップ済み features から構築。
-   * FlagGuesserPlayfield と同様、SVG に描画されたパスと一致させることで
-   * geoContains の winding 問題（海域がモルディブ判定される等）を回避する。
-   */
-  const pathDById = useMemo(() => {
-    if (!projection || !unwrappedFeatures.length) return new Map<string, string>();
-    return buildPathStrings(projection, unwrappedFeatures);
-  }, [projection, unwrappedFeatures]);
-
-  /** ヒットテスト用ソート済み features（アンラップ済み、面積昇順） */
-  const hitFeatures = useMemo(() => sortFeaturesForHitTest(unwrappedFeatures), [unwrappedFeatures]);
-
-  // LOD upgrade based on zoom metric
   const lodMetric = useMemo(
     () => (projection ? projection.scale() * zoomTransform.k : 0),
     [projection, zoomTransform.k]
   );
 
+  const desiredLod = useMemo(
+    () => lodTierForMetric(lodMetric, DEFAULT_LOD_THRESHOLD_LOW, lodThresholdHighEffective),
+    [lodMetric, lodThresholdHighEffective]
+  );
+
+  /** ズーム操作中は 50m で描き、操作終了 200ms 後に displayedLod（10m 含む）へ。canvasPaintLod と同じ */
+  const mapPaintLod = useMemo<TopoLodId>(() => {
+    if (!mapInteracting) return displayedLod;
+    if (desiredLod === "10" && featuresCache["50"]?.length) return "50";
+    return displayedLod;
+  }, [mapInteracting, desiredLod, displayedLod, featuresCache]);
+
+  const paintFilteredFeatures = useMemo<CountryFeature[]>(() => {
+    const raw = featuresCache[mapPaintLod];
+    if (!raw?.length) return [];
+    return filterWorldTopoFeatures(raw, byCountryCode);
+  }, [featuresCache, mapPaintLod, byCountryCode]);
+
+  /** 描画・ヒットテスト用。投影は tier 固定、ポリゴンだけ paint LOD */
+  const unwrappedPaintFeatures = useMemo(() => {
+    if (!unwrappedTierFeatures.length) return [];
+    if (!paintFilteredFeatures.length) return unwrappedTierFeatures;
+    return paintFilteredFeatures.map((f) => cloneCountryFeatureUnwrapped(f, meridian));
+  }, [meridian, paintFilteredFeatures, unwrappedTierFeatures]);
+
+  const pathDById = useMemo(() => {
+    if (!projection || !unwrappedPaintFeatures.length) return new Map<string, string>();
+    return buildPathStrings(projection, unwrappedPaintFeatures);
+  }, [projection, unwrappedPaintFeatures]);
+
+  const hitFeatures = useMemo(
+    () => sortFeaturesForHitTest(unwrappedPaintFeatures),
+    [unwrappedPaintFeatures]
+  );
+
   useEffect(() => {
-    const desired = lodTierForMetric(lodMetric, DEFAULT_LOD_THRESHOLD_LOW, DEFAULT_LOD_THRESHOLD_HIGH);
-    if (featuresCache[desired]?.length) {
-      setDisplayedLod(desired);
+    if (featuresCache[desiredLod]?.length) {
+      setDisplayedLod(desiredLod);
       return;
     }
-    if (!featuresCacheRef.current[desired]) {
+    if (!featuresCacheRef.current[desiredLod]) {
       let cancelled = false;
-      fetch(TOPO_LOD_URL[desired])
+      fetch(TOPO_LOD_URL[desiredLod])
         .then((r) => r.json())
         .then((topo) => {
-          if (!cancelled) setFeaturesCache((p) => ({ ...p, [desired]: countryFeaturesFromTopology(topo) }));
+          if (!cancelled) setFeaturesCache((p) => ({ ...p, [desiredLod]: countryFeaturesFromTopology(topo) }));
         })
         .catch(() => {});
-      return () => { cancelled = true; };
+      return () => {
+        cancelled = true;
+      };
     }
-  }, [lodMetric, featuresCache]);
+  }, [desiredLod, featuresCache]);
 
   const borderStrokeWidth = useMemo(
     () => Math.max(0.35, Math.min(1.15, 1 / Math.sqrt(zoomTransform.k))),
@@ -253,6 +287,7 @@ export function FlagExplorerMapSelect({
           clearTimeout(canvasRefineTimerRef.current);
           canvasRefineTimerRef.current = null;
         }
+        setMapInteracting(true);
       })
       .on("zoom", (ev) => {
         const next: ZoomPlain = { x: ev.transform.x, y: ev.transform.y, k: ev.transform.k };
@@ -261,7 +296,9 @@ export function FlagExplorerMapSelect({
         setZoomTransform(next);
       })
       .on("end", () => {
+        if (canvasRefineTimerRef.current) clearTimeout(canvasRefineTimerRef.current);
         canvasRefineTimerRef.current = setTimeout(() => {
+          setMapInteracting(false);
           canvasRefineTimerRef.current = null;
         }, 200);
       });
@@ -274,6 +311,10 @@ export function FlagExplorerMapSelect({
     return () => {
       zoomBehaviorRef.current = null;
       sel.on(".zoom", null);
+      if (canvasRefineTimerRef.current) {
+        clearTimeout(canvasRefineTimerRef.current);
+        canvasRefineTimerRef.current = null;
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [size.w, size.h]);
@@ -331,6 +372,14 @@ export function FlagExplorerMapSelect({
     [size.w, size.h, applyZoomTransform]
   );
 
+  const endSliderMapInteraction = useCallback(() => {
+    if (canvasRefineTimerRef.current) clearTimeout(canvasRefineTimerRef.current);
+    canvasRefineTimerRef.current = setTimeout(() => {
+      setMapInteracting(false);
+      canvasRefineTimerRef.current = null;
+    }, 200);
+  }, []);
+
   /**
    * 初期ビュー／地域変更／プリセット変更／リサイズ時だけ fit またはプリセットを適用するキー。
    * displayedLod は含めない — TopoJSON 解像度切替（110m→50m は lodMetric≈300 付近）で
@@ -351,7 +400,7 @@ export function FlagExplorerMapSelect({
 
   /** プリセット適用 or 地域外接 fit（地域・サイズ・プリセット変更時のみ。LOD 差し替えでは走らせない） */
   useEffect(() => {
-    if (!projection || size.w < 32 || size.h < 32 || !unwrappedFeatures.length) return;
+    if (!projection || size.w < 32 || size.h < 32 || !unwrappedTierFeatures.length) return;
 
     if (lastMapViewResetKeyRef.current === mapViewResetKey) return;
 
@@ -370,10 +419,10 @@ export function FlagExplorerMapSelect({
       return;
     }
 
-    let fitFeatures = unwrappedFeatures;
+    let fitFeatures = unwrappedTierFeatures;
     if (regionFitCountryCodes && regionFitCountryCodes.length > 0) {
       const codeSet = new Set(regionFitCountryCodes);
-      const subset = unwrappedFeatures.filter((f) => {
+      const subset = unwrappedTierFeatures.filter((f) => {
         const id = featureIdString(f);
         return id ? codeSet.has(id) : false;
       });
@@ -409,7 +458,7 @@ export function FlagExplorerMapSelect({
     regionFitCountryCodes,
     size.h,
     size.w,
-    unwrappedFeatures,
+    unwrappedTierFeatures,
   ]);
 
   /**
@@ -507,7 +556,7 @@ export function FlagExplorerMapSelect({
           >
             <rect width={size.w} height={size.h} fill={MAP_SEA} />
             <g transform={gTransform}>
-              {unwrappedFeatures.map((f) => {
+              {unwrappedPaintFeatures.map((f) => {
                 const id = featureIdString(f);
                 if (!id) return null;
                 const d = pathDById.get(id);
@@ -589,6 +638,11 @@ export function FlagExplorerMapSelect({
               onPointerDown={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                if (canvasRefineTimerRef.current) {
+                  clearTimeout(canvasRefineTimerRef.current);
+                  canvasRefineTimerRef.current = null;
+                }
+                setMapInteracting(true);
                 const track = e.currentTarget;
                 const startY = e.clientY;
                 let moved = false;
@@ -601,6 +655,7 @@ export function FlagExplorerMapSelect({
                   window.removeEventListener("pointerup", onUp);
                   window.removeEventListener("pointercancel", onUp);
                   if (!moved) applySliderRatioFromClientY(track, ev.clientY, true);
+                  endSliderMapInteraction();
                 };
                 window.addEventListener("pointermove", onMove);
                 window.addEventListener("pointerup", onUp);
@@ -626,7 +681,7 @@ export function FlagExplorerMapSelect({
           </div>
         </div>
 
-        {unwrappedFeatures.length === 0 ? (
+        {unwrappedTierFeatures.length === 0 ? (
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-xs text-[var(--color-muted)]">
             地図データを読み込み中…
           </div>
