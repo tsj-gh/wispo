@@ -8,9 +8,8 @@
     "intermediate_region": "Southern Asia",
     "tags": {
       "colors": [
-        "black",
-        "red_brown",
-        "green"
+        "white",
+        "black"
       ],
       "design": "その他",
       "symbol": [
@@ -185,7 +184,8 @@
       "colors": [
         "blue",
         "white",
-        "red_brown"
+        "red_brown",
+        "other"
       ],
       "design": "Y字/V字",
       "symbol": [
@@ -223,7 +223,8 @@
       "colors": [
         "blue",
         "yellow_orange",
-        "red_brown"
+        "red_brown",
+        "other"
       ],
       "design": "縦分割",
       "symbol": [
@@ -941,7 +942,8 @@
         "blue",
         "red_brown",
         "white",
-        "green"
+        "green",
+        "other"
       ],
       "design": "その他",
       "symbol": [
@@ -1029,7 +1031,8 @@
       "colors": [
         "red_brown",
         "white",
-        "blue"
+        "blue",
+        "other"
       ],
       "design": "カントン",
       "symbol": [
@@ -1108,7 +1111,8 @@
       "colors": [
         "red_brown",
         "yellow_orange",
-        "green"
+        "green",
+        "other"
       ],
       "design": "横分割",
       "symbol": [
@@ -1379,7 +1383,8 @@
         "blue",
         "white",
         "red_brown",
-        "green"
+        "green",
+        "other"
       ],
       "design": "カントン",
       "symbol": [
@@ -1784,7 +1789,8 @@
         "white",
         "red_brown",
         "green",
-        "yellow_orange"
+        "yellow_orange",
+        "other"
       ],
       "design": "カントン",
       "symbol": [
@@ -2310,7 +2316,8 @@
       "colors": [
         "blue",
         "white",
-        "red_brown"
+        "red_brown",
+        "other"
       ],
       "design": "横分割",
       "symbol": [
@@ -2402,7 +2409,8 @@
       "colors": [
         "red_brown",
         "white",
-        "blue"
+        "blue",
+        "other"
       ],
       "design": "横分割",
       "symbol": [
@@ -2729,7 +2737,8 @@
         "black",
         "white",
         "red_brown",
-        "purple"
+        "purple",
+        "other"
       ],
       "design": "十字四分割",
       "symbol": [
@@ -2774,7 +2783,8 @@
       "colors": [
         "blue",
         "red_brown",
-        "white"
+        "white",
+        "other"
       ],
       "design": "十字四分割",
       "symbol": [
@@ -2819,7 +2829,8 @@
       "colors": [
         "yellow_orange",
         "blue",
-        "red_brown"
+        "red_brown",
+        "other"
       ],
       "design": "横分割",
       "symbol": [
@@ -2910,7 +2921,8 @@
     "tags": {
       "colors": [
         "blue",
-        "white"
+        "white",
+        "other"
       ],
       "design": "横分割",
       "symbol": [
@@ -2960,7 +2972,8 @@
         "green",
         "white",
         "red_brown",
-        "blue"
+        "blue",
+        "other"
       ],
       "design": "Y字/V字",
       "symbol": [
@@ -3194,7 +3207,8 @@
       "colors": [
         "blue",
         "white",
-        "red_brown"
+        "red_brown",
+        "other"
       ],
       "design": "カントン",
       "symbol": [
@@ -3287,7 +3301,8 @@
         "white",
         "red_brown",
         "green",
-        "yellow_orange"
+        "yellow_orange",
+        "other"
       ],
       "design": "カントン",
       "symbol": [
@@ -3465,7 +3480,8 @@
     "tags": {
       "colors": [
         "red_brown",
-        "white"
+        "white",
+        "other"
       ],
       "design": "横分割",
       "symbol": [
@@ -3991,7 +4007,8 @@
       "colors": [
         "blue",
         "red_brown",
-        "white"
+        "white",
+        "other"
       ],
       "design": "その他",
       "symbol": [
@@ -4033,7 +4050,8 @@
         "white",
         "green",
         "red_brown",
-        "yellow_orange"
+        "yellow_orange",
+        "other"
       ],
       "design": "縦分割",
       "symbol": [
@@ -4278,7 +4296,8 @@
         "blue",
         "red_brown",
         "white",
-        "green"
+        "green",
+        "other"
       ],
       "design": "横分割",
       "symbol": [
@@ -4349,7 +4368,8 @@
     "tags": {
       "colors": [
         "yellow_orange",
-        "white"
+        "white",
+        "other"
       ],
       "design": "縦分割",
       "symbol": [
@@ -6067,7 +6087,8 @@
       "colors": [
         "green",
         "white",
-        "red_brown"
+        "red_brown",
+        "other"
       ],
       "design": "縦分割",
       "symbol": [
@@ -6141,7 +6162,8 @@
       "colors": [
         "blue",
         "yellow_orange",
-        "red_brown"
+        "red_brown",
+        "other"
       ],
       "design": "縦分割",
       "symbol": [
@@ -6289,7 +6311,8 @@
         "blue",
         "white",
         "red_brown",
-        "green"
+        "green",
+        "other"
       ],
       "design": "カントン",
       "symbol": [
@@ -6654,7 +6677,8 @@
       "colors": [
         "blue",
         "white",
-        "purple"
+        "purple",
+        "other"
       ],
       "design": "横分割",
       "symbol": [
@@ -6845,7 +6869,8 @@
         "blue",
         "white",
         "green",
-        "red_brown"
+        "red_brown",
+        "other"
       ],
       "design": "その他",
       "symbol": [
@@ -7142,7 +7167,8 @@
       "colors": [
         "red_brown",
         "white",
-        "blue"
+        "blue",
+        "other"
       ],
       "design": "横分割",
       "symbol": [
@@ -7266,7 +7292,8 @@
         "white",
         "red_brown",
         "green",
-        "yellow_orange"
+        "yellow_orange",
+        "other"
       ],
       "design": "カントン",
       "symbol": [
@@ -7337,7 +7364,8 @@
         "red_brown",
         "yellow_orange",
         "blue",
-        "white"
+        "white",
+        "other"
       ],
       "design": "縦分割",
       "symbol": [
@@ -7679,7 +7707,8 @@
       "colors": [
         "blue",
         "white",
-        "red_brown"
+        "red_brown",
+        "other"
       ],
       "design": "その他",
       "symbol": [
@@ -7785,7 +7814,8 @@
     "tags": {
       "colors": [
         "white",
-        "blue"
+        "blue",
+        "other"
       ],
       "design": "横分割",
       "symbol": [
@@ -8287,7 +8317,8 @@
     "tags": {
       "colors": [
         "red_brown",
-        "yellow_orange"
+        "yellow_orange",
+        "other"
       ],
       "design": "横分割",
       "symbol": [
@@ -8843,7 +8874,8 @@
         "green",
         "red_brown",
         "white",
-        "yellow_orange"
+        "yellow_orange",
+        "other"
       ],
       "design": "その他",
       "symbol": [
@@ -8914,7 +8946,8 @@
         "black",
         "yellow_orange",
         "red_brown",
-        "white"
+        "white",
+        "other"
       ],
       "design": "横分割",
       "symbol": [
@@ -9480,7 +9513,8 @@
         "blue",
         "white",
         "red_brown",
-        "yellow_orange"
+        "yellow_orange",
+        "other"
       ],
       "design": "その他",
       "symbol": [
@@ -9537,7 +9571,8 @@
         "red_brown",
         "white",
         "yellow_orange",
-        "green"
+        "green",
+        "other"
       ],
       "design": "カントン",
       "symbol": [
@@ -9648,7 +9683,8 @@
         "blue",
         "red_brown",
         "white",
-        "yellow_orange"
+        "yellow_orange",
+        "other"
       ],
       "design": "Y字/V字",
       "symbol": [
@@ -9750,7 +9786,8 @@
         "red_brown",
         "white",
         "yellow_orange",
-        "green"
+        "green",
+        "other"
       ],
       "design": "カントン",
       "symbol": [
@@ -10025,7 +10062,8 @@
         "red_brown",
         "white",
         "yellow_orange",
-        "green"
+        "green",
+        "other"
       ],
       "design": "カントン",
       "symbol": [
@@ -10133,7 +10171,8 @@
         "red_brown",
         "white",
         "green",
-        "yellow_orange"
+        "yellow_orange",
+        "other"
       ],
       "design": "カントン",
       "symbol": [
@@ -10190,7 +10229,8 @@
         "yellow_orange",
         "blue",
         "green",
-        "red_brown"
+        "red_brown",
+        "other"
       ],
       "design": "その他",
       "symbol": [

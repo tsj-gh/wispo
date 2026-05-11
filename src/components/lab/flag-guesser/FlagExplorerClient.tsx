@@ -7,7 +7,16 @@ import jaLocale from "i18n-iso-countries/langs/ja.json";
 import { Filter, Map as MapIcon, Search, X } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { PairLinkAdSlot } from "@/components/PairLinkAdSlots";
 import { GamePageHeader } from "@/components/GamePageHeader";
 import { FlagExplorerMap } from "@/components/lab/flag-guesser/FlagExplorerMap";
@@ -53,6 +62,127 @@ function colorTagMultisetsEqual(a: readonly string[], b: readonly string[]): boo
   const sa = [...a].sort();
   const sb = [...b].sort();
   return sa.every((c, i) => c === sb[i]);
+}
+
+type ClampDiffFn = (a: number, b: number) => { lo: number; hi: number };
+
+/**
+ * 難易度 1〜8 の範囲。トラック上のクリック位置に近い側のハンドルをドラッグ対象にする（従来の二重 range の取りこぼしを避ける）。
+ */
+function ExplorerDifficultyRange({
+  diffMin,
+  diffMax,
+  setDiffMin,
+  setDiffMax,
+  clampDiff,
+}: {
+  diffMin: number;
+  diffMax: number;
+  setDiffMin: Dispatch<SetStateAction<number>>;
+  setDiffMax: Dispatch<SetStateAction<number>>;
+  clampDiff: ClampDiffFn;
+}) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const dragThumbRef = useRef<"min" | "max" | null>(null);
+
+  const { lo, hi } = clampDiff(diffMin, diffMax);
+
+  const clientXToValue = useCallback((clientX: number): number => {
+    const el = trackRef.current;
+    if (!el) return 4;
+    const rect = el.getBoundingClientRect();
+    if (rect.width <= 0) return 4;
+    const t = (clientX - rect.left) / rect.width;
+    return Math.min(8, Math.max(1, Math.round(1 + t * 7)));
+  }, []);
+
+  const applyThumb = useCallback((thumb: "min" | "max", v: number) => {
+    if (thumb === "min") {
+      setDiffMin(v);
+      setDiffMax((m) => (m < v ? v : m));
+    } else {
+      setDiffMax(v);
+      setDiffMin((m) => (m > v ? v : m));
+    }
+  }, [setDiffMin, setDiffMax]);
+
+  const pickThumbForValue = useCallback(
+    (v: number, curLo: number, curHi: number): "min" | "max" => {
+      const distLo = Math.abs(v - curLo);
+      const distHi = Math.abs(v - curHi);
+      if (distLo < distHi) return "min";
+      if (distHi < distLo) return "max";
+      return v * 2 <= curLo + curHi ? "min" : "max";
+    },
+    []
+  );
+
+  const onPointerDown = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (e.button !== 0) return;
+      const v = clientXToValue(e.clientX);
+      const thumb = pickThumbForValue(v, lo, hi);
+      dragThumbRef.current = thumb;
+      applyThumb(thumb, v);
+      e.currentTarget.setPointerCapture(e.pointerId);
+    },
+    [applyThumb, clientXToValue, lo, hi, pickThumbForValue]
+  );
+
+  const onPointerMove = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      const thumb = dragThumbRef.current;
+      if (!thumb) return;
+      const v = clientXToValue(e.clientX);
+      applyThumb(thumb, v);
+    },
+    [applyThumb, clientXToValue]
+  );
+
+  const onPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (dragThumbRef.current) {
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch {
+        /* already released */
+      }
+    }
+    dragThumbRef.current = null;
+  }, []);
+
+  return (
+    <div
+      ref={trackRef}
+      className="relative h-8 w-full cursor-pointer touch-none select-none px-2"
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+    >
+      <div className="pointer-events-none absolute left-2 right-2 top-1/2 h-2 -translate-y-1/2 rounded-full bg-[color-mix(in_srgb,var(--color-text)_12%,transparent)]" />
+      <div
+        className="pointer-events-none absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-[var(--color-primary)]"
+        style={{
+          left: `calc(0.5rem + (100% - 1rem) * ${(lo - 1) / 7})`,
+          width: `calc((100% - 1rem) * ${(hi - lo) / 7})`,
+        }}
+      />
+      <button
+        type="button"
+        tabIndex={-1}
+        aria-label={`難易度の下限 ${lo}`}
+        className="pointer-events-none absolute top-1/2 z-[1] h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[color-mix(in_srgb,var(--color-bg)_90%,transparent)] bg-[var(--color-primary)] shadow"
+        style={{ left: `calc(0.5rem + (100% - 1rem) * ${(lo - 1) / 7})` }}
+      />
+      <button
+        type="button"
+        tabIndex={-1}
+        aria-label={`難易度の上限 ${hi}`}
+        className="pointer-events-none absolute top-1/2 z-[1] h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[color-mix(in_srgb,var(--color-bg)_90%,transparent)] bg-[var(--color-primary)] shadow"
+        style={{ left: `calc(0.5rem + (100% - 1rem) * ${(hi - 1) / 7})` }}
+      />
+    </div>
+  );
 }
 
 function DifficultyDots({ value }: { value: number }) {
@@ -606,40 +736,13 @@ export function FlagExplorerClient() {
                 <div className="pt-1">
                   <div className="flex flex-col gap-1.5">
                     <span className="text-xs">難易度 {clampDiff(diffMin, diffMax).lo}〜{clampDiff(diffMin, diffMax).hi}</span>
-                    <div className="relative h-6">
-                      <div className="pointer-events-none absolute left-0 right-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-[color-mix(in_srgb,var(--color-text)_12%,transparent)]" />
-                      <div
-                        className="pointer-events-none absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-[var(--color-primary)]"
-                        style={{
-                          left: `${((clampDiff(diffMin, diffMax).lo - 1) / 7) * 100}%`,
-                          width: `${((clampDiff(diffMin, diffMax).hi - clampDiff(diffMin, diffMax).lo) / 7) * 100}%`,
-                        }}
-                      />
-                      <input
-                        type="range"
-                        min={1}
-                        max={8}
-                        value={diffMin}
-                        onChange={(e) => {
-                          const v = Number(e.target.value);
-                          setDiffMin(v);
-                          setDiffMax((m) => (m < v ? v : m));
-                        }}
-                        className="absolute inset-0 h-6 w-full cursor-pointer appearance-none bg-transparent [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--color-primary)] [&::-webkit-slider-thumb]:shadow [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[var(--color-primary)]"
-                      />
-                      <input
-                        type="range"
-                        min={1}
-                        max={8}
-                        value={diffMax}
-                        onChange={(e) => {
-                          const v = Number(e.target.value);
-                          setDiffMax(v);
-                          setDiffMin((m) => (m > v ? v : m));
-                        }}
-                        className="absolute inset-0 h-6 w-full cursor-pointer appearance-none bg-transparent [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--color-primary)] [&::-webkit-slider-thumb]:shadow [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[var(--color-primary)]"
-                      />
-                    </div>
+                    <ExplorerDifficultyRange
+                      diffMin={diffMin}
+                      diffMax={diffMax}
+                      setDiffMin={setDiffMin}
+                      setDiffMax={setDiffMax}
+                      clampDiff={clampDiff}
+                    />
                   </div>
                 </div>
 

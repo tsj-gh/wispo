@@ -146,6 +146,7 @@ export function collectColorTagOptions(rows: readonly ExplorerCountryRow[]): str
     "silver",
     "pink",
     "emblem_colors",
+    "other",
   ];
   const ordered = preferredOrder.filter((c) => s.has(c));
   const extra = Array.from(s)
@@ -159,7 +160,7 @@ export function collectColorTagOptions(rows: readonly ExplorerCountryRow[]): str
 export function displayColorTag(c: string): string {
   const m: Record<string, string> = {
     red_brown: "赤/茶",
-    blue: "青",
+    blue: "青/水",
     yellow_orange: "黄/橙",
     white: "白",
     black: "黒",
@@ -174,6 +175,7 @@ export function displayColorTag(c: string): string {
     silver: "銀",
     pink: "桃",
     emblem_colors: "紋章色",
+    other: "他",
     unknown: "不明",
   };
   return m[c] ?? c;
