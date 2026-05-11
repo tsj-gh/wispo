@@ -47,6 +47,14 @@ const MAP_PRESETS_URL = "/assets/flag-guesser/explorer_map_presets.json";
 const springPanel = { type: "spring" as const, stiffness: 370, damping: 32 };
 const springItem = { type: "spring" as const, stiffness: 400, damping: 32 };
 
+/** カラータグ配列が同一か（順不同・重複数も一致） */
+function colorTagMultisetsEqual(a: readonly string[], b: readonly string[]): boolean {
+  if (a.length !== b.length) return false;
+  const sa = [...a].sort();
+  const sb = [...b].sort();
+  return sa.every((c, i) => c === sb[i]);
+}
+
 function DifficultyDots({ value }: { value: number }) {
   const n = Math.min(8, Math.max(1, Math.round(value)));
   return (
@@ -85,13 +93,17 @@ export function FlagExplorerClient() {
   const [diffRows, setDiffRows] = useState<FlagDifficultyJsonRow[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
 
-  /** "filter" = 絞り込みモード, "map" = 地図から選ぶモード */
+  /** "filter" = 条件で絞り込みモード, "map" = 地図から選ぶモード */
   const [explorerMode, setExplorerMode] = useState<"filter" | "map">("filter");
 
   const [region, setRegion] = useState("");
   const [subRegion, setSubRegion] = useState("");
   const [intermediateRegion, setIntermediateRegion] = useState("");
   const [colorFilter, setColorFilter] = useState<string[]>([]);
+  /** 色タグ複数選択時: AND = すべて含む / OR = いずれかを含む（選択色のみ時は無効） */
+  const [colorCombineMode, setColorCombineMode] = useState<"and" | "or">("and");
+  /** true のとき選択した色集合と国旗の tags.colors が完全一致のみ表示 */
+  const [colorExactMatch, setColorExactMatch] = useState(false);
   const [diffMin, setDiffMin] = useState(1);
   const [diffMax, setDiffMax] = useState(8);
   const [query, setQuery] = useState("");
@@ -226,6 +238,8 @@ export function FlagExplorerClient() {
     setSubRegion("");
     setIntermediateRegion("");
     setColorFilter([]);
+    setColorCombineMode("and");
+    setColorExactMatch(false);
     setDiffMin(1);
     setDiffMax(8);
     setDesignFilter("");
@@ -241,8 +255,13 @@ export function FlagExplorerClient() {
     if (subRegion) list = list.filter((r) => r.subRegionLabel === subRegion);
     if (intermediateRegion) list = list.filter((r) => r.intermediateRegionLabel === intermediateRegion);
     if (colorFilter.length > 0) {
-      // 色タグは OR ではなく AND（選択した色をすべて含む）
-      list = list.filter((r) => colorFilter.every((c) => r.colors.includes(c)));
+      if (colorExactMatch) {
+        list = list.filter((r) => colorTagMultisetsEqual(colorFilter, r.colors));
+      } else if (colorCombineMode === "and") {
+        list = list.filter((r) => colorFilter.every((c) => r.colors.includes(c)));
+      } else {
+        list = list.filter((r) => colorFilter.some((c) => r.colors.includes(c)));
+      }
     }
     if (isDevTj && isDebugMode && designFilter) {
       list = list.filter((r) => r.designLabel === designFilter);
@@ -252,7 +271,23 @@ export function FlagExplorerClient() {
     }
     const { lo, hi } = clampDiff(diffMin, diffMax);
     return Array.from(list).filter((r) => r.difficulty >= lo && r.difficulty <= hi).sort((a, b) => a.nameJa.localeCompare(b.nameJa, "ja"));
-  }, [merged, query, region, subRegion, intermediateRegion, colorFilter, diffMin, diffMax, clampDiff, isDevTj, isDebugMode, designFilter, symbolFilter]);
+  }, [
+    merged,
+    query,
+    region,
+    subRegion,
+    intermediateRegion,
+    colorFilter,
+    colorCombineMode,
+    colorExactMatch,
+    diffMin,
+    diffMax,
+    clampDiff,
+    isDevTj,
+    isDebugMode,
+    designFilter,
+    symbolFilter,
+  ]);
 
   useEffect(() => {
     if (!selected) return;
@@ -505,7 +540,7 @@ export function FlagExplorerClient() {
       ) : null}
 
       <p className="mb-4 text-sm leading-relaxed text-[var(--color-muted)]">
-        地域・色タグ・難易度で絞り込み、国旗を一覧します。<Link href="/lab/flag-guesser" className="text-[var(--color-primary)] underline-offset-2 hover:underline">フラッグゲッサー</Link>へ。
+        地域・色タグ・難易度などで条件を指定して国旗を一覧できます。<Link href="/lab/flag-guesser" className="text-[var(--color-primary)] underline-offset-2 hover:underline">フラッグゲッサー</Link>へ。
       </p>
 
       <div className="relative z-0 mb-4 w-full" style={{ minHeight: GAME_AD_SLOT_MIN_HEIGHT_PX }}><PairLinkAdSlot slotIndex={1} /></div>
@@ -527,7 +562,7 @@ export function FlagExplorerClient() {
               }`}
             >
               <Filter className="h-4 w-4" />
-              絞り込み
+              条件で絞り込み
             </button>
             <button
               type="button"
@@ -543,11 +578,19 @@ export function FlagExplorerClient() {
             </button>
           </div>
 
-          {/* 絞り込みモード */}
+          {/* 条件で絞り込みモード */}
           {explorerMode === "filter" ? (
             <>
               <section className="mb-6 space-y-4 rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] p-4 backdrop-blur sm:p-5">
-                <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-[var(--color-text)]"><div className="flex items-center gap-2"><Filter className="h-4 w-4" />絞り込み</div><button type="button" onClick={resetFilters} className="rounded-md border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] px-2 py-1 text-[11px] font-medium">入力をリセット</button></div>
+                <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-[var(--color-text)]">
+                  <div className="flex items-center gap-2">
+                    <Filter className="h-4 w-4" />
+                    条件で絞り込み
+                  </div>
+                  <button type="button" onClick={resetFilters} className="rounded-md border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] px-2 py-1 text-[11px] font-medium">
+                    入力をリセット
+                  </button>
+                </div>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                   <label className="flex flex-col gap-1.5 text-xs"><span>地域</span><select value={region} onChange={(e) => { setRegion(e.target.value); setSubRegion(""); setIntermediateRegion(""); }} className="rounded-lg border px-3 py-2 text-sm"><option value="">（すべて）</option>{regionOptions.map((r) => <option key={r} value={r}>{r}</option>)}</select></label>
 
@@ -600,7 +643,69 @@ export function FlagExplorerClient() {
                   </div>
                 </div>
 
-                <label className="flex flex-col gap-1.5 text-xs"><span>色 (AND)</span><div className="flex flex-wrap gap-2">{colorOptions.map((c) => { const on = colorFilter.includes(c); return <button key={c} type="button" onClick={() => setColorFilter((prev) => prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c])} className={`rounded-full border px-2.5 py-1 text-xs ${on ? "border-[var(--color-primary)]" : ""}`}>{displayColorTag(c)}</button>; })}</div></label>
+                <div className="flex flex-col gap-1.5 text-xs">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-medium text-[var(--color-text)]">色</span>
+                    <div
+                      className="inline-flex rounded-lg border border-[color-mix(in_srgb,var(--color-text)_18%,transparent)] p-0.5"
+                      role="group"
+                      aria-label="色タグの複数選択の結合"
+                    >
+                      <button
+                        type="button"
+                        disabled={colorExactMatch}
+                        onClick={() => setColorCombineMode("and")}
+                        className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                          colorCombineMode === "and"
+                            ? "bg-[var(--color-primary)] text-[var(--color-on-primary)]"
+                            : "text-[var(--color-muted)] hover:bg-[color-mix(in_srgb,var(--color-text)_8%,transparent)]"
+                        }`}
+                      >
+                        AND
+                      </button>
+                      <button
+                        type="button"
+                        disabled={colorExactMatch}
+                        onClick={() => setColorCombineMode("or")}
+                        className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                          colorCombineMode === "or"
+                            ? "bg-[var(--color-primary)] text-[var(--color-on-primary)]"
+                            : "text-[var(--color-muted)] hover:bg-[color-mix(in_srgb,var(--color-text)_8%,transparent)]"
+                        }`}
+                      >
+                        OR
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {colorOptions.map((c) => {
+                      const on = colorFilter.includes(c);
+                      return (
+                        <button
+                          key={c}
+                          type="button"
+                          onClick={() =>
+                            setColorFilter((prev) =>
+                              prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]
+                            )
+                          }
+                          className={`rounded-full border px-2.5 py-1 text-xs ${on ? "border-[var(--color-primary)]" : ""}`}
+                        >
+                          {displayColorTag(c)}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <label className="flex cursor-pointer items-center gap-2 pt-0.5 text-[11px] text-[var(--color-text)]">
+                    <input
+                      type="checkbox"
+                      checked={colorExactMatch}
+                      onChange={(e) => setColorExactMatch(e.target.checked)}
+                      className="rounded border-[color-mix(in_srgb,var(--color-text)_25%,transparent)]"
+                    />
+                    <span>選択色のみ</span>
+                  </label>
+                </div>
                 {isDevTj && isDebugMode ? (
                   <label className="flex flex-col gap-1.5 text-xs">
                     <span>{locale === "ja" ? "デザイン" : "Design"}</span>
