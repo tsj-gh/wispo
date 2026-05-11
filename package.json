@@ -13,7 +13,8 @@
     "bench:pairlink-9k": "node scripts/run-pairlink-benchmark-9k.mjs",
     "bench:pairlink-9k-revised": "node scripts/run-pairlink-benchmark-9k-revised.mjs",
     "sim:pairlink-2026-0324": "node scripts/run-pairlink-simulation-2026-0324.mjs",
-    "bench:pairlink-grade-adoption-b": "node scripts/run-pairlink-grade-adoption-benchmark.mjs"
+    "bench:pairlink-grade-adoption-b": "node scripts/run-pairlink-grade-adoption-benchmark.mjs",
+    "validate:explorer-presets": "npx tsx scripts/validate-explorer-map-presets.mts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

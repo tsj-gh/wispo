@@ -25,130 +25,131 @@
     "lon": 45.418443497925836,
     "lat": -22.711446851040602,
     "k": 4.245692835799187
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Africa|Sub-Saharan Africa|Middle Africa": {
     "lon": 25.61920238848437,
     "lat": 2.5272795892611617,
     "k": 7.868016592209989
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Africa|Sub-Saharan Africa|Southern Africa": {
     "lon": 21.570322042696596,
     "lat": -25.436805436087564,
     "k": 10.9738663087248
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Africa|Sub-Saharan Africa|Western Africa": {
     "lon": -3.468100770612542,
     "lat": 15.167580877701948,
     "k": 12.570760266681296
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Americas|*|*": {
     "lon": -80.70218629999572,
     "lat": 15.837996907133274,
     "k": 1.9158704364453998
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Americas|Latin America and the Caribbean|*": {
     "lon": -70.56804917165242,
     "lat": -16.84055460248629,
     "k": 3.2761467914393103
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Americas|Latin America and the Caribbean|Caribbean": {
     "lon": -71.48065153978993,
     "lat": 19.283914903437616,
     "k": 19.671021876073404
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Americas|Latin America and the Caribbean|Central America": {
     "lon": -96.64820840635657,
     "lat": 19.922425197081484,
     "k": 11.392401564776582
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Americas|Latin America and the Caribbean|South America": {
     "lon": -60.90727156701616,
     "lat": -29.03114833014075,
     "k": 3.972369981748149
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Americas|Northern America|*": {
     "lon": -102.85231551205769,
     "lat": 52.978368234001316,
     "k": 4.413734960167849
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Asia|*|*": {
     "lon": 88.18026148054301,
     "lat": 26.877218954853454,
     "k": 4.328898578102864
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Asia|Central Asia|*": {
     "lon": 67.34480074357081,
     "lat": 46.778489825888194,
     "k": 9.659844731891967
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Asia|Eastern Asia|*": {
     "lon": 114.71392959325179,
     "lat": 37.22296333213707,
     "k": 7.2904102450971395
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Asia|South-eastern Asia|*": {
     "lon": 115.45958217479964,
     "lat": 9.306681248685369,
     "k": 8.122928806955445
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Asia|Southern Asia|*": {
     "lon": 70.68884286487676,
     "lat": 19.806242671323357,
     "k": 7.260153242537301
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Asia|Western Asia|*": {
     "lon": 44.76965893607314,
     "lat": 29.17641201701195,
     "k": 9.343739156904956
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Europe|*|*": {
     "lon": 18.189644780088233,
     "lat": 56.99781993973251,
     "k": 5.091179741103777
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Europe|Eastern Europe|*": {
     "lon": 32.67661635098563,
     "lat": 49.48632948880496,
     "k": 14.162460233272746
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Europe|Northern Europe|*": {
     "lon": 8.698942975013447,
     "lat": 62.20661993364601,
     "k": 6.964404506368998
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Europe|Southern Europe|*": {
     "lon": 9.38610124999094,
     "lat": 42.02286232073742,
     "k": 16.610228328688997
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Europe|Western Europe|*": {
     "lon": 9.6425503663365,
     "lat": 48.71326008583061,
     "k": 17.58166748123019
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Oceania|*|*": {
     "lon": 162.96385275998705,
     "lat": -21.48959489707551,
     "k": 3.950403445781504
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Oceania|Australia and New Zealand|*": {
     "lon": 128.71246883432718,
     "lat": -32.80296997329307,
     "k": 5.2268005010258225
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Oceania|Melanesia|*": {
     "lon": 143.8981819513445,
     "lat": -13.727196610012163,
     "k": 7.735466920134343
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Oceania|Micronesia|*": {
     "lon": 168.69557134936966,
     "lat": 3.4334800273346513,
     "k": 8.224910613248593
-  },// Merge into "presets" in public/assets/flag-guesser/explorer_map_presets.json
+  },
   "Oceania|Polynesia|*": {
     "lon": 173.67840964676253,
     "lat": -15.279742303041534,
     "k": 9.025007274624368
+  }
   }
 }
