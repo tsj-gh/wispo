@@ -77,6 +77,36 @@ export function spawnBubbleLike(opts: {
 }
 
 /**
+ * パネル座標（浮遊レイヤーと同じ左上原点 px）の位置でバブルを生成し、中央方向へ初速を与える。
+ */
+export function spawnBubbleLikeAtPanelXY(opts: {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  radius: number;
+  speedScale?: number;
+  restitution?: number;
+}): FloatingBubbleLike {
+  const { x, y, width, height, radius } = opts;
+  const speedScale = opts.speedScale ?? 1;
+  const restitution = opts.restitution ?? 0.88;
+  const baseAngle = Math.atan2(height * 0.5 - y, width * 0.5 - x);
+  const angle = baseAngle + rand(-0.75, 0.75);
+  const speed = rand(22, 38) * speedScale;
+  return {
+    x,
+    y,
+    vx: Math.cos(angle) * speed,
+    vy: Math.sin(angle) * speed,
+    cruiseSpeed: speed,
+    radius,
+    restitution,
+    friction: 0.01,
+  };
+}
+
+/**
  * 1 フレーム分の移動と壁反発（`dt` 秒）。
  */
 export function stepBubbleLikeInBox(b: FloatingBubbleLike, width: number, height: number, dt: number): void {

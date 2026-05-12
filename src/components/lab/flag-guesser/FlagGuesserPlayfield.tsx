@@ -33,7 +33,7 @@ import {
   topoNumericIdSet,
   resolveIsoRows,
 } from "@/lib/flag-guesser/selectRound";
-import { spawnBubbleLike, stepBubbleLikeInBox, type FloatingBubbleLike } from "@/lib/flag-guesser/floatingFlagPhysics";
+import { spawnBubbleLike, spawnBubbleLikeAtPanelXY, stepBubbleLikeInBox, type FloatingBubbleLike } from "@/lib/flag-guesser/floatingFlagPhysics";
 import { useI18n } from "@/lib/i18n-context";
 import {
   getCountryDisplayName,
@@ -229,6 +229,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   const [isDebugPanelExpanded, setIsDebugPanelExpanded] = useState(true);
   const [mapRenderBackend, setMapRenderBackend] = useState<MapRenderBackend>("canvas");
   const [zoomTransform, setZoomTransform] = useState<ZoomPlain>(ZOOM_IDENTITY);
+  const zoomTransformRef = useRef<ZoomPlain>(ZOOM_IDENTITY);
+  zoomTransformRef.current = zoomTransform;
   /** マップ操作のズーム／パン中は true（終了後 200ms で false → Canvas を高精細に戻す） */
   const [canvasMapInteracting, setCanvasMapInteracting] = useState(false);
   const canvasRefineTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -257,6 +259,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   const [dragPointerMap, setDragPointerMap] = useState<{ x: number; y: number } | null>(null);
   /** カード中心（地図座標・慣性追従） */
   const [dragCardDisplay, setDragCardDisplay] = useState<{ x: number; y: number } | null>(null);
+  /** `endDrag` で最新の表示位置を参照するため（state は 1 フレーム遅れうる） */
+  const dragCardDisplayRef = useRef<{ x: number; y: number } | null>(null);
   const dragPointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
   const [hoverCountryId, setHoverCountryId] = useState<string | null>(null);
@@ -757,6 +761,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       dragPointerRef.current = { x, y };
       setDragPointerMap({ x, y });
       setDragCardDisplay({ x: cx, y: cy });
+      dragCardDisplayRef.current = { x: cx, y: cy };
       setMapHoverCrossMap(null);
       setDrag({ cardId });
       if (fl) {
@@ -793,10 +798,43 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   const endDrag = useCallback(
     (cardId: string) => {
       const countryId = dragTargetCountryId;
+      const lastMap = dragCardDisplayRef.current;
+      const zt = zoomTransformRef.current;
+      const k = Math.max(zt.k, 0.06);
+      const radius = CARD_W * 0.45;
+
+      const floatFromLastCardVisual = (): FloatingBubbleLike => {
+        if (!lastMap) {
+          return spawnBubbleLike({
+            width: size.w,
+            height: size.h,
+            radius,
+            speedScale: 0.95,
+            restitution: 0.88,
+          });
+        }
+        let px = lastMap.x * k + zt.x;
+        let py = lastMap.y * k + zt.y;
+        px = Math.min(size.w - radius, Math.max(radius, px));
+        py = Math.min(size.h - radius, Math.max(radius, py));
+        return spawnBubbleLikeAtPanelXY({
+          x: px,
+          y: py,
+          width: size.w,
+          height: size.h,
+          radius,
+          speedScale: 0.95,
+          restitution: 0.88,
+        });
+      };
+
+      const floater = floatFromLastCardVisual();
+
       setDrag(null);
       setDragTargetCountryId(null);
       setDragPointerMap(null);
       setDragCardDisplay(null);
+      dragCardDisplayRef.current = null;
 
       if (countryId) {
         const prevPlaced = placedRef.current;
@@ -804,13 +842,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         if (occupied) {
           setFloatByCard((prev) => ({
             ...prev,
-            [cardId]: spawnBubbleLike({
-              width: size.w,
-              height: size.h,
-              radius: CARD_W * 0.45,
-              speedScale: 0.95,
-              restitution: 0.88,
-            }),
+            [cardId]: floater,
           }));
           return;
         }
@@ -820,45 +852,21 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
 
       setFloatByCard((prev) => ({
         ...prev,
-        [cardId]: spawnBubbleLike({
-          width: size.w,
-          height: size.h,
-          radius: CARD_W * 0.45,
-          speedScale: 0.95,
-          restitution: 0.88,
-        }),
+        [cardId]: floater,
       }));
     },
     [dragTargetCountryId, size.w, size.h]
-  );
-
-  const peelStuck = useCallback(
-    (cardId: string) => {
-      setPlacedByCard((prev) => {
-        const next = { ...prev };
-        delete next[cardId];
-        return next;
-      });
-      setFloatByCard((prev) => ({
-        ...prev,
-        [cardId]: spawnBubbleLike({
-          width: size.w,
-          height: size.h,
-          radius: CARD_W * 0.45,
-          speedScale: 0.95,
-          restitution: 0.88,
-        }),
-      }));
-    },
-    [size.w, size.h]
   );
 
   const handleCardPointerDown = (cardId: string, e: ReactPointerEvent) => {
     if (answered) return;
     e.preventDefault();
     if (placedByCard[cardId]) {
-      peelStuck(cardId);
-      return;
+      setPlacedByCard((prev) => {
+        const next = { ...prev };
+        delete next[cardId];
+        return next;
+      });
     }
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
     beginDrag(cardId, e.clientX, e.clientY);
@@ -888,7 +896,10 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       const k = Math.max(zoomTransform.k, 0.08);
       const target = dragCardTargetFromPointer(pt.x, pt.y, k, dragCardScreenOffsetPx);
       setDragCardDisplay((prev) => {
-        if (!prev) return target;
+        if (!prev) {
+          dragCardDisplayRef.current = target;
+          return target;
+        }
         const s = dragCardSpring;
         const nx = prev.x + (target.x - prev.x) * s;
         const ny = prev.y + (target.y - prev.y) * s;
@@ -898,9 +909,12 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
           Math.abs(target.x - prev.x) < 0.12 &&
           Math.abs(target.y - prev.y) < 0.12
         ) {
+          dragCardDisplayRef.current = prev;
           return prev;
         }
-        return { x: nx, y: ny };
+        const next = { x: nx, y: ny };
+        dragCardDisplayRef.current = next;
+        return next;
       });
       frameId = requestAnimationFrame(tick);
     };
@@ -939,6 +953,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     setDrag(null);
     setDragPointerMap(null);
     setDragCardDisplay(null);
+    dragCardDisplayRef.current = null;
   }, [isoRows, featuresForGame, topoIds, excludeAlphas]);
 
   /** ズーム k が大きいほど線を細く（ユーザー座標上の太さ = base/k →画面上は nonScaling でほぼ一定） */
