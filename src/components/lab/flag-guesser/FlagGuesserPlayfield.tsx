@@ -750,8 +750,9 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       let cy = y;
       const fl = floatRef.current[cardId];
       if (fl) {
-        cx = fl.x;
-        cy = fl.y;
+        const k = Math.max(zoomTransform.k, 0.06);
+        cx = (fl.x - zoomTransform.x) / k;
+        cy = (fl.y - zoomTransform.y) / k;
       }
       dragPointerRef.current = { x, y };
       setDragPointerMap({ x, y });
@@ -772,7 +773,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         setDragTargetCountryId(null);
       }
     },
-    [projection, pointerToMapCoords, pointerRegionModel, hitFeaturesForPointer]
+    [projection, pointerToMapCoords, pointerRegionModel, hitFeaturesForPointer, zoomTransform]
   );
 
   const moveDrag = useCallback(
@@ -1574,37 +1575,6 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                     );
                   })()}
 
-                {!answered &&
-                  cards.map((c) => {
-                    if (placedByCard[c.id] || drag?.cardId === c.id) return null;
-                    const fl = floatByCard[c.id];
-                    if (!fl) return null;
-                    return (
-                      <button
-                        key={c.id}
-                        type="button"
-                        className="pointer-events-auto absolute z-20 flex cursor-default items-center justify-center overflow-hidden rounded-md border border-[color-mix(in_srgb,var(--color-text)_15%,transparent)] bg-[color-mix(in_srgb,var(--color-surface)_88%,transparent)] p-1 shadow-md"
-                        style={{
-                          left: fl.x,
-                          top: fl.y,
-                          width: CARD_W,
-                          height: CARD_H,
-                          transform: `translate(-50%, -50%) scale(${flagVisualScale})`,
-                        }}
-                        onPointerDown={(e) => handleCardPointerDown(c.id, e)}
-                      >
-                        <Image
-                          src={flagUrlForAlpha2(c.alpha2)}
-                          alt=""
-                          width={CARD_W}
-                          height={CARD_H}
-                          className="pointer-events-none max-h-full max-w-full object-contain"
-                          draggable={false}
-                          unoptimized
-                        />
-                      </button>
-                    );
-                  })}
               </div>
             </div>
 
@@ -1615,6 +1585,41 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
               </div>
             )}
           </div>
+
+          {!answered ? (
+            <div className="pointer-events-none absolute inset-0 z-[22] overflow-visible">
+              {cards.map((c) => {
+                if (placedByCard[c.id] || drag?.cardId === c.id) return null;
+                const fl = floatByCard[c.id];
+                if (!fl) return null;
+                return (
+                  <button
+                    key={c.id}
+                    type="button"
+                    className="pointer-events-auto absolute z-20 flex cursor-default items-center justify-center overflow-hidden rounded-md border border-[color-mix(in_srgb,var(--color-text)_15%,transparent)] bg-[color-mix(in_srgb,var(--color-surface)_88%,transparent)] p-1 shadow-md"
+                    style={{
+                      left: fl.x,
+                      top: fl.y,
+                      width: CARD_W,
+                      height: CARD_H,
+                      transform: "translate(-50%, -50%)",
+                    }}
+                    onPointerDown={(e) => handleCardPointerDown(c.id, e)}
+                  >
+                    <Image
+                      src={flagUrlForAlpha2(c.alpha2)}
+                      alt=""
+                      width={CARD_W}
+                      height={CARD_H}
+                      className="pointer-events-none max-h-full max-w-full object-contain"
+                      draggable={false}
+                      unoptimized
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
       </div>
 
