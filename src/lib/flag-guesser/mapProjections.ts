@@ -170,6 +170,62 @@ export function countryIdAtPixel(
   return null;
 }
 
+/** 海上クリック時、重心への近傍で国を拾うときの既定上限（画面上の px） */
+export const DEFAULT_SEA_PROXIMITY_MAX_SNAP_SCREEN_PX = 52;
+/** 最近傍 A と次点 B の距離差がこれ未満ならスナップしない（画面上の px） */
+export const DEFAULT_SEA_PROXIMITY_MIN_GAP_SCREEN_PX = 18;
+
+export type CountryProximitySnapOptions = {
+  /** d3-zoom の k（map 座標 1 単位 ≈ k screen px） */
+  zoomK: number;
+  maxSnapScreenPx?: number;
+  minGapScreenPx?: number;
+};
+
+/**
+ * ポリゴン内ヒットを優先し、海上では重心距離で最近傍国を補正する。
+ * 国 A が最近傍かつ、次点 B までの距離差が十分大きいときだけ A を返す。
+ */
+export function countryIdAtPixelWithSeaProximity(
+  projection: GeoProjection,
+  features: readonly CountryFeature[],
+  x: number,
+  y: number,
+  pathDById: ReadonlyMap<string, string> | undefined,
+  opts: CountryProximitySnapOptions
+): string | null {
+  const polygonHit = countryIdAtPixel(projection, features, x, y, pathDById);
+  if (polygonHit) return polygonHit;
+
+  const k = Math.max(opts.zoomK, 0.06);
+  const maxDist = (opts.maxSnapScreenPx ?? DEFAULT_SEA_PROXIMITY_MAX_SNAP_SCREEN_PX) / k;
+  const minGap = (opts.minGapScreenPx ?? DEFAULT_SEA_PROXIMITY_MIN_GAP_SCREEN_PX) / k;
+
+  const distances: { id: string; dist: number }[] = [];
+  for (const feat of features) {
+    const id = featureIdString(feat);
+    if (!id) continue;
+    const area = geoArea(feat as Feature<Geometry, GeoJsonProperties>);
+    if (area > MAX_PLAUSIBLE_COUNTRY_GEO_AREA_STERADIANS) continue;
+    const centroid = projectCentroid(projection, feat);
+    if (!centroid) continue;
+    const dist = Math.hypot(centroid[0] - x, centroid[1] - y);
+    distances.push({ id, dist });
+  }
+
+  if (distances.length === 0) return null;
+  distances.sort((a, b) => a.dist - b.dist);
+
+  const nearest = distances[0]!;
+  if (nearest.dist > maxDist) return null;
+
+  if (distances.length === 1) return nearest.id;
+
+  const second = distances[1]!;
+  if (second.dist - nearest.dist >= minGap) return nearest.id;
+  return null;
+}
+
 /**
  * フィルタ済み Feature の bounding を中央フィットする Mercator を構築。
  * `centralMeridian` を渡すと `rotate([-λ,0,0])` で縫い目をデータから逃がしてから fit する。

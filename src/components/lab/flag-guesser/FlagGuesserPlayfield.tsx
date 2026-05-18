@@ -21,6 +21,7 @@ import {
   buildRegionRoundModel,
   buildRegionRoundModelSameProjection,
   countryIdAtPixel,
+  countryIdAtPixelWithSeaProximity,
   projectCentroid,
   sortFeaturesForHitTest,
 } from "@/lib/flag-guesser/mapProjections";
@@ -399,6 +400,22 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
 
   const projection = regionModel?.projection;
 
+  /** ドラッグ着弾候補（領土外の海上は重心近傍＋最近傍との距離差で補正） */
+  const resolveDragTargetAtMapPoint = useCallback(
+    (x: number, y: number): string | null => {
+      if (!projection || !pointerRegionModel) return null;
+      return countryIdAtPixelWithSeaProximity(
+        projection,
+        hitFeaturesForPointer,
+        x,
+        y,
+        pointerRegionModel.pathDById,
+        { zoomK: zoomTransformRef.current.k }
+      );
+    },
+    [projection, pointerRegionModel, hitFeaturesForPointer]
+  );
+
   /** ロード完了前は盤面 DOM が無く zoomHostRef が null のため、これが true になったタイミングで d3-zoom を付け直す */
   const mapStageMounted = regionModel != null;
 
@@ -771,14 +788,9 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
           return next;
         });
       }
-      if (projection && pointerRegionModel) {
-        const id = countryIdAtPixel(projection, hitFeaturesForPointer, x, y, pointerRegionModel.pathDById);
-        setDragTargetCountryId(id);
-      } else {
-        setDragTargetCountryId(null);
-      }
+      setDragTargetCountryId(resolveDragTargetAtMapPoint(x, y));
     },
-    [projection, pointerToMapCoords, pointerRegionModel, hitFeaturesForPointer, zoomTransform]
+    [projection, pointerToMapCoords, zoomTransform, resolveDragTargetAtMapPoint]
   );
 
   const moveDrag = useCallback(
@@ -789,10 +801,9 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       const [x, y] = pt;
       dragPointerRef.current = { x, y };
       setDragPointerMap({ x, y });
-      const id = countryIdAtPixel(projection, hitFeaturesForPointer, x, y, pointerRegionModel.pathDById);
-      setDragTargetCountryId(id);
+      setDragTargetCountryId(resolveDragTargetAtMapPoint(x, y));
     },
-    [projection, drag, hitFeaturesForPointer, pointerToMapCoords, pointerRegionModel]
+    [projection, drag, pointerToMapCoords, pointerRegionModel, resolveDragTargetAtMapPoint]
   );
 
   const endDrag = useCallback(
