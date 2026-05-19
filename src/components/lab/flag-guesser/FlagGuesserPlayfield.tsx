@@ -18,6 +18,8 @@ import { select } from "d3-selection";
 import { interpolate } from "flubber";
 import "d3-transition";
 import {
+  buildPoolRoundModel,
+  buildPoolRoundModelSameProjection,
   buildRegionRoundModel,
   buildRegionRoundModelSameProjection,
   countryIdAtPixel,
@@ -29,11 +31,19 @@ import { geoPath, type GeoProjection } from "d3-geo";
 import type { CountryFeature, Iso3166Row, RegionRoundModel } from "@/lib/flag-guesser/types";
 import {
   countryFeaturesFromTopology,
-  createRoundPlan,
+  createCurriculumRoundPlan,
   flagUrlForAlpha2,
   topoNumericIdSet,
   resolveIsoRows,
+  type RoundPlan,
 } from "@/lib/flag-guesser/selectRound";
+import {
+  buildCurriculumPool,
+  getCurriculumStage,
+  indexDifficultyByAlpha3,
+  type FlagGuesserCurriculumLevel,
+} from "@/lib/flag-guesser/flagGuesserCurriculum";
+import type { FlagDifficultyJsonRow } from "@/lib/flag-guesser/flagExplorerDataset";
 import { spawnBubbleLike, spawnBubbleLikeAtPanelXY, stepBubbleLikeInBox, type FloatingBubbleLike } from "@/lib/flag-guesser/floatingFlagPhysics";
 import { useI18n } from "@/lib/i18n-context";
 import {
@@ -63,6 +73,7 @@ import {
 import { filterWorldTopoFeatures } from "@/lib/flag-guesser/topoFeatureFilter";
 
 const ISO_URL = "/assets/flag-guesser/iso-3166.json";
+const DIFF_URL = "/assets/flag-guesser/flag_difficulty.json";
 
 /** 海（SVG 背景）— 視認性のため以前どおり淡い背景のみ */
 const MAP_SEA_FILL = "color-mix(in srgb, var(--color-bg) 96%, transparent)";
@@ -210,6 +221,9 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   const [size, setSize] = useState({ w: 520, h: 390 });
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isoRows, setIsoRows] = useState<Iso3166Row[]>([]);
+  const [diffRows, setDiffRows] = useState<FlagDifficultyJsonRow[] | null>(null);
+  const [curriculumLevel, setCurriculumLevel] = useState<FlagGuesserCurriculumLevel>(1);
+  const curriculumLevelRef = useRef<FlagGuesserCurriculumLevel>(1);
   /** 必要になった解像度だけ逐次 fetch して保持 */
   const [featuresCache, setFeaturesCache] = useState<Partial<Record<TopoLodId, CountryFeature[]>>>({});
   const [displayedLod, setDisplayedLod] = useState<TopoLodId>("110");
@@ -244,7 +258,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   const canvasDrawSnapshotRef = useRef<CanvasDrawSnapshot | null>(null);
 
   const [roundSeq, setRoundSeq] = useState(0);
-  const [roundPlan, setRoundPlan] = useState<{ targetRow: Iso3166Row; cardAlpha2s: string[] } | null>(null);
+  const [roundPlan, setRoundPlan] = useState<RoundPlan | null>(null);
   const [excludeAlphas, setExcludeAlphas] = useState<Set<string>>(new Set());
 
   const [placedByCard, setPlacedByCard] = useState<Record<string, string>>({});
@@ -293,28 +307,61 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
 
   const topoIds = useMemo(() => topoNumericIdSet(featuresForGame["110"] ?? []), [featuresForGame]);
 
+  const difficultyByAlpha3 = useMemo(
+    () => (diffRows ? indexDifficultyByAlpha3(diffRows) : new Map()),
+    [diffRows]
+  );
+
+  const curriculumPool = useMemo(() => {
+    if (!isoRows?.length || !diffRows) return [];
+    return buildCurriculumPool(isoRows, difficultyByAlpha3, topoIds, curriculumLevel);
+  }, [isoRows, diffRows, difficultyByAlpha3, topoIds, curriculumLevel]);
+
+  const curriculumStage = useMemo(() => getCurriculumStage(curriculumLevel), [curriculumLevel]);
+
   const regionModel = useMemo<RegionRoundModel | null>(() => {
     if (!roundPlan || size.w < 32 || size.h < 32) return null;
     const world = featuresForGame[displayedLod];
     if (!world?.length) return null;
+    const mapCodes = roundPlan.mapCountryCodes;
     try {
       const roundChanged = frozenRoundSeqRef.current !== roundSeq;
       if (roundChanged) {
         frozenRoundSeqRef.current = roundSeq;
-        const rm = buildRegionRoundModel({
-          target: roundPlan.targetRow,
-          region: roundPlan.targetRow.region!,
-          allFeatures: world,
-          isoByCode: byCountryCode,
-          width: size.w,
-          height: size.h,
-        });
+        const rm =
+          mapCodes?.size && mapCodes.size > 0
+            ? buildPoolRoundModel({
+                target: roundPlan.targetRow,
+                countryCodes: mapCodes,
+                allFeatures: world,
+                width: size.w,
+                height: size.h,
+              })
+            : buildRegionRoundModel({
+                target: roundPlan.targetRow,
+                region: roundPlan.targetRow.region!,
+                allFeatures: world,
+                isoByCode: byCountryCode,
+                width: size.w,
+                height: size.h,
+              });
         frozenProjectionRef.current = rm.projection;
         frozenUnwrapMeridianRef.current = rm.unwrapCenterMeridian;
         return rm;
       }
       const proj = frozenProjectionRef.current;
       if (!proj) return null;
+      if (mapCodes?.size && mapCodes.size > 0) {
+        return buildPoolRoundModelSameProjection({
+          target: roundPlan.targetRow,
+          countryCodes: mapCodes,
+          projection: proj,
+          allWorldFeatures: world,
+          width: size.w,
+          height: size.h,
+          unwrapCenterMeridian: frozenUnwrapMeridianRef.current,
+        });
+      }
       return buildRegionRoundModelSameProjection({
         target: roundPlan.targetRow,
         region: roundPlan.targetRow.region!,
@@ -358,7 +405,19 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     if (canvasPaintLod === displayedLod) return regionModel;
     const world = featuresForGame[canvasPaintLod];
     if (!world?.length) return regionModel;
+    const mapCodes = roundPlan.mapCountryCodes;
     try {
+      if (mapCodes?.size && mapCodes.size > 0) {
+        return buildPoolRoundModelSameProjection({
+          target: roundPlan.targetRow,
+          countryCodes: mapCodes,
+          projection: regionModel.projection,
+          allWorldFeatures: world,
+          width: size.w,
+          height: size.h,
+          unwrapCenterMeridian: regionModel.unwrapCenterMeridian,
+        });
+      }
       return buildRegionRoundModelSameProjection({
         target: roundPlan.targetRow,
         region: roundPlan.targetRow.region!,
@@ -592,18 +651,51 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   useEffect(() => {
     let cancelled = false;
     setLoadError(null);
-    fetch(ISO_URL)
-      .then((r) => r.json() as Promise<Iso3166Row[]>)
-      .then((iso) => {
-        if (!cancelled) setIsoRows(iso);
+    Promise.all([
+      fetch(ISO_URL).then((r) => {
+        if (!r.ok) throw new Error("iso");
+        return r.json() as Promise<Iso3166Row[]>;
+      }),
+      fetch(DIFF_URL).then((r) => {
+        if (!r.ok) throw new Error("diff");
+        return r.json() as Promise<FlagDifficultyJsonRow[]>;
+      }),
+    ])
+      .then(([iso, diff]) => {
+        if (!cancelled) {
+          setIsoRows(iso);
+          setDiffRows(diff);
+        }
       })
       .catch(() => {
-        if (!cancelled) setLoadError("国情報の読み込みに失敗しました");
+        if (!cancelled) setLoadError("国旗・難易度データの読み込みに失敗しました");
       });
     return () => {
       cancelled = true;
     };
   }, []);
+
+  const resetRoundForCurriculum = useCallback(
+    (exclude: Set<string>, options?: { bumpSeq?: boolean }) => {
+      if (!isoRows.length || !featuresForGame["110"]?.length || curriculumPool.length === 0) return;
+      const stage = getCurriculumStage(curriculumLevel);
+      const plan = createCurriculumRoundPlan(curriculumPool, exclude, stage.decoyCount);
+      if (!plan) return;
+      if (options?.bumpSeq) setRoundSeq((s) => s + 1);
+      setRoundPlan(plan);
+      setPlacedByCard({});
+      setAnswered(false);
+      setResultByCountryId({});
+      setHoverCountryId(null);
+      setMapHoverCrossMap(null);
+      setDragTargetCountryId(null);
+      setDrag(null);
+      setDragPointerMap(null);
+      setDragCardDisplay(null);
+      dragCardDisplayRef.current = null;
+    },
+    [isoRows, featuresForGame, curriculumPool, curriculumLevel]
+  );
 
   /** 閾値を跨いだときだけ該当解像度を fetch（キャッシュがあればスキップ） */
   useEffect(() => {
@@ -645,13 +737,27 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   }, [desiredLod, featuresForGame]);
 
   useEffect(() => {
-    if (!isoRows.length || !featuresForGame["110"]?.length || initRoundRef.current) return;
-    const plan = createRoundPlan(isoRows, topoNumericIdSet(featuresForGame["110"] ?? []), new Set(), 3);
-    if (plan) {
-      setRoundPlan(plan);
-      initRoundRef.current = true;
+    if (!isoRows.length || !diffRows || !featuresForGame["110"]?.length || curriculumPool.length === 0) return;
+    if (initRoundRef.current) return;
+    resetRoundForCurriculum(new Set());
+    initRoundRef.current = true;
+  }, [isoRows, diffRows, featuresForGame, curriculumPool, resetRoundForCurriculum]);
+
+  useEffect(() => {
+    curriculumLevelRef.current = curriculumLevel;
+  }, [curriculumLevel]);
+
+  const curriculumLevelChangeSkRef = useRef(true);
+  useEffect(() => {
+    if (curriculumLevelChangeSkRef.current) {
+      curriculumLevelChangeSkRef.current = false;
+      return;
     }
-  }, [isoRows, featuresForGame]);
+    if (!initRoundRef.current) return;
+    setExcludeAlphas(new Set());
+    lastFitRoundSeqRef.current = -1;
+    resetRoundForCurriculum(new Set(), { bumpSeq: true });
+  }, [curriculumLevel, resetRoundForCurriculum]);
 
   useEffect(() => {
     const el = stageRef.current;
@@ -950,22 +1056,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   };
 
   const startNewRound = useCallback(() => {
-    if (!isoRows.length || !featuresForGame["110"]?.length) return;
-    const plan = createRoundPlan(isoRows, topoIds, excludeAlphas, 3);
-    if (!plan) return;
-    setRoundSeq((s) => s + 1);
-    setRoundPlan(plan);
-    setPlacedByCard({});
-    setAnswered(false);
-    setResultByCountryId({});
-    setHoverCountryId(null);
-    setMapHoverCrossMap(null);
-    setDragTargetCountryId(null);
-    setDrag(null);
-    setDragPointerMap(null);
-    setDragCardDisplay(null);
-    dragCardDisplayRef.current = null;
-  }, [isoRows, featuresForGame, topoIds, excludeAlphas]);
+    resetRoundForCurriculum(excludeAlphas, { bumpSeq: true });
+  }, [resetRoundForCurriculum, excludeAlphas]);
 
   /** ズーム k が大きいほど線を細く（ユーザー座標上の太さ = base/k →画面上は nonScaling でほぼ一定） */
   const borderStrokeWidth = useMemo(() => {
@@ -1241,6 +1333,38 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       ref={stageRef}
       className="relative flex h-full min-h-[min(58dvh,640px)] w-full flex-1 flex-col touch-none overflow-hidden rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_94%,white_6%)] shadow-inner"
     >
+      <div className="pointer-events-none absolute left-2 top-2 z-30 flex flex-col items-start gap-1.5 md:left-3 md:top-3">
+        <div
+          className="pointer-events-auto flex flex-col gap-1 rounded-xl border border-[color-mix(in_srgb,var(--color-text)_18%,transparent)] bg-[color-mix(in_srgb,var(--color-surface)_92%,var(--color-bg))] p-1.5 shadow-sm"
+          role="group"
+          aria-label="学習レベル"
+        >
+          <span className="px-1 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+            学習 Lv
+          </span>
+          <div className="flex gap-1">
+            {([1, 2] as const).map((lv) => (
+              <button
+                key={lv}
+                type="button"
+                onClick={() => setCurriculumLevel(lv)}
+                aria-pressed={curriculumLevel === lv}
+                className={`rounded-lg px-2 py-1 text-xs font-semibold transition ${
+                  curriculumLevel === lv
+                    ? "bg-[var(--color-primary)] text-[var(--color-on-primary)]"
+                    : "text-[var(--color-text)] hover:bg-[color-mix(in_srgb,var(--color-primary)_14%,transparent)]"
+                }`}
+              >
+                {lv}
+              </button>
+            ))}
+          </div>
+          <p className="max-w-[11rem] px-1 text-[10px] leading-snug text-[var(--color-muted)]">
+            {curriculumStage.nameJa}
+            <span className="tabular-nums"> · {curriculumPool.length}国</span>
+          </p>
+        </div>
+      </div>
       <div className="pointer-events-none absolute right-2 top-2 z-30 flex flex-col items-end gap-2 md:right-3 md:top-3">
         {!answered ? (
           <button

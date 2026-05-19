@@ -314,6 +314,105 @@ export function filterFeaturesByRegion(
   return inRegion;
 }
 
+/** カリキュラム段階のプール（numeric country-code 集合）に含まれるポリゴンのみ */
+export function filterFeaturesByCountryCodes(
+  allFeatures: readonly CountryFeature[],
+  countryCodes: Set<string>
+): CountryFeature[] {
+  const out: CountryFeature[] = [];
+  for (const f of allFeatures) {
+    const id = featureIdString(f);
+    if (id && countryCodes.has(id)) out.push(f);
+  }
+  return out;
+}
+
+type BuildPoolRoundInput = {
+  target: Iso3166Row;
+  countryCodes: Set<string>;
+  allFeatures: CountryFeature[];
+  width: number;
+  height: number;
+};
+
+/**
+ * プール内の国だけで Mercator をフィット（学習段階 Lv1〜2 用）。
+ */
+export function buildPoolRoundModel(input: BuildPoolRoundInput): RegionRoundModel {
+  const { target, countryCodes, allFeatures, width, height } = input;
+  const inPoolRaw = filterFeaturesByCountryCodes(allFeatures, countryCodes);
+
+  if (inPoolRaw.length === 0) {
+    throw new Error("pool has no mappable features");
+  }
+
+  const fcRaw: FeatureCollection<Geometry, GeoJsonProperties> = {
+    type: "FeatureCollection",
+    features: inPoolRaw as Feature<Geometry, GeoJsonProperties>[],
+  };
+  const unwrapCenterMeridian = computeUnwrapCenterMeridian(fcRaw);
+  const inPool = inPoolRaw.map((f) => cloneCountryFeatureUnwrapped(f, unwrapCenterMeridian));
+
+  const collection: FeatureCollection<Geometry, GeoJsonProperties> = {
+    type: "FeatureCollection",
+    features: inPool as Feature<Geometry, GeoJsonProperties>[],
+  };
+  const projection = buildMercatorForCollection(collection, width, height, 8, unwrapCenterMeridian);
+  const pathDById = buildPathStrings(projection, inPool);
+
+  return {
+    target,
+    regionCollection: collection,
+    allFeatures: inPool,
+    projection,
+    pathDById,
+    width,
+    height,
+    unwrapCenterMeridian,
+  };
+}
+
+type SamePoolProjectionInput = {
+  target: Iso3166Row;
+  countryCodes: Set<string>;
+  projection: GeoProjection;
+  allWorldFeatures: CountryFeature[];
+  width: number;
+  height: number;
+  unwrapCenterMeridian: number;
+};
+
+/** 凍結投影のままプール内の国土だけ差し替え（LOD 切替用）。 */
+export function buildPoolRoundModelSameProjection(input: SamePoolProjectionInput): RegionRoundModel {
+  const { target, countryCodes, projection, allWorldFeatures, width, height, unwrapCenterMeridian } = input;
+  const inPoolRaw = filterFeaturesByCountryCodes(allWorldFeatures, countryCodes);
+  if (inPoolRaw.length === 0) {
+    throw new Error("pool has no mappable features");
+  }
+  const inPool = inPoolRaw.map((f) => cloneCountryFeatureUnwrapped(f, unwrapCenterMeridian));
+  const collection: FeatureCollection<Geometry, GeoJsonProperties> = {
+    type: "FeatureCollection",
+    features: inPool as Feature<Geometry, GeoJsonProperties>[],
+  };
+  const w = Math.max(1, width);
+  const h = Math.max(1, height);
+  projection.clipExtent([
+    [0, 0],
+    [w, h],
+  ]);
+  const pathDById = buildPathStrings(projection, inPool);
+  return {
+    target,
+    regionCollection: collection,
+    allFeatures: inPool,
+    projection,
+    pathDById,
+    width,
+    height,
+    unwrapCenterMeridian,
+  };
+}
+
 export function buildRegionRoundModel(input: BuildRoundInput): RegionRoundModel {
   const { target, region, allFeatures, isoByCode, width, height } = input;
   const inRegionRaw = filterFeaturesByRegion(allFeatures, region, isoByCode);
