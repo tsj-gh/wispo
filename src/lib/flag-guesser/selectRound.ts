@@ -2,7 +2,7 @@ import { feature } from "topojson-client";
 import type { Topology } from "topojson-specification";
 import type { CountryFeature, Iso3166Row } from "./types";
 import { featureIdString } from "./mapProjections";
-import { mapDisplayCountryCodesForTarget } from "./flagGuesserCurriculum";
+import { mapDisplayCountryCodesForSubRegion } from "./flagGuesserCurriculum";
 import { indexIsoByAlpha2, indexIsoByCountryCode } from "./isoIndex";
 
 const FLAG_BASE = "/assets/flag-guesser/flags";
@@ -104,12 +104,14 @@ export function createRoundPlan(
 }
 
 /**
- * カリキュラム用: プール内から正解とお邪魔を抽選。地図は `mapCountryCodes` でプールの sub_region ブロックに限定。
+ * カリキュラム用: プール内から正解を抽選。地図は正解の sub_region 内の全国を描画。
  */
 export function createCurriculumRoundPlan(
   poolRows: readonly Iso3166Row[],
   excludeAlpha2: Set<string>,
-  decoyCount = 2
+  decoyCount: number,
+  isoRows: readonly Iso3166Row[],
+  topoIds: Set<string>
 ): RoundPlan | null {
   if (poolRows.length === 0) return null;
 
@@ -121,28 +123,33 @@ export function createCurriculumRoundPlan(
   const targetRow = targetPool[Math.floor(Math.random() * targetPool.length)]!;
   const targetA2 = targetRow["alpha-2"].trim().toUpperCase();
 
-  const decoysPool = Array.from(
-    new Set(
-      poolRows
-        .filter((r) => r["alpha-2"].trim().toUpperCase() !== targetA2)
-        .map((r) => r["alpha-2"].trim().toUpperCase())
-    )
-  );
-  shuffleInPlace(decoysPool);
+  let cardAlpha2s: string[];
+  if (decoyCount <= 0) {
+    cardAlpha2s = [targetA2];
+  } else {
+    const decoysPool = Array.from(
+      new Set(
+        poolRows
+          .filter((r) => r["alpha-2"].trim().toUpperCase() !== targetA2)
+          .map((r) => r["alpha-2"].trim().toUpperCase())
+      )
+    );
+    shuffleInPlace(decoysPool);
 
-  const decoys: string[] = [];
-  for (const d of decoysPool) {
-    if (decoys.length >= decoyCount) break;
-    decoys.push(d);
+    const decoys: string[] = [];
+    for (const d of decoysPool) {
+      if (decoys.length >= decoyCount) break;
+      decoys.push(d);
+    }
+    while (decoys.length < decoyCount && decoysPool.length > 0) {
+      decoys.push(decoysPool[decoys.length % decoysPool.length]!);
+    }
+
+    cardAlpha2s = [targetA2, ...decoys].slice(0, decoyCount + 1);
+    shuffleInPlace(cardAlpha2s);
   }
-  while (decoys.length < decoyCount && decoysPool.length > 0) {
-    decoys.push(decoysPool[decoys.length % decoysPool.length]!);
-  }
 
-  const cardAlpha2s = [targetA2, ...decoys].slice(0, decoyCount + 1);
-  shuffleInPlace(cardAlpha2s);
-
-  const mapCountryCodes = mapDisplayCountryCodesForTarget(poolRows, targetRow);
+  const mapCountryCodes = mapDisplayCountryCodesForSubRegion(isoRows, topoIds, targetRow);
   return { targetRow, cardAlpha2s, mapCountryCodes };
 }
 

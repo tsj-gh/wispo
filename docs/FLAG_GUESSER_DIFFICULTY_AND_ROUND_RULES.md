@@ -43,8 +43,8 @@
 
 | Lv | 名称 | 正解プール（`sub_region` + difficulty） | 正解数（目安） | 地図フィット | お邪魔 |
 |----|------|----------------------------------------|----------------|--------------|--------|
-| **1** | 東アジア・西ヨーロッパ・北米 | Eastern Asia, Western Europe, Northern America かつ **d=1** | **8** | 当該 **sub_region** のプールのみ | 2・プール内 d=1 |
-| **2** | 北欧・東欧・中南米（入門） | Northern Europe, Eastern Europe, Latin America and the Caribbean かつ **d=1** | **7** | 同上 | 2・プール内 d=1 |
+| **1** | 東アジア・西ヨーロッパ・北米 | Eastern Asia, Western Europe, Northern America かつ **d=1** | **8** | 正解の **sub_region 内の全国**（Topo あり） | **0**（正解旗 1 枚のみ） |
+| **2** | 北欧・東欧・中南米（入門） | Northern Europe, Eastern Europe, Latin America and the Caribbean かつ **d=1** | **7** | 同上 | **0**（正解旗 1 枚のみ） |
 | **3** | 南欧（超有名） | Southern Europe かつ **d=1** | 3 | 同上 | 2・プール内 d=1 |
 | **4** | 南アジア・西アジア・豪州 | Southern Asia, Western Asia, Australia and New Zealand かつ **d=1** | 3 | 同上 | 2・プール内 d=1 |
 | **5** | 全世界・超有名マスター | 全 `sub_region` かつ **d=1** | **22** | 正解の sub_region のプール | 2・プール内 d=1 |
@@ -81,8 +81,8 @@
 | USA, CAN | 米・加 | Northern America |
 
 - ラウンドごとに上記 **8 か国のいずれか** が正解。
-- お邪魔は **同じ Lv1 プール** から 2 枚（必ず d=1）。
-- 地図は正解国の sub_region に属する **Lv1 の 3 ブロックのうち 1 ブロック分だけ** 表示。
+- 国旗カードは **正解 1 枚のみ**（お邪魔なし）。
+- 地図は正解国の **sub_region（中間リージョン）に属する全国** を描画・フィット（出題プール外の隣国も表示）。
 
 **Lv2 — 北欧・東欧・中南米入門（`difficulty = 1` のみ）**
 
@@ -92,8 +92,8 @@
 | RUS, UKR | Eastern Europe |
 | BRA, MEX | Latin America and the Caribbean |
 
-- 正解・お邪魔とも **この 7 か国だけ**。
-- 中南米はプールが 2 か国でも、地図は **この 2 か国＋お邪魔候補だけ** でフィット（大陸全体 52 か国表示にしない）。
+- 正解は **この 7 か国のいずれか**。国旗カードは正解 1 枚のみ。
+- 地図は正解の sub_region 内の **全国** を表示（例: 中南米正解時はラテンアメリカ・カリブ全域をフィット、大陸 `region` 全体ではない）。
 
 ### フェーズ B — 超有名の完成（Lv3〜5）
 

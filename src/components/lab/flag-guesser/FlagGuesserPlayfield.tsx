@@ -679,7 +679,13 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     (exclude: Set<string>, options?: { bumpSeq?: boolean }) => {
       if (!isoRows.length || !featuresForGame["110"]?.length || curriculumPool.length === 0) return;
       const stage = getCurriculumStage(curriculumLevel);
-      const plan = createCurriculumRoundPlan(curriculumPool, exclude, stage.decoyCount);
+      const plan = createCurriculumRoundPlan(
+        curriculumPool,
+        exclude,
+        stage.decoyCount,
+        isoRows,
+        topoIds
+      );
       if (!plan) return;
       if (options?.bumpSeq) setRoundSeq((s) => s + 1);
       setRoundPlan(plan);
@@ -694,7 +700,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       setDragCardDisplay(null);
       dragCardDisplayRef.current = null;
     },
-    [isoRows, featuresForGame, curriculumPool, curriculumLevel]
+    [isoRows, topoIds, featuresForGame, curriculumPool, curriculumLevel]
   );
 
   /** 閾値を跨いだときだけ該当解像度を fetch（キャッシュがあればスキップ） */

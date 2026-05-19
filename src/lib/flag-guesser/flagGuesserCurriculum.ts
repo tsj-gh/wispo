@@ -19,14 +19,14 @@ export const CURRICULUM_STAGES: Record<FlagGuesserCurriculumLevel, CurriculumSta
     nameJa: "東アジア・西ヨーロッパ・北米",
     targetSubRegions: ["Eastern Asia", "Western Europe", "Northern America"],
     targetDifficultyExact: 1,
-    decoyCount: 2,
+    decoyCount: 0,
   },
   2: {
     level: 2,
     nameJa: "北欧・東欧・中南米",
     targetSubRegions: ["Northern Europe", "Eastern Europe", "Latin America and the Caribbean"],
     targetDifficultyExact: 1,
-    decoyCount: 2,
+    decoyCount: 0,
   },
 };
 
@@ -77,18 +77,23 @@ export function buildCurriculumPool(
 }
 
 /**
- * 地図表示・外接フィット用: 正解国と同一 sub_region に属するプール内の国だけ。
+ * 地図表示・外接フィット用: 正解国と同一 sub_region（中間リージョン）に属する
+ * Topo に載る ISO 国をすべて含める（出題プールの difficulty 制限はかけない）。
  */
-export function mapDisplayCountryCodesForTarget(
-  poolRows: readonly Iso3166Row[],
+export function mapDisplayCountryCodesForSubRegion(
+  isoRows: readonly Iso3166Row[],
+  topoIds: Set<string>,
   target: Iso3166Row
 ): Set<string> {
   const sub = target["sub-region"]?.trim();
+  if (!sub) return new Set();
   const codes = new Set<string>();
-  for (const row of poolRows) {
-    if (sub && row["sub-region"]?.trim() !== sub) continue;
+  for (const row of isoRows) {
+    if (row["sub-region"]?.trim() !== sub) continue;
     const code = row["country-code"]?.trim();
-    if (code) codes.add(code);
+    if (!code || !topoIds.has(code)) continue;
+    if (row.region === "Antarctica") continue;
+    codes.add(code);
   }
   return codes;
 }
