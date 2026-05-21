@@ -18,8 +18,8 @@ import { select } from "d3-selection";
 import { interpolate } from "flubber";
 import "d3-transition";
 import {
-  buildPoolRoundModel,
-  buildPoolRoundModelSameProjection,
+  buildCurriculumMapRoundModel,
+  buildCurriculumMapRoundModelSameProjection,
   buildRegionRoundModel,
   buildRegionRoundModelSameProjection,
   countryIdAtPixel,
@@ -39,10 +39,16 @@ import {
 } from "@/lib/flag-guesser/selectRound";
 import {
   buildCurriculumPool,
+  explorerMapPresetForIsoRow,
   getCurriculumStage,
   indexDifficultyByAlpha3,
   type FlagGuesserCurriculumLevel,
 } from "@/lib/flag-guesser/flagGuesserCurriculum";
+import {
+  type ExplorerMapPresetView,
+  type ExplorerMapPresetsFile,
+  zoomPlainFromCenterLonLatK,
+} from "@/lib/flag-guesser/explorerMapPresets";
 import type { FlagDifficultyJsonRow } from "@/lib/flag-guesser/flagExplorerDataset";
 import { spawnBubbleLike, spawnBubbleLikeAtPanelXY, stepBubbleLikeInBox, type FloatingBubbleLike } from "@/lib/flag-guesser/floatingFlagPhysics";
 import { useI18n } from "@/lib/i18n-context";
@@ -74,6 +80,7 @@ import { filterWorldTopoFeatures } from "@/lib/flag-guesser/topoFeatureFilter";
 
 const ISO_URL = "/assets/flag-guesser/iso-3166.json";
 const DIFF_URL = "/assets/flag-guesser/flag_difficulty.json";
+const MAP_PRESETS_URL = "/assets/flag-guesser/explorer_map_presets.json";
 
 /** 海（SVG 背景）— 視認性のため以前どおり淡い背景のみ */
 const MAP_SEA_FILL = "color-mix(in srgb, var(--color-bg) 96%, transparent)";
@@ -222,6 +229,10 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isoRows, setIsoRows] = useState<Iso3166Row[]>([]);
   const [diffRows, setDiffRows] = useState<FlagDifficultyJsonRow[] | null>(null);
+  const [explorerMapPresets, setExplorerMapPresets] = useState<Record<
+    string,
+    ExplorerMapPresetView
+  > | null>(null);
   const [curriculumLevel, setCurriculumLevel] = useState<FlagGuesserCurriculumLevel>(1);
   const curriculumLevelRef = useRef<FlagGuesserCurriculumLevel>(1);
   /** 必要になった解像度だけ逐次 fetch して保持 */
@@ -330,10 +341,10 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         frozenRoundSeqRef.current = roundSeq;
         const rm =
           mapCodes?.size && mapCodes.size > 0
-            ? buildPoolRoundModel({
+            ? buildCurriculumMapRoundModel({
                 target: roundPlan.targetRow,
                 countryCodes: mapCodes,
-                allFeatures: world,
+                filteredWorldFeatures: world,
                 width: size.w,
                 height: size.h,
               })
@@ -352,11 +363,11 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       const proj = frozenProjectionRef.current;
       if (!proj) return null;
       if (mapCodes?.size && mapCodes.size > 0) {
-        return buildPoolRoundModelSameProjection({
+        return buildCurriculumMapRoundModelSameProjection({
           target: roundPlan.targetRow,
           countryCodes: mapCodes,
           projection: proj,
-          allWorldFeatures: world,
+          filteredWorldFeatures: world,
           width: size.w,
           height: size.h,
           unwrapCenterMeridian: frozenUnwrapMeridianRef.current,
@@ -408,11 +419,11 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     const mapCodes = roundPlan.mapCountryCodes;
     try {
       if (mapCodes?.size && mapCodes.size > 0) {
-        return buildPoolRoundModelSameProjection({
+        return buildCurriculumMapRoundModelSameProjection({
           target: roundPlan.targetRow,
           countryCodes: mapCodes,
           projection: regionModel.projection,
-          allWorldFeatures: world,
+          filteredWorldFeatures: world,
           width: size.w,
           height: size.h,
           unwrapCenterMeridian: regionModel.unwrapCenterMeridian,
@@ -641,12 +652,27 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   }, []);
 
   useEffect(() => {
-    if (!regionModel || size.w < 16 || size.h < 16) return;
+    if (!regionModel || !roundPlan || size.w < 16 || size.h < 16) return;
     if (lastFitRoundSeqRef.current === roundSeq) return;
     lastFitRoundSeqRef.current = roundSeq;
-    const fitted = fitTransformForRegion(regionModel, size.w, size.h);
+    const preset =
+      explorerMapPresets != null
+        ? explorerMapPresetForIsoRow(explorerMapPresets, roundPlan.targetRow)
+        : null;
+    const fromPreset =
+      preset != null
+        ? zoomPlainFromCenterLonLatK(
+            regionModel.projection,
+            size.w,
+            size.h,
+            preset.lon,
+            preset.lat,
+            preset.k
+          )
+        : null;
+    const fitted = fromPreset ?? fitTransformForRegion(regionModel, size.w, size.h);
     applyZoomTransform(fitted, false);
-  }, [regionModel, size.w, size.h, roundSeq, applyZoomTransform]);
+  }, [regionModel, roundPlan, explorerMapPresets, size.w, size.h, roundSeq, applyZoomTransform]);
 
   useEffect(() => {
     let cancelled = false;
@@ -660,11 +686,16 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         if (!r.ok) throw new Error("diff");
         return r.json() as Promise<FlagDifficultyJsonRow[]>;
       }),
+      fetch(MAP_PRESETS_URL).then((r) => {
+        if (!r.ok) throw new Error("presets");
+        return r.json() as Promise<ExplorerMapPresetsFile>;
+      }),
     ])
-      .then(([iso, diff]) => {
+      .then(([iso, diff, presetsFile]) => {
         if (!cancelled) {
           setIsoRows(iso);
           setDiffRows(diff);
+          setExplorerMapPresets(presetsFile.presets ?? null);
         }
       })
       .catch(() => {

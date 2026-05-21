@@ -1,3 +1,4 @@
+import { resolveExplorerMapPreset, type ExplorerMapPresetView } from "./explorerMapPresets";
 import type { FlagDifficultyJsonRow } from "./flagExplorerDataset";
 import type { Iso3166Row } from "./types";
 
@@ -96,4 +97,15 @@ export function mapDisplayCountryCodesForSubRegion(
     codes.add(code);
   }
   return codes;
+}
+
+/** explorer の地図タブと同じ優先順位でプリセットを解決（中間 → サブ → 地域 → 世界）。 */
+export function explorerMapPresetForIsoRow(
+  presets: Record<string, ExplorerMapPresetView>,
+  row: Iso3166Row
+): ExplorerMapPresetView | null {
+  const region = row.region?.trim() ?? "";
+  const subRegion = row["sub-region"]?.trim() ?? "";
+  const intermediateRegion = row["intermediate-region"]?.trim() ?? "";
+  return resolveExplorerMapPreset(presets, region, subRegion, intermediateRegion);
 }

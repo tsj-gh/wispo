@@ -314,6 +314,30 @@ export function filterFeaturesByRegion(
   return inRegion;
 }
 
+/**
+ * FlagExplorerMapSelect / explorer プリセットと同じ全世界 Mercator。
+ * 学習モードの初期ズーム（lon,lat,k）をプリセットと揃えるために使う。
+ */
+export function buildExplorerWorldMapProjection(
+  filteredWorldFeatures: readonly CountryFeature[],
+  width: number,
+  height: number
+): { projection: GeoProjection; unwrapCenterMeridian: number } | null {
+  if (!filteredWorldFeatures.length || width < 32 || height < 32) return null;
+  const fc: FeatureCollection<Geometry, GeoJsonProperties> = {
+    type: "FeatureCollection",
+    features: filteredWorldFeatures as Feature<Geometry, GeoJsonProperties>[],
+  };
+  const unwrapCenterMeridian = computeUnwrapCenterMeridian(fc);
+  const unwrapped = filteredWorldFeatures.map((f) => cloneCountryFeatureUnwrapped(f, unwrapCenterMeridian));
+  const fcUnwrapped: FeatureCollection<Geometry, GeoJsonProperties> = {
+    type: "FeatureCollection",
+    features: unwrapped as Feature<Geometry, GeoJsonProperties>[],
+  };
+  const projection = buildMercatorForCollection(fcUnwrapped, width, height, 8, unwrapCenterMeridian);
+  return { projection, unwrapCenterMeridian };
+}
+
 /** カリキュラム段階のプール（numeric country-code 集合）に含まれるポリゴンのみ */
 export function filterFeaturesByCountryCodes(
   allFeatures: readonly CountryFeature[],
@@ -335,8 +359,88 @@ type BuildPoolRoundInput = {
   height: number;
 };
 
+type BuildCurriculumMapRoundInput = {
+  target: Iso3166Row;
+  countryCodes: Set<string>;
+  filteredWorldFeatures: readonly CountryFeature[];
+  width: number;
+  height: number;
+};
+
 /**
- * プール内の国だけで Mercator をフィット（学習段階 Lv1〜2 用）。
+ * 描画は sub_region 内の国のみ。投影は explorer と同じ全世界フィット（プリセット lon/lat/k 用）。
+ */
+export function buildCurriculumMapRoundModel(input: BuildCurriculumMapRoundInput): RegionRoundModel {
+  const { target, countryCodes, filteredWorldFeatures, width, height } = input;
+  const world = buildExplorerWorldMapProjection(filteredWorldFeatures, width, height);
+  if (!world) throw new Error("curriculum world projection failed");
+
+  const inPoolRaw = filterFeaturesByCountryCodes(filteredWorldFeatures, countryCodes);
+  if (inPoolRaw.length === 0) throw new Error("curriculum map has no features");
+
+  const inPool = inPoolRaw.map((f) => cloneCountryFeatureUnwrapped(f, world.unwrapCenterMeridian));
+  const collection: FeatureCollection<Geometry, GeoJsonProperties> = {
+    type: "FeatureCollection",
+    features: inPool as Feature<Geometry, GeoJsonProperties>[],
+  };
+  const pathDById = buildPathStrings(world.projection, inPool);
+
+  return {
+    target,
+    regionCollection: collection,
+    allFeatures: inPool,
+    projection: world.projection,
+    pathDById,
+    width,
+    height,
+    unwrapCenterMeridian: world.unwrapCenterMeridian,
+  };
+}
+
+type SameCurriculumMapProjectionInput = {
+  target: Iso3166Row;
+  countryCodes: Set<string>;
+  projection: GeoProjection;
+  filteredWorldFeatures: readonly CountryFeature[];
+  width: number;
+  height: number;
+  unwrapCenterMeridian: number;
+};
+
+/** 凍結した全世界投影のまま sub_region の国土だけ差し替え（LOD 切替用）。 */
+export function buildCurriculumMapRoundModelSameProjection(
+  input: SameCurriculumMapProjectionInput
+): RegionRoundModel {
+  const { target, countryCodes, projection, filteredWorldFeatures, width, height, unwrapCenterMeridian } =
+    input;
+  const inPoolRaw = filterFeaturesByCountryCodes(filteredWorldFeatures, countryCodes);
+  if (inPoolRaw.length === 0) throw new Error("curriculum map has no features");
+  const inPool = inPoolRaw.map((f) => cloneCountryFeatureUnwrapped(f, unwrapCenterMeridian));
+  const collection: FeatureCollection<Geometry, GeoJsonProperties> = {
+    type: "FeatureCollection",
+    features: inPool as Feature<Geometry, GeoJsonProperties>[],
+  };
+  const w = Math.max(1, width);
+  const h = Math.max(1, height);
+  projection.clipExtent([
+    [0, 0],
+    [w, h],
+  ]);
+  const pathDById = buildPathStrings(projection, inPool);
+  return {
+    target,
+    regionCollection: collection,
+    allFeatures: inPool,
+    projection,
+    pathDById,
+    width,
+    height,
+    unwrapCenterMeridian,
+  };
+}
+
+/**
+ * プール内の国だけで Mercator をフィット（レガシー／プリセット無し時のフォールバック）。
  */
 export function buildPoolRoundModel(input: BuildPoolRoundInput): RegionRoundModel {
   const { target, countryCodes, allFeatures, width, height } = input;

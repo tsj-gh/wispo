@@ -45,6 +45,8 @@
 |----|------|----------------------------------------|----------------|--------------|--------|
 | **1** | 東アジア・西ヨーロッパ・北米 | Eastern Asia, Western Europe, Northern America かつ **d=1** | **8** | 正解の **sub_region 内の全国**（Topo あり） | **0**（正解旗 1 枚のみ） |
 | **2** | 北欧・東欧・中南米（入門） | Northern Europe, Eastern Europe, Latin America and the Caribbean かつ **d=1** | **7** | 同上 | **0**（正解旗 1 枚のみ） |
+
+**地図の初期ズーム（Lv1〜2）:** `explorer_map_presets.json` の **中間リージョン**（なければサブリージョン）プリセットを適用。投影は explorer と同じ全世界 Mercator。
 | **3** | 南欧（超有名） | Southern Europe かつ **d=1** | 3 | 同上 | 2・プール内 d=1 |
 | **4** | 南アジア・西アジア・豪州 | Southern Asia, Western Asia, Australia and New Zealand かつ **d=1** | 3 | 同上 | 2・プール内 d=1 |
 | **5** | 全世界・超有名マスター | 全 `sub_region` かつ **d=1** | **22** | 正解の sub_region のプール | 2・プール内 d=1 |
