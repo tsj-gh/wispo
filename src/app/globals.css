@@ -76,9 +76,29 @@ body.smart-guard-lock * {
   vector-effect: non-scaling-stroke;
 }
 
-.fg-flag-card.is-judging {
-  opacity: 0.28;
-  transition: opacity 200ms ease;
+.fg-flag-card {
+  transition: left 0.38s cubic-bezier(0.22, 0.85, 0.36, 1), top 0.38s cubic-bezier(0.22, 0.85, 0.36, 1);
+}
+
+.fg-flag-bubble-pop {
+  animation: fg-flag-bubble-pop 0.38s cubic-bezier(0.22, 0.85, 0.36, 1) forwards;
+}
+
+.fg-flag-bubble-connector {
+  fill: none;
+  stroke: rgba(100, 100, 108, 0.48);
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+@keyframes fg-flag-bubble-pop {
+  from {
+    transform: translate(calc(-50% + var(--fg-bubble-from-dx, 0px)), calc(-50% + var(--fg-bubble-from-dy, 0px)))
+      scale(var(--fg-flag-scale, 1));
+  }
+  to {
+    transform: translate(-50%, -50%) scale(var(--fg-flag-scale, 1));
+  }
 }
 
 @keyframes fg-map-shake {
@@ -117,8 +137,8 @@ body.smart-guard-lock * {
   .fg-map-shake-wrap.is-judge-wrong {
     animation: none !important;
   }
-  .fg-flag-card.is-judging {
-    opacity: 0.45;
+  .fg-flag-bubble-pop {
+    animation: none !important;
   }
 }
 

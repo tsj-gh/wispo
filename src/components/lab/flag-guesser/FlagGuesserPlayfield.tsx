@@ -28,6 +28,11 @@ import {
   sortFeaturesForHitTest,
 } from "@/lib/flag-guesser/mapProjections";
 import { FlagGuesserPopBurstRipple } from "@/components/lab/flag-guesser/FlagGuesserPopBurstRipple";
+import {
+  computeFlagBubbleLayout,
+  flagCardEdgeTowardAnchor,
+  type FlagBubbleLayout,
+} from "@/lib/flag-guesser/flagBubblePlacement";
 import { geoPath, type GeoProjection } from "d3-geo";
 import type { CountryFeature, Iso3166Row, RegionRoundModel } from "@/lib/flag-guesser/types";
 import {
@@ -109,6 +114,8 @@ const ZOOM_STEP = 1.3;
 
 const DEFAULT_DRAG_CARD_SCREEN_OFFSET_PX = 80;
 const DEFAULT_DRAG_CARD_SPRING = 0.22;
+/** 国旗面積 / 最大陸塊面積 がこの % 以上で吹き出し */
+const DEFAULT_FLAG_BUBBLE_AREA_THRESHOLD_PCT = 80;
 
 type DragState = {
   cardId: string;
@@ -295,6 +302,10 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   const [excludeAlphas, setExcludeAlphas] = useState<Set<string>>(new Set());
 
   const [placedByCard, setPlacedByCard] = useState<Record<string, string>>({});
+  const [placedLayoutByCard, setPlacedLayoutByCard] = useState<Record<string, FlagBubbleLayout>>({});
+  const [flagBubbleAreaThresholdPct, setFlagBubbleAreaThresholdPct] = useState(
+    DEFAULT_FLAG_BUBBLE_AREA_THRESHOLD_PCT
+  );
   const placedRef = useRef(placedByCard);
   placedRef.current = placedByCard;
 
@@ -743,6 +754,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       if (options?.bumpSeq) setRoundSeq((s) => s + 1);
       setRoundPlan(plan);
       setPlacedByCard({});
+      setPlacedLayoutByCard({});
       setAnswered(false);
       setResultByCountryId({});
       setHoverCountryId(null);
@@ -880,6 +892,35 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     if (!el) return null;
     return el.getBoundingClientRect();
   }, [mapRenderBackend]);
+
+  const buildPlacementLayout = useCallback(
+    (countryId: string): FlagBubbleLayout | null => {
+      if (!projection || !pointerRegionModel) return null;
+      const feat = pointerRegionModel.allFeatures.find((f) => String(f.id) === countryId);
+      if (!feat) return null;
+      return computeFlagBubbleLayout({
+        projection,
+        targetCountryId: countryId,
+        targetFeature: feat as CountryFeature,
+        hitFeatures: pointerRegionModel.allFeatures,
+        pathDById: pointerRegionModel.pathDById,
+        flagVisualScale,
+        cardW: CARD_W,
+        cardH: CARD_H,
+        thresholdPercent: flagBubbleAreaThresholdPct,
+        mapWidth: size.w,
+        mapHeight: size.h,
+      });
+    },
+    [
+      projection,
+      pointerRegionModel,
+      flagVisualScale,
+      flagBubbleAreaThresholdPct,
+      size.w,
+      size.h,
+    ]
+  );
 
   const pointerToMapCoords = useCallback(
     (clientX: number, clientY: number): [number, number] | null => {
@@ -1039,7 +1080,11 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
           }));
           return;
         }
+        const layout = buildPlacementLayout(countryId);
         setPlacedByCard((prev) => ({ ...prev, [cardId]: countryId }));
+        if (layout) {
+          setPlacedLayoutByCard((prev) => ({ ...prev, [cardId]: layout }));
+        }
         return;
       }
 
@@ -1048,14 +1093,34 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         [cardId]: floater,
       }));
     },
-    [dragTargetCountryId, size.w, size.h]
+    [dragTargetCountryId, size.w, size.h, buildPlacementLayout]
   );
+
+  useEffect(() => {
+    if (!projection || !pointerRegionModel) return;
+    const entries = Object.entries(placedByCard);
+    if (!entries.length) {
+      setPlacedLayoutByCard({});
+      return;
+    }
+    const next: Record<string, FlagBubbleLayout> = {};
+    for (const [cardId, countryId] of entries) {
+      const layout = buildPlacementLayout(countryId);
+      if (layout) next[cardId] = layout;
+    }
+    setPlacedLayoutByCard(next);
+  }, [placedByCard, buildPlacementLayout, projection, pointerRegionModel]);
 
   const handleCardPointerDown = (cardId: string, e: ReactPointerEvent) => {
     if (answered) return;
     e.preventDefault();
     if (placedByCard[cardId]) {
       setPlacedByCard((prev) => {
+        const next = { ...prev };
+        delete next[cardId];
+        return next;
+      });
+      setPlacedLayoutByCard((prev) => {
         const next = { ...prev };
         delete next[cardId];
         return next;
@@ -1459,6 +1524,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       canvasMapFps,
       canvasPaintLod,
       canvasMapInteracting,
+      flagBubbleAreaThresholdPct,
+      setFlagBubbleAreaThresholdPct,
     });
     return () => onDebugPanelPropsChange(null);
   }, [
@@ -1468,6 +1535,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     isDebugPanelExpanded,
     dragCardScreenOffsetPx,
     dragCardSpring,
+    flagBubbleAreaThresholdPct,
     listedCountryLabelsJa,
     mapDebugCenterScale,
     onEnumerateVisible,
@@ -1788,35 +1856,70 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                   cards.map((c) => {
                     const cid = placedByCard[c.id];
                     if (!cid || drag?.cardId === c.id) return null;
-                    const feat = regionModel.allFeatures.find((f) => String(f.id) === cid);
-                    if (!feat) return null;
-                    const p = projectMainlandCentroid(projection, feat as CountryFeature);
-                    if (!p) return null;
+                    const layout = placedLayoutByCard[c.id];
+                    if (!layout) return null;
+                    const { anchorX, anchorY, flagX, flagY, useBubble } = layout;
+                    const bubbleFromDx = anchorX - flagX;
+                    const bubbleFromDy = anchorY - flagY;
+                    const [lineTx, lineTy] = useBubble
+                      ? flagCardEdgeTowardAnchor(
+                          flagX,
+                          flagY,
+                          anchorX,
+                          anchorY,
+                          CARD_W,
+                          CARD_H,
+                          flagVisualScale
+                        )
+                      : [flagX, flagY];
+                    const connD = useBubble
+                      ? dragConnectorPathD(anchorX, anchorY, lineTx, lineTy)
+                      : null;
                     return (
-                      <button
-                        key={`stuck-${c.id}`}
-                        type="button"
-                        className={`fg-flag-card pointer-events-auto absolute z-20 flex cursor-default items-center justify-center overflow-hidden rounded-md border-2 border-white/40 bg-white/10 p-1 shadow-md backdrop-blur-sm ${!answered ? "is-judging" : ""}`}
-                        style={{
-                          left: p[0],
-                          top: p[1],
-                          width: CARD_W,
-                          height: CARD_H,
-                          transform: `translate(-50%, -50%) scale(${flagVisualScale})`,
-                        }}
-                        onPointerDown={(e) => handleCardPointerDown(c.id, e)}
-                        aria-label="国旗を戻す"
-                      >
-                        <Image
-                          src={flagUrlForAlpha2(c.alpha2)}
-                          alt=""
-                          width={CARD_W}
-                          height={CARD_H}
-                          className="pointer-events-none max-h-full max-w-full object-contain"
-                          draggable={false}
-                          unoptimized
-                        />
-                      </button>
+                      <span key={`stuck-${c.id}`} className="pointer-events-none absolute left-0 top-0 z-20">
+                        {useBubble && connD && (
+                          <svg
+                            className="pointer-events-none absolute left-0 top-0 overflow-visible"
+                            width={size.w}
+                            height={size.h}
+                            aria-hidden
+                          >
+                            <path
+                              d={connD}
+                              className="fg-flag-bubble-connector"
+                              strokeWidth={2.2}
+                            />
+                          </svg>
+                        )}
+                        <button
+                          type="button"
+                          className={`fg-flag-card pointer-events-auto absolute flex cursor-default items-center justify-center overflow-hidden rounded-md border-2 border-white/40 bg-white/90 p-1 shadow-md backdrop-blur-sm ${useBubble ? "fg-flag-bubble-pop" : ""}`}
+                          style={{
+                            left: flagX,
+                            top: flagY,
+                            width: CARD_W,
+                            height: CARD_H,
+                            ["--fg-bubble-from-dx" as string]: `${bubbleFromDx}px`,
+                            ["--fg-bubble-from-dy" as string]: `${bubbleFromDy}px`,
+                            ["--fg-flag-scale" as string]: String(flagVisualScale),
+                            transform: useBubble
+                              ? undefined
+                              : `translate(-50%, -50%) scale(${flagVisualScale})`,
+                          }}
+                          onPointerDown={(e) => handleCardPointerDown(c.id, e)}
+                          aria-label="国旗を戻す"
+                        >
+                          <Image
+                            src={flagUrlForAlpha2(c.alpha2)}
+                            alt=""
+                            width={CARD_W}
+                            height={CARD_H}
+                            className="pointer-events-none max-h-full max-w-full object-contain"
+                            draggable={false}
+                            unoptimized
+                          />
+                        </button>
+                      </span>
                     );
                   })}
 

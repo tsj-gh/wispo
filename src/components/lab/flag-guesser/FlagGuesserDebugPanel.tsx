@@ -36,6 +36,9 @@ export type FlagGuesserDebugPanelProps = {
   canvasPaintLod: TopoLodId;
   /** ズーム／パン操作中（終了後 200ms は false） */
   canvasMapInteracting: boolean;
+  /** 国旗面積 / 最大陸塊面積 がこの % 以上で吹き出し */
+  flagBubbleAreaThresholdPct: number;
+  setFlagBubbleAreaThresholdPct: (n: number) => void;
 };
 
 /**
@@ -68,6 +71,8 @@ export function FlagGuesserDebugPanel({
   canvasMapFps,
   canvasPaintLod,
   canvasMapInteracting,
+  flagBubbleAreaThresholdPct,
+  setFlagBubbleAreaThresholdPct,
 }: FlagGuesserDebugPanelProps) {
   return (
     <div className="w-full">
@@ -190,6 +195,26 @@ export function FlagGuesserDebugPanel({
                 {loadingHighDetail && (
                   <p className="mt-2 text-[9px] font-medium text-[var(--color-primary)]">高精細データ読み込み中…</p>
                 )}
+              </div>
+
+              <div className="rounded-lg border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] p-2">
+                <div className="mb-2 font-semibold text-[var(--color-text)]">吹き出し（小さな国）</div>
+                <p className="mb-2 text-[9px] leading-snug">
+                  国旗矩形面積 ÷ 最大陸塊の投影面積が閾値以上のとき、他国と重なりにくい方向へ吹き出して線で指し示します。
+                </p>
+                <label className="block">
+                  <div className="mb-0.5 font-semibold text-[var(--color-text)]">面積比閾値（%）</div>
+                  <input
+                    type="range"
+                    min={60}
+                    max={150}
+                    step={1}
+                    value={flagBubbleAreaThresholdPct}
+                    onChange={(e) => setFlagBubbleAreaThresholdPct(Number(e.target.value))}
+                    className="w-full accent-[var(--color-primary)]"
+                  />
+                  <div className="tabular-nums">{flagBubbleAreaThresholdPct}%</div>
+                </label>
               </div>
 
               <div className="rounded-lg border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] p-2">

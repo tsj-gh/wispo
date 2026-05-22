@@ -308,11 +308,9 @@ function polygonPiecesFromGeometry(geometry: Geometry): Feature<Polygon, GeoJson
   return [];
 }
 
-/**
- * 全ポリゴンの球面積が最大の一片の重心（コルシカ・海外領などで全体重心が海に寄るのを避ける）。
- */
-export function geoCentroidOfLargestPolygonPiece(geometry: Geometry | null | undefined): [number, number] | null {
-  if (!geometry) return null;
+function largestPolygonPieceFromGeometry(
+  geometry: Geometry
+): Feature<Polygon, GeoJsonProperties> | null {
   let best: Feature<Polygon, GeoJsonProperties> | null = null;
   let bestArea = -1;
   for (const piece of polygonPiecesFromGeometry(geometry)) {
@@ -323,10 +321,40 @@ export function geoCentroidOfLargestPolygonPiece(geometry: Geometry | null | und
       best = piece;
     }
   }
+  return best;
+}
+
+/** 球面積が最大のポリゴン一片（海外領・離島で重心が海に寄るのを避ける） */
+export function largestPolygonPieceFromFeature(
+  feat: CountryFeature
+): Feature<Polygon, GeoJsonProperties> | null {
+  if (!feat.geometry) return null;
+  return largestPolygonPieceFromGeometry(feat.geometry);
+}
+
+/**
+ * 全ポリゴンの球面積が最大の一片の重心（コルシカ・海外領などで全体重心が海に寄るのを避ける）。
+ */
+export function geoCentroidOfLargestPolygonPiece(geometry: Geometry | null | undefined): [number, number] | null {
+  if (!geometry) return null;
+  const best = largestPolygonPieceFromGeometry(geometry);
   if (!best) return null;
   const c = geoCentroid(best as Feature<Geometry, GeoJsonProperties>);
   if (!Number.isFinite(c[0]) || !Number.isFinite(c[1])) return null;
   return [c[0]!, c[1]!];
+}
+
+/** 現在の投影におけるポリゴン面積（px²・比較用） */
+export function projectedFeatureArea(
+  projection: GeoProjection,
+  feat: Feature<Geometry, GeoJsonProperties>
+): number {
+  try {
+    const a = geoPath(projection).area(feat as Parameters<ReturnType<typeof geoPath>["area"]>[0]);
+    return Number.isFinite(a) && a > 0 ? a : 0;
+  } catch {
+    return 0;
+  }
 }
 
 /** 国旗吸着・正誤演出の錨 — 最大陸塊の重心を投影座標へ */
