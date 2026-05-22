@@ -1,5 +1,5 @@
 import { geoArea, geoBounds, geoCentroid, geoContains, geoMercator, geoPath, type GeoProjection } from "d3-geo";
-import type { Feature, FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
+import type { Feature, FeatureCollection, GeoJsonProperties, Geometry, Polygon } from "geojson";
 import type { CountryFeature, Iso3166Row, RegionRoundModel } from "./types";
 
 /**
@@ -283,6 +283,68 @@ export function projectCentroid(projection: GeoProjection, feat: CountryFeature)
   const c = geoCentroid(feat as Feature<Geometry, GeoJsonProperties>);
   const p = projection(c as [number, number]);
   if (!p) return null;
+  return [p[0]!, p[1]!];
+}
+
+/** MultiPolygon / GeometryCollection を個別 Polygon に分解 */
+function polygonPiecesFromGeometry(geometry: Geometry): Feature<Polygon, GeoJsonProperties>[] {
+  if (geometry.type === "Polygon") {
+    return [{ type: "Feature", properties: {}, geometry }];
+  }
+  if (geometry.type === "MultiPolygon") {
+    return geometry.coordinates.map((coords) => ({
+      type: "Feature" as const,
+      properties: {},
+      geometry: { type: "Polygon" as const, coordinates: coords },
+    }));
+  }
+  if (geometry.type === "GeometryCollection") {
+    const out: Feature<Polygon, GeoJsonProperties>[] = [];
+    for (const g of geometry.geometries) {
+      out.push(...polygonPiecesFromGeometry(g));
+    }
+    return out;
+  }
+  return [];
+}
+
+/**
+ * 全ポリゴンの球面積が最大の一片の重心（コルシカ・海外領などで全体重心が海に寄るのを避ける）。
+ */
+export function geoCentroidOfLargestPolygonPiece(geometry: Geometry | null | undefined): [number, number] | null {
+  if (!geometry) return null;
+  let best: Feature<Polygon, GeoJsonProperties> | null = null;
+  let bestArea = -1;
+  for (const piece of polygonPiecesFromGeometry(geometry)) {
+    const area = geoArea(piece as Feature<Geometry, GeoJsonProperties>);
+    if (area > MAX_PLAUSIBLE_COUNTRY_GEO_AREA_STERADIANS) continue;
+    if (area > bestArea) {
+      bestArea = area;
+      best = piece;
+    }
+  }
+  if (!best) return null;
+  const c = geoCentroid(best as Feature<Geometry, GeoJsonProperties>);
+  if (!Number.isFinite(c[0]) || !Number.isFinite(c[1])) return null;
+  return [c[0]!, c[1]!];
+}
+
+/** 国旗吸着・正誤演出の錨 — 最大陸塊の重心を投影座標へ */
+export function projectMainlandCentroid(
+  projection: GeoProjection,
+  feat: CountryFeature
+): [number, number] | null {
+  const c =
+    geoCentroidOfLargestPolygonPiece(feat.geometry) ??
+    (() => {
+      const fallback = geoCentroid(feat as Feature<Geometry, GeoJsonProperties>);
+      return Number.isFinite(fallback[0]) && Number.isFinite(fallback[1])
+        ? ([fallback[0]!, fallback[1]!] as [number, number])
+        : null;
+    })();
+  if (!c) return null;
+  const p = projection(c);
+  if (!p || !Number.isFinite(p[0]) || !Number.isFinite(p[1])) return null;
   return [p[0]!, p[1]!];
 }
 

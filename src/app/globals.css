@@ -76,14 +76,6 @@ body.smart-guard-lock * {
   vector-effect: non-scaling-stroke;
 }
 
-.fg-map-ripple-ring {
-  fill: none;
-  stroke: rgba(74, 222, 128, 0.7);
-  stroke-width: 2;
-  animation: fg-map-ripple 0.9s ease-out forwards;
-  pointer-events: none;
-}
-
 .fg-flag-card.is-judging {
   opacity: 0.28;
   transition: opacity 200ms ease;
@@ -120,23 +112,9 @@ body.smart-guard-lock * {
   }
 }
 
-@keyframes fg-map-ripple {
-  0% {
-    r: 8px;
-    opacity: 0.75;
-    stroke-width: 3;
-  }
-  100% {
-    r: 56px;
-    opacity: 0;
-    stroke-width: 0.5;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .fg-map-country.is-judge-correct,
-  .fg-map-shake-wrap.is-judge-wrong,
-  .fg-map-ripple-ring {
+  .fg-map-shake-wrap.is-judge-wrong {
     animation: none !important;
   }
   .fg-flag-card.is-judging {

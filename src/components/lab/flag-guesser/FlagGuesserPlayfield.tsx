@@ -24,9 +24,10 @@ import {
   buildRegionRoundModelSameProjection,
   countryIdAtPixel,
   countryIdAtPixelWithSeaProximity,
-  projectCentroid,
+  projectMainlandCentroid,
   sortFeaturesForHitTest,
 } from "@/lib/flag-guesser/mapProjections";
+import { FlagGuesserPopBurstRipple } from "@/components/lab/flag-guesser/FlagGuesserPopBurstRipple";
 import { geoPath, type GeoProjection } from "d3-geo";
 import type { CountryFeature, Iso3166Row, RegionRoundModel } from "@/lib/flag-guesser/types";
 import {
@@ -1166,7 +1167,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
             const d = rm.pathDById.get(id);
             const feat = rm.allFeatures.find((f) => String(f.id) === id);
             if (!d || !feat || !verdict) return null;
-            const c = projectCentroid(proj, feat as CountryFeature);
+            const c = projectMainlandCentroid(proj, feat as CountryFeature);
             if (!c) return null;
             const [cx, cy] = c;
 
@@ -1196,7 +1197,6 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
 
             return (
               <g key={id}>
-                <circle cx={cx} cy={cy} className="fg-map-ripple-ring" />
                 <path
                   d={d}
                   className={`fg-map-country-outline is-judge-correct ${countryMapPathClass(id, mapPathClassOpts)}`}
@@ -1226,6 +1226,32 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     gTransform,
     mapPathClassOpts,
     borderStrokeWidth,
+  ]);
+
+  /** 正解時バーストリング（画面 px・国旗直径基準。PopPopBubbles と同系） */
+  const judgeBurstRipples = useMemo(() => {
+    const rm = regionModelForCanvas ?? regionModel;
+    const proj = projection;
+    if (!rm || !proj || !answered) return [];
+    const k = zoomTransform.k;
+    const { x: zx, y: zy } = zoomTransform;
+    const out: { id: string; screenX: number; screenY: number }[] = [];
+    for (const [id, verdict] of Object.entries(resultByCountryId)) {
+      if (verdict !== "correct") continue;
+      const feat = rm.allFeatures.find((f) => String(f.id) === id);
+      if (!feat) continue;
+      const p = projectMainlandCentroid(proj, feat as CountryFeature);
+      if (!p) continue;
+      out.push({ id, screenX: p[0] * k + zx, screenY: p[1] * k + zy });
+    }
+    return out;
+  }, [
+    regionModelForCanvas,
+    regionModel,
+    projection,
+    answered,
+    resultByCountryId,
+    zoomTransform,
   ]);
 
   const hoverCountryLabel = useMemo(() => {
@@ -1665,6 +1691,15 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
 
             {mapJudgeOverlay}
 
+            {judgeBurstRipples.map((r) => (
+              <FlagGuesserPopBurstRipple
+                key={`burst-${r.id}-${roundSeq}`}
+                screenX={r.screenX}
+                screenY={r.screenY}
+                flagRadiusPx={CARD_DIAM / 2}
+              />
+            ))}
+
             {loadingHighDetail && (
               <div className="pointer-events-none absolute bottom-1 left-1 z-[11] rounded border border-[color-mix(in_srgb,var(--color-primary)_25%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_90%,transparent)] px-1.5 py-0.5 text-[9px] text-[var(--color-muted)] backdrop-blur-sm">
                 高精細データ読み込み中…
@@ -1755,7 +1790,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                     if (!cid || drag?.cardId === c.id) return null;
                     const feat = regionModel.allFeatures.find((f) => String(f.id) === cid);
                     if (!feat) return null;
-                    const p = projectCentroid(projection, feat as CountryFeature);
+                    const p = projectMainlandCentroid(projection, feat as CountryFeature);
                     if (!p) return null;
                     return (
                       <button
