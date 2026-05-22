@@ -116,26 +116,20 @@ function getHitTestContext2D(): CanvasRenderingContext2D | null {
 }
 
 /**
- * 画面上の点がどの国に属するか（面積の小さいポリゴンを先に判定）。
- *
- * `pathDById` があるときは **Mercator に投影した SVG path（画面と同一ジオメトリ）** に対して
- * `Path2D` + `isPointInPath` で判定する。球面の `geoContains` だけだと、島嶼・ズーム大で
- * 「海上なのにモルディブ」など描画と不一致になるケースがある。
+ * `sortFeaturesForHitTest` 済みの一覧に対するヒットテスト（吹き出し探索など大量呼び出し向け）。
  */
-export function countryIdAtPixel(
+export function countryIdAtPixelOnSorted(
   projection: GeoProjection,
-  features: readonly CountryFeature[],
+  sortedFeatures: readonly CountryFeature[],
   x: number,
   y: number,
   pathDById?: ReadonlyMap<string, string>
 ): string | null {
-  const sorted = sortFeaturesForHitTest(features);
-
   if (pathDById?.size) {
     const ctx = getHitTestContext2D();
     if (ctx && typeof Path2D !== "undefined") {
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-      for (const feat of sorted) {
+      for (const feat of sortedFeatures) {
         const id = featureIdString(feat);
         if (!id) continue;
         const area = geoArea(feat as Feature<Geometry, GeoJsonProperties>);
@@ -159,7 +153,7 @@ export function countryIdAtPixel(
   const inv = projection.invert?.([x, y]);
   if (!inv) return null;
   const [lon, lat] = inv;
-  for (const feat of sorted) {
+  for (const feat of sortedFeatures) {
     const area = geoArea(feat as Feature<Geometry, GeoJsonProperties>);
     if (area > MAX_PLAUSIBLE_COUNTRY_GEO_AREA_STERADIANS) continue;
     if (geoContains(feat as Feature<Geometry, GeoJsonProperties>, [lon, lat])) {
@@ -168,6 +162,23 @@ export function countryIdAtPixel(
     }
   }
   return null;
+}
+
+/**
+ * 画面上の点がどの国に属するか（面積の小さいポリゴンを先に判定）。
+ *
+ * `pathDById` があるときは **Mercator に投影した SVG path（画面と同一ジオメトリ）** に対して
+ * `Path2D` + `isPointInPath` で判定する。球面の `geoContains` だけだと、島嶼・ズーム大で
+ * 「海上なのにモルディブ」など描画と不一致になるケースがある。
+ */
+export function countryIdAtPixel(
+  projection: GeoProjection,
+  features: readonly CountryFeature[],
+  x: number,
+  y: number,
+  pathDById?: ReadonlyMap<string, string>
+): string | null {
+  return countryIdAtPixelOnSorted(projection, sortFeaturesForHitTest(features), x, y, pathDById);
 }
 
 /** 海上クリック時、重心への近傍で国を拾うときの既定上限（画面上の px） */

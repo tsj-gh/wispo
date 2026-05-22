@@ -1,7 +1,7 @@
 import { geoPath, type GeoProjection } from "d3-geo";
 import type { Feature, GeoJsonProperties, Geometry } from "geojson";
 import {
-  countryIdAtPixel,
+  countryIdAtPixelOnSorted,
   largestPolygonPieceFromFeature,
   projectMainlandCentroid,
   projectedFeatureArea,
@@ -59,7 +59,7 @@ function sampleOverlapScore(
   flagVisualScale: number,
   targetCountryId: string,
   projection: GeoProjection,
-  hitFeatures: readonly CountryFeature[],
+  sortedHitFeatures: readonly CountryFeature[],
   pathDById: Map<string, string>
 ): { other: number; target: number; sea: number } {
   const { hw, hh } = flagHalfExtents(cardW, cardH, flagVisualScale);
@@ -72,7 +72,7 @@ function sampleOverlapScore(
       const v = (row + 0.5) / SAMPLE_ROWS - 0.5;
       const x = flagX + u * 2 * hw;
       const y = flagY + v * 2 * hh;
-      const id = countryIdAtPixel(projection, hitFeatures, x, y, pathDById);
+      const id = countryIdAtPixelOnSorted(projection, sortedHitFeatures, x, y, pathDById);
       if (!id) {
         sea++;
       } else if (id === targetCountryId) {
@@ -91,7 +91,7 @@ function pickBubbleDirection(
   targetCountryId: string,
   piece: Feature<Geometry, GeoJsonProperties>,
   projection: GeoProjection,
-  hitFeatures: readonly CountryFeature[],
+  sortedHitFeatures: readonly CountryFeature[],
   pathDById: Map<string, string>,
   cardW: number,
   cardH: number,
@@ -134,7 +134,7 @@ function pickBubbleDirection(
         flagVisualScale,
         targetCountryId,
         projection,
-        hitFeatures,
+        sortedHitFeatures,
         pathDById
       );
       const score = other * 100 + target * 8 - sea * 2;

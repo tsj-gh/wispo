@@ -308,6 +308,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   );
   const placedRef = useRef(placedByCard);
   placedRef.current = placedByCard;
+  const placedByCardForLayoutRef = useRef(placedByCard);
+  placedByCardForLayoutRef.current = placedByCard;
 
   const [floatByCard, setFloatByCard] = useState<Record<string, FloatingBubbleLike>>({});
   const floatRef = useRef(floatByCard);
@@ -1096,20 +1098,18 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     [dragTargetCountryId, size.w, size.h, buildPlacementLayout]
   );
 
+  /** 吹き出し閾値変更時のみ再配置（endDrag で layout は既に設定済み） */
   useEffect(() => {
     if (!projection || !pointerRegionModel) return;
-    const entries = Object.entries(placedByCard);
-    if (!entries.length) {
-      setPlacedLayoutByCard({});
-      return;
-    }
+    const entries = Object.entries(placedByCardForLayoutRef.current);
+    if (!entries.length) return;
     const next: Record<string, FlagBubbleLayout> = {};
     for (const [cardId, countryId] of entries) {
       const layout = buildPlacementLayout(countryId);
       if (layout) next[cardId] = layout;
     }
     setPlacedLayoutByCard(next);
-  }, [placedByCard, buildPlacementLayout, projection, pointerRegionModel]);
+  }, [flagBubbleAreaThresholdPct, buildPlacementLayout, projection, pointerRegionModel]);
 
   const handleCardPointerDown = (cardId: string, e: ReactPointerEvent) => {
     if (answered) return;
