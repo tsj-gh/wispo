@@ -90,11 +90,11 @@ const MAP_LAND_REGION_QUIET = "color-mix(in srgb, var(--color-muted) 14%, transp
 const MAP_BORDER_STROKE = "color-mix(in srgb, var(--color-text) 26%, transparent)";
 /** ホバー時の太い輪郭（以前のホバー fill トーンに合わせる） */
 const MAP_HOVER_STROKE = "color-mix(in srgb, var(--color-primary) 72%, transparent)";
-/** ドラッグ着弾候補の輪郭（やや濃いめ） */
-const MAP_DRAG_STROKE = "color-mix(in srgb, var(--color-primary) 88%, transparent)";
-
-/** Tailwind の `in_srgb` はクラス名用エスケープ。生の CSS では `in srgb` とスペースが必須。 */
-const MAP_FILL_DRAG = "color-mix(in srgb, var(--color-primary) 42%, transparent)";
+/** ドラッグ着弾候補の輪郭（マイルドな青） */
+const MAP_DRAG_STROKE = "rgba(59, 130, 246, 0.72)";
+/** ドラッグ中・配置待ちの領域塗り（正誤色と区別する薄い青） */
+const MAP_FILL_DRAG_TARGET = "rgba(59, 130, 246, 0.2)";
+const MAP_FILL_PLACED = "rgba(139, 92, 246, 0.18)";
 const MAP_FILL_CORRECT = "color-mix(in srgb, #22c55e 42%, transparent)";
 const MAP_FILL_WRONG = "color-mix(in srgb, #ef4444 42%, transparent)";
 
@@ -195,6 +195,27 @@ function localToMap([sx, sy]: [number, number], zoomTf: ZoomPlain): [number, num
 }
 
 type PlayCard = { id: string; alpha2: string };
+
+function countryMapPathClass(
+  id: string,
+  opts: {
+    drag: boolean;
+    dragTargetCountryId: string | null;
+    answered: boolean;
+    placedCountryIds: Set<string>;
+    resultByCountryId: Record<string, "correct" | "wrong">;
+  }
+): string {
+  const parts = ["fg-map-country"];
+  if (opts.drag && opts.dragTargetCountryId === id) parts.push("is-drag-target");
+  if (!opts.answered && opts.placedCountryIds.has(id)) parts.push("is-placed");
+  if (opts.answered) {
+    const r = opts.resultByCountryId[id];
+    if (r === "correct") parts.push("is-judge-correct");
+    if (r === "wrong") parts.push("is-judge-wrong");
+  }
+  return parts.join(" ");
+}
 
 type CanvasDrawSnapshot = {
   logicalW: number;
@@ -891,6 +912,22 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     setMapHoverCrossMap(null);
   }, [drag]);
 
+  const placedCountryIds = useMemo(
+    () => new Set(Object.values(placedByCard).filter((x): x is string => Boolean(x))),
+    [placedByCard]
+  );
+
+  const mapPathClassOpts = useMemo(
+    () => ({
+      drag: Boolean(drag),
+      dragTargetCountryId,
+      answered,
+      placedCountryIds,
+      resultByCountryId,
+    }),
+    [drag, dragTargetCountryId, answered, placedCountryIds, resultByCountryId]
+  );
+
   const countryFill = useCallback(
     (id: string): string => {
       if (answered) {
@@ -898,10 +935,11 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         if (m === "correct") return MAP_FILL_CORRECT;
         if (m === "wrong") return MAP_FILL_WRONG;
       }
-      if (drag && dragTargetCountryId === id) return MAP_FILL_DRAG;
+      if (drag && dragTargetCountryId === id) return MAP_FILL_DRAG_TARGET;
+      if (placedCountryIds.has(id)) return MAP_FILL_PLACED;
       return MAP_LAND_REGION_QUIET;
     },
-    [answered, resultByCountryId, drag, dragTargetCountryId]
+    [answered, resultByCountryId, drag, dragTargetCountryId, placedCountryIds]
   );
 
   const beginDrag = useCallback(
@@ -1107,6 +1145,88 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     const k = Math.max(zoomTransform.k, 0.08);
     return Math.max((borderStrokeWidth * 3.6) / k, 2.6 / k);
   }, [zoomTransform.k, borderStrokeWidth]);
+
+  const mapJudgeOverlay = useMemo(() => {
+    const rm = regionModelForCanvas ?? regionModel;
+    const proj = projection;
+    if (!rm || !proj || !answered) return null;
+    const judgedIds = Object.keys(resultByCountryId);
+    if (!judgedIds.length) return null;
+
+    return (
+      <svg
+        className="pointer-events-none absolute left-0 top-0 z-[9] block select-none"
+        width={size.w}
+        height={size.h}
+        aria-hidden
+      >
+        <g transform={gTransform}>
+          {judgedIds.map((id) => {
+            const verdict = resultByCountryId[id];
+            const d = rm.pathDById.get(id);
+            const feat = rm.allFeatures.find((f) => String(f.id) === id);
+            if (!d || !feat || !verdict) return null;
+            const c = projectCentroid(proj, feat as CountryFeature);
+            if (!c) return null;
+            const [cx, cy] = c;
+
+            if (verdict === "wrong") {
+              return (
+                <g
+                  key={id}
+                  transform={`translate(${cx},${cy})`}
+                  className="fg-map-shake-wrap is-judge-wrong"
+                >
+                  <path
+                    d={d}
+                    transform={`translate(${-cx},${-cy})`}
+                    className="fg-map-country-outline is-judge-wrong"
+                    style={{
+                      fill: MAP_FILL_WRONG,
+                      stroke: "#ef4444",
+                      strokeWidth: borderStrokeWidth * 2.8,
+                      strokeLinecap: "round",
+                      strokeLinejoin: "round",
+                      vectorEffect: "non-scaling-stroke",
+                    }}
+                  />
+                </g>
+              );
+            }
+
+            return (
+              <g key={id}>
+                <circle cx={cx} cy={cy} className="fg-map-ripple-ring" />
+                <path
+                  d={d}
+                  className={`fg-map-country-outline is-judge-correct ${countryMapPathClass(id, mapPathClassOpts)}`}
+                  style={{
+                    fill: "none",
+                    stroke: "#4ade80",
+                    strokeWidth: borderStrokeWidth * 2.6,
+                    strokeLinecap: "round",
+                    strokeLinejoin: "round",
+                    vectorEffect: "non-scaling-stroke",
+                  }}
+                />
+              </g>
+            );
+          })}
+        </g>
+      </svg>
+    );
+  }, [
+    regionModelForCanvas,
+    regionModel,
+    projection,
+    answered,
+    resultByCountryId,
+    size.w,
+    size.h,
+    gTransform,
+    mapPathClassOpts,
+    borderStrokeWidth,
+  ]);
 
   const hoverCountryLabel = useMemo(() => {
     if (!hoverCountryId) return null;
@@ -1515,7 +1635,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                         key={id}
                         data-fg-cid={id}
                         d={d}
-                        className="transition-[fill,stroke,stroke-width] duration-150"
+                        className={countryMapPathClass(id, mapPathClassOpts)}
                         style={{
                           fill: countryFill(id),
                           stroke: emphasisDrag ? MAP_DRAG_STROKE : emphasisHover ? MAP_HOVER_STROKE : MAP_BORDER_STROKE,
@@ -1542,6 +1662,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                 onPointerLeave={handleMapLeave}
               />
             )}
+
+            {mapJudgeOverlay}
 
             {loadingHighDetail && (
               <div className="pointer-events-none absolute bottom-1 left-1 z-[11] rounded border border-[color-mix(in_srgb,var(--color-primary)_25%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_90%,transparent)] px-1.5 py-0.5 text-[9px] text-[var(--color-muted)] backdrop-blur-sm">
@@ -1639,7 +1761,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                       <button
                         key={`stuck-${c.id}`}
                         type="button"
-                        className="pointer-events-auto absolute z-20 flex cursor-default items-center justify-center overflow-hidden rounded-md border-2 border-white/40 bg-white/10 p-1 shadow-md backdrop-blur-sm"
+                        className={`fg-flag-card pointer-events-auto absolute z-20 flex cursor-default items-center justify-center overflow-hidden rounded-md border-2 border-white/40 bg-white/10 p-1 shadow-md backdrop-blur-sm ${!answered ? "is-judging" : ""}`}
                         style={{
                           left: p[0],
                           top: p[1],
