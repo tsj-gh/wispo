@@ -35,6 +35,7 @@ import {
   flagBubbleHitTestSampleCount,
   flagBubbleSearchCandidateCount,
   flagCardEdgeTowardAnchor,
+  refreshFlagLayoutForViewport,
   type FlagBubbleLayout,
   type FlagBubbleSearchTuning,
 } from "@/lib/flag-guesser/flagBubblePlacement";
@@ -133,6 +134,18 @@ type DragState = {
 function mapUnitsPerScreenPx(zoomK: number): number {
   return 1 / Math.max(zoomK, 0.08);
 }
+
+/** ズーム親 `scale(k)` 内の SVG で、画面上のストローク太さを k=1 相当に保つ */
+function mapOverlayStrokeWidth(baseScreenPx: number, zoomK: number): number {
+  return baseScreenPx / Math.max(zoomK, 0.08);
+}
+
+const MAP_CROSS_GAP_SCREEN_PX = 1;
+const MAP_CROSS_ARM_SCREEN_PX = 14;
+const MAP_CROSS_STROKE_LAND_PX = 1.65;
+const MAP_CROSS_STROKE_SEA_PX = 1.05;
+const MAP_CONNECTOR_STROKE_PX = 2.2;
+const MAP_CONNECTOR_STROKE_DRAG_SEA_PX = 1.2;
 
 function dragCardTargetFromPointer(
   px: number,
@@ -312,6 +325,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
 
   const [placedByCard, setPlacedByCard] = useState<Record<string, string>>({});
   const [placedLayoutByCard, setPlacedLayoutByCard] = useState<Record<string, FlagBubbleLayout>>({});
+  const placedLayoutRef = useRef(placedLayoutByCard);
+  placedLayoutRef.current = placedLayoutByCard;
   const [flagBubbleAreaThresholdPct, setFlagBubbleAreaThresholdPct] = useState(
     DEFAULT_FLAG_BUBBLE_AREA_THRESHOLD_PCT
   );
@@ -932,7 +947,10 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   }, [mapRenderBackend]);
 
   const buildPlacementLayout = useCallback(
-    (countryId: string, opts?: { anchorPreviewOnly?: boolean }): FlagBubbleLayout | null => {
+    (
+      countryId: string,
+      opts?: { anchorPreviewOnly?: boolean; hintMapPoint?: [number, number] }
+    ): FlagBubbleLayout | null => {
       if (!projection || !pointerRegionModel) return null;
       const feat = pointerRegionModel.allFeatures.find((f) => String(f.id) === countryId);
       if (!feat) return null;
@@ -950,6 +968,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         mapHeight: size.h,
         searchTuning: flagBubbleSearchTuning,
         anchorPreviewOnly: opts?.anchorPreviewOnly,
+        hintMapPoint: opts?.hintMapPoint,
       });
     },
     [
@@ -1122,14 +1141,18 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
           return;
         }
         setPlacedByCard((prev) => ({ ...prev, [cardId]: countryId }));
-        const preview = buildPlacementLayout(countryId, { anchorPreviewOnly: true });
+        const dropHint: [number, number] | undefined = lastMap ? [lastMap.x, lastMap.y] : undefined;
+        const preview = buildPlacementLayout(countryId, {
+          anchorPreviewOnly: true,
+          hintMapPoint: dropHint,
+        });
         if (preview) {
           setPlacedLayoutByCard((prev) => ({ ...prev, [cardId]: preview }));
         }
         requestAnimationFrame(() => {
           startTransition(() => {
             if (placedRef.current[cardId] !== countryId) return;
-            const layout = buildPlacementLayout(countryId);
+            const layout = buildPlacementLayout(countryId, { hintMapPoint: dropHint });
             if (!layout) return;
             setPlacedLayoutByCard((prev) => ({ ...prev, [cardId]: layout }));
             if (layout.useBubble) {
@@ -1151,14 +1174,45 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     [dragTargetCountryId, size.w, size.h, buildPlacementLayout]
   );
 
-  /** 吹き出し閾値変更時のみ再配置（endDrag で layout は既に設定済み） */
+  /** パン・ズームで見えているポリゴン内へ国旗表示位置を追従（探索は再実行しない） */
+  useEffect(() => {
+    if (!projection || !pointerRegionModel) return;
+    const entries = Object.entries(placedByCardForLayoutRef.current);
+    if (!entries.length) return;
+    startTransition(() => {
+      const next = { ...placedLayoutRef.current };
+      for (const [cardId, countryId] of entries) {
+        const prev = next[cardId];
+        if (!prev) continue;
+        const feat = pointerRegionModel.allFeatures.find((f) => String(f.id) === countryId);
+        if (!feat) continue;
+        const refreshed = refreshFlagLayoutForViewport(prev, {
+          projection,
+          targetFeature: feat as CountryFeature,
+          mapWidth: size.w,
+          mapHeight: size.h,
+          cardW: CARD_W,
+          cardH: CARD_H,
+          flagVisualScale,
+          hintMapPoint: [prev.flagX, prev.flagY],
+        });
+        if (refreshed) next[cardId] = refreshed;
+        else delete next[cardId];
+      }
+      setPlacedLayoutByCard(next);
+    });
+  }, [zoomTransform, projection, pointerRegionModel, size.w, size.h, flagVisualScale]);
+
+  /** 吹き出し閾値・探索パラメータ変更時はフル再配置 */
   useEffect(() => {
     if (!projection || !pointerRegionModel) return;
     const entries = Object.entries(placedByCardForLayoutRef.current);
     if (!entries.length) return;
     const next: Record<string, FlagBubbleLayout> = {};
     for (const [cardId, countryId] of entries) {
-      const layout = buildPlacementLayout(countryId);
+      const prev = placedLayoutRef.current[cardId];
+      const hint: [number, number] | undefined = prev ? [prev.flagX, prev.flagY] : undefined;
+      const layout = buildPlacementLayout(countryId, { hintMapPoint: hint });
       if (layout) next[cardId] = layout;
     }
     setPlacedLayoutByCard(next);
@@ -1871,12 +1925,14 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                   const k = Math.max(zoomTransform.k, 0.08);
                   const px = mapHoverCrossMap.x;
                   const py = mapHoverCrossMap.y;
-                  const unit = mapUnitsPerScreenPx(k);
-                  const gap = unit;
-                  const arm = 14 * unit;
+                  const gap = MAP_CROSS_GAP_SCREEN_PX * mapUnitsPerScreenPx(k);
+                  const arm = MAP_CROSS_ARM_SCREEN_PX * mapUnitsPerScreenPx(k);
                   const onLand = hoverCountryId !== null;
                   const stroke = onLand ? "var(--color-primary)" : "rgba(42,42,48,0.92)";
-                  const sw = onLand ? 1.65 : 1.05;
+                  const sw = mapOverlayStrokeWidth(
+                    onLand ? MAP_CROSS_STROKE_LAND_PX : MAP_CROSS_STROKE_SEA_PX,
+                    k
+                  );
                   return (
                     <svg
                       className="pointer-events-none absolute left-0 top-0 z-[38] overflow-visible"
@@ -1962,7 +2018,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                             <path
                               d={connD}
                               className="fg-flag-bubble-connector"
-                              strokeWidth={2.2}
+                              strokeWidth={mapOverlayStrokeWidth(MAP_CONNECTOR_STROKE_PX, zoomTransform.k)}
                             />
                           </svg>
                         )}
@@ -2013,12 +2069,17 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                     const cardR = (CARD_DIAM / 2) * flagVisualScale;
                     const [tx, ty] = circleEdgeNearestPointer(px, py, cx, cy, cardR);
                     const inCountry = dragTargetCountryId !== null;
-                    const unit = mapUnitsPerScreenPx(k);
-                    const gap = unit;
-                    const arm = 14 * unit;
+                    const gap = MAP_CROSS_GAP_SCREEN_PX * mapUnitsPerScreenPx(k);
+                    const arm = MAP_CROSS_ARM_SCREEN_PX * mapUnitsPerScreenPx(k);
                     const crossStroke = inCountry ? "var(--color-primary)" : "rgba(42,42,48,0.92)";
-                    const crossW = inCountry ? 1.65 : 1.05;
-                    const connStroke = inCountry ? 2.2 : 1.2;
+                    const crossW = mapOverlayStrokeWidth(
+                      inCountry ? MAP_CROSS_STROKE_LAND_PX : MAP_CROSS_STROKE_SEA_PX,
+                      k
+                    );
+                    const connStroke = mapOverlayStrokeWidth(
+                      inCountry ? MAP_CONNECTOR_STROKE_PX : MAP_CONNECTOR_STROKE_DRAG_SEA_PX,
+                      k
+                    );
                     return (
                       <>
                         <svg

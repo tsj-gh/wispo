@@ -6,11 +6,12 @@ import {
   projectMainlandCentroid,
   projectedFeatureArea,
   sortFeaturesForHitTest,
+  visiblePlacementBaseForCountry,
 } from "@/lib/flag-guesser/mapProjections";
 import type { CountryFeature } from "@/lib/flag-guesser/types";
 
 export type FlagBubbleLayout = {
-  /** 最大陸塊重心（地図座標）— 指し示し先 */
+  /** 最大陸塊重心（地図座標）— 指し示し線の先 */
   anchorX: number;
   anchorY: number;
   /** 国旗カード中心（地図座標） */
@@ -19,6 +20,9 @@ export type FlagBubbleLayout = {
   useBubble: boolean;
   /** 国旗矩形面積 / 最大陸塊投影面積 × 100 */
   areaRatioPercent: number;
+  /** 吹き出し探索基準点からのオフセット（パン時に基準点だけ更新） */
+  placementOffsetX: number;
+  placementOffsetY: number;
 };
 
 /** 距離段の倍率（段数スライダーは先頭から何段使うか） */
@@ -33,9 +37,9 @@ export type FlagBubbleSearchTuning = {
 };
 
 export const DEFAULT_FLAG_BUBBLE_SEARCH_TUNING: FlagBubbleSearchTuning = {
-  directionCount: 32,
-  sampleCols: 6,
-  sampleRows: 5,
+  directionCount: 16,
+  sampleCols: 4,
+  sampleRows: 4,
   distanceStepCount: 3,
 };
 
@@ -50,6 +54,10 @@ export function flagBubbleHitTestSampleCount(tuning: FlagBubbleSearchTuning): nu
     Math.max(1, tuning.sampleCols) *
     Math.max(1, tuning.sampleRows)
   );
+}
+
+function flagPlacementMarginPx(cardW: number, cardH: number, flagVisualScale: number): number {
+  return Math.max(cardW, cardH) * flagVisualScale * 0.55;
 }
 
 function flagHalfExtents(cardW: number, cardH: number, flagVisualScale: number) {
@@ -207,7 +215,43 @@ export type ComputeFlagBubbleLayoutInput = {
   searchTuning?: FlagBubbleSearchTuning;
   /** true のとき方向探索をスキップ（重心に仮置き・非同期の先行表示用） */
   anchorPreviewOnly?: boolean;
+  /** ドロップ位置など — 複数の見えているポリゴン片のうちどれを基準にするか */
+  hintMapPoint?: [number, number];
 };
+
+/** パン・ズーム後に表示基準点だけ更新（吹き出し探索はやり直さない） */
+export function refreshFlagLayoutForViewport(
+  layout: FlagBubbleLayout,
+  input: {
+    projection: GeoProjection;
+    targetFeature: CountryFeature;
+    mapWidth: number;
+    mapHeight: number;
+    cardW: number;
+    cardH: number;
+    flagVisualScale: number;
+    hintMapPoint?: [number, number];
+  }
+): FlagBubbleLayout | null {
+  const margin = flagPlacementMarginPx(input.cardW, input.cardH, input.flagVisualScale);
+  const base = visiblePlacementBaseForCountry(
+    input.projection,
+    input.targetFeature,
+    layout.anchorX,
+    layout.anchorY,
+    input.mapWidth,
+    input.mapHeight,
+    margin,
+    input.hintMapPoint
+  );
+  if (!base) return null;
+  const [baseX, baseY] = base;
+  return {
+    ...layout,
+    flagX: baseX + layout.placementOffsetX,
+    flagY: baseY + layout.placementOffsetY,
+  };
+}
 
 /**
  * 国旗が最大陸塊に対して大きいとき、周囲で他国との重なりが少ない方向へ吹き出す。
@@ -217,6 +261,20 @@ export function computeFlagBubbleLayout(input: ComputeFlagBubbleLayoutInput): Fl
   const anchor = projectMainlandCentroid(input.projection, input.targetFeature);
   if (!anchor) return null;
   const [anchorX, anchorY] = anchor;
+
+  const margin = flagPlacementMarginPx(input.cardW, input.cardH, input.flagVisualScale);
+  const placementBase = visiblePlacementBaseForCountry(
+    input.projection,
+    input.targetFeature,
+    anchorX,
+    anchorY,
+    input.mapWidth,
+    input.mapHeight,
+    margin,
+    input.hintMapPoint
+  );
+  if (!placementBase) return null;
+  const [baseX, baseY] = placementBase;
 
   const piece = largestPolygonPieceFromFeature(input.targetFeature);
   const countryArea = piece
@@ -233,18 +291,20 @@ export function computeFlagBubbleLayout(input: ComputeFlagBubbleLayoutInput): Fl
     return {
       anchorX,
       anchorY,
-      flagX: anchorX,
-      flagY: anchorY,
+      flagX: baseX,
+      flagY: baseY,
       useBubble: false,
       areaRatioPercent,
+      placementOffsetX: 0,
+      placementOffsetY: 0,
     };
   }
 
   const sortedHits = sortFeaturesForHitTest(input.hitFeatures);
   const pieceFeat = piece ?? input.targetFeature;
   const { flagX, flagY } = pickBubbleDirection(
-    anchorX,
-    anchorY,
+    baseX,
+    baseY,
     input.targetCountryId,
     pieceFeat as Feature<Geometry, GeoJsonProperties>,
     input.projection,
@@ -265,5 +325,7 @@ export function computeFlagBubbleLayout(input: ComputeFlagBubbleLayoutInput): Fl
     flagY,
     useBubble: true,
     areaRatioPercent,
+    placementOffsetX: flagX - baseX,
+    placementOffsetY: flagY - baseY,
   };
 }

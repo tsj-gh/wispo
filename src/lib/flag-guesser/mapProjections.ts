@@ -387,6 +387,107 @@ export function projectMainlandCentroid(
   return [p[0]!, p[1]!];
 }
 
+type ProjectedMapRect = { x0: number; y0: number; x1: number; y1: number };
+
+function intersectProjectedBoundsWithViewport(
+  [[bx0, by0], [bx1, by1]]: [[number, number], [number, number]],
+  mapWidth: number,
+  mapHeight: number,
+  marginPx: number
+): ProjectedMapRect | null {
+  const x0 = Math.max(Math.min(bx0, bx1), marginPx);
+  const y0 = Math.max(Math.min(by0, by1), marginPx);
+  const x1 = Math.min(Math.max(bx0, bx1), mapWidth - marginPx);
+  const y1 = Math.min(Math.max(by0, by1), mapHeight - marginPx);
+  if (x1 - x0 < 1 || y1 - y0 < 1) return null;
+  return { x0, y0, x1, y1 };
+}
+
+function pointInProjectedMapRect(x: number, y: number, r: ProjectedMapRect): boolean {
+  return x >= r.x0 && x <= r.x1 && y >= r.y0 && y <= r.y1;
+}
+
+function projectedMapRectArea(r: ProjectedMapRect): number {
+  return (r.x1 - r.x0) * (r.y1 - r.y0);
+}
+
+/**
+ * 盤面上に見えている国ポリゴン（各 Polygon 片の投影 bbox ∩ ビューポート）のうち、
+ * 真の吸着点（重心）を矩形内にクランプした表示用基準点。見えなければ null。
+ */
+export function visiblePlacementBaseForCountry(
+  projection: GeoProjection,
+  feat: CountryFeature,
+  trueAnchorX: number,
+  trueAnchorY: number,
+  mapWidth: number,
+  mapHeight: number,
+  marginPx: number,
+  hintMapPoint?: [number, number]
+): [number, number] | null {
+  const geometry = feat.geometry;
+  if (!geometry) return null;
+  const path = geoPath(projection);
+  const candidates: { rect: ProjectedMapRect; area: number }[] = [];
+
+  for (const piece of polygonPiecesFromGeometry(geometry)) {
+    let bounds: [[number, number], [number, number]];
+    try {
+      bounds = path.bounds(piece as Parameters<typeof path.bounds>[0]);
+    } catch {
+      continue;
+    }
+    if (
+      !Number.isFinite(bounds[0][0]) ||
+      !Number.isFinite(bounds[0][1]) ||
+      !Number.isFinite(bounds[1][0]) ||
+      !Number.isFinite(bounds[1][1])
+    ) {
+      continue;
+    }
+    const rect = intersectProjectedBoundsWithViewport(bounds, mapWidth, mapHeight, marginPx);
+    if (!rect) continue;
+    candidates.push({ rect, area: projectedMapRectArea(rect) });
+  }
+
+  if (!candidates.length) return null;
+
+  let chosen = candidates[0]!.rect;
+
+  if (hintMapPoint) {
+    const [hx, hy] = hintMapPoint;
+    const containing = candidates.filter((c) => pointInProjectedMapRect(hx, hy, c.rect));
+    if (containing.length) {
+      chosen = containing.reduce((best, c) => (c.area > best.area ? c : best), containing[0]!).rect;
+    } else {
+      let bestD = Infinity;
+      for (const c of candidates) {
+        const cx = (c.rect.x0 + c.rect.x1) / 2;
+        const cy = (c.rect.y0 + c.rect.y1) / 2;
+        const d = (cx - hx) ** 2 + (cy - hy) ** 2;
+        if (d < bestD) {
+          bestD = d;
+          chosen = c.rect;
+        }
+      }
+    }
+  } else {
+    const anchorVisible = candidates.find((c) =>
+      pointInProjectedMapRect(trueAnchorX, trueAnchorY, c.rect)
+    );
+    if (anchorVisible) {
+      chosen = anchorVisible.rect;
+    } else {
+      chosen = candidates.reduce((best, c) => (c.area > best.area ? c : best), candidates[0]!).rect;
+    }
+  }
+
+  return [
+    Math.max(chosen.x0, Math.min(chosen.x1, trueAnchorX)),
+    Math.max(chosen.y0, Math.min(chosen.y1, trueAnchorY)),
+  ];
+}
+
 type BuildRoundInput = {
   target: Iso3166Row;
   region: string;
