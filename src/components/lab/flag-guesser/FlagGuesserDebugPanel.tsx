@@ -39,6 +39,17 @@ export type FlagGuesserDebugPanelProps = {
   /** 国旗面積 / 最大陸塊面積 がこの % 以上で吹き出し */
   flagBubbleAreaThresholdPct: number;
   setFlagBubbleAreaThresholdPct: (n: number) => void;
+  /** 吹き出し方向探索（候補数・ヒットテスト回数の調整） */
+  flagBubbleDirectionCount: number;
+  setFlagBubbleDirectionCount: (n: number) => void;
+  flagBubbleSampleCols: number;
+  setFlagBubbleSampleCols: (n: number) => void;
+  flagBubbleSampleRows: number;
+  setFlagBubbleSampleRows: (n: number) => void;
+  flagBubbleDistanceSteps: number;
+  setFlagBubbleDistanceSteps: (n: number) => void;
+  flagBubbleSearchCandidateCount: number;
+  flagBubbleHitTestSampleCount: number;
 };
 
 /**
@@ -73,6 +84,16 @@ export function FlagGuesserDebugPanel({
   canvasMapInteracting,
   flagBubbleAreaThresholdPct,
   setFlagBubbleAreaThresholdPct,
+  flagBubbleDirectionCount,
+  setFlagBubbleDirectionCount,
+  flagBubbleSampleCols,
+  setFlagBubbleSampleCols,
+  flagBubbleSampleRows,
+  setFlagBubbleSampleRows,
+  flagBubbleDistanceSteps,
+  setFlagBubbleDistanceSteps,
+  flagBubbleSearchCandidateCount,
+  flagBubbleHitTestSampleCount,
 }: FlagGuesserDebugPanelProps) {
   return (
     <div className="w-full">
@@ -214,6 +235,69 @@ export function FlagGuesserDebugPanel({
                     className="w-full accent-[var(--color-primary)]"
                   />
                   <div className="tabular-nums">{flagBubbleAreaThresholdPct}%</div>
+                </label>
+                <p className="mb-2 mt-3 text-[9px] leading-snug">
+                  探索コスト（小さいほど軽い・大きいほど重なり回避の精度向上）。候補{" "}
+                  <span className="tabular-nums font-semibold text-[var(--color-text)]">
+                    {flagBubbleSearchCandidateCount}
+                  </span>
+                  ・ヒットテスト約{" "}
+                  <span className="tabular-nums font-semibold text-[var(--color-text)]">
+                    {flagBubbleHitTestSampleCount}
+                  </span>
+                  回／配置
+                </p>
+                <label className="mb-2 block">
+                  <div className="mb-0.5 font-semibold text-[var(--color-text)]">方向数</div>
+                  <input
+                    type="range"
+                    min={8}
+                    max={32}
+                    step={1}
+                    value={flagBubbleDirectionCount}
+                    onChange={(e) => setFlagBubbleDirectionCount(Number(e.target.value))}
+                    className="w-full accent-[var(--color-primary)]"
+                  />
+                  <div className="tabular-nums">{flagBubbleDirectionCount}</div>
+                </label>
+                <label className="mb-2 block">
+                  <div className="mb-0.5 font-semibold text-[var(--color-text)]">サンプル列（国旗矩形内）</div>
+                  <input
+                    type="range"
+                    min={3}
+                    max={8}
+                    step={1}
+                    value={flagBubbleSampleCols}
+                    onChange={(e) => setFlagBubbleSampleCols(Number(e.target.value))}
+                    className="w-full accent-[var(--color-primary)]"
+                  />
+                  <div className="tabular-nums">{flagBubbleSampleCols}</div>
+                </label>
+                <label className="mb-2 block">
+                  <div className="mb-0.5 font-semibold text-[var(--color-text)]">サンプル行</div>
+                  <input
+                    type="range"
+                    min={3}
+                    max={8}
+                    step={1}
+                    value={flagBubbleSampleRows}
+                    onChange={(e) => setFlagBubbleSampleRows(Number(e.target.value))}
+                    className="w-full accent-[var(--color-primary)]"
+                  />
+                  <div className="tabular-nums">{flagBubbleSampleRows}</div>
+                </label>
+                <label className="block">
+                  <div className="mb-0.5 font-semibold text-[var(--color-text)]">距離段数</div>
+                  <input
+                    type="range"
+                    min={1}
+                    max={3}
+                    step={1}
+                    value={flagBubbleDistanceSteps}
+                    onChange={(e) => setFlagBubbleDistanceSteps(Number(e.target.value))}
+                    className="w-full accent-[var(--color-primary)]"
+                  />
+                  <div className="tabular-nums">{flagBubbleDistanceSteps}</div>
                 </label>
               </div>
 

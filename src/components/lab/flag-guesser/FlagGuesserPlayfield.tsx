@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import {
+  startTransition,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -30,8 +31,12 @@ import {
 import { FlagGuesserPopBurstRipple } from "@/components/lab/flag-guesser/FlagGuesserPopBurstRipple";
 import {
   computeFlagBubbleLayout,
+  DEFAULT_FLAG_BUBBLE_SEARCH_TUNING,
+  flagBubbleHitTestSampleCount,
+  flagBubbleSearchCandidateCount,
   flagCardEdgeTowardAnchor,
   type FlagBubbleLayout,
+  type FlagBubbleSearchTuning,
 } from "@/lib/flag-guesser/flagBubblePlacement";
 import { geoPath, type GeoProjection } from "d3-geo";
 import type { CountryFeature, Iso3166Row, RegionRoundModel } from "@/lib/flag-guesser/types";
@@ -116,6 +121,10 @@ const DEFAULT_DRAG_CARD_SCREEN_OFFSET_PX = 80;
 const DEFAULT_DRAG_CARD_SPRING = 0.22;
 /** 国旗面積 / 最大陸塊面積 がこの % 以上で吹き出し */
 const DEFAULT_FLAG_BUBBLE_AREA_THRESHOLD_PCT = 80;
+const DEFAULT_FLAG_BUBBLE_DIRECTION_COUNT = DEFAULT_FLAG_BUBBLE_SEARCH_TUNING.directionCount;
+const DEFAULT_FLAG_BUBBLE_SAMPLE_COLS = DEFAULT_FLAG_BUBBLE_SEARCH_TUNING.sampleCols;
+const DEFAULT_FLAG_BUBBLE_SAMPLE_ROWS = DEFAULT_FLAG_BUBBLE_SEARCH_TUNING.sampleRows;
+const DEFAULT_FLAG_BUBBLE_DISTANCE_STEPS = DEFAULT_FLAG_BUBBLE_SEARCH_TUNING.distanceStepCount;
 
 type DragState = {
   cardId: string;
@@ -305,6 +314,32 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   const [placedLayoutByCard, setPlacedLayoutByCard] = useState<Record<string, FlagBubbleLayout>>({});
   const [flagBubbleAreaThresholdPct, setFlagBubbleAreaThresholdPct] = useState(
     DEFAULT_FLAG_BUBBLE_AREA_THRESHOLD_PCT
+  );
+  const [flagBubbleDirectionCount, setFlagBubbleDirectionCount] = useState(
+    DEFAULT_FLAG_BUBBLE_DIRECTION_COUNT
+  );
+  const [flagBubbleSampleCols, setFlagBubbleSampleCols] = useState(DEFAULT_FLAG_BUBBLE_SAMPLE_COLS);
+  const [flagBubbleSampleRows, setFlagBubbleSampleRows] = useState(DEFAULT_FLAG_BUBBLE_SAMPLE_ROWS);
+  const [flagBubbleDistanceSteps, setFlagBubbleDistanceSteps] = useState(
+    DEFAULT_FLAG_BUBBLE_DISTANCE_STEPS
+  );
+  const flagBubbleSearchTuning = useMemo<FlagBubbleSearchTuning>(
+    () => ({
+      directionCount: flagBubbleDirectionCount,
+      sampleCols: flagBubbleSampleCols,
+      sampleRows: flagBubbleSampleRows,
+      distanceStepCount: flagBubbleDistanceSteps,
+    }),
+    [
+      flagBubbleDirectionCount,
+      flagBubbleSampleCols,
+      flagBubbleSampleRows,
+      flagBubbleDistanceSteps,
+    ]
+  );
+  /** 吹き出し確定時に pop アニメを再トリガーする */
+  const [placedLayoutAnimKeyByCard, setPlacedLayoutAnimKeyByCard] = useState<Record<string, number>>(
+    {}
   );
   const placedRef = useRef(placedByCard);
   placedRef.current = placedByCard;
@@ -757,6 +792,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       setRoundPlan(plan);
       setPlacedByCard({});
       setPlacedLayoutByCard({});
+      setPlacedLayoutAnimKeyByCard({});
       setAnswered(false);
       setResultByCountryId({});
       setHoverCountryId(null);
@@ -896,7 +932,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   }, [mapRenderBackend]);
 
   const buildPlacementLayout = useCallback(
-    (countryId: string): FlagBubbleLayout | null => {
+    (countryId: string, opts?: { anchorPreviewOnly?: boolean }): FlagBubbleLayout | null => {
       if (!projection || !pointerRegionModel) return null;
       const feat = pointerRegionModel.allFeatures.find((f) => String(f.id) === countryId);
       if (!feat) return null;
@@ -912,6 +948,8 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         thresholdPercent: flagBubbleAreaThresholdPct,
         mapWidth: size.w,
         mapHeight: size.h,
+        searchTuning: flagBubbleSearchTuning,
+        anchorPreviewOnly: opts?.anchorPreviewOnly,
       });
     },
     [
@@ -919,6 +957,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       pointerRegionModel,
       flagVisualScale,
       flagBubbleAreaThresholdPct,
+      flagBubbleSearchTuning,
       size.w,
       size.h,
     ]
@@ -1082,11 +1121,25 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
           }));
           return;
         }
-        const layout = buildPlacementLayout(countryId);
         setPlacedByCard((prev) => ({ ...prev, [cardId]: countryId }));
-        if (layout) {
-          setPlacedLayoutByCard((prev) => ({ ...prev, [cardId]: layout }));
+        const preview = buildPlacementLayout(countryId, { anchorPreviewOnly: true });
+        if (preview) {
+          setPlacedLayoutByCard((prev) => ({ ...prev, [cardId]: preview }));
         }
+        requestAnimationFrame(() => {
+          startTransition(() => {
+            if (placedRef.current[cardId] !== countryId) return;
+            const layout = buildPlacementLayout(countryId);
+            if (!layout) return;
+            setPlacedLayoutByCard((prev) => ({ ...prev, [cardId]: layout }));
+            if (layout.useBubble) {
+              setPlacedLayoutAnimKeyByCard((prev) => ({
+                ...prev,
+                [cardId]: (prev[cardId] ?? 0) + 1,
+              }));
+            }
+          });
+        });
         return;
       }
 
@@ -1109,7 +1162,13 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       if (layout) next[cardId] = layout;
     }
     setPlacedLayoutByCard(next);
-  }, [flagBubbleAreaThresholdPct, buildPlacementLayout, projection, pointerRegionModel]);
+  }, [
+    flagBubbleAreaThresholdPct,
+    flagBubbleSearchTuning,
+    buildPlacementLayout,
+    projection,
+    pointerRegionModel,
+  ]);
 
   const handleCardPointerDown = (cardId: string, e: ReactPointerEvent) => {
     if (answered) return;
@@ -1526,6 +1585,16 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       canvasMapInteracting,
       flagBubbleAreaThresholdPct,
       setFlagBubbleAreaThresholdPct,
+      flagBubbleDirectionCount,
+      setFlagBubbleDirectionCount,
+      flagBubbleSampleCols,
+      setFlagBubbleSampleCols,
+      flagBubbleSampleRows,
+      setFlagBubbleSampleRows,
+      flagBubbleDistanceSteps,
+      setFlagBubbleDistanceSteps,
+      flagBubbleSearchCandidateCount: flagBubbleSearchCandidateCount(flagBubbleSearchTuning),
+      flagBubbleHitTestSampleCount: flagBubbleHitTestSampleCount(flagBubbleSearchTuning),
     });
     return () => onDebugPanelPropsChange(null);
   }, [
@@ -1536,6 +1605,11 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     dragCardScreenOffsetPx,
     dragCardSpring,
     flagBubbleAreaThresholdPct,
+    flagBubbleDirectionCount,
+    flagBubbleSampleCols,
+    flagBubbleSampleRows,
+    flagBubbleDistanceSteps,
+    flagBubbleSearchTuning,
     listedCountryLabelsJa,
     mapDebugCenterScale,
     onEnumerateVisible,
@@ -1858,6 +1932,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                     if (!cid || drag?.cardId === c.id) return null;
                     const layout = placedLayoutByCard[c.id];
                     if (!layout) return null;
+                    const layoutAnimKey = placedLayoutAnimKeyByCard[c.id] ?? 0;
                     const { anchorX, anchorY, flagX, flagY, useBubble } = layout;
                     const bubbleFromDx = anchorX - flagX;
                     const bubbleFromDy = anchorY - flagY;
@@ -1892,6 +1967,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
                           </svg>
                         )}
                         <button
+                          key={`stuck-btn-${c.id}-${layoutAnimKey}`}
                           type="button"
                           className={`fg-flag-card pointer-events-auto absolute flex cursor-default items-center justify-center overflow-hidden rounded-md border-2 border-white/40 bg-white/90 p-1 shadow-md backdrop-blur-sm ${useBubble ? "fg-flag-bubble-pop" : ""}`}
                           style={{

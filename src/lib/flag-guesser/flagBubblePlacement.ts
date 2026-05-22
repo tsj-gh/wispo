@@ -21,9 +21,36 @@ export type FlagBubbleLayout = {
   areaRatioPercent: number;
 };
 
-const DIRECTION_COUNT = 32;
-const SAMPLE_COLS = 6;
-const SAMPLE_ROWS = 5;
+/** 距離段の倍率（段数スライダーは先頭から何段使うか） */
+export const FLAG_BUBBLE_DISTANCE_MULTIPLIERS = [1, 1.18, 1.38] as const;
+
+export type FlagBubbleSearchTuning = {
+  directionCount: number;
+  sampleCols: number;
+  sampleRows: number;
+  /** `FLAG_BUBBLE_DISTANCE_MULTIPLIERS` の先頭 N 段 */
+  distanceStepCount: number;
+};
+
+export const DEFAULT_FLAG_BUBBLE_SEARCH_TUNING: FlagBubbleSearchTuning = {
+  directionCount: 32,
+  sampleCols: 6,
+  sampleRows: 5,
+  distanceStepCount: 3,
+};
+
+export function flagBubbleSearchCandidateCount(tuning: FlagBubbleSearchTuning): number {
+  const steps = Math.max(1, Math.min(FLAG_BUBBLE_DISTANCE_MULTIPLIERS.length, tuning.distanceStepCount));
+  return tuning.directionCount * steps;
+}
+
+export function flagBubbleHitTestSampleCount(tuning: FlagBubbleSearchTuning): number {
+  return (
+    flagBubbleSearchCandidateCount(tuning) *
+    Math.max(1, tuning.sampleCols) *
+    Math.max(1, tuning.sampleRows)
+  );
+}
 
 function flagHalfExtents(cardW: number, cardH: number, flagVisualScale: number) {
   const s = flagVisualScale;
@@ -60,16 +87,18 @@ function sampleOverlapScore(
   targetCountryId: string,
   projection: GeoProjection,
   sortedHitFeatures: readonly CountryFeature[],
-  pathDById: Map<string, string>
+  pathDById: Map<string, string>,
+  sampleCols: number,
+  sampleRows: number
 ): { other: number; target: number; sea: number } {
   const { hw, hh } = flagHalfExtents(cardW, cardH, flagVisualScale);
   let other = 0;
   let target = 0;
   let sea = 0;
-  for (let row = 0; row < SAMPLE_ROWS; row++) {
-    for (let col = 0; col < SAMPLE_COLS; col++) {
-      const u = (col + 0.5) / SAMPLE_COLS - 0.5;
-      const v = (row + 0.5) / SAMPLE_ROWS - 0.5;
+  for (let row = 0; row < sampleRows; row++) {
+    for (let col = 0; col < sampleCols; col++) {
+      const u = (col + 0.5) / sampleCols - 0.5;
+      const v = (row + 0.5) / sampleRows - 0.5;
       const x = flagX + u * 2 * hw;
       const y = flagY + v * 2 * hh;
       const id = countryIdAtPixelOnSorted(projection, sortedHitFeatures, x, y, pathDById);
@@ -97,7 +126,8 @@ function pickBubbleDirection(
   cardH: number,
   flagVisualScale: number,
   mapWidth: number,
-  mapHeight: number
+  mapHeight: number,
+  tuning: FlagBubbleSearchTuning
 ): { flagX: number; flagY: number } {
   const path = geoPath(projection);
   let minDist = Math.max(cardW, cardH) * flagVisualScale * 0.85;
@@ -111,16 +141,24 @@ function pickBubbleDirection(
   }
 
   const margin = Math.max(cardW, cardH) * flagVisualScale * 0.6;
+  const directionCount = Math.max(4, Math.min(64, Math.round(tuning.directionCount)));
+  const sampleCols = Math.max(2, Math.min(10, Math.round(tuning.sampleCols)));
+  const sampleRows = Math.max(2, Math.min(10, Math.round(tuning.sampleRows)));
+  const distSteps = Math.max(
+    1,
+    Math.min(FLAG_BUBBLE_DISTANCE_MULTIPLIERS.length, Math.round(tuning.distanceStepCount))
+  );
+
   let bestScore = Infinity;
   let bestX = anchorX + minDist;
   let bestY = anchorY;
 
-  for (let i = 0; i < DIRECTION_COUNT; i++) {
-    const angle = (i / DIRECTION_COUNT) * Math.PI * 2;
+  for (let i = 0; i < directionCount; i++) {
+    const angle = (i / directionCount) * Math.PI * 2;
     const cos = Math.cos(angle);
     const sin = Math.sin(angle);
-    for (const distMul of [1, 1.18, 1.38]) {
-      const dist = minDist * distMul;
+    for (let di = 0; di < distSteps; di++) {
+      const dist = minDist * FLAG_BUBBLE_DISTANCE_MULTIPLIERS[di]!;
       const fx = anchorX + cos * dist;
       const fy = anchorY + sin * dist;
       if (fx < margin || fy < margin || fx > mapWidth - margin || fy > mapHeight - margin) {
@@ -135,13 +173,18 @@ function pickBubbleDirection(
         targetCountryId,
         projection,
         sortedHitFeatures,
-        pathDById
+        pathDById,
+        sampleCols,
+        sampleRows
       );
       const score = other * 100 + target * 8 - sea * 2;
       if (score < bestScore) {
         bestScore = score;
         bestX = fx;
         bestY = fy;
+        if (other === 0) {
+          return { flagX: bestX, flagY: bestY };
+        }
       }
     }
   }
@@ -149,10 +192,7 @@ function pickBubbleDirection(
   return { flagX: bestX, flagY: bestY };
 }
 
-/**
- * 国旗が最大陸塊に対して大きいとき、周囲で他国との重なりが少ない方向へ吹き出す。
- */
-export function computeFlagBubbleLayout(input: {
+export type ComputeFlagBubbleLayoutInput = {
   projection: GeoProjection;
   targetCountryId: string;
   targetFeature: CountryFeature;
@@ -164,7 +204,16 @@ export function computeFlagBubbleLayout(input: {
   thresholdPercent: number;
   mapWidth: number;
   mapHeight: number;
-}): FlagBubbleLayout | null {
+  searchTuning?: FlagBubbleSearchTuning;
+  /** true のとき方向探索をスキップ（重心に仮置き・非同期の先行表示用） */
+  anchorPreviewOnly?: boolean;
+};
+
+/**
+ * 国旗が最大陸塊に対して大きいとき、周囲で他国との重なりが少ない方向へ吹き出す。
+ */
+export function computeFlagBubbleLayout(input: ComputeFlagBubbleLayoutInput): FlagBubbleLayout | null {
+  const tuning = input.searchTuning ?? DEFAULT_FLAG_BUBBLE_SEARCH_TUNING;
   const anchor = projectMainlandCentroid(input.projection, input.targetFeature);
   if (!anchor) return null;
   const [anchorX, anchorY] = anchor;
@@ -180,7 +229,7 @@ export function computeFlagBubbleLayout(input: {
 
   const useBubble = areaRatioPercent >= input.thresholdPercent;
 
-  if (!useBubble) {
+  if (!useBubble || input.anchorPreviewOnly) {
     return {
       anchorX,
       anchorY,
@@ -205,7 +254,8 @@ export function computeFlagBubbleLayout(input: {
     input.cardH,
     input.flagVisualScale,
     input.mapWidth,
-    input.mapHeight
+    input.mapHeight,
+    tuning
   );
 
   return {
