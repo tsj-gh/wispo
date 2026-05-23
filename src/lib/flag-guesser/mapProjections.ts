@@ -411,8 +411,103 @@ function projectedMapRectArea(r: ProjectedMapRect): number {
   return (r.x1 - r.x0) * (r.y1 - r.y0);
 }
 
+/** 線分と軸平行矩形の交点（盤面内に見える辺の端点を拾う） */
+function clipSegmentToViewportRect(
+  ax: number,
+  ay: number,
+  bx: number,
+  by: number,
+  marginPx: number,
+  mapWidth: number,
+  mapHeight: number,
+  onPoint: (x: number, y: number) => void
+): void {
+  const xMin = marginPx;
+  const yMin = marginPx;
+  const xMax = mapWidth - marginPx;
+  const yMax = mapHeight - marginPx;
+
+  const inside = (x: number, y: number) => x >= xMin && x <= xMax && y >= yMin && y <= yMax;
+  if (inside(ax, ay)) onPoint(ax, ay);
+  if (inside(bx, by)) onPoint(bx, by);
+
+  const dx = bx - ax;
+  const dy = by - ay;
+  if (Math.abs(dx) < 1e-9 && Math.abs(dy) < 1e-9) return;
+
+  const ts: number[] = [];
+  if (Math.abs(dx) > 1e-9) {
+    ts.push((xMin - ax) / dx, (xMax - ax) / dx);
+  }
+  if (Math.abs(dy) > 1e-9) {
+    ts.push((yMin - ay) / dy, (yMax - ay) / dy);
+  }
+  for (const t of ts) {
+    if (t < 0 || t > 1) continue;
+    const x = ax + t * dx;
+    const y = ay + t * dy;
+    if (inside(x, y)) onPoint(x, y);
+  }
+}
+
 /**
- * 盤面上に見えている国ポリゴン（各 Polygon 片の投影 bbox ∩ ビューポート）のうち、
+ * ポリゴン片のうち **ビューポート内に投影された頂点・辺** だけから可視 bbox を作る。
+ * `path.bounds` 全体（日付変更線で画面幅いっぱいになる国）を避ける。
+ */
+function visibleProjectedRectFromPieceInViewport(
+  projection: GeoProjection,
+  piece: Feature<Polygon, GeoJsonProperties>,
+  mapWidth: number,
+  mapHeight: number,
+  marginPx: number
+): ProjectedMapRect | null {
+  const geom = piece.geometry;
+  if (geom.type !== "Polygon") return null;
+
+  const points: [number, number][] = [];
+  const add = (x: number, y: number) => {
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+    points.push([x, y]);
+  };
+
+  for (const ring of geom.coordinates) {
+    for (let i = 0; i < ring.length; i++) {
+      const a = ring[i]!;
+      const b = ring[(i + 1) % ring.length]!;
+      const pa = projection([a[0], a[1]]);
+      const pb = projection([b[0], b[1]]);
+      if (!pa || !pb) continue;
+      clipSegmentToViewportRect(
+        pa[0]!,
+        pa[1]!,
+        pb[0]!,
+        pb[1]!,
+        marginPx,
+        mapWidth,
+        mapHeight,
+        add
+      );
+    }
+  }
+
+  if (!points.length) return null;
+  let x0 = points[0]![0];
+  let y0 = points[0]![1];
+  let x1 = x0;
+  let y1 = y0;
+  for (let i = 1; i < points.length; i++) {
+    const [x, y] = points[i]!;
+    x0 = Math.min(x0, x);
+    y0 = Math.min(y0, y);
+    x1 = Math.max(x1, x);
+    y1 = Math.max(y1, y);
+  }
+  if (x1 - x0 < 1 || y1 - y0 < 1) return null;
+  return { x0, y0, x1, y1 };
+}
+
+/**
+ * 盤面上に見えている国ポリゴン（各 Polygon 片の可視 bbox）のうち、
  * 真の吸着点（重心）を矩形内にクランプした表示用基準点。見えなければ null。
  */
 export function visiblePlacementBaseForCountry(
@@ -431,21 +526,21 @@ export function visiblePlacementBaseForCountry(
   const candidates: { rect: ProjectedMapRect; area: number }[] = [];
 
   for (const piece of polygonPiecesFromGeometry(geometry)) {
-    let bounds: [[number, number], [number, number]];
-    try {
-      bounds = path.bounds(piece as Parameters<typeof path.bounds>[0]);
-    } catch {
-      continue;
+    let rect = visibleProjectedRectFromPieceInViewport(
+      projection,
+      piece,
+      mapWidth,
+      mapHeight,
+      marginPx
+    );
+    if (!rect) {
+      try {
+        const bounds = path.bounds(piece as Parameters<typeof path.bounds>[0]);
+        rect = intersectProjectedBoundsWithViewport(bounds, mapWidth, mapHeight, marginPx);
+      } catch {
+        continue;
+      }
     }
-    if (
-      !Number.isFinite(bounds[0][0]) ||
-      !Number.isFinite(bounds[0][1]) ||
-      !Number.isFinite(bounds[1][0]) ||
-      !Number.isFinite(bounds[1][1])
-    ) {
-      continue;
-    }
-    const rect = intersectProjectedBoundsWithViewport(bounds, mapWidth, mapHeight, marginPx);
     if (!rect) continue;
     candidates.push({ rect, area: projectedMapRectArea(rect) });
   }
