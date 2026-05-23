@@ -241,8 +241,7 @@ export function refreshFlagLayoutForViewport(
     layout.anchorY,
     input.mapWidth,
     input.mapHeight,
-    margin,
-    input.hintMapPoint
+    margin
   );
   if (!base) return null;
   const [baseX, baseY] = base;
@@ -270,8 +269,7 @@ export function computeFlagBubbleLayout(input: ComputeFlagBubbleLayoutInput): Fl
     anchorY,
     input.mapWidth,
     input.mapHeight,
-    margin,
-    input.hintMapPoint
+    margin
   );
   if (!placementBase) return null;
   const [baseX, baseY] = placementBase;

@@ -407,8 +407,13 @@ function pointInProjectedMapRect(x: number, y: number, r: ProjectedMapRect): boo
   return x >= r.x0 && x <= r.x1 && y >= r.y0 && y <= r.y1;
 }
 
-function projectedMapRectArea(r: ProjectedMapRect): number {
-  return (r.x1 - r.x0) * (r.y1 - r.y0);
+function mapViewportRect(mapWidth: number, mapHeight: number, marginPx: number): ProjectedMapRect {
+  return {
+    x0: marginPx,
+    y0: marginPx,
+    x1: mapWidth - marginPx,
+    y1: mapHeight - marginPx,
+  };
 }
 
 /** 線分と軸平行矩形の交点（盤面内に見える辺の端点を拾う） */
@@ -506,9 +511,39 @@ function visibleProjectedRectFromPieceInViewport(
   return { x0, y0, x1, y1 };
 }
 
+/** 国のポリゴンがマップ表示領域のいずれかと重なっているか */
+function countryFootprintVisibleOnMap(
+  projection: GeoProjection,
+  feat: CountryFeature,
+  mapWidth: number,
+  mapHeight: number,
+  marginPx: number
+): boolean {
+  const geometry = feat.geometry;
+  if (!geometry) return false;
+  const path = geoPath(projection);
+
+  for (const piece of polygonPiecesFromGeometry(geometry)) {
+    if (visibleProjectedRectFromPieceInViewport(projection, piece, mapWidth, mapHeight, marginPx)) {
+      return true;
+    }
+    try {
+      const bounds = path.bounds(piece as Parameters<typeof path.bounds>[0]);
+      if (intersectProjectedBoundsWithViewport(bounds, mapWidth, mapHeight, marginPx)) {
+        return true;
+      }
+    } catch {
+      /* skip */
+    }
+  }
+  return false;
+}
+
 /**
- * 盤面上に見えている国ポリゴン（各 Polygon 片の可視 bbox）のうち、
- * 真の吸着点（重心）を矩形内にクランプした表示用基準点。見えなければ null。
+ * 国旗の表示基準点。
+ * - 重心がマップ表示領域内 → 重心
+ * - 重心が領域外だが国ポリゴンが見えている → 重心を表示矩形の辺へクランプ（盤面端）
+ * - 国が盤面に見えない → null
  */
 export function visiblePlacementBaseForCountry(
   projection: GeoProjection,
@@ -517,69 +552,21 @@ export function visiblePlacementBaseForCountry(
   trueAnchorY: number,
   mapWidth: number,
   mapHeight: number,
-  marginPx: number,
-  hintMapPoint?: [number, number]
+  marginPx: number
 ): [number, number] | null {
-  const geometry = feat.geometry;
-  if (!geometry) return null;
-  const path = geoPath(projection);
-  const candidates: { rect: ProjectedMapRect; area: number }[] = [];
+  const vp = mapViewportRect(mapWidth, mapHeight, marginPx);
 
-  for (const piece of polygonPiecesFromGeometry(geometry)) {
-    let rect = visibleProjectedRectFromPieceInViewport(
-      projection,
-      piece,
-      mapWidth,
-      mapHeight,
-      marginPx
-    );
-    if (!rect) {
-      try {
-        const bounds = path.bounds(piece as Parameters<typeof path.bounds>[0]);
-        rect = intersectProjectedBoundsWithViewport(bounds, mapWidth, mapHeight, marginPx);
-      } catch {
-        continue;
-      }
-    }
-    if (!rect) continue;
-    candidates.push({ rect, area: projectedMapRectArea(rect) });
+  if (pointInProjectedMapRect(trueAnchorX, trueAnchorY, vp)) {
+    return [trueAnchorX, trueAnchorY];
   }
 
-  if (!candidates.length) return null;
-
-  let chosen = candidates[0]!.rect;
-
-  if (hintMapPoint) {
-    const [hx, hy] = hintMapPoint;
-    const containing = candidates.filter((c) => pointInProjectedMapRect(hx, hy, c.rect));
-    if (containing.length) {
-      chosen = containing.reduce((best, c) => (c.area > best.area ? c : best), containing[0]!).rect;
-    } else {
-      let bestD = Infinity;
-      for (const c of candidates) {
-        const cx = (c.rect.x0 + c.rect.x1) / 2;
-        const cy = (c.rect.y0 + c.rect.y1) / 2;
-        const d = (cx - hx) ** 2 + (cy - hy) ** 2;
-        if (d < bestD) {
-          bestD = d;
-          chosen = c.rect;
-        }
-      }
-    }
-  } else {
-    const anchorVisible = candidates.find((c) =>
-      pointInProjectedMapRect(trueAnchorX, trueAnchorY, c.rect)
-    );
-    if (anchorVisible) {
-      chosen = anchorVisible.rect;
-    } else {
-      chosen = candidates.reduce((best, c) => (c.area > best.area ? c : best), candidates[0]!).rect;
-    }
+  if (!countryFootprintVisibleOnMap(projection, feat, mapWidth, mapHeight, marginPx)) {
+    return null;
   }
 
   return [
-    Math.max(chosen.x0, Math.min(chosen.x1, trueAnchorX)),
-    Math.max(chosen.y0, Math.min(chosen.y1, trueAnchorY)),
+    Math.max(vp.x0, Math.min(vp.x1, trueAnchorX)),
+    Math.max(vp.y0, Math.min(vp.y1, trueAnchorY)),
   ];
 }
 
