@@ -2,7 +2,11 @@ import { feature } from "topojson-client";
 import type { Topology } from "topojson-specification";
 import type { CountryFeature, Iso3166Row } from "./types";
 import { featureIdString } from "./mapProjections";
-import { mapDisplayCountryCodesForSubRegion } from "./flagGuesserCurriculum";
+import {
+  mapDisplayCountryCodesForStage,
+  type CurriculumStageConfig,
+} from "./flagGuesserCurriculum";
+import type { FlagDifficultyJsonRow } from "./flagExplorerDataset";
 import { indexIsoByAlpha2, indexIsoByCountryCode } from "./isoIndex";
 
 const FLAG_BASE = "/assets/flag-guesser/flags";
@@ -103,15 +107,174 @@ export function createRoundPlan(
   return { targetRow, cardAlpha2s };
 }
 
+function decoyDifficultyOk(
+  diffRow: FlagDifficultyJsonRow | undefined,
+  stage: CurriculumStageConfig
+): boolean {
+  if (!diffRow) return false;
+  const max = stage.decoyDifficultyMax ?? stage.targetDifficultyMax;
+  const min = stage.targetDifficultyMin ?? 1;
+  return diffRow.difficulty >= min && diffRow.difficulty <= max;
+}
+
+function alpha2FromPoolRow(row: Iso3166Row): string | null {
+  const a2 = row["alpha-2"]?.trim().toUpperCase();
+  return a2 || null;
+}
+
+function pickDecoysFromPool(
+  poolRows: readonly Iso3166Row[],
+  targetA2: string,
+  decoyCount: number,
+  stage: CurriculumStageConfig,
+  difficultyByAlpha3: Map<string, FlagDifficultyJsonRow>
+): string[] {
+  const decoysPool = Array.from(
+    new Set(
+      poolRows
+        .filter((r) => {
+          const a2 = alpha2FromPoolRow(r);
+          if (!a2 || a2 === targetA2) return false;
+          const a3 = r["alpha-3"]?.trim().toUpperCase();
+          return decoyDifficultyOk(a3 ? difficultyByAlpha3.get(a3) : undefined, stage);
+        })
+        .map((r) => alpha2FromPoolRow(r)!)
+    )
+  );
+  shuffleInPlace(decoysPool);
+
+  const decoys: string[] = [];
+  for (const d of decoysPool) {
+    if (decoys.length >= decoyCount) break;
+    decoys.push(d);
+  }
+  while (decoys.length < decoyCount && decoysPool.length > 0) {
+    decoys.push(decoysPool[decoys.length % decoysPool.length]!);
+  }
+  return decoys;
+}
+
+function pickConfusableDecoyAlpha2(
+  targetRow: Iso3166Row,
+  poolRows: readonly Iso3166Row[],
+  isoRows: readonly Iso3166Row[],
+  topoIds: Set<string>,
+  stage: CurriculumStageConfig,
+  difficultyByAlpha3: Map<string, FlagDifficultyJsonRow>,
+  exclude: Set<string>,
+  field: "confusable_colors" | "confusable_region"
+): string | null {
+  const targetA3 = targetRow["alpha-3"]?.trim().toUpperCase();
+  if (!targetA3) return null;
+  const diffRow = difficultyByAlpha3.get(targetA3);
+  if (!diffRow) return null;
+
+  const candidates = new Set(
+    (field === "confusable_colors" ? diffRow.confusable_colors : diffRow.confusable_region).map((x) =>
+      x.trim().toUpperCase()
+    )
+  );
+  if (!candidates.size) return null;
+
+  const poolA3 = new Set(poolRows.map((r) => r["alpha-3"]?.trim().toUpperCase()).filter(Boolean));
+  const tryRows = poolRows.length > 0 ? poolRows : isoRows;
+
+  const matches: string[] = [];
+  for (const row of tryRows) {
+    const a3 = row["alpha-3"]?.trim().toUpperCase();
+    const a2 = alpha2FromPoolRow(row);
+    const code = row["country-code"]?.trim();
+    if (!a3 || !a2 || !code || !topoIds.has(code)) continue;
+    if (!candidates.has(a3)) continue;
+    if (exclude.has(a2)) continue;
+    if (poolA3.size > 0 && !poolA3.has(a3)) continue;
+    const dr = difficultyByAlpha3.get(a3);
+    if (!decoyDifficultyOk(dr, stage)) continue;
+    matches.push(a2);
+  }
+
+  if (!matches.length) return null;
+  return matches[Math.floor(Math.random() * matches.length)]!;
+}
+
+function pickDecoysWithConfusable(
+  poolRows: readonly Iso3166Row[],
+  targetRow: Iso3166Row,
+  decoyCount: number,
+  stage: CurriculumStageConfig,
+  isoRows: readonly Iso3166Row[],
+  topoIds: Set<string>,
+  difficultyByAlpha3: Map<string, FlagDifficultyJsonRow>
+): string[] {
+  const targetA2 = targetRow["alpha-2"].trim().toUpperCase();
+  const used = new Set<string>([targetA2]);
+  const decoys: string[] = [];
+
+  if (decoyCount >= 1) {
+    const colorDecoy = pickConfusableDecoyAlpha2(
+      targetRow,
+      poolRows,
+      isoRows,
+      topoIds,
+      stage,
+      difficultyByAlpha3,
+      used,
+      "confusable_colors"
+    );
+    if (colorDecoy) {
+      decoys.push(colorDecoy);
+      used.add(colorDecoy);
+    }
+  }
+  if (decoyCount >= 2) {
+    const regionDecoy = pickConfusableDecoyAlpha2(
+      targetRow,
+      poolRows,
+      isoRows,
+      topoIds,
+      stage,
+      difficultyByAlpha3,
+      used,
+      "confusable_region"
+    );
+    if (regionDecoy) {
+      decoys.push(regionDecoy);
+      used.add(regionDecoy);
+    }
+  }
+
+  const remaining = decoyCount - decoys.length;
+  if (remaining > 0) {
+    const fromPool = pickDecoysFromPool(poolRows, targetA2, remaining, stage, difficultyByAlpha3).filter(
+      (d) => !used.has(d)
+    );
+    for (const d of fromPool) {
+      if (decoys.length >= decoyCount) break;
+      decoys.push(d);
+      used.add(d);
+    }
+  }
+
+  while (decoys.length < decoyCount) {
+    const extra = pickDecoysFromPool(poolRows, targetA2, 1, stage, difficultyByAlpha3).find((d) => !used.has(d));
+    if (!extra) break;
+    decoys.push(extra);
+    used.add(extra);
+  }
+
+  return decoys.slice(0, decoyCount);
+}
+
 /**
- * カリキュラム用: プール内から正解を抽選。地図は正解の sub_region 内の全国を描画。
+ * カリキュラム用: プール内から正解を抽選。地図は `mapFitScope` に従う。
  */
 export function createCurriculumRoundPlan(
   poolRows: readonly Iso3166Row[],
   excludeAlpha2: Set<string>,
-  decoyCount: number,
+  stage: CurriculumStageConfig,
   isoRows: readonly Iso3166Row[],
-  topoIds: Set<string>
+  topoIds: Set<string>,
+  difficultyByAlpha3: Map<string, FlagDifficultyJsonRow>
 ): RoundPlan | null {
   if (poolRows.length === 0) return null;
 
@@ -124,32 +287,34 @@ export function createCurriculumRoundPlan(
   const targetA2 = targetRow["alpha-2"].trim().toUpperCase();
 
   let cardAlpha2s: string[];
+  const decoyCount = stage.decoyCount;
   if (decoyCount <= 0) {
     cardAlpha2s = [targetA2];
-  } else {
-    const decoysPool = Array.from(
-      new Set(
-        poolRows
-          .filter((r) => r["alpha-2"].trim().toUpperCase() !== targetA2)
-          .map((r) => r["alpha-2"].trim().toUpperCase())
-      )
+  } else if (stage.decoySource === "pool_plus_confusable") {
+    const decoys = pickDecoysWithConfusable(
+      poolRows,
+      targetRow,
+      decoyCount,
+      stage,
+      isoRows,
+      topoIds,
+      difficultyByAlpha3
     );
-    shuffleInPlace(decoysPool);
-
-    const decoys: string[] = [];
-    for (const d of decoysPool) {
-      if (decoys.length >= decoyCount) break;
-      decoys.push(d);
-    }
-    while (decoys.length < decoyCount && decoysPool.length > 0) {
-      decoys.push(decoysPool[decoys.length % decoysPool.length]!);
-    }
-
+    cardAlpha2s = [targetA2, ...decoys].slice(0, decoyCount + 1);
+    shuffleInPlace(cardAlpha2s);
+  } else {
+    const decoys = pickDecoysFromPool(poolRows, targetA2, decoyCount, stage, difficultyByAlpha3);
     cardAlpha2s = [targetA2, ...decoys].slice(0, decoyCount + 1);
     shuffleInPlace(cardAlpha2s);
   }
 
-  const mapCountryCodes = mapDisplayCountryCodesForSubRegion(isoRows, topoIds, targetRow);
+  const mapCountryCodes = mapDisplayCountryCodesForStage(
+    isoRows,
+    topoIds,
+    targetRow,
+    stage.mapFitScope,
+    poolRows
+  );
   return { targetRow, cardAlpha2s, mapCountryCodes };
 }
 

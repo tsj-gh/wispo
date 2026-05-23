@@ -51,6 +51,7 @@ import {
 } from "@/lib/flag-guesser/selectRound";
 import {
   buildCurriculumPool,
+  CURRICULUM_LEVELS,
   explorerMapPresetForIsoRow,
   getCurriculumStage,
   indexDifficultyByAlpha3,
@@ -798,9 +799,10 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       const plan = createCurriculumRoundPlan(
         curriculumPool,
         exclude,
-        stage.decoyCount,
+        stage,
         isoRows,
-        topoIds
+        topoIds,
+        difficultyByAlpha3
       );
       if (!plan) return;
       if (options?.bumpSeq) setRoundSeq((s) => s + 1);
@@ -818,7 +820,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       setDragCardDisplay(null);
       dragCardDisplayRef.current = null;
     },
-    [isoRows, topoIds, featuresForGame, curriculumPool, curriculumLevel]
+    [isoRows, topoIds, featuresForGame, curriculumPool, curriculumLevel, difficultyByAlpha3]
   );
 
   /** 閾値を跨いだときだけ該当解像度を fetch（キャッシュがあればスキップ） */
@@ -1717,33 +1719,38 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     >
       <div className="pointer-events-none absolute left-2 top-2 z-30 flex flex-col items-start gap-1.5 md:left-3 md:top-3">
         <div
-          className="pointer-events-auto flex flex-col gap-1 rounded-xl border border-[color-mix(in_srgb,var(--color-text)_18%,transparent)] bg-[color-mix(in_srgb,var(--color-surface)_92%,var(--color-bg))] p-1.5 shadow-sm"
+          className="pointer-events-auto flex max-h-[min(52vh,420px)] w-[min(100%,13.5rem)] flex-col gap-1 overflow-hidden rounded-xl border border-[color-mix(in_srgb,var(--color-text)_18%,transparent)] bg-[color-mix(in_srgb,var(--color-surface)_92%,var(--color-bg))] p-1.5 shadow-sm"
           role="group"
           aria-label="学習レベル"
         >
           <span className="px-1 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-muted)]">
             学習 Lv
           </span>
-          <div className="flex gap-1">
-            {([1, 2] as const).map((lv) => (
-              <button
-                key={lv}
-                type="button"
-                onClick={() => setCurriculumLevel(lv)}
-                aria-pressed={curriculumLevel === lv}
-                className={`rounded-lg px-2 py-1 text-xs font-semibold transition ${
-                  curriculumLevel === lv
-                    ? "bg-[var(--color-primary)] text-[var(--color-on-primary)]"
-                    : "text-[var(--color-text)] hover:bg-[color-mix(in_srgb,var(--color-primary)_14%,transparent)]"
-                }`}
-              >
-                {lv}
-              </button>
-            ))}
+          <div className="max-h-[11rem] overflow-y-auto overflow-x-hidden pr-0.5">
+            <div className="flex flex-wrap gap-1">
+              {CURRICULUM_LEVELS.map((lv) => (
+                <button
+                  key={lv}
+                  type="button"
+                  onClick={() => setCurriculumLevel(lv)}
+                  aria-pressed={curriculumLevel === lv}
+                  className={`min-w-[1.65rem] rounded-lg px-1.5 py-0.5 text-[11px] font-semibold tabular-nums transition ${
+                    curriculumLevel === lv
+                      ? "bg-[var(--color-primary)] text-[var(--color-on-primary)]"
+                      : "text-[var(--color-text)] hover:bg-[color-mix(in_srgb,var(--color-primary)_14%,transparent)]"
+                  }`}
+                >
+                  {lv}
+                </button>
+              ))}
+            </div>
           </div>
-          <p className="max-w-[11rem] px-1 text-[10px] leading-snug text-[var(--color-muted)]">
+          <p className="shrink-0 px-1 text-[10px] leading-snug text-[var(--color-muted)]">
             {curriculumStage.nameJa}
             <span className="tabular-nums"> · {curriculumPool.length}国</span>
+            {curriculumStage.decoyCount > 0 ? (
+              <span className="tabular-nums"> · 計{curriculumStage.decoyCount + 1}枚</span>
+            ) : null}
           </p>
         </div>
       </div>

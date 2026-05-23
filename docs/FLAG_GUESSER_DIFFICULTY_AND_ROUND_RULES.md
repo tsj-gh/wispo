@@ -2,7 +2,7 @@
 
 **目的:** `flag_difficulty.json` の国別 `difficulty`（1〜8）と ISO の **`sub_region`** を組み合わせ、**狭い国セットから順に広げる**カリキュラムで国旗と位置を覚える。
 
-**現状の実装**（`createRoundPlan`）は地域・難易度を見ておらず、正解の **大陸（region）** 全体からお邪魔を出している。本提案は **段階ごとに「出題してよい国の一覧（プール）」** を決め、地図もそのプールにフィットさせる想定。
+**現状の実装**（`flagGuesserCurriculum.ts` + `createCurriculumRoundPlan`）は **学習 Lv1〜20** を UI で切り替え可能。段階ごとのプール・お邪魔枚数・地図フィット（`sub_region` / `region`）・Lv19〜20 の confusable お邪魔に対応。旧 `createRoundPlan`（大陸全体お邪魔）は未使用。
 
 ---
 
