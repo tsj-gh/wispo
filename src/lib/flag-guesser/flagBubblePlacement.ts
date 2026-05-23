@@ -9,7 +9,7 @@ import {
   visiblePlacementBaseForCountry,
 } from "@/lib/flag-guesser/mapProjections";
 import type { CountryFeature } from "@/lib/flag-guesser/types";
-import type { ZoomPlain } from "@/lib/flag-guesser/viewportGeo";
+import { visibleMapRectInMapSpace, type ZoomPlain } from "@/lib/flag-guesser/viewportGeo";
 
 export type FlagBubbleLayout = {
   /** 最大陸塊重心（地図座標）— 指し示し線の先 */
@@ -64,6 +64,33 @@ function flagPlacementMarginPx(cardW: number, cardH: number, flagVisualScale: nu
 function flagHalfExtents(cardW: number, cardH: number, flagVisualScale: number) {
   const s = flagVisualScale;
   return { hw: (cardW * s) / 2, hh: (cardH * s) / 2 };
+}
+
+/** 国旗中心（translate -50%）が可視地図範囲に収まるよう内側へ寄せる */
+function insetFlagCenterInVisibleMap(
+  x: number,
+  y: number,
+  mapWidth: number,
+  mapHeight: number,
+  marginPx: number,
+  mapZoom: ZoomPlain,
+  cardW: number,
+  cardH: number,
+  flagVisualScale: number
+): [number, number] {
+  const vp = visibleMapRectInMapSpace(mapWidth, mapHeight, marginPx, mapZoom);
+  const { hw, hh } = flagHalfExtents(cardW, cardH, flagVisualScale);
+  const insetX0 = vp.x0 + hw;
+  const insetX1 = vp.x1 - hw;
+  const insetY0 = vp.y0 + hh;
+  const insetY1 = vp.y1 - hh;
+  if (insetX1 <= insetX0 || insetY1 <= insetY0) {
+    return [(vp.x0 + vp.x1) / 2, (vp.y0 + vp.y1) / 2];
+  }
+  return [
+    Math.max(insetX0, Math.min(insetX1, x)),
+    Math.max(insetY0, Math.min(insetY1, y)),
+  ];
 }
 
 /** 国旗中心から anchor 方向の矩形外周上の点（コネクタ終端） */
@@ -250,10 +277,21 @@ export function refreshFlagLayoutForViewport(
   );
   if (!base) return null;
   const [baseX, baseY] = base;
+  const [flagX, flagY] = insetFlagCenterInVisibleMap(
+    baseX + layout.placementOffsetX,
+    baseY + layout.placementOffsetY,
+    input.mapWidth,
+    input.mapHeight,
+    margin,
+    input.mapZoom,
+    input.cardW,
+    input.cardH,
+    input.flagVisualScale
+  );
   return {
     ...layout,
-    flagX: baseX + layout.placementOffsetX,
-    flagY: baseY + layout.placementOffsetY,
+    flagX,
+    flagY,
   };
 }
 
@@ -278,7 +316,17 @@ export function computeFlagBubbleLayout(input: ComputeFlagBubbleLayoutInput): Fl
     input.mapZoom
   );
   if (!placementBase) return null;
-  const [baseX, baseY] = placementBase;
+  const [baseX, baseY] = insetFlagCenterInVisibleMap(
+    placementBase[0],
+    placementBase[1],
+    input.mapWidth,
+    input.mapHeight,
+    margin,
+    input.mapZoom,
+    input.cardW,
+    input.cardH,
+    input.flagVisualScale
+  );
 
   const piece = largestPolygonPieceFromFeature(input.targetFeature);
   const countryArea = piece
@@ -306,7 +354,7 @@ export function computeFlagBubbleLayout(input: ComputeFlagBubbleLayoutInput): Fl
 
   const sortedHits = sortFeaturesForHitTest(input.hitFeatures);
   const pieceFeat = piece ?? input.targetFeature;
-  const { flagX, flagY } = pickBubbleDirection(
+  const picked = pickBubbleDirection(
     baseX,
     baseY,
     input.targetCountryId,
@@ -320,6 +368,17 @@ export function computeFlagBubbleLayout(input: ComputeFlagBubbleLayoutInput): Fl
     input.mapWidth,
     input.mapHeight,
     tuning
+  );
+  const [flagX, flagY] = insetFlagCenterInVisibleMap(
+    picked.flagX,
+    picked.flagY,
+    input.mapWidth,
+    input.mapHeight,
+    margin,
+    input.mapZoom,
+    input.cardW,
+    input.cardH,
+    input.flagVisualScale
   );
 
   return {
