@@ -1,6 +1,7 @@
 import { geoArea, geoBounds, geoCentroid, geoContains, geoMercator, geoPath, type GeoProjection } from "d3-geo";
 import type { Feature, FeatureCollection, GeoJsonProperties, Geometry, Polygon } from "geojson";
 import type { CountryFeature, Iso3166Row, RegionRoundModel } from "./types";
+import { visibleMapRectInMapSpace, type ZoomPlain } from "./viewportGeo";
 
 /**
  * ヒットテスト対象とする球面積（steradians）の上限。
@@ -389,16 +390,14 @@ export function projectMainlandCentroid(
 
 type ProjectedMapRect = { x0: number; y0: number; x1: number; y1: number };
 
-function intersectProjectedBoundsWithViewport(
+function intersectProjectedBoundsWithMapRect(
   [[bx0, by0], [bx1, by1]]: [[number, number], [number, number]],
-  mapWidth: number,
-  mapHeight: number,
-  marginPx: number
+  rect: ProjectedMapRect
 ): ProjectedMapRect | null {
-  const x0 = Math.max(Math.min(bx0, bx1), marginPx);
-  const y0 = Math.max(Math.min(by0, by1), marginPx);
-  const x1 = Math.min(Math.max(bx0, bx1), mapWidth - marginPx);
-  const y1 = Math.min(Math.max(by0, by1), mapHeight - marginPx);
+  const x0 = Math.max(Math.min(bx0, bx1), rect.x0);
+  const y0 = Math.max(Math.min(by0, by1), rect.y0);
+  const x1 = Math.min(Math.max(bx0, bx1), rect.x1);
+  const y1 = Math.min(Math.max(by0, by1), rect.y1);
   if (x1 - x0 < 1 || y1 - y0 < 1) return null;
   return { x0, y0, x1, y1 };
 }
@@ -407,30 +406,16 @@ function pointInProjectedMapRect(x: number, y: number, r: ProjectedMapRect): boo
   return x >= r.x0 && x <= r.x1 && y >= r.y0 && y <= r.y1;
 }
 
-function mapViewportRect(mapWidth: number, mapHeight: number, marginPx: number): ProjectedMapRect {
-  return {
-    x0: marginPx,
-    y0: marginPx,
-    x1: mapWidth - marginPx,
-    y1: mapHeight - marginPx,
-  };
-}
-
 /** 線分と軸平行矩形の交点（盤面内に見える辺の端点を拾う） */
-function clipSegmentToViewportRect(
+function clipSegmentToMapRect(
   ax: number,
   ay: number,
   bx: number,
   by: number,
-  marginPx: number,
-  mapWidth: number,
-  mapHeight: number,
+  rect: ProjectedMapRect,
   onPoint: (x: number, y: number) => void
 ): void {
-  const xMin = marginPx;
-  const yMin = marginPx;
-  const xMax = mapWidth - marginPx;
-  const yMax = mapHeight - marginPx;
+  const { x0: xMin, y0: yMin, x1: xMax, y1: yMax } = rect;
 
   const inside = (x: number, y: number) => x >= xMin && x <= xMax && y >= yMin && y <= yMax;
   if (inside(ax, ay)) onPoint(ax, ay);
@@ -459,12 +444,10 @@ function clipSegmentToViewportRect(
  * ポリゴン片のうち **ビューポート内に投影された頂点・辺** だけから可視 bbox を作る。
  * `path.bounds` 全体（日付変更線で画面幅いっぱいになる国）を避ける。
  */
-function visibleProjectedRectFromPieceInViewport(
+function visibleProjectedRectFromPieceInMapRect(
   projection: GeoProjection,
   piece: Feature<Polygon, GeoJsonProperties>,
-  mapWidth: number,
-  mapHeight: number,
-  marginPx: number
+  visibleMapRect: ProjectedMapRect
 ): ProjectedMapRect | null {
   const geom = piece.geometry;
   if (geom.type !== "Polygon") return null;
@@ -482,16 +465,7 @@ function visibleProjectedRectFromPieceInViewport(
       const pa = projection([a[0], a[1]]);
       const pb = projection([b[0], b[1]]);
       if (!pa || !pb) continue;
-      clipSegmentToViewportRect(
-        pa[0]!,
-        pa[1]!,
-        pb[0]!,
-        pb[1]!,
-        marginPx,
-        mapWidth,
-        mapHeight,
-        add
-      );
+      clipSegmentToMapRect(pa[0]!, pa[1]!, pb[0]!, pb[1]!, visibleMapRect, add);
     }
   }
 
@@ -511,25 +485,23 @@ function visibleProjectedRectFromPieceInViewport(
   return { x0, y0, x1, y1 };
 }
 
-/** 国のポリゴンがマップ表示領域のいずれかと重なっているか */
+/** 国のポリゴンが現在の画面表示（ズーム・パン後）と重なっているか */
 function countryFootprintVisibleOnMap(
   projection: GeoProjection,
   feat: CountryFeature,
-  mapWidth: number,
-  mapHeight: number,
-  marginPx: number
+  visibleMapRect: ProjectedMapRect
 ): boolean {
   const geometry = feat.geometry;
   if (!geometry) return false;
   const path = geoPath(projection);
 
   for (const piece of polygonPiecesFromGeometry(geometry)) {
-    if (visibleProjectedRectFromPieceInViewport(projection, piece, mapWidth, mapHeight, marginPx)) {
+    if (visibleProjectedRectFromPieceInMapRect(projection, piece, visibleMapRect)) {
       return true;
     }
     try {
       const bounds = path.bounds(piece as Parameters<typeof path.bounds>[0]);
-      if (intersectProjectedBoundsWithViewport(bounds, mapWidth, mapHeight, marginPx)) {
+      if (intersectProjectedBoundsWithMapRect(bounds, visibleMapRect)) {
         return true;
       }
     } catch {
@@ -540,10 +512,10 @@ function countryFootprintVisibleOnMap(
 }
 
 /**
- * 国旗の表示基準点。
- * - 重心がマップ表示領域内 → 重心
- * - 重心が領域外だが国ポリゴンが見えている → 重心を表示矩形の辺へクランプ（盤面端）
- * - 国が盤面に見えない → null
+ * 国旗の表示基準点（地図座標）。
+ * - 重心が **現在画面に見えている地図範囲** 内 → 重心
+ * - 重心は画面外だが国ポリゴンが見えている → 重心をその可視範囲の辺へクランプ
+ * - 国が画面に見えない → null
  */
 export function visiblePlacementBaseForCountry(
   projection: GeoProjection,
@@ -552,15 +524,16 @@ export function visiblePlacementBaseForCountry(
   trueAnchorY: number,
   mapWidth: number,
   mapHeight: number,
-  marginPx: number
+  marginPx: number,
+  mapZoom: ZoomPlain
 ): [number, number] | null {
-  const vp = mapViewportRect(mapWidth, mapHeight, marginPx);
+  const vp = visibleMapRectInMapSpace(mapWidth, mapHeight, marginPx, mapZoom);
 
   if (pointInProjectedMapRect(trueAnchorX, trueAnchorY, vp)) {
     return [trueAnchorX, trueAnchorY];
   }
 
-  if (!countryFootprintVisibleOnMap(projection, feat, mapWidth, mapHeight, marginPx)) {
+  if (!countryFootprintVisibleOnMap(projection, feat, vp)) {
     return null;
   }
 

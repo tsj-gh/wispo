@@ -966,6 +966,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
         thresholdPercent: flagBubbleAreaThresholdPct,
         mapWidth: size.w,
         mapHeight: size.h,
+        mapZoom: zoomTransform,
         searchTuning: flagBubbleSearchTuning,
         anchorPreviewOnly: opts?.anchorPreviewOnly,
         hintMapPoint: opts?.hintMapPoint,
@@ -979,6 +980,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       flagBubbleSearchTuning,
       size.w,
       size.h,
+      zoomTransform,
     ]
   );
 
@@ -1191,6 +1193,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
           targetFeature: feat as CountryFeature,
           mapWidth: size.w,
           mapHeight: size.h,
+          mapZoom: zoomTransform,
           cardW: CARD_W,
           cardH: CARD_H,
           flagVisualScale,

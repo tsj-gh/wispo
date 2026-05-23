@@ -19,6 +19,26 @@ export function mapSpaceToScreen(mx: number, my: number, z: ZoomPlain): [number,
   return zoomIdentity.translate(z.x, z.y).scale(z.k).apply([mx, my]) as [number, number];
 }
 
+/** 現在のズーム・パンで「画面に見えている」範囲（地図座標・projection 空間） */
+export function visibleMapRectInMapSpace(
+  mapWidth: number,
+  mapHeight: number,
+  marginPx: number,
+  zoom: ZoomPlain
+): { x0: number; y0: number; x1: number; y1: number } {
+  const k = Math.max(zoom.k, 1e-6);
+  const x0 = (marginPx - zoom.x) / k;
+  const x1 = (mapWidth - marginPx - zoom.x) / k;
+  const y0 = (marginPx - zoom.y) / k;
+  const y1 = (mapHeight - marginPx - zoom.y) / k;
+  return {
+    x0: Math.min(x0, x1),
+    y0: Math.min(y0, y1),
+    x1: Math.max(x0, x1),
+    y1: Math.max(y0, y1),
+  };
+}
+
 /**
  * 表示 Viewport（SVG 四隅）を経緯度の粗い矩形に射影。
  * Mercator の極付近などで invert が NaN になる点はスキップ。

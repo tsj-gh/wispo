@@ -9,6 +9,7 @@ import {
   visiblePlacementBaseForCountry,
 } from "@/lib/flag-guesser/mapProjections";
 import type { CountryFeature } from "@/lib/flag-guesser/types";
+import type { ZoomPlain } from "@/lib/flag-guesser/viewportGeo";
 
 export type FlagBubbleLayout = {
   /** 最大陸塊重心（地図座標）— 指し示し線の先 */
@@ -212,6 +213,8 @@ export type ComputeFlagBubbleLayoutInput = {
   thresholdPercent: number;
   mapWidth: number;
   mapHeight: number;
+  /** d3-zoom の transform（画面に見えている地図範囲の算出に必須） */
+  mapZoom: ZoomPlain;
   searchTuning?: FlagBubbleSearchTuning;
   /** true のとき方向探索をスキップ（重心に仮置き・非同期の先行表示用） */
   anchorPreviewOnly?: boolean;
@@ -227,6 +230,7 @@ export function refreshFlagLayoutForViewport(
     targetFeature: CountryFeature;
     mapWidth: number;
     mapHeight: number;
+    mapZoom: ZoomPlain;
     cardW: number;
     cardH: number;
     flagVisualScale: number;
@@ -241,7 +245,8 @@ export function refreshFlagLayoutForViewport(
     layout.anchorY,
     input.mapWidth,
     input.mapHeight,
-    margin
+    margin,
+    input.mapZoom
   );
   if (!base) return null;
   const [baseX, baseY] = base;
@@ -269,7 +274,8 @@ export function computeFlagBubbleLayout(input: ComputeFlagBubbleLayoutInput): Fl
     anchorY,
     input.mapWidth,
     input.mapHeight,
-    margin
+    margin,
+    input.mapZoom
   );
   if (!placementBase) return null;
   const [baseX, baseY] = placementBase;
