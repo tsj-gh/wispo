@@ -33,8 +33,7 @@ export function FlagGuesserGradePicker({
     <div className="w-full min-w-0">
       <label className="mb-1 block text-xs text-[var(--color-muted)]">{t("common.chooseGrade")}</label>
       <div
-        className="flex w-full min-w-0 snap-x snap-mandatory gap-2 overflow-x-auto py-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:[display:none]"
-        style={{ WebkitOverflowScrolling: "touch" }}
+        className="grid grid-cols-7 gap-1 sm:grid-cols-10"
         role="group"
         aria-label="グレード"
       >
@@ -47,10 +46,10 @@ export function FlagGuesserGradePicker({
               aria-pressed={isActive}
               disabled={disabled}
               onClick={() => onLevelChange(lv)}
-              className={`min-h-[44px] shrink-0 snap-center touch-manipulation whitespace-nowrap rounded-lg border px-3 py-2.5 text-sm font-medium tabular-nums transition-colors disabled:pointer-events-none disabled:opacity-50 ${
+              className={`flex h-9 w-full min-w-0 items-center justify-center rounded-lg text-[11px] font-semibold tabular-nums transition touch-manipulation disabled:pointer-events-none disabled:opacity-50 ${
                 isActive
-                  ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-on-primary)]"
-                  : "border-[color-mix(in_srgb,var(--color-text)_18%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_78%,var(--color-bg))] text-[var(--color-text)] hover:bg-[color-mix(in_srgb,var(--color-text)_70%,var(--color-bg))]"
+                  ? "bg-[var(--color-primary)] text-[var(--color-on-primary)]"
+                  : "text-[var(--color-text)] hover:bg-[color-mix(in_srgb,var(--color-primary)_14%,transparent)]"
               }`}
             >
               {lv}
