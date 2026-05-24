@@ -8,17 +8,34 @@ import { GamePageHeader } from "@/components/GamePageHeader";
 import { GameQuickInfoNote } from "@/components/lab/GameQuickInfoNote";
 import { FlagGuesserPlayfield } from "@/components/lab/flag-guesser/FlagGuesserPlayfield";
 import {
+  FlagGuesserGradePicker,
+  type FlagGuesserCurriculumMeta,
+} from "@/components/lab/flag-guesser/FlagGuesserGradePicker";
+import {
   FlagGuesserDebugPanel,
   type FlagGuesserDebugPanelProps,
 } from "@/components/lab/flag-guesser/FlagGuesserDebugPanel";
+import type { FlagGuesserCurriculumLevel } from "@/lib/flag-guesser/flagGuesserCurriculum";
+import { getCurriculumStage } from "@/lib/flag-guesser/flagGuesserCurriculum";
 import { GAME_AD_GAP_BEFORE_SLOT_2_PX, GAME_COLUMN_CLASS, GAME_NO_TOP_AD_LAYOUT_OFFSET_PX, GAME_AD_SLOT_MIN_HEIGHT_PX } from "@/lib/gameLayout";
+
+const INITIAL_CURRICULUM_META: FlagGuesserCurriculumMeta = {
+  poolLength: 0,
+  stageNameJa: getCurriculumStage(1).nameJa,
+  decoyCount: 0,
+};
 
 export function FlagGuesserLabShell() {
   const searchParams = useSearchParams();
   const isDevTj = searchParams.get("devtj") === "true";
+  const [curriculumLevel, setCurriculumLevel] = useState<FlagGuesserCurriculumLevel>(1);
+  const [curriculumMeta, setCurriculumMeta] = useState<FlagGuesserCurriculumMeta>(INITIAL_CURRICULUM_META);
   const [debugPanelProps, setDebugPanelProps] = useState<FlagGuesserDebugPanelProps | null>(null);
   const onDebugPanelPropsChange = useCallback((p: FlagGuesserDebugPanelProps | null) => {
     setDebugPanelProps(p);
+  }, []);
+  const onCurriculumMetaChange = useCallback((meta: FlagGuesserCurriculumMeta) => {
+    setCurriculumMeta(meta);
   }, []);
 
   return (
@@ -44,13 +61,24 @@ export function FlagGuesserLabShell() {
           <section className="relative z-[1] mb-0 flex min-h-[min(52dvh,560px)] flex-1 flex-col rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] px-4 pb-4 pt-2 backdrop-blur sm:px-5 sm:pb-5 sm:pt-2 lg:mb-0">
             <Suspense fallback={<div className="py-10 text-center text-sm text-[var(--color-muted)]">読み込み中…</div>}>
               <div className="flex min-h-0 flex-1 flex-col">
-                <FlagGuesserPlayfield onDebugPanelPropsChange={onDebugPanelPropsChange} />
+                <FlagGuesserPlayfield
+                  curriculumLevel={curriculumLevel}
+                  onCurriculumMetaChange={onCurriculumMetaChange}
+                  onDebugPanelPropsChange={onDebugPanelPropsChange}
+                />
               </div>
             </Suspense>
           </section>
         </div>
 
         <aside className="order-2 w-full shrink-0 lg:sticky lg:top-5 lg:max-h-[calc(100dvh-20px)] lg:w-[360px] lg:self-start lg:overflow-y-auto">
+          <div className="mb-3 w-full min-w-0">
+            <FlagGuesserGradePicker
+              level={curriculumLevel}
+              onLevelChange={setCurriculumLevel}
+              meta={curriculumMeta}
+            />
+          </div>
           {isDevTj && debugPanelProps ? (
             <div className="mb-3 w-full">
               <FlagGuesserDebugPanel {...debugPanelProps} />

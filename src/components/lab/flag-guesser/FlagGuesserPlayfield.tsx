@@ -51,12 +51,12 @@ import {
 } from "@/lib/flag-guesser/selectRound";
 import {
   buildCurriculumPool,
-  CURRICULUM_LEVELS,
   explorerMapPresetForIsoRow,
   getCurriculumStage,
   indexDifficultyByAlpha3,
   type FlagGuesserCurriculumLevel,
 } from "@/lib/flag-guesser/flagGuesserCurriculum";
+import type { FlagGuesserCurriculumMeta } from "@/components/lab/flag-guesser/FlagGuesserGradePicker";
 import {
   type ExplorerMapPresetView,
   type ExplorerMapPresetsFile,
@@ -264,11 +264,17 @@ type CanvasDrawSnapshot = {
 };
 
 export type FlagGuesserPlayfieldProps = {
+  curriculumLevel: FlagGuesserCurriculumLevel;
+  onCurriculumMetaChange?: (meta: FlagGuesserCurriculumMeta) => void;
   /** devtj デバッグパネルをラボシェルのサイドバーに出すときに渡す */
   onDebugPanelPropsChange?: (props: FlagGuesserDebugPanelProps | null) => void;
 };
 
-export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPlayfieldProps = {}) {
+export function FlagGuesserPlayfield({
+  curriculumLevel,
+  onCurriculumMetaChange,
+  onDebugPanelPropsChange,
+}: FlagGuesserPlayfieldProps) {
   const searchParams = useSearchParams();
   const isDevTj = searchParams.get("devtj") === "true";
   const { locale } = useI18n();
@@ -285,8 +291,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     string,
     ExplorerMapPresetView
   > | null>(null);
-  const [curriculumLevel, setCurriculumLevel] = useState<FlagGuesserCurriculumLevel>(1);
-  const curriculumLevelRef = useRef<FlagGuesserCurriculumLevel>(1);
+  const curriculumLevelRef = useRef<FlagGuesserCurriculumLevel>(curriculumLevel);
   /** 必要になった解像度だけ逐次 fetch して保持 */
   const [featuresCache, setFeaturesCache] = useState<Partial<Record<TopoLodId, CountryFeature[]>>>({});
   const [displayedLod, setDisplayedLod] = useState<TopoLodId>("110");
@@ -415,6 +420,19 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
   }, [isoRows, diffRows, difficultyByAlpha3, topoIds, curriculumLevel]);
 
   const curriculumStage = useMemo(() => getCurriculumStage(curriculumLevel), [curriculumLevel]);
+
+  useEffect(() => {
+    onCurriculumMetaChange?.({
+      poolLength: curriculumPool.length,
+      stageNameJa: curriculumStage.nameJa,
+      decoyCount: curriculumStage.decoyCount,
+    });
+  }, [
+    onCurriculumMetaChange,
+    curriculumPool.length,
+    curriculumStage.nameJa,
+    curriculumStage.decoyCount,
+  ]);
 
   const regionModel = useMemo<RegionRoundModel | null>(() => {
     if (!roundPlan || size.w < 32 || size.h < 32) return null;
@@ -729,6 +747,15 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
     [setZoomFromSliderRatio]
   );
 
+  const applySliderRatioFromClientX = useCallback(
+    (track: HTMLElement, clientX: number, smooth: boolean) => {
+      const rect = track.getBoundingClientRect();
+      const raw = (clientX - rect.left) / Math.max(rect.width, 1);
+      setZoomFromSliderRatio(raw, smooth);
+    },
+    [setZoomFromSliderRatio]
+  );
+
   const endSliderMapInteraction = useCallback(() => {
     if (canvasRefineTimerRef.current) clearTimeout(canvasRefineTimerRef.current);
     canvasRefineTimerRef.current = setTimeout(() => {
@@ -736,6 +763,59 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       canvasRefineTimerRef.current = null;
     }, 200);
   }, []);
+
+  const bindZoomSliderPointer = useCallback(
+    (
+      track: HTMLElement,
+      pickRatio: (track: HTMLElement, clientX: number, clientY: number, smooth: boolean) => void,
+      ev: ReactPointerEvent<HTMLElement>
+    ) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (canvasRefineTimerRef.current) {
+        clearTimeout(canvasRefineTimerRef.current);
+        canvasRefineTimerRef.current = null;
+      }
+      setCanvasMapInteracting(true);
+      const startX = ev.clientX;
+      const startY = ev.clientY;
+      let moved = false;
+      const onMove = (moveEv: PointerEvent) => {
+        if (Math.abs(moveEv.clientX - startX) > 3 || Math.abs(moveEv.clientY - startY) > 3) moved = true;
+        pickRatio(track, moveEv.clientX, moveEv.clientY, false);
+      };
+      const onUp = (upEv: PointerEvent) => {
+        window.removeEventListener("pointermove", onMove);
+        window.removeEventListener("pointerup", onUp);
+        window.removeEventListener("pointercancel", onUp);
+        if (!moved) pickRatio(track, upEv.clientX, upEv.clientY, true);
+        endSliderMapInteraction();
+      };
+      window.addEventListener("pointermove", onMove);
+      window.addEventListener("pointerup", onUp);
+      window.addEventListener("pointercancel", onUp);
+    },
+    [endSliderMapInteraction]
+  );
+
+  const pickZoomFromVerticalSlider = useCallback(
+    (track: HTMLElement, _clientX: number, clientY: number, smooth: boolean) => {
+      applySliderRatioFromClientY(track, clientY, smooth);
+    },
+    [applySliderRatioFromClientY]
+  );
+
+  const pickZoomFromHorizontalSlider = useCallback(
+    (track: HTMLElement, clientX: number, _clientY: number, smooth: boolean) => {
+      applySliderRatioFromClientX(track, clientX, smooth);
+    },
+    [applySliderRatioFromClientX]
+  );
+
+  const zoomLevelLabel =
+    zoomTransform.k < 10 ? zoomTransform.k.toFixed(2) : zoomTransform.k.toFixed(1);
+  const zoomSliderRatio = zoomKToRatio(zoomTransform.k);
+  const zoomSliderAriaNow = Math.round(zoomSliderRatio * 100);
 
   useEffect(() => {
     if (!regionModel || !roundPlan || size.w < 16 || size.h < 16) return;
@@ -1717,43 +1797,6 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
       ref={stageRef}
       className="relative flex h-full min-h-[min(58dvh,640px)] w-full flex-1 flex-col touch-none overflow-hidden rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_94%,white_6%)] shadow-inner"
     >
-      <div className="pointer-events-none absolute left-2 top-2 z-30 flex flex-col items-start gap-1.5 md:left-3 md:top-3">
-        <div
-          className="pointer-events-auto flex max-h-[min(52vh,420px)] w-[min(100%,13.5rem)] flex-col gap-1 overflow-hidden rounded-xl border border-[color-mix(in_srgb,var(--color-text)_18%,transparent)] bg-[color-mix(in_srgb,var(--color-surface)_92%,var(--color-bg))] p-1.5 shadow-sm"
-          role="group"
-          aria-label="学習レベル"
-        >
-          <span className="px-1 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-muted)]">
-            学習 Lv
-          </span>
-          <div className="max-h-[11rem] overflow-y-auto overflow-x-hidden pr-0.5">
-            <div className="flex flex-wrap gap-1">
-              {CURRICULUM_LEVELS.map((lv) => (
-                <button
-                  key={lv}
-                  type="button"
-                  onClick={() => setCurriculumLevel(lv)}
-                  aria-pressed={curriculumLevel === lv}
-                  className={`min-w-[1.65rem] rounded-lg px-1.5 py-0.5 text-[11px] font-semibold tabular-nums transition ${
-                    curriculumLevel === lv
-                      ? "bg-[var(--color-primary)] text-[var(--color-on-primary)]"
-                      : "text-[var(--color-text)] hover:bg-[color-mix(in_srgb,var(--color-primary)_14%,transparent)]"
-                  }`}
-                >
-                  {lv}
-                </button>
-              ))}
-            </div>
-          </div>
-          <p className="shrink-0 px-1 text-[10px] leading-snug text-[var(--color-muted)]">
-            {curriculumStage.nameJa}
-            <span className="tabular-nums"> · {curriculumPool.length}国</span>
-            {curriculumStage.decoyCount > 0 ? (
-              <span className="tabular-nums"> · 計{curriculumStage.decoyCount + 1}枚</span>
-            ) : null}
-          </p>
-        </div>
-      </div>
       <div className="pointer-events-none absolute right-2 top-2 z-30 flex flex-col items-end gap-2 md:right-3 md:top-3">
         {!answered ? (
           <button
@@ -1773,7 +1816,7 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
             つぎの国
           </button>
         )}
-        <div className="pointer-events-auto flex w-10 select-none flex-col items-center gap-1 rounded-xl border border-[color-mix(in_srgb,var(--color-text)_20%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_90%,transparent)] px-1 py-1.5 shadow-lg backdrop-blur-sm">
+        <div className="pointer-events-auto hidden w-10 select-none flex-col items-center gap-1 rounded-xl border border-[color-mix(in_srgb,var(--color-text)_20%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_90%,transparent)] px-1 py-1.5 shadow-lg backdrop-blur-sm lg:flex">
           <button
             type="button"
             className="grid h-6 w-6 place-items-center rounded-md border border-[color-mix(in_srgb,var(--color-text)_16%,transparent)] text-sm font-bold text-[var(--color-text)] transition hover:bg-[color-mix(in_srgb,var(--color-primary)_14%,transparent)]"
@@ -1783,45 +1826,23 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
             +
           </button>
           <div className="tabular-nums text-[10px] font-semibold leading-none text-[var(--color-muted)]">
-            {zoomTransform.k < 10 ? zoomTransform.k.toFixed(2) : zoomTransform.k.toFixed(1)}×
+            {zoomLevelLabel}×
           </div>
           <div
             role="slider"
             aria-label="地図のズーム"
             aria-valuemin={0}
             aria-valuemax={100}
-            aria-valuenow={Math.round(zoomKToRatio(zoomTransform.k) * 100)}
+            aria-valuenow={zoomSliderAriaNow}
             className="relative mx-auto h-36 w-4 cursor-pointer touch-none rounded-full bg-[color-mix(in_srgb,var(--color-text)_15%,transparent)] px-1"
-            onPointerDown={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              if (canvasRefineTimerRef.current) {
-                clearTimeout(canvasRefineTimerRef.current);
-                canvasRefineTimerRef.current = null;
-              }
-              setCanvasMapInteracting(true);
-              const track = e.currentTarget;
-              const startY = e.clientY;
-              let moved = false;
-              const onMove = (ev: PointerEvent) => {
-                if (Math.abs(ev.clientY - startY) > 3) moved = true;
-                applySliderRatioFromClientY(track, ev.clientY, false);
-              };
-              const onUp = (ev: PointerEvent) => {
-                window.removeEventListener("pointermove", onMove);
-                window.removeEventListener("pointerup", onUp);
-                window.removeEventListener("pointercancel", onUp);
-                if (!moved) applySliderRatioFromClientY(track, ev.clientY, true);
-                endSliderMapInteraction();
-              };
-              window.addEventListener("pointermove", onMove);
-              window.addEventListener("pointerup", onUp);
-              window.addEventListener("pointercancel", onUp);
-            }}
+            onPointerDown={(e) => bindZoomSliderPointer(e.currentTarget, pickZoomFromVerticalSlider, e)}
           >
             <div
-              className="pointer-events-none absolute left-1/2 h-3 w-3 -translate-x-1/2 rounded-full border border-white/80 bg-[var(--color-primary)] shadow"
-              style={{ top: `${(1 - zoomKToRatio(zoomTransform.k)) * 100}%`, transform: "translate(-50%, -50%)" }}
+              className="pointer-events-none absolute left-1/2 h-3 w-3 rounded-full border border-white/80 bg-[var(--color-primary)] shadow"
+              style={{
+                top: `${(1 - zoomSliderRatio) * 100}%`,
+                transform: "translate(-50%, -50%)",
+              }}
             />
           </div>
           <button
@@ -1830,7 +1851,48 @@ export function FlagGuesserPlayfield({ onDebugPanelPropsChange }: FlagGuesserPla
             onClick={() => zoomByFactor(1 / ZOOM_STEP)}
             aria-label="ズームアウト"
           >
-            -
+            −
+          </button>
+        </div>
+      </div>
+
+      <div className="pointer-events-none absolute bottom-2 left-1/2 z-30 w-[min(100%,18rem)] -translate-x-1/2 px-2 lg:hidden">
+        <div className="pointer-events-auto flex select-none items-center gap-1.5 rounded-xl border border-[color-mix(in_srgb,var(--color-text)_20%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_92%,transparent)] px-2 py-1.5 shadow-lg backdrop-blur-sm">
+          <button
+            type="button"
+            className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-[color-mix(in_srgb,var(--color-text)_16%,transparent)] text-sm font-bold text-[var(--color-text)] transition hover:bg-[color-mix(in_srgb,var(--color-primary)_14%,transparent)]"
+            onClick={() => zoomByFactor(1 / ZOOM_STEP)}
+            aria-label="ズームアウト"
+          >
+            −
+          </button>
+          <div
+            role="slider"
+            aria-label="地図のズーム"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={zoomSliderAriaNow}
+            className="relative h-3 min-w-0 flex-1 cursor-pointer touch-none rounded-full bg-[color-mix(in_srgb,var(--color-text)_15%,transparent)]"
+            onPointerDown={(e) => bindZoomSliderPointer(e.currentTarget, pickZoomFromHorizontalSlider, e)}
+          >
+            <div
+              className="pointer-events-none absolute top-1/2 h-3.5 w-3.5 rounded-full border border-white/80 bg-[var(--color-primary)] shadow"
+              style={{
+                left: `${zoomSliderRatio * 100}%`,
+                transform: "translate(-50%, -50%)",
+              }}
+            />
+          </div>
+          <span className="shrink-0 tabular-nums text-[10px] font-semibold leading-none text-[var(--color-muted)]">
+            {zoomLevelLabel}×
+          </span>
+          <button
+            type="button"
+            className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-[color-mix(in_srgb,var(--color-text)_16%,transparent)] text-sm font-bold text-[var(--color-text)] transition hover:bg-[color-mix(in_srgb,var(--color-primary)_14%,transparent)]"
+            onClick={() => zoomByFactor(ZOOM_STEP)}
+            aria-label="ズームイン"
+          >
+            +
           </button>
         </div>
       </div>
