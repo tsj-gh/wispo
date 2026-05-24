@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build:reflect-worker": "node scripts/build-reflect-shot-worker.mjs",
     "build": "npm run build:reflect-worker && next build",
+    "deploy:pages": "npm run build && npx wrangler pages deploy out --project-name=wispo --branch=main",
     "start": "next start",
     "lint": "next lint",
     "sim:pairlink-scores": "node scripts/run-pairlink-score-simulation.mjs",
