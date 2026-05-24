@@ -381,6 +381,10 @@ export function FlagGuesserPlayfield({
   const dragPointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
   const [hoverCountryId, setHoverCountryId] = useState<string | null>(null);
+  /** 正誤判定後のマップホバー用（カーソル付近に国旗＋国名） */
+  const [judgmentHoverScreenPos, setJudgmentHoverScreenPos] = useState<{ x: number; y: number } | null>(
+    null
+  );
   /** 出題中・マップ上で十字を描くためのポインタ位置（地図座標） */
   const [mapHoverCrossMap, setMapHoverCrossMap] = useState<{ x: number; y: number } | null>(null);
   const [dragTargetCountryId, setDragTargetCountryId] = useState<string | null>(null);
@@ -566,7 +570,15 @@ export function FlagGuesserPlayfield({
 
   const cards: PlayCard[] = useMemo(() => {
     if (!roundPlan) return [];
-    return roundPlan.cardAlpha2s.map((a2, i) => ({
+    const seen = new Set<string>();
+    const unique: string[] = [];
+    for (const a2 of roundPlan.cardAlpha2s) {
+      const u = a2.trim().toUpperCase();
+      if (!u || seen.has(u)) continue;
+      seen.add(u);
+      unique.push(u);
+    }
+    return unique.map((a2, i) => ({
       id: `fc-${roundSeq}-${i}`,
       alpha2: a2,
     }));
@@ -893,6 +905,7 @@ export function FlagGuesserPlayfield({
       setAnswered(false);
       setResultByCountryId({});
       setHoverCountryId(null);
+      setJudgmentHoverScreenPos(null);
       setMapHoverCrossMap(null);
       setDragTargetCountryId(null);
       setDrag(null);
@@ -1085,10 +1098,27 @@ export function FlagGuesserPlayfield({
         setMapHoverCrossMap(null);
       }
 
-      if (!projection || !pointerRegionModel || answered || drag) return;
-      const [x, y] = pt!;
+      if (!projection || !pointerRegionModel || drag) {
+        return;
+      }
+      if (!pt) {
+        if (!drag) setHoverCountryId(null);
+        setJudgmentHoverScreenPos(null);
+        return;
+      }
+      const [x, y] = pt;
       const id = countryIdAtPixel(projection, hitFeaturesForPointer, x, y, pointerRegionModel.pathDById);
       setHoverCountryId(id);
+
+      if (answered && id && stageRef.current) {
+        const rect = stageRef.current.getBoundingClientRect();
+        setJudgmentHoverScreenPos({
+          x: event.clientX - rect.left,
+          y: event.clientY - rect.top,
+        });
+      } else {
+        setJudgmentHoverScreenPos(null);
+      }
     },
     [projection, pointerRegionModel, hitFeaturesForPointer, answered, drag, pointerToMapCoords]
   );
@@ -1096,6 +1126,7 @@ export function FlagGuesserPlayfield({
   const handleMapLeave = useCallback(() => {
     if (!drag) setHoverCountryId(null);
     setMapHoverCrossMap(null);
+    setJudgmentHoverScreenPos(null);
   }, [drag]);
 
   const placedCountryIds = useMemo(
@@ -1516,6 +1547,12 @@ export function FlagGuesserPlayfield({
     resultByCountryId,
     zoomTransform,
   ]);
+
+  const hoverCountryAlpha2 = useMemo(() => {
+    if (!hoverCountryId) return null;
+    const a2 = byCountryCode.get(hoverCountryId)?.["alpha-2"]?.trim().toUpperCase();
+    return a2 || null;
+  }, [hoverCountryId, byCountryCode]);
 
   const hoverCountryLabel = useMemo(() => {
     if (!hoverCountryId) return null;
@@ -2279,11 +2316,35 @@ export function FlagGuesserPlayfield({
         </div>
       </div>
 
-      {hoverCountryId && projection && !drag && (
+      {hoverCountryId && projection && !drag && !answered && (
         <div className="pointer-events-none absolute bottom-2 left-2 right-2 z-10 rounded-lg bg-[color-mix(in_srgb,var(--color-bg)_88%,transparent)] px-2 py-1 text-center text-[11px] text-[var(--color-text)] backdrop-blur-sm md:text-xs">
           {hoverCountryLabel ?? (locale === "ja" ? "国を選択中" : "Select a country")}
         </div>
       )}
+
+      {answered &&
+        hoverCountryId &&
+        hoverCountryAlpha2 &&
+        hoverCountryLabel &&
+        judgmentHoverScreenPos && (
+          <div
+            className="pointer-events-none absolute z-[45] flex max-w-[min(240px,calc(100%-16px))] items-center gap-2 rounded-lg border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_94%,transparent)] px-2.5 py-1.5 shadow-lg backdrop-blur-sm"
+            style={{
+              left: Math.min(judgmentHoverScreenPos.x + 14, Math.max(8, size.w - 220)),
+              top: Math.max(8, judgmentHoverScreenPos.y - 44),
+            }}
+          >
+            <img
+              src={flagUrlForAlpha2(hoverCountryAlpha2)}
+              alt=""
+              aria-hidden
+              className="h-7 w-auto max-w-[40px] shrink-0 object-contain"
+            />
+            <span className="min-w-0 truncate text-xs font-semibold leading-snug text-[var(--color-text)]">
+              {hoverCountryLabel}
+            </span>
+          </div>
+        )}
     </div>
   );
 }

@@ -18,6 +18,19 @@ function shuffleInPlace<T>(arr: T[]): void {
   }
 }
 
+/** 同一 alpha-2 を除去（先頭優先）。国旗カードの重複出題を防ぐ */
+function dedupeAlpha2PreservingOrder(alpha2s: readonly string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const raw of alpha2s) {
+    const a2 = raw.trim().toUpperCase();
+    if (!a2 || seen.has(a2)) continue;
+    seen.add(a2);
+    out.push(a2);
+  }
+  return out;
+}
+
 /**
  * Natural Earth TopoJSON から国別 Feature 一覧を得る。
  */
@@ -95,13 +108,8 @@ export function createRoundPlan(
   shuffleInPlace(decoysPool);
 
   const decoys = decoysPool.slice(0, decoyCount);
-  while (decoys.length < decoyCount && decoysPool.length > decoys.length) {
-    const extra = decoysPool.find((d) => !decoys.includes(d));
-    if (!extra) break;
-    decoys.push(extra);
-  }
 
-  const cardAlpha2s = [targetA2, ...decoys].slice(0, decoyCount + 1);
+  const cardAlpha2s = dedupeAlpha2PreservingOrder([targetA2, ...decoys].slice(0, decoyCount + 1));
   shuffleInPlace(cardAlpha2s);
 
   return { targetRow, cardAlpha2s };
@@ -144,12 +152,12 @@ function pickDecoysFromPool(
   shuffleInPlace(decoysPool);
 
   const decoys: string[] = [];
+  const used = new Set<string>();
   for (const d of decoysPool) {
     if (decoys.length >= decoyCount) break;
+    if (used.has(d)) continue;
+    used.add(d);
     decoys.push(d);
-  }
-  while (decoys.length < decoyCount && decoysPool.length > 0) {
-    decoys.push(decoysPool[decoys.length % decoysPool.length]!);
   }
   return decoys;
 }
@@ -300,11 +308,11 @@ export function createCurriculumRoundPlan(
       topoIds,
       difficultyByAlpha3
     );
-    cardAlpha2s = [targetA2, ...decoys].slice(0, decoyCount + 1);
+    cardAlpha2s = dedupeAlpha2PreservingOrder([targetA2, ...decoys].slice(0, decoyCount + 1));
     shuffleInPlace(cardAlpha2s);
   } else {
     const decoys = pickDecoysFromPool(poolRows, targetA2, decoyCount, stage, difficultyByAlpha3);
-    cardAlpha2s = [targetA2, ...decoys].slice(0, decoyCount + 1);
+    cardAlpha2s = dedupeAlpha2PreservingOrder([targetA2, ...decoys].slice(0, decoyCount + 1));
     shuffleInPlace(cardAlpha2s);
   }
 
