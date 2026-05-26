@@ -2,7 +2,21 @@
 
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { ExplorerCountryDetailOverlay } from "@/components/lab/flag-guesser/ExplorerCountryDetailOverlay";
+import dynamic from "next/dynamic";
+
+/**
+ * Explorer の国詳細オーバーレイは i18n-iso-countries / framer-motion 等の依存が大きいので、
+ * 正誤判定後に初めて開いたタイミングで遅延ロードする。
+ * 副次効果として、フラッグゲッサーページ初期チャンクの hash が安定し、
+ * Pages CDN 上の壊れたアセットを参照し続ける事故を避けやすい。
+ */
+const ExplorerCountryDetailOverlay = dynamic(
+  () =>
+    import("@/components/lab/flag-guesser/ExplorerCountryDetailOverlay").then(
+      (m) => m.ExplorerCountryDetailOverlay
+    ),
+  { ssr: false }
+);
 import {
   startTransition,
   useCallback,
