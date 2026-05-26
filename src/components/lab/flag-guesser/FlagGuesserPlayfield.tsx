@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   startTransition,
   useCallback,
@@ -275,6 +275,7 @@ export function FlagGuesserPlayfield({
   onCurriculumMetaChange,
   onDebugPanelPropsChange,
 }: FlagGuesserPlayfieldProps) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const isDevTj = searchParams.get("devtj") === "true";
   const { locale } = useI18n();
@@ -1129,6 +1130,64 @@ export function FlagGuesserPlayfield({
     setJudgmentHoverScreenPos(null);
   }, [drag]);
 
+  /** 正誤判定中: alpha-2 を Explorer の国詳細ページに渡して遷移 */
+  const openExplorerForCountryAlpha2 = useCallback(
+    (alpha2: string | null | undefined) => {
+      const a2 = alpha2?.trim().toUpperCase();
+      if (!a2) return;
+      router.push(`/lab/flag-guesser/explorer?alpha2=${encodeURIComponent(a2)}`);
+    },
+    [router]
+  );
+
+  /** 正誤判定中のマップクリック: 国を Explorer の詳細ページで開く */
+  const handleMapClick = useCallback(
+    (event: React.MouseEvent<HTMLCanvasElement | SVGSVGElement>) => {
+      if (!answered || drag) return;
+      if (!projection || !pointerRegionModel) return;
+      const pt = pointerToMapCoords(event.clientX, event.clientY);
+      if (!pt) return;
+      const [x, y] = pt;
+      const id = countryIdAtPixel(projection, hitFeaturesForPointer, x, y, pointerRegionModel.pathDById);
+      if (!id) return;
+      const a2 = byCountryCode.get(id)?.["alpha-2"];
+      openExplorerForCountryAlpha2(a2);
+    },
+    [
+      answered,
+      drag,
+      projection,
+      pointerRegionModel,
+      hitFeaturesForPointer,
+      pointerToMapCoords,
+      byCountryCode,
+      openExplorerForCountryAlpha2,
+    ]
+  );
+
+  /** 正誤判定中: 配置済み国旗カード上でホバーしたとき、カードが覆っている国のハイライト/ツールチップを出す */
+  const handlePlacedFlagPointerMove = useCallback(
+    (placedCountryId: string, event: ReactPointerEvent) => {
+      if (!answered) return;
+      setHoverCountryId(placedCountryId);
+      const stageEl = stageRef.current;
+      if (stageEl) {
+        const rect = stageEl.getBoundingClientRect();
+        setJudgmentHoverScreenPos({
+          x: event.clientX - rect.left,
+          y: event.clientY - rect.top,
+        });
+      }
+    },
+    [answered]
+  );
+
+  const handlePlacedFlagPointerLeave = useCallback(() => {
+    if (!answered) return;
+    setHoverCountryId(null);
+    setJudgmentHoverScreenPos(null);
+  }, [answered]);
+
   const placedCountryIds = useMemo(
     () => new Set(Object.values(placedByCard).filter((x): x is string => Boolean(x))),
     [placedByCard]
@@ -1946,11 +2005,12 @@ export function FlagGuesserPlayfield({
                 ref={svgRef}
                 width={size.w}
                 height={size.h}
-                className="block select-none"
+                className={`block select-none ${answered ? "cursor-pointer" : ""}`}
                 role="img"
                 aria-label="地域マップ"
                 onPointerMove={handleMapPointerMove}
                 onPointerLeave={handleMapLeave}
+                onClick={handleMapClick}
               >
                 <rect width={size.w} height={size.h} style={{ fill: MAP_SEA_FILL }} />
                 <g transform={gTransform}>
@@ -1985,12 +2045,13 @@ export function FlagGuesserPlayfield({
                 ref={canvasRef}
                 width={Math.max(1, Math.round(size.w * devicePixelRatioState))}
                 height={Math.max(1, Math.round(size.h * devicePixelRatioState))}
-                className="block select-none"
+                className={`block select-none ${answered ? "cursor-pointer" : ""}`}
                 role="img"
                 aria-label="地域マップ"
                 style={{ width: size.w, height: size.h }}
                 onPointerMove={handleMapPointerMove}
                 onPointerLeave={handleMapLeave}
+                onClick={handleMapClick}
               />
             )}
 
@@ -2134,7 +2195,9 @@ export function FlagGuesserPlayfield({
                         <button
                           key={`stuck-btn-${c.id}-${layoutAnimKey}`}
                           type="button"
-                          className={`fg-flag-card pointer-events-auto absolute flex cursor-default items-center justify-center overflow-hidden rounded-md border-2 border-white/40 bg-white/90 p-1 shadow-md backdrop-blur-sm ${useBubble ? "fg-flag-bubble-pop" : ""}`}
+                          className={`fg-flag-card pointer-events-auto absolute flex items-center justify-center overflow-hidden rounded-md border-2 border-white/40 bg-white/90 p-1 shadow-md backdrop-blur-sm ${
+                            answered ? "cursor-pointer" : "cursor-default"
+                          } ${useBubble ? "fg-flag-bubble-pop" : ""}`}
                           style={{
                             left: flagX,
                             top: flagY,
@@ -2148,7 +2211,12 @@ export function FlagGuesserPlayfield({
                               : `translate(-50%, -50%) scale(${flagVisualScale})`,
                           }}
                           onPointerDown={(e) => handleCardPointerDown(c.id, e)}
-                          aria-label="国旗を戻す"
+                          onPointerMove={(e) => handlePlacedFlagPointerMove(cid, e)}
+                          onPointerLeave={handlePlacedFlagPointerLeave}
+                          onClick={() => {
+                            if (answered) openExplorerForCountryAlpha2(c.alpha2);
+                          }}
+                          aria-label={answered ? "この国の詳細をエクスプローラーで開く" : "国旗を戻す"}
                         >
                           <Image
                             src={flagUrlForAlpha2(c.alpha2)}

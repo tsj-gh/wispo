@@ -217,6 +217,8 @@ export function FlagExplorerClient() {
   const { locale } = useI18n();
   const searchParams = useSearchParams();
   const isDevTj = searchParams.get("devtj") === "true";
+  const initialAlpha2Param = searchParams.get("alpha2")?.trim().toUpperCase() ?? "";
+  const initialAlpha3Param = searchParams.get("alpha3")?.trim().toUpperCase() ?? "";
   const debugOnButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const [isoRows, setIsoRows] = useState<Iso3166Row[] | null>(null);
@@ -329,6 +331,19 @@ export function FlagExplorerClient() {
     for (const r of merged) m.set(r.alpha3, r);
     return m;
   }, [merged]);
+
+  /** URL クエリ (?alpha2=XX or ?alpha3=XXX) で渡された国を初回ロード時に詳細表示 */
+  const initialAutoSelectedRef = useRef(false);
+  useEffect(() => {
+    if (initialAutoSelectedRef.current) return;
+    if (!merged.length) return;
+    if (!initialAlpha2Param && !initialAlpha3Param) return;
+    const found = initialAlpha3Param
+      ? merged.find((r) => r.alpha3.toUpperCase() === initialAlpha3Param)
+      : merged.find((r) => r.alpha2.toUpperCase() === initialAlpha2Param);
+    if (found) setSelected(found);
+    initialAutoSelectedRef.current = true;
+  }, [merged, initialAlpha2Param, initialAlpha3Param]);
 
   const hierarchy = useMemo(() => (!isoRows ? new Map<string, Set<string>>() : buildRegionHierarchy(isoRows)), [isoRows]);
   const regionOptions = useMemo(() => Array.from(hierarchy.keys()).sort((a, b) => a.localeCompare(b)), [hierarchy]);
