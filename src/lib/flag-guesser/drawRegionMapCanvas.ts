@@ -35,6 +35,15 @@ export type DrawRegionMapCanvasParams = {
   dpr: number;
   projection: GeoProjection;
   features: readonly CountryFeature[];
+  /**
+   * プール外で「世界地図の文脈」用に背面描画する周辺国（任意）。
+   * features より先に同じ投影・ズームで描く。ヒットテスト・判定の対象ではない。
+   */
+  contextFeatures?: readonly CountryFeature[];
+  /** contextFeatures の fill（解決済み RGB）。指定なら全件まとめて 1 色で塗る */
+  contextFillResolved?: string;
+  /** contextFeatures の border stroke（解決済み RGB） */
+  contextBorderStrokeResolved?: string;
   zoom: { x: number; y: number; k: number };
   /** 解決済み RGB の fillStyle 文字列を返す（同一色バッチ用） */
   fillForId: (id: string) => string;
@@ -70,6 +79,9 @@ export function drawRegionMapCanvas(p: DrawRegionMapCanvasParams): void {
     dpr,
     projection,
     features,
+    contextFeatures,
+    contextFillResolved,
+    contextBorderStrokeResolved,
     zoom,
     fillForId,
     seaFillResolved,
@@ -98,6 +110,30 @@ export function drawRegionMapCanvas(p: DrawRegionMapCanvasParams): void {
 
   const k = Math.max(zoom.k, 0.08);
   const normalLineW = borderStrokeWidth / k;
+
+  /* プール外の文脈用ポリゴンを先に背面描画（ヒットテスト無し） */
+  if (contextFeatures && contextFeatures.length > 0 && contextFillResolved) {
+    let combined = "";
+    for (const f of contextFeatures) {
+      const d = pathStringGen(f as Feature<Geometry, GeoJsonProperties>);
+      if (d) combined += d;
+    }
+    if (combined) {
+      const path = safePath2D(combined);
+      if (path) {
+        ctx.fillStyle = contextFillResolved;
+        ctx.fill(path);
+        if (contextBorderStrokeResolved) {
+          ctx.strokeStyle = contextBorderStrokeResolved;
+          ctx.lineWidth = normalLineW * 0.75;
+          ctx.lineJoin = "round";
+          ctx.lineCap = "round";
+          ctx.setLineDash([]);
+          ctx.stroke(path);
+        }
+      }
+    }
+  }
 
   const byFill = new Map<string, CountryFeature[]>();
   for (const f of features) {

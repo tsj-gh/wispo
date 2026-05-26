@@ -25,6 +25,14 @@ export type RegionRoundModel = {
   allFeatures: CountryFeature[];
   projection: GeoProjection;
   pathDById: Map<string, string>;
+  /**
+   * プール外で「世界地図の文脈」として背面に描画する周辺国。
+   * 描画専用で、ヒットテスト・判定・「ここにはない」ロジックには使わない。
+   * 初期視認範囲の周辺をなるべくカバーするため、ここには事実上 Topo の全国（プールを除く）を入れる。
+   */
+  contextFeatures?: readonly CountryFeature[];
+  /** contextFeatures の path 文字列（id -> d） */
+  contextPathDById?: ReadonlyMap<string, string>;
   width: number;
   height: number;
   /**

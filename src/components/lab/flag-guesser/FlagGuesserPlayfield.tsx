@@ -114,6 +114,12 @@ const MAP_PRESETS_URL = "/assets/flag-guesser/explorer_map_presets.json";
 const MAP_SEA_FILL = "color-mix(in srgb, var(--color-bg) 96%, transparent)";
 /** 同一リージョンの陸（出題中はカード掲載国も含め同一トーン） */
 const MAP_LAND_REGION_QUIET = "color-mix(in srgb, var(--color-muted) 14%, transparent)";
+/**
+ * プール外で文脈用に背面描画する陸（より淡く、世界地図の連続性を補う）。
+ * インタラクション対象ではないので、ホバー／ドラッグ／判定の色や輪郭は付かない。
+ */
+const MAP_LAND_CONTEXT_QUIET = "color-mix(in srgb, var(--color-muted) 6%, transparent)";
+const MAP_BORDER_CONTEXT_STROKE = "color-mix(in srgb, var(--color-text) 14%, transparent)";
 /** 通常の陸地国境（実線） */
 const MAP_BORDER_STROKE = "color-mix(in srgb, var(--color-text) 26%, transparent)";
 /** ホバー時の太い輪郭（以前のホバー fill トーンに合わせる） */
@@ -2014,6 +2020,8 @@ export function FlagGuesserPlayfield({
       const border = resolveCssColorForCanvas(MAP_BORDER_STROKE, probeMount);
       const hoverS = resolveCssColorForCanvas(MAP_HOVER_STROKE, probeMount);
       const dragS = resolveCssColorForCanvas(MAP_DRAG_STROKE, probeMount);
+      const contextFill = resolveCssColorForCanvas(MAP_LAND_CONTEXT_QUIET, probeMount);
+      const contextBorder = resolveCssColorForCanvas(MAP_BORDER_CONTEXT_STROKE, probeMount);
       const fillResolvedCache = new Map<string, string>();
       const fillForId = (id: string) => {
         const css = snap.countryFill(id);
@@ -2032,6 +2040,9 @@ export function FlagGuesserPlayfield({
         dpr: snap.dpr,
         projection: snap.projection,
         features: snap.rm.allFeatures,
+        contextFeatures: snap.rm.contextFeatures,
+        contextFillResolved: contextFill,
+        contextBorderStrokeResolved: contextBorder,
         zoom: snap.zoomTransform,
         fillForId,
         seaFillResolved: sea,
@@ -2299,6 +2310,33 @@ export function FlagGuesserPlayfield({
               >
                 <rect width={size.w} height={size.h} style={{ fill: MAP_SEA_FILL }} />
                 <g transform={gTransform}>
+                  {/*
+                   * プール外の周辺国を背面にミュート描画して、世界地図としての連続性を保つ。
+                   * pointer-events を切ってヒットテスト・ホバー・ドラッグの対象から完全に外す。
+                   */}
+                  {regionModel.contextFeatures && regionModel.contextPathDById && (
+                    <g style={{ pointerEvents: "none" }} aria-hidden>
+                      {regionModel.contextFeatures.map((f) => {
+                        const id = String(f.id ?? "");
+                        const d = regionModel.contextPathDById!.get(id);
+                        if (!d) return null;
+                        return (
+                          <path
+                            key={`ctx-${id}`}
+                            d={d}
+                            style={{
+                              fill: MAP_LAND_CONTEXT_QUIET,
+                              stroke: MAP_BORDER_CONTEXT_STROKE,
+                              strokeWidth: borderStrokeWidth * 0.75,
+                              strokeLinecap: "round",
+                              strokeLinejoin: "round",
+                              vectorEffect: "non-scaling-stroke",
+                            }}
+                          />
+                        );
+                      })}
+                    </g>
+                  )}
                   {regionModel.allFeatures.map((f) => {
                     const id = String(f.id ?? "");
                     const d = regionModel.pathDById.get(id);

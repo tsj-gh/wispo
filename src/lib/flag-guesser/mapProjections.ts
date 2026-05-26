@@ -608,6 +608,39 @@ export function filterFeaturesByCountryCodes(
   return out;
 }
 
+/**
+ * プール外の世界国を「文脈用ポリゴン」として返す。
+ *
+ * 初期視認範囲の周辺で世界地図としての連続性を保つため、難易度・sub_region フィルタに
+ * 関わらず Topo に載る全国（プールを除く）を背面に描画するための入力を作る。
+ * `inPoolIds` に含まれる feature は除外する。
+ * unwrap は呼び出し側の `unwrapCenterMeridian` を必ず使うこと（プールと同じ縫い目処理）。
+ */
+function buildContextFeaturesAndPaths(
+  filteredWorldFeatures: readonly CountryFeature[],
+  inPoolIds: ReadonlySet<string>,
+  unwrapCenterMeridian: number,
+  projection: GeoProjection
+): { contextFeatures: CountryFeature[]; contextPathDById: Map<string, string> } {
+  const out: CountryFeature[] = [];
+  for (const f of filteredWorldFeatures) {
+    const id = featureIdString(f);
+    if (!id || inPoolIds.has(id)) continue;
+    out.push(cloneCountryFeatureUnwrapped(f, unwrapCenterMeridian));
+  }
+  const contextPathDById = buildPathStrings(projection, out);
+  return { contextFeatures: out, contextPathDById };
+}
+
+function inPoolIdsOf(features: readonly CountryFeature[]): Set<string> {
+  const s = new Set<string>();
+  for (const f of features) {
+    const id = featureIdString(f);
+    if (id) s.add(id);
+  }
+  return s;
+}
+
 type BuildPoolRoundInput = {
   target: Iso3166Row;
   countryCodes: Set<string>;
@@ -641,6 +674,12 @@ export function buildCurriculumMapRoundModel(input: BuildCurriculumMapRoundInput
     features: inPool as Feature<Geometry, GeoJsonProperties>[],
   };
   const pathDById = buildPathStrings(world.projection, inPool);
+  const { contextFeatures, contextPathDById } = buildContextFeaturesAndPaths(
+    filteredWorldFeatures,
+    inPoolIdsOf(inPool),
+    world.unwrapCenterMeridian,
+    world.projection
+  );
 
   return {
     target,
@@ -648,6 +687,8 @@ export function buildCurriculumMapRoundModel(input: BuildCurriculumMapRoundInput
     allFeatures: inPool,
     projection: world.projection,
     pathDById,
+    contextFeatures,
+    contextPathDById,
     width,
     height,
     unwrapCenterMeridian: world.unwrapCenterMeridian,
@@ -684,12 +725,20 @@ export function buildCurriculumMapRoundModelSameProjection(
     [w, h],
   ]);
   const pathDById = buildPathStrings(projection, inPool);
+  const { contextFeatures, contextPathDById } = buildContextFeaturesAndPaths(
+    filteredWorldFeatures,
+    inPoolIdsOf(inPool),
+    unwrapCenterMeridian,
+    projection
+  );
   return {
     target,
     regionCollection: collection,
     allFeatures: inPool,
     projection,
     pathDById,
+    contextFeatures,
+    contextPathDById,
     width,
     height,
     unwrapCenterMeridian,
@@ -720,6 +769,12 @@ export function buildPoolRoundModel(input: BuildPoolRoundInput): RegionRoundMode
   };
   const projection = buildMercatorForCollection(collection, width, height, 8, unwrapCenterMeridian);
   const pathDById = buildPathStrings(projection, inPool);
+  const { contextFeatures, contextPathDById } = buildContextFeaturesAndPaths(
+    allFeatures,
+    inPoolIdsOf(inPool),
+    unwrapCenterMeridian,
+    projection
+  );
 
   return {
     target,
@@ -727,6 +782,8 @@ export function buildPoolRoundModel(input: BuildPoolRoundInput): RegionRoundMode
     allFeatures: inPool,
     projection,
     pathDById,
+    contextFeatures,
+    contextPathDById,
     width,
     height,
     unwrapCenterMeridian,
@@ -762,12 +819,20 @@ export function buildPoolRoundModelSameProjection(input: SamePoolProjectionInput
     [w, h],
   ]);
   const pathDById = buildPathStrings(projection, inPool);
+  const { contextFeatures, contextPathDById } = buildContextFeaturesAndPaths(
+    allWorldFeatures,
+    inPoolIdsOf(inPool),
+    unwrapCenterMeridian,
+    projection
+  );
   return {
     target,
     regionCollection: collection,
     allFeatures: inPool,
     projection,
     pathDById,
+    contextFeatures,
+    contextPathDById,
     width,
     height,
     unwrapCenterMeridian,
@@ -795,12 +860,20 @@ export function buildRegionRoundModel(input: BuildRoundInput): RegionRoundModel 
   };
   const projection = buildMercatorForCollection(collection, width, height, 8, unwrapCenterMeridian);
   const pathDById = buildPathStrings(projection, inRegion);
+  const { contextFeatures, contextPathDById } = buildContextFeaturesAndPaths(
+    allFeatures,
+    inPoolIdsOf(inRegion),
+    unwrapCenterMeridian,
+    projection
+  );
   return {
     target,
     regionCollection: collection,
     allFeatures: inRegion,
     projection,
     pathDById,
+    contextFeatures,
+    contextPathDById,
     width,
     height,
     unwrapCenterMeridian,
@@ -839,12 +912,20 @@ export function buildRegionRoundModelSameProjection(input: SameProjectionInput):
     [w, h],
   ]);
   const pathDById = buildPathStrings(projection, inRegion);
+  const { contextFeatures, contextPathDById } = buildContextFeaturesAndPaths(
+    allWorldFeatures,
+    inPoolIdsOf(inRegion),
+    unwrapCenterMeridian,
+    projection
+  );
   return {
     target,
     regionCollection: collection,
     allFeatures: inRegion,
     projection,
     pathDById,
+    contextFeatures,
+    contextPathDById,
     width,
     height,
     unwrapCenterMeridian,
