@@ -2659,9 +2659,14 @@ export function FlagGuesserPlayfield({
             </div>
 
             {/*
-             * 「ここにはない」ゾーン内のカードはズーム変換の外側に固定描画する。
-             * `flagVisualScale = 1/k` はズーム内側のカード見た目を一定にする補正値なので
-             * ここでは使わず、画面 1:1 の scale=1 で固定する（ズームしても国旗が縮まない）。
+             * 「ここにはない」ゾーン内のカードはズーム変換の外側に「画面 1:1」で描画する。
+             *
+             * 通常の placed card は `overlayParentTransform` の `scale(k)` の内側にあるため、
+             * `flagVisualScale = 1/k` を CSS 変数経由で渡して見た目サイズを一定に保っている。
+             * ゾーン用カードはその親 transform の外側にあるので 1/k の打ち消しは不要で、
+             * scale = 1 を **inline transform で直に固定** する（CSS アニメ keyframes 経由だと
+             * `var(--fg-flag-scale)` が他の re-render と相互作用してズームに引きずられることが
+             * 観測された）。
              */}
             {notOnMapZone && (
               <div className="pointer-events-none absolute inset-0 z-[27]">
@@ -2671,7 +2676,6 @@ export function FlagGuesserPlayfield({
                   const layout = placedLayoutByCard[c.id];
                   if (!layout) return null;
                   const { anchorX, anchorY, flagX, flagY } = layout;
-                  const ZONE_CARD_SCALE = 1;
                   const [lineTx, lineTy] = flagCardEdgeTowardAnchor(
                     flagX,
                     flagY,
@@ -2679,10 +2683,8 @@ export function FlagGuesserPlayfield({
                     anchorY,
                     CARD_W,
                     CARD_H,
-                    ZONE_CARD_SCALE
+                    1
                   );
-                  const bubbleFromDx = anchorX - flagX;
-                  const bubbleFromDy = anchorY - flagY;
                   const connD = dragConnectorPathD(anchorX, anchorY, lineTx, lineTy);
                   const verdict = resultByNotOnMapCardId[c.id];
                   const borderTone = answered
@@ -2692,7 +2694,6 @@ export function FlagGuesserPlayfield({
                       ? "border-rose-500/70"
                       : "border-white/40"
                     : "border-white/40";
-                  const layoutAnimKey = placedLayoutAnimKeyByCard[c.id] ?? 0;
                   return (
                     <span
                       key={`zone-${c.id}`}
@@ -2711,9 +2712,9 @@ export function FlagGuesserPlayfield({
                         />
                       </svg>
                       <button
-                        key={`zone-btn-${c.id}-${layoutAnimKey}`}
+                        key={`zone-btn-${c.id}`}
                         type="button"
-                        className={`fg-flag-card pointer-events-auto absolute flex items-center justify-center overflow-hidden rounded-md border-2 bg-white/90 p-1 shadow-md backdrop-blur-sm fg-flag-bubble-pop ${
+                        className={`fg-flag-card pointer-events-auto absolute flex items-center justify-center overflow-hidden rounded-md border-2 bg-white/90 p-1 shadow-md backdrop-blur-sm ${
                           answered ? "cursor-pointer" : "cursor-default"
                         } ${borderTone}`}
                         style={{
@@ -2721,9 +2722,8 @@ export function FlagGuesserPlayfield({
                           top: flagY,
                           width: CARD_W,
                           height: CARD_H,
-                          ["--fg-bubble-from-dx" as string]: `${bubbleFromDx}px`,
-                          ["--fg-bubble-from-dy" as string]: `${bubbleFromDy}px`,
-                          ["--fg-flag-scale" as string]: String(ZONE_CARD_SCALE),
+                          transform: "translate(-50%, -50%) scale(1)",
+                          transformOrigin: "center center",
                         }}
                         onPointerDown={(e) => handleCardPointerDown(c.id, e)}
                         onClick={() => {
