@@ -147,6 +147,79 @@ type DragState = {
   cardId: string;
 };
 
+/**
+ * 「ここにはない」ドロップゾーンの特殊 placeId。
+ * `placedByCard[cardId] === NOT_ON_MAP_ID` のとき複数カードが同時に吸着できる
+ * （通常の country-code とは異なり一意化しない）。
+ */
+const NOT_ON_MAP_ID = "__not_on_map__";
+
+/** 「ここにはない」ゾーンの楕円半径（地図領域の screen 座標, 投影空間 = ズーム=identity 時の screen と一致） */
+const NOT_ON_MAP_ZONE_RX = 72;
+const NOT_ON_MAP_ZONE_RY = 50;
+const NOT_ON_MAP_ZONE_MARGIN = 10;
+/** 角の判定で「他の国の重心と被らない」とみなす最小距離（地図短辺に対する比） */
+const NOT_ON_MAP_ZONE_MIN_CENTROID_DIST_RATIO = 0.18;
+/** 重心採用の最小面積（小さすぎる島嶼を除外） */
+const NOT_ON_MAP_ZONE_FEATURE_MIN_AREA = 60;
+
+type NotOnMapCorner = "TL" | "BL" | "BR" | "TR";
+
+type NotOnMapZoneInfo = {
+  corner: NotOnMapCorner;
+  /** 地図領域の左上を原点とした座標（投影空間 = ズーム=identity 時の screen と同じ単位） */
+  cx: number;
+  cy: number;
+  rx: number;
+  ry: number;
+};
+
+/** 「ここにはない」ゾーンの内向き角度（カードが伸びる中心方向） */
+const NOT_ON_MAP_INWARD_ANGLE: Record<NotOnMapCorner, number> = {
+  TL: Math.PI / 4,
+  BL: -Math.PI / 4,
+  BR: -3 * Math.PI / 4,
+  TR: 3 * Math.PI / 4,
+};
+
+/**
+ * ゾーン内に吸着済みカードを並べる位置。線の方角と長さを均等にずらして重なりを避ける。
+ */
+function notOnMapBubbleLayoutFor(
+  zone: NotOnMapZoneInfo,
+  cardIndex: number,
+  totalCards: number,
+  cardW: number
+): FlagBubbleLayout {
+  const inward = NOT_ON_MAP_INWARD_ANGLE[zone.corner];
+  const arcHalf = Math.PI / 3;
+  const step =
+    totalCards > 1 ? (2 * arcHalf) / (totalCards - 1) : 0;
+  const offset =
+    totalCards > 1 ? -arcHalf + step * cardIndex : 0;
+  const angle = inward + offset;
+  const baseDist = Math.max(zone.rx, zone.ry) + cardW * 0.85;
+  const stagger = (cardIndex % 2) * 14;
+  const distance = baseDist + stagger;
+  return {
+    anchorX: zone.cx,
+    anchorY: zone.cy,
+    flagX: zone.cx + Math.cos(angle) * distance,
+    flagY: zone.cy + Math.sin(angle) * distance,
+    useBubble: true,
+    areaRatioPercent: 100,
+    placementOffsetX: 0,
+    placementOffsetY: 0,
+  };
+}
+
+/** screen 座標 (sx, sy) が楕円ゾーン内かを判定 */
+function isPointInNotOnMapZone(sx: number, sy: number, zone: NotOnMapZoneInfo): boolean {
+  const dx = (sx - zone.cx) / zone.rx;
+  const dy = (sy - zone.cy) / zone.ry;
+  return dx * dx + dy * dy <= 1;
+}
+
 function mapUnitsPerScreenPx(zoomK: number): number {
   return 1 / Math.max(zoomK, 0.08);
 }
@@ -410,6 +483,12 @@ export function FlagGuesserPlayfield({
   const [dragCardSpring, setDragCardSpring] = useState(DEFAULT_DRAG_CARD_SPRING);
   const [answered, setAnswered] = useState(false);
   const [resultByCountryId, setResultByCountryId] = useState<Record<string, "correct" | "wrong">>({});
+  /** 「ここにはない」へドロップしたカードの正誤（cardId 別） */
+  const [resultByNotOnMapCardId, setResultByNotOnMapCardId] = useState<
+    Record<string, "correct" | "wrong">
+  >({});
+  /** 現在のドラッグが「ここにはない」ゾーンの真上にあるか */
+  const [dragOverNotOnMap, setDragOverNotOnMap] = useState(false);
 
   const lastTsRef = useRef(0);
   const rafRef = useRef(0);
@@ -440,6 +519,8 @@ export function FlagGuesserPlayfield({
   }, [isoRows, diffRows, difficultyByAlpha3, topoIds, curriculumLevel]);
 
   const curriculumStage = useMemo(() => getCurriculumStage(curriculumLevel), [curriculumLevel]);
+  /** お邪魔のあるグレード（3 以降）のみ「ここにはない」ゾーンを出す */
+  const notOnMapEnabled = curriculumStage.decoyCount >= 1;
 
   useEffect(() => {
     onCurriculumMetaChange?.({
@@ -583,6 +664,59 @@ export function FlagGuesserPlayfield({
     if (!pointerRegionModel) return [];
     return sortFeaturesForHitTest(pointerRegionModel.allFeatures as CountryFeature[]);
   }, [pointerRegionModel]);
+
+  /**
+   * 「ここにはない」ゾーンの配置 corner を選ぶ。
+   * - 左上 → 左下 → 右下 → 右上 の順に探索
+   * - 国ポリゴン重心と一定距離以上離れていれば採用
+   * - 全部不適なら左上に固定
+   */
+  const notOnMapZone = useMemo<NotOnMapZoneInfo | null>(() => {
+    if (!notOnMapEnabled) return null;
+    if (!regionModel?.projection || !regionModel.allFeatures?.length) return null;
+    if (size.w < 220 || size.h < 220) return null;
+
+    const rx = NOT_ON_MAP_ZONE_RX;
+    const ry = NOT_ON_MAP_ZONE_RY;
+    const m = NOT_ON_MAP_ZONE_MARGIN;
+    const corners: Array<{ key: NotOnMapCorner; cx: number; cy: number }> = [
+      { key: "TL", cx: rx + m, cy: ry + m },
+      { key: "BL", cx: rx + m, cy: size.h - ry - m },
+      { key: "BR", cx: size.w - rx - m, cy: size.h - ry - m },
+      { key: "TR", cx: size.w - rx - m, cy: ry + m },
+    ];
+
+    const path = geoPath(regionModel.projection);
+    const centroids: Array<[number, number]> = [];
+    for (const f of regionModel.allFeatures) {
+      try {
+        const c = path.centroid(f as Parameters<typeof path.centroid>[0]);
+        const a = Math.abs(path.area(f as Parameters<typeof path.area>[0]));
+        if (Number.isFinite(c[0]) && Number.isFinite(c[1]) && a >= NOT_ON_MAP_ZONE_FEATURE_MIN_AREA) {
+          centroids.push([c[0], c[1]]);
+        }
+      } catch {
+        /* skip */
+      }
+    }
+
+    const minDist = Math.min(size.w, size.h) * NOT_ON_MAP_ZONE_MIN_CENTROID_DIST_RATIO;
+
+    for (const corner of corners) {
+      let nearest = Infinity;
+      for (const [cx, cy] of centroids) {
+        const dx = corner.cx - cx;
+        const dy = corner.cy - cy;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        if (d < nearest) nearest = d;
+        if (nearest < minDist) break;
+      }
+      if (nearest >= minDist) {
+        return { corner: corner.key, cx: corner.cx, cy: corner.cy, rx, ry };
+      }
+    }
+    return { corner: "TL", cx: corners[0]!.cx, cy: corners[0]!.cy, rx, ry };
+  }, [notOnMapEnabled, regionModel, size.w, size.h]);
 
   const cards: PlayCard[] = useMemo(() => {
     if (!roundPlan) return [];
@@ -920,10 +1054,12 @@ export function FlagGuesserPlayfield({
       setPlacedLayoutAnimKeyByCard({});
       setAnswered(false);
       setResultByCountryId({});
+      setResultByNotOnMapCardId({});
       setHoverCountryId(null);
       setJudgmentHoverScreenPos(null);
       setMapHoverCrossMap(null);
       setDragTargetCountryId(null);
+      setDragOverNotOnMap(false);
       setDrag(null);
       setDragPointerMap(null);
       setDragCardDisplay(null);
@@ -1185,6 +1321,12 @@ export function FlagGuesserPlayfield({
   const handlePlacedFlagPointerMove = useCallback(
     (placedCountryId: string, event: ReactPointerEvent) => {
       if (!answered) return;
+      // 「ここにはない」ゾーン上のカードは国がないのでホバーハイライトを出さない
+      if (placedCountryId === NOT_ON_MAP_ID) {
+        setHoverCountryId(null);
+        setJudgmentHoverScreenPos(null);
+        return;
+      }
       setHoverCountryId(placedCountryId);
       const stageEl = stageRef.current;
       if (stageEl) {
@@ -1205,7 +1347,21 @@ export function FlagGuesserPlayfield({
   }, [answered]);
 
   const placedCountryIds = useMemo(
-    () => new Set(Object.values(placedByCard).filter((x): x is string => Boolean(x))),
+    () =>
+      new Set(
+        Object.values(placedByCard).filter(
+          (x): x is string => Boolean(x) && x !== NOT_ON_MAP_ID
+        )
+      ),
+    [placedByCard]
+  );
+
+  /** ゾーンに置かれているカード ID の順序付き配列（描画時の index 計算用） */
+  const notOnMapCardIds = useMemo(
+    () =>
+      Object.entries(placedByCard)
+        .filter(([, v]) => v === NOT_ON_MAP_ID)
+        .map(([k]) => k),
     [placedByCard]
   );
 
@@ -1274,14 +1430,38 @@ export function FlagGuesserPlayfield({
       const [x, y] = pt;
       dragPointerRef.current = { x, y };
       setDragPointerMap({ x, y });
+
+      // 「ここにはない」ゾーン（地図領域 screen 座標）への着弾を優先判定
+      if (notOnMapZone) {
+        const rect = getMapRect();
+        if (rect) {
+          const sx = clientX - rect.left;
+          const sy = clientY - rect.top;
+          if (isPointInNotOnMapZone(sx, sy, notOnMapZone)) {
+            setDragOverNotOnMap(true);
+            setDragTargetCountryId(null);
+            return;
+          }
+        }
+      }
+      setDragOverNotOnMap(false);
       setDragTargetCountryId(resolveDragTargetAtMapPoint(x, y));
     },
-    [projection, drag, pointerToMapCoords, pointerRegionModel, resolveDragTargetAtMapPoint]
+    [
+      projection,
+      drag,
+      pointerToMapCoords,
+      pointerRegionModel,
+      resolveDragTargetAtMapPoint,
+      notOnMapZone,
+      getMapRect,
+    ]
   );
 
   const endDrag = useCallback(
     (cardId: string) => {
       const countryId = dragTargetCountryId;
+      const wasOverNotOnMap = dragOverNotOnMap;
       const lastMap = dragCardDisplayRef.current;
       const zt = zoomTransformRef.current;
       const k = Math.max(zt.k, 0.06);
@@ -1316,9 +1496,41 @@ export function FlagGuesserPlayfield({
 
       setDrag(null);
       setDragTargetCountryId(null);
+      setDragOverNotOnMap(false);
       setDragPointerMap(null);
       setDragCardDisplay(null);
       dragCardDisplayRef.current = null;
+
+      // 「ここにはない」ゾーンへのドロップ（複数枚許容）
+      if (wasOverNotOnMap && notOnMapZone) {
+        setPlacedByCard((prev) => {
+          const next = { ...prev, [cardId]: NOT_ON_MAP_ID };
+          // ゾーン内の全カードについて、線の方角・長さを再配分して重なりを抑える
+          const zoneCardIds = Object.entries(next)
+            .filter(([, v]) => v === NOT_ON_MAP_ID)
+            .map(([k]) => k);
+          // 既存の placedLayout を維持しつつ、ゾーン内分は再計算
+          setPlacedLayoutByCard((prevLayout) => {
+            const nextLayout: Record<string, FlagBubbleLayout> = { ...prevLayout };
+            zoneCardIds.forEach((id, idx) => {
+              nextLayout[id] = notOnMapBubbleLayoutFor(
+                notOnMapZone,
+                idx,
+                zoneCardIds.length,
+                CARD_W
+              );
+            });
+            return nextLayout;
+          });
+          // pop アニメを新規カードだけトリガー
+          setPlacedLayoutAnimKeyByCard((prevK) => ({
+            ...prevK,
+            [cardId]: (prevK[cardId] ?? 0) + 1,
+          }));
+          return next;
+        });
+        return;
+      }
 
       if (countryId) {
         const prevPlaced = placedRef.current;
@@ -1361,7 +1573,7 @@ export function FlagGuesserPlayfield({
         [cardId]: floater,
       }));
     },
-    [dragTargetCountryId, size.w, size.h, buildPlacementLayout]
+    [dragTargetCountryId, dragOverNotOnMap, notOnMapZone, size.w, size.h, buildPlacementLayout]
   );
 
   /** パン・ズームで見えているポリゴン内へ国旗表示位置を追従（探索は再実行しない） */
@@ -1401,6 +1613,11 @@ export function FlagGuesserPlayfield({
     if (!entries.length) return;
     const next: Record<string, FlagBubbleLayout> = {};
     for (const [cardId, countryId] of entries) {
+      if (countryId === NOT_ON_MAP_ID) {
+        const prev = placedLayoutRef.current[cardId];
+        if (prev) next[cardId] = prev;
+        continue;
+      }
       const prev = placedLayoutRef.current[cardId];
       const hint: [number, number] | undefined = prev ? [prev.flagX, prev.flagY] : undefined;
       const layout = buildPlacementLayout(countryId, { hintMapPoint: hint });
@@ -1415,20 +1632,59 @@ export function FlagGuesserPlayfield({
     pointerRegionModel,
   ]);
 
+  /** リサイズ等で「ここにはない」ゾーン位置が変わったとき、内部カードの吹き出しを再配分 */
+  useEffect(() => {
+    if (!notOnMapZone) return;
+    const zoneIds = Object.entries(placedByCardForLayoutRef.current)
+      .filter(([, v]) => v === NOT_ON_MAP_ID)
+      .map(([k]) => k);
+    if (zoneIds.length === 0) return;
+    setPlacedLayoutByCard((prev) => {
+      const next = { ...prev };
+      zoneIds.forEach((id, idx) => {
+        next[id] = notOnMapBubbleLayoutFor(notOnMapZone, idx, zoneIds.length, CARD_W);
+      });
+      return next;
+    });
+  }, [notOnMapZone]);
+
   const handleCardPointerDown = (cardId: string, e: ReactPointerEvent) => {
     if (answered) return;
     e.preventDefault();
     if (placedByCard[cardId]) {
+      const wasInZone = placedByCard[cardId] === NOT_ON_MAP_ID;
       setPlacedByCard((prev) => {
         const next = { ...prev };
         delete next[cardId];
+        // ゾーンから抜けたら、残ったゾーン内カードの線を再配分
+        if (wasInZone && notOnMapZone) {
+          const remaining = Object.entries(next)
+            .filter(([, v]) => v === NOT_ON_MAP_ID)
+            .map(([k]) => k);
+          setPlacedLayoutByCard((prevLayout) => {
+            const nextLayout: Record<string, FlagBubbleLayout> = { ...prevLayout };
+            delete nextLayout[cardId];
+            remaining.forEach((id, idx) => {
+              nextLayout[id] = notOnMapBubbleLayoutFor(
+                notOnMapZone,
+                idx,
+                remaining.length,
+                CARD_W
+              );
+            });
+            return nextLayout;
+          });
+          return next;
+        }
         return next;
       });
-      setPlacedLayoutByCard((prev) => {
-        const next = { ...prev };
-        delete next[cardId];
-        return next;
-      });
+      if (!wasInZone) {
+        setPlacedLayoutByCard((prev) => {
+          const next = { ...prev };
+          delete next[cardId];
+          return next;
+        });
+      }
     }
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
     beginDrag(cardId, e.clientX, e.clientY);
@@ -1487,14 +1743,27 @@ export function FlagGuesserPlayfield({
   const submitAnswer = () => {
     if (!roundPlan) return;
     const byC: Record<string, "correct" | "wrong"> = {};
+    const byZoneCard: Record<string, "correct" | "wrong"> = {};
+    const mapCodes = roundPlan.mapCountryCodes ?? null;
     for (const c of cards) {
       const cid = placedByCard[c.id];
       if (!cid) continue;
+      if (cid === NOT_ON_MAP_ID) {
+        // 国旗の対応国が地図に描画されていなければ正解
+        const isoRow = isoRows.find(
+          (r) => r["alpha-2"]?.trim().toUpperCase() === c.alpha2.toUpperCase()
+        );
+        const cc = isoRow?.["country-code"]?.trim() ?? "";
+        const onMap = mapCodes ? !!(cc && mapCodes.has(cc)) : true;
+        byZoneCard[c.id] = onMap ? "wrong" : "correct";
+        continue;
+      }
       const row = byCountryCode.get(cid);
       const ok = row?.["alpha-2"].toUpperCase() === c.alpha2.toUpperCase();
       byC[cid] = ok ? "correct" : "wrong";
     }
     setResultByCountryId(byC);
+    setResultByNotOnMapCardId(byZoneCard);
     setAnswered(true);
     const a2 = roundPlan.targetRow["alpha-2"]?.toUpperCase();
     if (a2) setExcludeAlphas((prev) => new Set([...Array.from(prev), a2]));
@@ -2071,6 +2340,39 @@ export function FlagGuesserPlayfield({
               />
             )}
 
+            {notOnMapZone && (
+              <div
+                className="pointer-events-none absolute z-[26] select-none"
+                style={{
+                  left: notOnMapZone.cx - notOnMapZone.rx,
+                  top: notOnMapZone.cy - notOnMapZone.ry,
+                  width: notOnMapZone.rx * 2,
+                  height: notOnMapZone.ry * 2,
+                }}
+                aria-hidden
+              >
+                <div
+                  className={`flex h-full w-full items-center justify-center rounded-full border-2 transition-colors duration-150 ${
+                    dragOverNotOnMap
+                      ? "border-[var(--color-primary)] bg-[color-mix(in_srgb,var(--color-primary)_22%,transparent)] shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-primary)_18%,transparent)]"
+                      : "border-dashed border-[color-mix(in_srgb,var(--color-text)_30%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_82%,transparent)]"
+                  }`}
+                >
+                  <span
+                    className={`text-center text-[11px] font-semibold leading-tight ${
+                      dragOverNotOnMap
+                        ? "text-[var(--color-primary)]"
+                        : "text-[color-mix(in_srgb,var(--color-text)_72%,transparent)]"
+                    }`}
+                  >
+                    ここには
+                    <br />
+                    ない
+                  </span>
+                </div>
+              </div>
+            )}
+
             {mapJudgeOverlay}
 
             {judgeBurstRipples.map((r) => (
@@ -2172,6 +2474,7 @@ export function FlagGuesserPlayfield({
                   cards.map((c) => {
                     const cid = placedByCard[c.id];
                     if (!cid || drag?.cardId === c.id) return null;
+                    if (cid === NOT_ON_MAP_ID) return null;
                     const layout = placedLayoutByCard[c.id];
                     if (!layout) return null;
                     const layoutAnimKey = placedLayoutAnimKeyByCard[c.id] ?? 0;
@@ -2354,6 +2657,94 @@ export function FlagGuesserPlayfield({
 
               </div>
             </div>
+
+            {/* 「ここにはない」ゾーン内のカードはズーム変換の外側に固定描画する */}
+            {notOnMapZone && (
+              <div className="pointer-events-none absolute inset-0 z-[27]">
+                {cards.map((c) => {
+                  if (placedByCard[c.id] !== NOT_ON_MAP_ID) return null;
+                  if (drag?.cardId === c.id) return null;
+                  const layout = placedLayoutByCard[c.id];
+                  if (!layout) return null;
+                  const { anchorX, anchorY, flagX, flagY } = layout;
+                  const [lineTx, lineTy] = flagCardEdgeTowardAnchor(
+                    flagX,
+                    flagY,
+                    anchorX,
+                    anchorY,
+                    CARD_W,
+                    CARD_H,
+                    flagVisualScale
+                  );
+                  const bubbleFromDx = anchorX - flagX;
+                  const bubbleFromDy = anchorY - flagY;
+                  const connD = dragConnectorPathD(anchorX, anchorY, lineTx, lineTy);
+                  const verdict = resultByNotOnMapCardId[c.id];
+                  const borderTone = answered
+                    ? verdict === "correct"
+                      ? "border-emerald-500/70"
+                      : verdict === "wrong"
+                      ? "border-rose-500/70"
+                      : "border-white/40"
+                    : "border-white/40";
+                  const layoutAnimKey = placedLayoutAnimKeyByCard[c.id] ?? 0;
+                  return (
+                    <span
+                      key={`zone-${c.id}`}
+                      className="pointer-events-none absolute left-0 top-0"
+                    >
+                      <svg
+                        className="pointer-events-none absolute left-0 top-0 overflow-visible"
+                        width={size.w}
+                        height={size.h}
+                        aria-hidden
+                      >
+                        <path
+                          d={connD}
+                          className="fg-flag-bubble-connector"
+                          strokeWidth={MAP_CONNECTOR_STROKE_PX}
+                        />
+                      </svg>
+                      <button
+                        key={`zone-btn-${c.id}-${layoutAnimKey}`}
+                        type="button"
+                        className={`fg-flag-card pointer-events-auto absolute flex items-center justify-center overflow-hidden rounded-md border-2 bg-white/90 p-1 shadow-md backdrop-blur-sm fg-flag-bubble-pop ${
+                          answered ? "cursor-pointer" : "cursor-default"
+                        } ${borderTone}`}
+                        style={{
+                          left: flagX,
+                          top: flagY,
+                          width: CARD_W,
+                          height: CARD_H,
+                          ["--fg-bubble-from-dx" as string]: `${bubbleFromDx}px`,
+                          ["--fg-bubble-from-dy" as string]: `${bubbleFromDy}px`,
+                          ["--fg-flag-scale" as string]: String(flagVisualScale),
+                        }}
+                        onPointerDown={(e) => handleCardPointerDown(c.id, e)}
+                        onClick={() => {
+                          if (answered) openExplorerForCountryAlpha2(c.alpha2);
+                        }}
+                        aria-label={
+                          answered
+                            ? "この国の詳細をエクスプローラーで開く"
+                            : "国旗を戻す"
+                        }
+                      >
+                        <Image
+                          src={flagUrlForAlpha2(c.alpha2)}
+                          alt=""
+                          width={CARD_W}
+                          height={CARD_H}
+                          className="pointer-events-none max-h-full max-w-full object-contain"
+                          draggable={false}
+                          unoptimized
+                        />
+                      </button>
+                    </span>
+                  );
+                })}
+              </div>
+            )}
 
             {isDevTj && isDebugMode && listedCountryLabelsJa.length > 0 && (
               <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-[5] border-t border-[color-mix(in_srgb,var(--color-text)_18%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_92%,transparent)] px-2 py-1.5 text-[10px] leading-snug text-[var(--color-text)] backdrop-blur-sm">
