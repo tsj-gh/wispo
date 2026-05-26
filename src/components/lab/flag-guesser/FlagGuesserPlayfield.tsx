@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { ExplorerCountryDetailOverlay } from "@/components/lab/flag-guesser/ExplorerCountryDetailOverlay";
 import {
   startTransition,
   useCallback,
@@ -275,7 +276,7 @@ export function FlagGuesserPlayfield({
   onCurriculumMetaChange,
   onDebugPanelPropsChange,
 }: FlagGuesserPlayfieldProps) {
-  const router = useRouter();
+  const [explorerOverlayAlpha2, setExplorerOverlayAlpha2] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const isDevTj = searchParams.get("devtj") === "true";
   const { locale } = useI18n();
@@ -1130,15 +1131,16 @@ export function FlagGuesserPlayfield({
     setJudgmentHoverScreenPos(null);
   }, [drag]);
 
-  /** 正誤判定中: alpha-2 を Explorer の国詳細ページに渡して遷移 */
+  /** 正誤判定中: ページを離れずに Explorer の国詳細パネルをオーバーレイ表示 */
   const openExplorerForCountryAlpha2 = useCallback(
     (alpha2: string | null | undefined) => {
       const a2 = alpha2?.trim().toUpperCase();
       if (!a2) return;
-      router.push(`/lab/flag-guesser/explorer?alpha2=${encodeURIComponent(a2)}`);
+      setExplorerOverlayAlpha2(a2);
     },
-    [router]
+    []
   );
+  const closeExplorerOverlay = useCallback(() => setExplorerOverlayAlpha2(null), []);
 
   /** 正誤判定中のマップクリック: 国を Explorer の詳細ページで開く */
   const handleMapClick = useCallback(
@@ -2413,6 +2415,13 @@ export function FlagGuesserPlayfield({
             </span>
           </div>
         )}
+
+      {explorerOverlayAlpha2 ? (
+        <ExplorerCountryDetailOverlay
+          alpha2={explorerOverlayAlpha2}
+          onClose={closeExplorerOverlay}
+        />
+      ) : null}
     </div>
   );
 }
