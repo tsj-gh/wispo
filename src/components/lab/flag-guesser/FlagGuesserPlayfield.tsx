@@ -2658,7 +2658,11 @@ export function FlagGuesserPlayfield({
               </div>
             </div>
 
-            {/* 「ここにはない」ゾーン内のカードはズーム変換の外側に固定描画する */}
+            {/*
+             * 「ここにはない」ゾーン内のカードはズーム変換の外側に固定描画する。
+             * `flagVisualScale = 1/k` はズーム内側のカード見た目を一定にする補正値なので
+             * ここでは使わず、画面 1:1 の scale=1 で固定する（ズームしても国旗が縮まない）。
+             */}
             {notOnMapZone && (
               <div className="pointer-events-none absolute inset-0 z-[27]">
                 {cards.map((c) => {
@@ -2667,6 +2671,7 @@ export function FlagGuesserPlayfield({
                   const layout = placedLayoutByCard[c.id];
                   if (!layout) return null;
                   const { anchorX, anchorY, flagX, flagY } = layout;
+                  const ZONE_CARD_SCALE = 1;
                   const [lineTx, lineTy] = flagCardEdgeTowardAnchor(
                     flagX,
                     flagY,
@@ -2674,7 +2679,7 @@ export function FlagGuesserPlayfield({
                     anchorY,
                     CARD_W,
                     CARD_H,
-                    flagVisualScale
+                    ZONE_CARD_SCALE
                   );
                   const bubbleFromDx = anchorX - flagX;
                   const bubbleFromDy = anchorY - flagY;
@@ -2718,7 +2723,7 @@ export function FlagGuesserPlayfield({
                           height: CARD_H,
                           ["--fg-bubble-from-dx" as string]: `${bubbleFromDx}px`,
                           ["--fg-bubble-from-dy" as string]: `${bubbleFromDy}px`,
-                          ["--fg-flag-scale" as string]: String(flagVisualScale),
+                          ["--fg-flag-scale" as string]: String(ZONE_CARD_SCALE),
                         }}
                         onPointerDown={(e) => handleCardPointerDown(c.id, e)}
                         onClick={() => {
