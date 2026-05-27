@@ -166,6 +166,38 @@ export function presetKToFitInPool(
 }
 
 /**
+ * モバイル向け: 横方向だけ in-pool が収まるよう k を抑える（縦はプリセット優先）。
+ * PC で過度に縮小されていた `min(kMaxByW, kMaxByH)` とは別に、左右の見切れだけを防ぐ。
+ */
+export function presetKToFitHorizontally(
+  presetK: number,
+  projection: GeoProjection,
+  width: number,
+  height: number,
+  centerLon: number,
+  centerLat: number,
+  inPoolBounds: [[number, number], [number, number]],
+  paddingPx = 16
+): number {
+  const center = projection([centerLon, centerLat]);
+  if (!center || !Number.isFinite(center[0]) || !Number.isFinite(center[1])) {
+    return clampPresetK(presetK);
+  }
+  const [mx] = center;
+  const [[x0], [x1]] = inPoolBounds;
+  if (![x0, x1].every((v) => Number.isFinite(v))) return clampPresetK(presetK);
+
+  const reqHalfW = Math.max(Math.abs(mx - x0), Math.abs(x1 - mx));
+  if (!Number.isFinite(reqHalfW) || reqHalfW <= 0) return clampPresetK(presetK);
+
+  const availHalfW = Math.max(1, width / 2 - paddingPx);
+  const kMaxByW = availHalfW / reqHalfW;
+  if (!Number.isFinite(kMaxByW) || kMaxByW <= 0) return clampPresetK(presetK);
+
+  return clampPresetK(Math.min(presetK, kMaxByW));
+}
+
+/**
  * JSON の `presets` に貼り付けやすい 1 エントリ（キーは現在の地域フィルタ相当）。
  */
 export function formatExplorerMapPresetClipboardEntry(

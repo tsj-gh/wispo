@@ -40,12 +40,33 @@ function enforceCruiseSpeed(b: FloatingBubbleLike): void {
   b.vy *= k;
 }
 
+/** 要素座標系で 2 矩形の交差 */
+export function intersectFlagFloatRects(a: FlagFloatRect, b: FlagFloatRect): FlagFloatRect {
+  const minX = Math.max(a.minX, b.minX);
+  const minY = Math.max(a.minY, b.minY);
+  const maxX = Math.min(a.maxX, b.maxX);
+  const maxY = Math.min(a.maxY, b.maxY);
+  if (maxX <= minX + 8 || maxY <= minY + 8) return a;
+  return { minX, minY, maxX, maxY };
+}
+
+/** 四辺を内側へ寄せる（カード半分＋余白がはみ出さないよう） */
+export function insetFlagFloatRect(
+  rect: FlagFloatRect,
+  padX: number,
+  padY: number
+): FlagFloatRect {
+  const minX = rect.minX + padX;
+  const minY = rect.minY + padY;
+  const maxX = rect.maxX - padX;
+  const maxY = rect.maxY - padY;
+  if (maxX <= minX + 8 || maxY <= minY + 8) return rect;
+  return { minX, minY, maxX, maxY };
+}
+
 /**
- * ステージ要素の getBoundingClientRect と visualViewport の交差を、
- * ステージローカル座標の移動範囲に変換する。
- *
- * モバイルでステージ幅がレイアウト上の viewport より広いと、
- * 物理の右壁が画面外にあり「右だけ跳ね返らない」ように見える。
+ * 要素の getBoundingClientRect と「実際に見えている viewport」の交差を、
+ * 要素ローカル座標の移動範囲に変換する。
  */
 export function flagFloatRectFromStageElement(el: HTMLElement): FlagFloatRect {
   const r = el.getBoundingClientRect();
@@ -56,27 +77,44 @@ export function flagFloatRectFromStageElement(el: HTMLElement): FlagFloatRect {
 
   if (typeof window !== "undefined") {
     const vv = window.visualViewport;
-    if (vv) {
-      const vvLeft = vv.offsetLeft;
-      const vvRight = vv.offsetLeft + vv.width;
-      const vvTop = vv.offsetTop;
-      const vvBottom = vv.offsetTop + vv.height;
-      const clipL = Math.max(0, vvLeft - r.left);
-      const clipR = Math.min(r.width, vvRight - r.left);
-      const clipT = Math.max(0, vvTop - r.top);
-      const clipB = Math.min(r.height, vvBottom - r.top);
-      if (clipR > clipL + 8) {
-        minX = clipL;
-        maxX = clipR;
-      }
-      if (clipB > clipT + 8) {
-        minY = clipT;
-        maxY = clipB;
-      }
+    const vLeft = vv?.offsetLeft ?? 0;
+    const vTop = vv?.offsetTop ?? 0;
+    const vRight = vLeft + (vv?.width ?? window.innerWidth);
+    const vBottom = vTop + (vv?.height ?? window.innerHeight);
+
+    /* layout viewport との交差も取り、Safari 等で rect が広く取られるケースを抑える */
+    const visLeft = Math.max(r.left, vLeft, 0);
+    const visRight = Math.min(r.right, vRight, document.documentElement.clientWidth);
+    const visTop = Math.max(r.top, vTop, 0);
+    const visBottom = Math.min(r.bottom, vBottom, document.documentElement.clientHeight);
+
+    const clipL = Math.max(0, visLeft - r.left);
+    const clipR = Math.min(r.width, visRight - r.left);
+    const clipT = Math.max(0, visTop - r.top);
+    const clipB = Math.min(r.height, visBottom - r.top);
+
+    if (clipR > clipL + 8) {
+      minX = clipL;
+      maxX = clipR;
+    }
+    if (clipB > clipT + 8) {
+      minY = clipT;
+      maxY = clipB;
     }
   }
 
   return { minX, minY, maxX, maxY };
+}
+
+/** 浮遊カード中心を矩形内に収める */
+export function clampBubbleToFloatRect(
+  b: FloatingBubbleLike,
+  rect: FlagFloatRect,
+  halfW: number,
+  halfH: number
+): void {
+  b.x = Math.min(rect.maxX - halfW, Math.max(rect.minX + halfW, b.x));
+  b.y = Math.min(rect.maxY - halfH, Math.max(rect.minY + halfH, b.y));
 }
 
 /**

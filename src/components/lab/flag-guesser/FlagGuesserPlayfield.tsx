@@ -73,13 +73,17 @@ import {
 } from "@/lib/flag-guesser/flagGuesserCurriculum";
 import type { FlagGuesserCurriculumMeta } from "@/components/lab/flag-guesser/FlagGuesserGradePicker";
 import {
+  presetKToFitHorizontally,
   type ExplorerMapPresetView,
   type ExplorerMapPresetsFile,
   zoomPlainFromCenterLonLatK,
 } from "@/lib/flag-guesser/explorerMapPresets";
 import type { FlagDifficultyJsonRow } from "@/lib/flag-guesser/flagExplorerDataset";
 import {
+  clampBubbleToFloatRect,
   flagFloatRectFromStageElement,
+  insetFlagFloatRect,
+  intersectFlagFloatRects,
   spawnBubbleLike,
   spawnBubbleLikeAtPanelXY,
   stepBubbleLikeInRect,
@@ -1042,17 +1046,38 @@ export function FlagGuesserPlayfield({
     if (!explorerMapPresets) return;
 
     const preset = explorerMapPresetForIsoRow(explorerMapPresets, roundPlan.targetRow);
-    const fromPreset =
-      preset != null
-        ? zoomPlainFromCenterLonLatK(
-            regionModel.projection,
-            size.w,
-            size.h,
-            preset.lon,
-            preset.lat,
-            preset.k
-          )
-        : null;
+    let fromPreset: ZoomPlain | null = null;
+    if (preset != null) {
+      let effectiveK = preset.k;
+      if (size.w < MOBILE_NARROW_WIDTH) {
+        try {
+          const path = geoPath(regionModel.projection);
+          const b = path.bounds(regionModel.regionCollection);
+          if (b && b[0] && b[1]) {
+            effectiveK = presetKToFitHorizontally(
+              preset.k,
+              regionModel.projection,
+              size.w,
+              size.h,
+              preset.lon,
+              preset.lat,
+              b as [[number, number], [number, number]],
+              12
+            );
+          }
+        } catch {
+          /* bounds 取得不能なら preset.k のまま */
+        }
+      }
+      fromPreset = zoomPlainFromCenterLonLatK(
+        regionModel.projection,
+        size.w,
+        size.h,
+        preset.lon,
+        preset.lat,
+        effectiveK
+      );
+    }
     const fitted = fromPreset ?? fitTransformForRegion(regionModel, size.w, size.h);
     applyZoomTransform(fitted, false);
     lastMapViewResetKeyRef.current = mapViewResetKey;
@@ -1203,7 +1228,15 @@ export function FlagGuesserPlayfield({
       const h = Math.max(280, Math.floor(r.height));
       if (w > 0 && h > 0) {
         setSize({ w, h });
-        setFloatRect(flagFloatRectFromStageElement(el));
+        const host = zoomHostRef.current;
+        let rect = flagFloatRectFromStageElement(el);
+        if (host) {
+          rect = intersectFlagFloatRects(rect, flagFloatRectFromStageElement(host));
+        }
+        if (w < MOBILE_NARROW_WIDTH) {
+          rect = insetFlagFloatRect(rect, FLOAT_HALF_W + 2, FLOAT_HALF_H + 2);
+        }
+        setFloatRect(rect);
       }
     };
     const ro = new ResizeObserver(() => measure());
@@ -1251,7 +1284,9 @@ export function FlagGuesserPlayfield({
           if (placedByCard[c.id] || drag?.cardId === c.id) continue;
           const b = next[c.id];
           if (!b) continue;
-          stepBubbleLikeInRect(b, floatRectRef.current, dt, FLOAT_HALF_W, FLOAT_HALF_H);
+          const rect = floatRectRef.current;
+          stepBubbleLikeInRect(b, rect, dt, FLOAT_HALF_W, FLOAT_HALF_H);
+          clampBubbleToFloatRect(b, rect, FLOAT_HALF_W, FLOAT_HALF_H);
         }
         return next;
       });
@@ -1260,6 +1295,20 @@ export function FlagGuesserPlayfield({
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
   }, [cards, placedByCard, drag, answered, size.w, size.h, floatRect, roundSeq]);
+
+  useEffect(() => {
+    if (!cards.length || answered) return;
+    const rect = floatRectRef.current;
+    setFloatByCard((prev) => {
+      const next = { ...prev };
+      for (const c of cards) {
+        const b = next[c.id];
+        if (!b) continue;
+        clampBubbleToFloatRect(b, rect, FLOAT_HALF_W, FLOAT_HALF_H);
+      }
+      return next;
+    });
+  }, [floatRect, cards, answered]);
 
   const getMapRect = useCallback((): DOMRect | null => {
     const mapEl = mapRenderBackend === "canvas" ? canvasRef.current : svgRef.current;
