@@ -550,6 +550,8 @@ type BuildRoundInput = {
   isoByCode: Map<string, Iso3166Row>;
   width: number;
   height: number;
+  /** 文脈用の低 LOD 全世界 features（未指定なら allFeatures を使用） */
+  contextWorldFeatures?: readonly CountryFeature[];
 };
 
 /**
@@ -615,21 +617,67 @@ export function filterFeaturesByCountryCodes(
  * 関わらず Topo に載る全国（プールを除く）を背面に描画するための入力を作る。
  * `inPoolIds` に含まれる feature は除外する。
  * unwrap は呼び出し側の `unwrapCenterMeridian` を必ず使うこと（プールと同じ縫い目処理）。
+ *
+ * 性能最適化（段階 1）:
+ * - `sourceWorldFeatures` には必ず低 LOD（110m 等）を渡すこと。高 LOD の頂点数で
+ *   全世界 ~200 国分を描くと高ズーム時に重くなる（context はミュート色なので
+ *   荒くても視認上は十分）。
+ * - `inPoolBounds` が与えられたとき、その bounding box を中心に `paddingMultiplier`
+ *   倍へ拡張した矩形に **bounds が掛からない** context は破棄する（フラスタムカリング）。
+ *   inPoolBounds がない場合は全件残す（後方互換）。
  */
 function buildContextFeaturesAndPaths(
-  filteredWorldFeatures: readonly CountryFeature[],
+  sourceWorldFeatures: readonly CountryFeature[],
   inPoolIds: ReadonlySet<string>,
   unwrapCenterMeridian: number,
-  projection: GeoProjection
+  projection: GeoProjection,
+  cullOpts?: {
+    /** 投影後の in-pool 全体の bounding box（map 座標, [[x0,y0],[x1,y1]]） */
+    inPoolBounds: [[number, number], [number, number]];
+    /** 中心からの拡大倍率。4 ≈ in-pool の幅・高さの 4 倍以内まで残す */
+    paddingMultiplier: number;
+    /** 拡大後の半幅・半高の最小値（map px）。ズーム = preset.k のとき
+     *  画面の何割を覆うかの実用最小ガードに使う。 */
+    minHalfExtent: number;
+  }
 ): { contextFeatures: CountryFeature[]; contextPathDById: Map<string, string> } {
-  const out: CountryFeature[] = [];
-  for (const f of filteredWorldFeatures) {
+  const cloned: CountryFeature[] = [];
+  for (const f of sourceWorldFeatures) {
     const id = featureIdString(f);
     if (!id || inPoolIds.has(id)) continue;
-    out.push(cloneCountryFeatureUnwrapped(f, unwrapCenterMeridian));
+    cloned.push(cloneCountryFeatureUnwrapped(f, unwrapCenterMeridian));
   }
-  const contextPathDById = buildPathStrings(projection, out);
-  return { contextFeatures: out, contextPathDById };
+
+  let kept: CountryFeature[] = cloned;
+  if (cullOpts) {
+    const path = geoPath(projection);
+    const [[x0, y0], [x1, y1]] = cullOpts.inPoolBounds;
+    const bw = Math.max(1, x1 - x0);
+    const bh = Math.max(1, y1 - y0);
+    const cx = (x0 + x1) / 2;
+    const cy = (y0 + y1) / 2;
+    const halfW = Math.max((bw / 2) * cullOpts.paddingMultiplier, cullOpts.minHalfExtent);
+    const halfH = Math.max((bh / 2) * cullOpts.paddingMultiplier, cullOpts.minHalfExtent);
+    const vx0 = cx - halfW;
+    const vx1 = cx + halfW;
+    const vy0 = cy - halfH;
+    const vy1 = cy + halfH;
+    kept = [];
+    for (const f of cloned) {
+      try {
+        const [[bx0, by0], [bx1, by1]] = path.bounds(f as Parameters<typeof path.bounds>[0]);
+        if (!Number.isFinite(bx0) || !Number.isFinite(by0)) continue;
+        // bbox が完全に外側ならスキップ（縫い目をまたぐ巨大 bounds は内側に重なるので残る）
+        if (bx1 < vx0 || bx0 > vx1 || by1 < vy0 || by0 > vy1) continue;
+        kept.push(f);
+      } catch {
+        /* bounds 計算失敗は単純に外す（描画しない方が安全） */
+      }
+    }
+  }
+
+  const contextPathDById = buildPathStrings(projection, kept);
+  return { contextFeatures: kept, contextPathDById };
 }
 
 function inPoolIdsOf(features: readonly CountryFeature[]): Set<string> {
@@ -641,12 +689,62 @@ function inPoolIdsOf(features: readonly CountryFeature[]): Set<string> {
   return s;
 }
 
+/**
+ * context フラスタムカリング用の標準パラメータ。
+ * - paddingMultiplier = 4: in-pool の bounding box を 4 倍に広げた領域に重なる国だけ残す。
+ *   Western Europe 出題なら欧州 + 北アフリカ + ロシア西側くらいまで広がる。
+ * - minHalfExtent: in-pool が極小（1 国だけ等）でも視野直径ぶんは確保する。
+ *   投影は通常 width/height の数倍の map px を持つので、画面短辺の 1.5 倍を下限にする。
+ */
+function defaultContextCullOpts(
+  inPoolBounds: [[number, number], [number, number]],
+  width: number,
+  height: number
+): {
+  inPoolBounds: [[number, number], [number, number]];
+  paddingMultiplier: number;
+  minHalfExtent: number;
+} {
+  return {
+    inPoolBounds,
+    paddingMultiplier: 4,
+    minHalfExtent: Math.min(width, height) * 1.5,
+  };
+}
+
+function safeBoundsOf(
+  projection: GeoProjection,
+  features: readonly CountryFeature[]
+): [[number, number], [number, number]] | null {
+  try {
+    const path = geoPath(projection);
+    const fc: FeatureCollection<Geometry, GeoJsonProperties> = {
+      type: "FeatureCollection",
+      features: features as Feature<Geometry, GeoJsonProperties>[],
+    };
+    const b = path.bounds(fc);
+    if (
+      !Number.isFinite(b[0][0]) ||
+      !Number.isFinite(b[0][1]) ||
+      !Number.isFinite(b[1][0]) ||
+      !Number.isFinite(b[1][1])
+    ) {
+      return null;
+    }
+    return b as [[number, number], [number, number]];
+  } catch {
+    return null;
+  }
+}
+
 type BuildPoolRoundInput = {
   target: Iso3166Row;
   countryCodes: Set<string>;
   allFeatures: CountryFeature[];
   width: number;
   height: number;
+  /** 文脈用の低 LOD 全世界 features（未指定なら allFeatures を使用） */
+  contextWorldFeatures?: readonly CountryFeature[];
 };
 
 type BuildCurriculumMapRoundInput = {
@@ -655,13 +753,15 @@ type BuildCurriculumMapRoundInput = {
   filteredWorldFeatures: readonly CountryFeature[];
   width: number;
   height: number;
+  /** 文脈用の低 LOD 全世界 features（未指定なら filteredWorldFeatures を使用） */
+  contextWorldFeatures?: readonly CountryFeature[];
 };
 
 /**
  * 描画は sub_region 内の国のみ。投影は explorer と同じ全世界フィット（プリセット lon/lat/k 用）。
  */
 export function buildCurriculumMapRoundModel(input: BuildCurriculumMapRoundInput): RegionRoundModel {
-  const { target, countryCodes, filteredWorldFeatures, width, height } = input;
+  const { target, countryCodes, filteredWorldFeatures, width, height, contextWorldFeatures } = input;
   const world = buildExplorerWorldMapProjection(filteredWorldFeatures, width, height);
   if (!world) throw new Error("curriculum world projection failed");
 
@@ -674,11 +774,13 @@ export function buildCurriculumMapRoundModel(input: BuildCurriculumMapRoundInput
     features: inPool as Feature<Geometry, GeoJsonProperties>[],
   };
   const pathDById = buildPathStrings(world.projection, inPool);
+  const poolBounds = safeBoundsOf(world.projection, inPool);
   const { contextFeatures, contextPathDById } = buildContextFeaturesAndPaths(
-    filteredWorldFeatures,
+    contextWorldFeatures ?? filteredWorldFeatures,
     inPoolIdsOf(inPool),
     world.unwrapCenterMeridian,
-    world.projection
+    world.projection,
+    poolBounds ? defaultContextCullOpts(poolBounds, width, height) : undefined
   );
 
   return {
@@ -703,14 +805,24 @@ type SameCurriculumMapProjectionInput = {
   width: number;
   height: number;
   unwrapCenterMeridian: number;
+  /** 文脈用の低 LOD 全世界 features（未指定なら filteredWorldFeatures を使用） */
+  contextWorldFeatures?: readonly CountryFeature[];
 };
 
 /** 凍結した全世界投影のまま sub_region の国土だけ差し替え（LOD 切替用）。 */
 export function buildCurriculumMapRoundModelSameProjection(
   input: SameCurriculumMapProjectionInput
 ): RegionRoundModel {
-  const { target, countryCodes, projection, filteredWorldFeatures, width, height, unwrapCenterMeridian } =
-    input;
+  const {
+    target,
+    countryCodes,
+    projection,
+    filteredWorldFeatures,
+    width,
+    height,
+    unwrapCenterMeridian,
+    contextWorldFeatures,
+  } = input;
   const inPoolRaw = filterFeaturesByCountryCodes(filteredWorldFeatures, countryCodes);
   if (inPoolRaw.length === 0) throw new Error("curriculum map has no features");
   const inPool = inPoolRaw.map((f) => cloneCountryFeatureUnwrapped(f, unwrapCenterMeridian));
@@ -725,11 +837,13 @@ export function buildCurriculumMapRoundModelSameProjection(
     [w, h],
   ]);
   const pathDById = buildPathStrings(projection, inPool);
+  const poolBounds = safeBoundsOf(projection, inPool);
   const { contextFeatures, contextPathDById } = buildContextFeaturesAndPaths(
-    filteredWorldFeatures,
+    contextWorldFeatures ?? filteredWorldFeatures,
     inPoolIdsOf(inPool),
     unwrapCenterMeridian,
-    projection
+    projection,
+    poolBounds ? defaultContextCullOpts(poolBounds, w, h) : undefined
   );
   return {
     target,
@@ -749,7 +863,7 @@ export function buildCurriculumMapRoundModelSameProjection(
  * プール内の国だけで Mercator をフィット（レガシー／プリセット無し時のフォールバック）。
  */
 export function buildPoolRoundModel(input: BuildPoolRoundInput): RegionRoundModel {
-  const { target, countryCodes, allFeatures, width, height } = input;
+  const { target, countryCodes, allFeatures, width, height, contextWorldFeatures } = input;
   const inPoolRaw = filterFeaturesByCountryCodes(allFeatures, countryCodes);
 
   if (inPoolRaw.length === 0) {
@@ -769,11 +883,13 @@ export function buildPoolRoundModel(input: BuildPoolRoundInput): RegionRoundMode
   };
   const projection = buildMercatorForCollection(collection, width, height, 8, unwrapCenterMeridian);
   const pathDById = buildPathStrings(projection, inPool);
+  const poolBounds = safeBoundsOf(projection, inPool);
   const { contextFeatures, contextPathDById } = buildContextFeaturesAndPaths(
-    allFeatures,
+    contextWorldFeatures ?? allFeatures,
     inPoolIdsOf(inPool),
     unwrapCenterMeridian,
-    projection
+    projection,
+    poolBounds ? defaultContextCullOpts(poolBounds, width, height) : undefined
   );
 
   return {
@@ -798,11 +914,22 @@ type SamePoolProjectionInput = {
   width: number;
   height: number;
   unwrapCenterMeridian: number;
+  /** 文脈用の低 LOD 全世界 features（未指定なら allWorldFeatures を使用） */
+  contextWorldFeatures?: readonly CountryFeature[];
 };
 
 /** 凍結投影のままプール内の国土だけ差し替え（LOD 切替用）。 */
 export function buildPoolRoundModelSameProjection(input: SamePoolProjectionInput): RegionRoundModel {
-  const { target, countryCodes, projection, allWorldFeatures, width, height, unwrapCenterMeridian } = input;
+  const {
+    target,
+    countryCodes,
+    projection,
+    allWorldFeatures,
+    width,
+    height,
+    unwrapCenterMeridian,
+    contextWorldFeatures,
+  } = input;
   const inPoolRaw = filterFeaturesByCountryCodes(allWorldFeatures, countryCodes);
   if (inPoolRaw.length === 0) {
     throw new Error("pool has no mappable features");
@@ -819,11 +946,13 @@ export function buildPoolRoundModelSameProjection(input: SamePoolProjectionInput
     [w, h],
   ]);
   const pathDById = buildPathStrings(projection, inPool);
+  const poolBounds = safeBoundsOf(projection, inPool);
   const { contextFeatures, contextPathDById } = buildContextFeaturesAndPaths(
-    allWorldFeatures,
+    contextWorldFeatures ?? allWorldFeatures,
     inPoolIdsOf(inPool),
     unwrapCenterMeridian,
-    projection
+    projection,
+    poolBounds ? defaultContextCullOpts(poolBounds, w, h) : undefined
   );
   return {
     target,
@@ -840,7 +969,7 @@ export function buildPoolRoundModelSameProjection(input: SamePoolProjectionInput
 }
 
 export function buildRegionRoundModel(input: BuildRoundInput): RegionRoundModel {
-  const { target, region, allFeatures, isoByCode, width, height } = input;
+  const { target, region, allFeatures, isoByCode, width, height, contextWorldFeatures } = input;
   const inRegionRaw = filterFeaturesByRegion(allFeatures, region, isoByCode);
 
   if (inRegionRaw.length === 0) {
@@ -860,11 +989,13 @@ export function buildRegionRoundModel(input: BuildRoundInput): RegionRoundModel 
   };
   const projection = buildMercatorForCollection(collection, width, height, 8, unwrapCenterMeridian);
   const pathDById = buildPathStrings(projection, inRegion);
+  const poolBounds = safeBoundsOf(projection, inRegion);
   const { contextFeatures, contextPathDById } = buildContextFeaturesAndPaths(
-    allFeatures,
+    contextWorldFeatures ?? allFeatures,
     inPoolIdsOf(inRegion),
     unwrapCenterMeridian,
-    projection
+    projection,
+    poolBounds ? defaultContextCullOpts(poolBounds, width, height) : undefined
   );
   return {
     target,
@@ -889,13 +1020,25 @@ type SameProjectionInput = {
   width: number;
   height: number;
   unwrapCenterMeridian: number;
+  /** 文脈用の低 LOD 全世界 features（未指定なら allWorldFeatures を使用） */
+  contextWorldFeatures?: readonly CountryFeature[];
 };
 
 /**
  * 同一 Mercator（ズームと整合させるため fit の投影を凍結したまま）で別解像度の国土だけ差し替える。
  */
 export function buildRegionRoundModelSameProjection(input: SameProjectionInput): RegionRoundModel {
-  const { target, region, projection, allWorldFeatures, isoByCode, width, height, unwrapCenterMeridian } = input;
+  const {
+    target,
+    region,
+    projection,
+    allWorldFeatures,
+    isoByCode,
+    width,
+    height,
+    unwrapCenterMeridian,
+    contextWorldFeatures,
+  } = input;
   const inRegionRaw = filterFeaturesByRegion(allWorldFeatures, region, isoByCode);
   if (inRegionRaw.length === 0) {
     throw new Error("region has no mappable features");
@@ -912,11 +1055,13 @@ export function buildRegionRoundModelSameProjection(input: SameProjectionInput):
     [w, h],
   ]);
   const pathDById = buildPathStrings(projection, inRegion);
+  const poolBounds = safeBoundsOf(projection, inRegion);
   const { contextFeatures, contextPathDById } = buildContextFeaturesAndPaths(
-    allWorldFeatures,
+    contextWorldFeatures ?? allWorldFeatures,
     inPoolIdsOf(inRegion),
     unwrapCenterMeridian,
-    projection
+    projection,
+    poolBounds ? defaultContextCullOpts(poolBounds, w, h) : undefined
   );
   return {
     target,

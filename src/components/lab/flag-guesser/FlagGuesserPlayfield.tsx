@@ -545,6 +545,12 @@ export function FlagGuesserPlayfield({
     if (!roundPlan || size.w < 32 || size.h < 32) return null;
     const world = featuresForGame[displayedLod];
     if (!world?.length) return null;
+    /**
+     * 文脈用 (context) 国は常に最低 LOD (110m) を使い、in-pool より頂点数を
+     * 大幅に減らす（段階1: ① context LOD 固定）。視認上は muted 色なので荒くて OK。
+     * 110m がまだロード前なら現在 LOD にフォールバックする。
+     */
+    const contextWorld = featuresForGame["110"] ?? world;
     const mapCodes = roundPlan.mapCountryCodes;
     try {
       const roundChanged = frozenRoundSeqRef.current !== roundSeq;
@@ -556,6 +562,7 @@ export function FlagGuesserPlayfield({
                 target: roundPlan.targetRow,
                 countryCodes: mapCodes,
                 filteredWorldFeatures: world,
+                contextWorldFeatures: contextWorld,
                 width: size.w,
                 height: size.h,
               })
@@ -563,6 +570,7 @@ export function FlagGuesserPlayfield({
                 target: roundPlan.targetRow,
                 region: roundPlan.targetRow.region!,
                 allFeatures: world,
+                contextWorldFeatures: contextWorld,
                 isoByCode: byCountryCode,
                 width: size.w,
                 height: size.h,
@@ -579,6 +587,7 @@ export function FlagGuesserPlayfield({
           countryCodes: mapCodes,
           projection: proj,
           filteredWorldFeatures: world,
+          contextWorldFeatures: contextWorld,
           width: size.w,
           height: size.h,
           unwrapCenterMeridian: frozenUnwrapMeridianRef.current,
@@ -589,6 +598,7 @@ export function FlagGuesserPlayfield({
         region: roundPlan.targetRow.region!,
         projection: proj,
         allWorldFeatures: world,
+        contextWorldFeatures: contextWorld,
         isoByCode: byCountryCode,
         width: size.w,
         height: size.h,
@@ -627,6 +637,7 @@ export function FlagGuesserPlayfield({
     if (canvasPaintLod === displayedLod) return regionModel;
     const world = featuresForGame[canvasPaintLod];
     if (!world?.length) return regionModel;
+    const contextWorld = featuresForGame["110"] ?? world;
     const mapCodes = roundPlan.mapCountryCodes;
     try {
       if (mapCodes?.size && mapCodes.size > 0) {
@@ -635,6 +646,7 @@ export function FlagGuesserPlayfield({
           countryCodes: mapCodes,
           projection: regionModel.projection,
           filteredWorldFeatures: world,
+          contextWorldFeatures: contextWorld,
           width: size.w,
           height: size.h,
           unwrapCenterMeridian: regionModel.unwrapCenterMeridian,
@@ -645,6 +657,7 @@ export function FlagGuesserPlayfield({
         region: roundPlan.targetRow.region!,
         projection: regionModel.projection,
         allWorldFeatures: world,
+        contextWorldFeatures: contextWorld,
         isoByCode: byCountryCode,
         width: size.w,
         height: size.h,
