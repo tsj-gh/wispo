@@ -81,7 +81,6 @@ import type { FlagDifficultyJsonRow } from "@/lib/flag-guesser/flagExplorerDatas
 import {
   clampBubbleToFloatRect,
   flagFloatRectFromStageElement,
-  insetFlagFloatRect,
   intersectFlagFloatRects,
   spawnBubbleLike,
   spawnBubbleLikeAtPanelXY,
@@ -151,6 +150,8 @@ const FLOAT_HALF_W = CARD_W / 2;
 const FLOAT_HALF_H = CARD_H / 2;
 /** 盤面 px 幅ではなく viewport 幅でモバイル判定（列 max 520px の PC では false） */
 const MOBILE_VIEWPORT_MAX_PX = 539;
+/** モバイルは全地域で少しだけ引き、左右端の切れを抑える */
+const MOBILE_PRESET_K_SCALE = 0.93;
 const ZOOM_MIN = 0.12;
 const ZOOM_MAX = 80;
 const ZOOM_STEP = 1.3;
@@ -1056,7 +1057,7 @@ export function FlagGuesserPlayfield({
         size.h,
         preset.lon,
         preset.lat,
-        preset.k
+        isMobileLayout ? preset.k * MOBILE_PRESET_K_SCALE : preset.k
       );
     }
     const fitted = fromPreset ?? fitTransformForRegion(regionModel, size.w, size.h);
@@ -1069,6 +1070,7 @@ export function FlagGuesserPlayfield({
     mapViewResetKey,
     size.w,
     size.h,
+    isMobileLayout,
     applyZoomTransform,
   ]);
 
@@ -1227,18 +1229,15 @@ export function FlagGuesserPlayfield({
         if (host) {
           rect = intersectFlagFloatRects(rect, flagFloatRectFromStageElement(host));
         }
-        if (isMobileLayout) {
-          rect = insetFlagFloatRect(rect, FLOAT_HALF_W + 2, FLOAT_HALF_H + 2);
-        }
         /* 計測幅を超えないようクランプ（viewport 交差の取りこぼし対策） */
         rect = {
-          minX: Math.max(0, Math.min(rect.minX, w - FLOAT_HALF_W * 2 - 4)),
+          minX: Math.max(0, Math.min(rect.minX, w - FLOAT_HALF_W * 2)),
           minY: rect.minY,
-          maxX: Math.min(w, Math.max(rect.maxX, FLOAT_HALF_W * 2 + 4)),
+          maxX: Math.min(w, Math.max(rect.maxX, FLOAT_HALF_W * 2)),
           maxY: rect.maxY,
         };
         if (rect.maxX - rect.minX < FLOAT_HALF_W * 2 + 8) {
-          rect = { minX: FLOAT_HALF_W + 2, minY: FLOAT_HALF_H + 2, maxX: w - FLOAT_HALF_W - 2, maxY: h - FLOAT_HALF_H - 2 };
+          rect = { minX: 0, minY: 0, maxX: w, maxY: h };
         }
         setFloatRect(rect);
       }
