@@ -73,7 +73,6 @@ import {
 } from "@/lib/flag-guesser/flagGuesserCurriculum";
 import type { FlagGuesserCurriculumMeta } from "@/components/lab/flag-guesser/FlagGuesserGradePicker";
 import {
-  zoomPlainToFitPoolWidth,
   type ExplorerMapPresetView,
   type ExplorerMapPresetsFile,
   zoomPlainFromCenterLonLatK,
@@ -1036,10 +1035,9 @@ export function FlagGuesserPlayfield({
     return [
       roundSeq,
       `${size.w}x${size.h}`,
-      isMobileLayout ? "m" : "d",
       preset ? `p:${preset.lon},${preset.lat},${preset.k}` : explorerMapPresets ? "fit" : "loading",
     ].join("|");
-  }, [roundPlan, roundSeq, size.w, size.h, isMobileLayout, explorerMapPresets]);
+  }, [roundPlan, roundSeq, size.w, size.h, explorerMapPresets]);
 
   useEffect(() => {
     if (!regionModel || !roundPlan || size.w < 16 || size.h < 16) return;
@@ -1050,36 +1048,16 @@ export function FlagGuesserPlayfield({
     const preset = explorerMapPresetForIsoRow(explorerMapPresets, roundPlan.targetRow);
     let fromPreset: ZoomPlain | null = null;
     if (preset != null) {
-      if (isMobileLayout) {
-        try {
-          const path = geoPath(regionModel.projection);
-          const b = path.bounds(regionModel.regionCollection);
-          if (b && b[0] && b[1]) {
-            fromPreset = zoomPlainToFitPoolWidth(
-              regionModel.projection,
-              size.w,
-              size.h,
-              preset.lon,
-              preset.lat,
-              preset.k,
-              b as [[number, number], [number, number]],
-              12
-            );
-          }
-        } catch {
-          /* fall through */
-        }
-      }
-      if (fromPreset == null) {
-        fromPreset = zoomPlainFromCenterLonLatK(
-          regionModel.projection,
-          size.w,
-          size.h,
-          preset.lon,
-          preset.lat,
-          preset.k
-        );
-      }
+      /* PC と同じ: プリセット lon/lat/k のみ（モバイルで pool 全 bbox に横フィットすると
+       * 仏領ギアナ・アラスカ切れ目など海外領が視野に入りカメラが不自然に引き寄る） */
+      fromPreset = zoomPlainFromCenterLonLatK(
+        regionModel.projection,
+        size.w,
+        size.h,
+        preset.lon,
+        preset.lat,
+        preset.k
+      );
     }
     const fitted = fromPreset ?? fitTransformForRegion(regionModel, size.w, size.h);
     applyZoomTransform(fitted, false);
@@ -1091,7 +1069,6 @@ export function FlagGuesserPlayfield({
     mapViewResetKey,
     size.w,
     size.h,
-    isMobileLayout,
     applyZoomTransform,
   ]);
 
