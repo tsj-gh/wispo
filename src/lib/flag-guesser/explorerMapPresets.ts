@@ -110,6 +110,62 @@ export function zoomPlainFromCenterLonLatK(
 }
 
 /**
+ * プリセット (lon,lat) を画面中央に置いたとき、in-pool の bounding box が
+ * 画面の幅・高さに収まる最大の k を求める。
+ *
+ * モバイル等で画面幅が狭いとき、プリセット k のまま適用すると in-pool の
+ * 左右の国が画面外に切れる。この k 上限と元のプリセット k の min を取ることで
+ * 必ず in-pool が表示領域に収まるようにする。
+ *
+ * @param presetK     プリセット定義の k（上限）
+ * @param projection  ラウンドの投影（既に width/height にフィット済み）
+ * @param width       描画ステージ幅 px
+ * @param height      描画ステージ高 px
+ * @param centerLon   プリセット中心 lon
+ * @param centerLat   プリセット中心 lat
+ * @param inPoolBounds  投影後の in-pool の bounding box（map 座標）
+ * @param paddingPx   画面端からのマージン px（デフォルト 16）
+ * @returns adjusted k
+ */
+export function presetKToFitInPool(
+  presetK: number,
+  projection: GeoProjection,
+  width: number,
+  height: number,
+  centerLon: number,
+  centerLat: number,
+  inPoolBounds: [[number, number], [number, number]],
+  paddingPx = 16
+): number {
+  const center = projection([centerLon, centerLat]);
+  if (!center || !Number.isFinite(center[0]) || !Number.isFinite(center[1])) {
+    return clampPresetK(presetK);
+  }
+  const [mx, my] = center;
+  const [[x0, y0], [x1, y1]] = inPoolBounds;
+  if (![x0, y0, x1, y1].every((v) => Number.isFinite(v))) return clampPresetK(presetK);
+
+  /* preset 中央から in-pool の左右・上下端までの距離（map 座標, 中央オフセット込み） */
+  const reqHalfW = Math.max(Math.abs(mx - x0), Math.abs(x1 - mx));
+  const reqHalfH = Math.max(Math.abs(my - y0), Math.abs(y1 - my));
+
+  /* 数値異常時はそのまま preset を採用 */
+  if (!Number.isFinite(reqHalfW) || !Number.isFinite(reqHalfH) || reqHalfW <= 0 || reqHalfH <= 0) {
+    return clampPresetK(presetK);
+  }
+
+  const availHalfW = Math.max(1, width / 2 - paddingPx);
+  const availHalfH = Math.max(1, height / 2 - paddingPx);
+  const kMaxByW = availHalfW / reqHalfW;
+  const kMaxByH = availHalfH / reqHalfH;
+  const kMax = Math.min(kMaxByW, kMaxByH);
+  if (!Number.isFinite(kMax) || kMax <= 0) return clampPresetK(presetK);
+
+  /* preset k より kMax の方が小さければ「画面が狭いので縮める」フェーズ */
+  return clampPresetK(Math.min(presetK, kMax));
+}
+
+/**
  * JSON の `presets` に貼り付けやすい 1 エントリ（キーは現在の地域フィルタ相当）。
  */
 export function formatExplorerMapPresetClipboardEntry(

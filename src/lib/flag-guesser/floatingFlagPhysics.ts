@@ -34,6 +34,10 @@ function enforceCruiseSpeed(b: FloatingBubbleLike): void {
 
 /**
  * 画面外から内向きにバブルを生成（PopPopBubbles の spawnWave と同様）。
+ *
+ * `spawnInside: true` の場合は、ボックス内ランダム位置で生成する。
+ * モバイル等で `width` が狭く、ステージ外の領域がページ上に存在しない（=
+ * オフスクリーンクリップで国旗アイコンが画面外に消える）状況での見栄え対策。
  */
 export function spawnBubbleLike(opts: {
   width: number;
@@ -41,28 +45,41 @@ export function spawnBubbleLike(opts: {
   radius: number;
   speedScale?: number;
   restitution?: number;
+  spawnInside?: boolean;
 }): FloatingBubbleLike {
   const { width, height, radius } = opts;
   const speedScale = opts.speedScale ?? 1;
   const restitution = opts.restitution ?? 0.86;
-  const side = Math.floor(Math.random() * 4);
+  const spawnInside = opts.spawnInside ?? false;
   let x = 0;
   let y = 0;
-  if (side === 0) {
-    x = rand(radius, width - radius);
-    y = -radius - rand(16, 72);
-  } else if (side === 1) {
-    x = width + radius + rand(16, 72);
-    y = rand(radius, height - radius);
-  } else if (side === 2) {
-    x = rand(radius, width - radius);
-    y = height + radius + rand(16, 72);
+  if (spawnInside) {
+    /* ボックスの内側 (radius 余白) からランダムに発生 */
+    const minX = radius + 4;
+    const maxX = Math.max(minX + 1, width - radius - 4);
+    const minY = radius + 4;
+    const maxY = Math.max(minY + 1, height - radius - 4);
+    x = rand(minX, maxX);
+    y = rand(minY, maxY);
   } else {
-    x = -radius - rand(16, 72);
-    y = rand(radius, height - radius);
+    const side = Math.floor(Math.random() * 4);
+    if (side === 0) {
+      x = rand(radius, width - radius);
+      y = -radius - rand(16, 72);
+    } else if (side === 1) {
+      x = width + radius + rand(16, 72);
+      y = rand(radius, height - radius);
+    } else if (side === 2) {
+      x = rand(radius, width - radius);
+      y = height + radius + rand(16, 72);
+    } else {
+      x = -radius - rand(16, 72);
+      y = rand(radius, height - radius);
+    }
   }
   const baseAngle = Math.atan2(height * 0.5 - y, width * 0.5 - x);
-  const angle = baseAngle + rand(-0.75, 0.75);
+  /* 内側スポーンは中心方向の縛りが弱いので角度を完全にランダム化 */
+  const angle = spawnInside ? Math.random() * Math.PI * 2 : baseAngle + rand(-0.75, 0.75);
   const speed = rand(22, 38) * speedScale;
   return {
     x,

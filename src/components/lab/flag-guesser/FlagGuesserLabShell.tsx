@@ -26,7 +26,7 @@ const INITIAL_CURRICULUM_META: FlagGuesserCurriculumMeta = {
 };
 
 /** Pages CDN で壊れた JS が「already uploaded」されるのを避ける（docs/CLOUDFLARE_PAGES_DEPLOY.md） */
-const PAGES_DEPLOY_ASSET_BUST = 3;
+const PAGES_DEPLOY_ASSET_BUST = 4;
 void PAGES_DEPLOY_ASSET_BUST;
 
 export function FlagGuesserLabShell() {

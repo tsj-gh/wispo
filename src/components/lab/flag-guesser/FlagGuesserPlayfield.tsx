@@ -73,6 +73,7 @@ import {
 } from "@/lib/flag-guesser/flagGuesserCurriculum";
 import type { FlagGuesserCurriculumMeta } from "@/components/lab/flag-guesser/FlagGuesserGradePicker";
 import {
+  presetKToFitInPool,
   type ExplorerMapPresetView,
   type ExplorerMapPresetsFile,
   zoomPlainFromCenterLonLatK,
@@ -1006,17 +1007,41 @@ export function FlagGuesserPlayfield({
       explorerMapPresets != null
         ? explorerMapPresetForIsoRow(explorerMapPresets, roundPlan.targetRow)
         : null;
-    const fromPreset =
-      preset != null
-        ? zoomPlainFromCenterLonLatK(
+    let fromPreset: ZoomPlain | null = null;
+    if (preset != null) {
+      /*
+       * モバイル等で画面が狭いとき、preset.k のまま適用すると in-pool 左右の国が
+       * 切れて見えなくなることがある。preset 中心に表示したまま in-pool が
+       * 完全に viewport に収まる最大 k を求め、preset.k と min を取る。
+       */
+      let effectiveK = preset.k;
+      try {
+        const path = geoPath(regionModel.projection);
+        const b = path.bounds(regionModel.regionCollection);
+        if (b && b[0] && b[1]) {
+          effectiveK = presetKToFitInPool(
+            preset.k,
             regionModel.projection,
             size.w,
             size.h,
             preset.lon,
             preset.lat,
-            preset.k
-          )
-        : null;
+            b as [[number, number], [number, number]],
+            16
+          );
+        }
+      } catch {
+        /* bounds 取得不能なら preset.k のまま */
+      }
+      fromPreset = zoomPlainFromCenterLonLatK(
+        regionModel.projection,
+        size.w,
+        size.h,
+        preset.lon,
+        preset.lat,
+        effectiveK
+      );
+    }
     const fitted = fromPreset ?? fitTransformForRegion(regionModel, size.w, size.h);
     applyZoomTransform(fitted, false);
   }, [regionModel, roundPlan, explorerMapPresets, size.w, size.h, roundSeq, applyZoomTransform]);
@@ -1167,6 +1192,13 @@ export function FlagGuesserPlayfield({
   useEffect(() => {
     if (!cards.length || answered) return;
     const r = CARD_W * 0.45;
+    /*
+     * モバイル等で stage が画面いっぱい幅のとき、ステージ外（外側）から
+     * 飛び込む既定スポーンはオフスクリーンに隠れて見えなくなる。狭い viewport
+     * では内側ランダムスポーンへ切り替えることで「国旗アイコンが画面外に
+     * 行ってしまう」現象を防ぐ。
+     */
+    const spawnInside = size.w < 540;
     setFloatByCard(() => {
       const next: Record<string, FloatingBubbleLike> = {};
       for (const c of cards) {
@@ -1176,6 +1208,7 @@ export function FlagGuesserPlayfield({
           radius: r,
           speedScale: 0.95,
           restitution: 0.88,
+          spawnInside,
         });
       }
       return next;
