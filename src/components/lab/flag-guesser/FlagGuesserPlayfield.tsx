@@ -394,13 +394,13 @@ export function FlagGuesserPlayfield({
   const svgRef = useRef<SVGSVGElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const [size, setSize] = useState({ w: 520, h: 390 });
+  const [size, setSize] = useState({ w: 0, h: 0 });
   const [isMobileLayout, setIsMobileLayout] = useState(false);
   const [floatRect, setFloatRect] = useState<FlagFloatRect>({
     minX: 0,
     minY: 0,
-    maxX: 520,
-    maxY: 390,
+    maxX: 0,
+    maxY: 0,
   });
   const floatRectRef = useRef(floatRect);
   floatRectRef.current = floatRect;
@@ -1236,13 +1236,17 @@ export function FlagGuesserPlayfield({
     const el = stageRef.current;
     if (!el) return;
     const measure = () => {
-      const r = el.getBoundingClientRect();
-      const w = Math.max(280, Math.floor(r.width));
-      const h = Math.max(280, Math.floor(r.height));
-      if (w > 0 && h > 0) {
+      const host = zoomHostRef.current;
+      /* clientWidth: 子の固定 px 幅で膨らんだ border-box より、親 flex の実表示幅を取る */
+      const rawW = host && host.clientWidth > 0 ? host.clientWidth : el.clientWidth;
+      const rawH = host && host.clientHeight > 0 ? host.clientHeight : el.clientHeight;
+      if (rawW <= 0 || rawH <= 0) return;
+      const w = Math.floor(rawW);
+      const h = Math.floor(rawH);
+      if (w >= 32 && h >= 32) {
         setSize({ w, h });
-        const host = zoomHostRef.current;
-        let rect = flagFloatRectFromStageElement(el);
+        let rect: FlagFloatRect = { minX: 0, minY: 0, maxX: w, maxY: h };
+        rect = intersectFlagFloatRects(rect, flagFloatRectFromStageElement(el));
         if (host) {
           rect = intersectFlagFloatRects(rect, flagFloatRectFromStageElement(host));
         }
@@ -1264,7 +1268,10 @@ export function FlagGuesserPlayfield({
     };
     const ro = new ResizeObserver(() => measure());
     ro.observe(el);
+    const hostEl = zoomHostRef.current;
+    if (hostEl) ro.observe(hostEl);
     measure();
+    requestAnimationFrame(measure);
     const vv = typeof window !== "undefined" ? window.visualViewport : null;
     vv?.addEventListener("resize", measure);
     vv?.addEventListener("scroll", measure);
@@ -2330,7 +2337,7 @@ export function FlagGuesserPlayfield({
   return (
     <div
       ref={stageRef}
-      className="relative flex h-full min-h-[min(58dvh,640px)] w-full flex-1 flex-col touch-none overflow-hidden rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_94%,white_6%)] shadow-inner"
+      className="relative flex h-full min-h-[min(58dvh,640px)] w-full min-w-0 flex-1 flex-col touch-none overflow-hidden rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_94%,white_6%)] shadow-inner"
     >
       <div className="pointer-events-none absolute right-2 top-2 z-30 flex flex-col items-end gap-2 md:right-3 md:top-3">
         {!answered ? (
@@ -2432,14 +2439,15 @@ export function FlagGuesserPlayfield({
         </div>
       </div>
 
-      <div className="relative flex min-h-0 w-full flex-1 flex-col items-center justify-center">
-        <div className="relative mx-auto min-h-0 w-full max-w-full flex-1" style={{ width: size.w, height: size.h }}>
+      <div className="relative flex min-h-0 w-full min-w-0 flex-1 flex-col items-center justify-center">
+        <div className="relative mx-auto flex min-h-0 min-w-0 w-full max-w-full flex-1">
           <div
             ref={zoomHostRef}
-            className={`relative touch-none ${answered && !drag ? "cursor-grab active:cursor-grabbing" : "cursor-crosshair"}`}
-            style={{ width: size.w, height: size.h }}
+            className={`relative h-full w-full min-w-0 touch-none ${answered && !drag ? "cursor-grab active:cursor-grabbing" : "cursor-crosshair"}`}
           >
-            {mapRenderBackend === "svg" ? (
+            {size.w >= 32 && size.h >= 32 ? (
+              <>
+                {mapRenderBackend === "svg" ? (
               <svg
                 ref={svgRef}
                 width={size.w}
@@ -2938,9 +2946,16 @@ export function FlagGuesserPlayfield({
                 {listedCountryLabelsJa.join(" · ")}
               </div>
             )}
+              </>
+            ) : (
+              <div
+                className="absolute inset-0 min-h-[12rem] w-full animate-pulse rounded-xl bg-[color-mix(in_srgb,var(--color-text)_6%,transparent)]"
+                aria-hidden
+              />
+            )}
           </div>
 
-          {!answered ? (
+          {size.w >= 32 && size.h >= 32 && !answered ? (
             <div className="pointer-events-none absolute inset-0 z-[22] overflow-visible">
               {cards.map((c) => {
                 if (placedByCard[c.id] || drag?.cardId === c.id) return null;
