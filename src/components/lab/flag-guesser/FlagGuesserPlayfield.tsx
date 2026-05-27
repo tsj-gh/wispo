@@ -150,8 +150,8 @@ const FLOAT_HALF_W = CARD_W / 2;
 const FLOAT_HALF_H = CARD_H / 2;
 /** 盤面 px 幅ではなく viewport 幅でモバイル判定（列 max 520px の PC では false） */
 const MOBILE_VIEWPORT_MAX_PX = 539;
-/** モバイルは全地域で少しだけ引き、左右端の切れを抑える */
-const MOBILE_PRESET_K_SCALE = 0.93;
+/** モバイル初期ズーム係数（devtj デバッグパネルで調整可能） */
+const DEFAULT_MOBILE_PRESET_K_SCALE = 0.9;
 const ZOOM_MIN = 0.12;
 const ZOOM_MAX = 80;
 const ZOOM_STEP = 1.3;
@@ -430,6 +430,7 @@ export function FlagGuesserPlayfield({
 
   const [isDebugMode, setIsDebugMode] = useState(false);
   const [isDebugPanelExpanded, setIsDebugPanelExpanded] = useState(true);
+  const [mobilePresetKScale, setMobilePresetKScale] = useState(DEFAULT_MOBILE_PRESET_K_SCALE);
   const [mapRenderBackend, setMapRenderBackend] = useState<MapRenderBackend>("canvas");
   const [zoomTransform, setZoomTransform] = useState<ZoomPlain>(ZOOM_IDENTITY);
   const zoomTransformRef = useRef<ZoomPlain>(ZOOM_IDENTITY);
@@ -1057,7 +1058,7 @@ export function FlagGuesserPlayfield({
         size.h,
         preset.lon,
         preset.lat,
-        isMobileLayout ? preset.k * MOBILE_PRESET_K_SCALE : preset.k
+        isMobileLayout ? preset.k * mobilePresetKScale : preset.k
       );
     }
     const fitted = fromPreset ?? fitTransformForRegion(regionModel, size.w, size.h);
@@ -1071,6 +1072,7 @@ export function FlagGuesserPlayfield({
     size.w,
     size.h,
     isMobileLayout,
+    mobilePresetKScale,
     applyZoomTransform,
   ]);
 
@@ -2222,6 +2224,8 @@ export function FlagGuesserPlayfield({
       setDragCardScreenOffsetPx,
       dragCardSpring,
       setDragCardSpring,
+      mobilePresetKScale,
+      setMobilePresetKScale,
       onEnumerateVisible,
       listedCountryLabelsJa,
       mapDebugSnippet: mapDebugCenterScale?.snippet ?? null,
@@ -2261,6 +2265,7 @@ export function FlagGuesserPlayfield({
     isDebugPanelExpanded,
     dragCardScreenOffsetPx,
     dragCardSpring,
+    mobilePresetKScale,
     flagBubbleAreaThresholdPct,
     flagBubbleDirectionCount,
     flagBubbleSampleCols,
