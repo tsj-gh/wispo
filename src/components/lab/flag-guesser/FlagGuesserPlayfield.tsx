@@ -73,7 +73,7 @@ import {
 } from "@/lib/flag-guesser/flagGuesserCurriculum";
 import type { FlagGuesserCurriculumMeta } from "@/components/lab/flag-guesser/FlagGuesserGradePicker";
 import {
-  presetKToFitHorizontally,
+  zoomPlainToFitPoolWidth,
   type ExplorerMapPresetView,
   type ExplorerMapPresetsFile,
   zoomPlainFromCenterLonLatK,
@@ -150,8 +150,8 @@ const CARD_DIAM = Math.min(CARD_W, CARD_H);
 /** 浮遊国旗の translate(-50%) 付き矩形の半幅・半高（壁反射に使用） */
 const FLOAT_HALF_W = CARD_W / 2;
 const FLOAT_HALF_H = CARD_H / 2;
-/** この幅未満で in-pool フィット縮小・内側スポーンを有効化 */
-const MOBILE_NARROW_WIDTH = 540;
+/** 盤面 px 幅ではなく viewport 幅でモバイル判定（列 max 520px の PC では false） */
+const MOBILE_VIEWPORT_MAX_PX = 539;
 const ZOOM_MIN = 0.12;
 const ZOOM_MAX = 80;
 const ZOOM_STEP = 1.3;
@@ -395,6 +395,7 @@ export function FlagGuesserPlayfield({
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [size, setSize] = useState({ w: 520, h: 390 });
+  const [isMobileLayout, setIsMobileLayout] = useState(false);
   const [floatRect, setFloatRect] = useState<FlagFloatRect>({
     minX: 0,
     minY: 0,
@@ -1035,9 +1036,10 @@ export function FlagGuesserPlayfield({
     return [
       roundSeq,
       `${size.w}x${size.h}`,
+      isMobileLayout ? "m" : "d",
       preset ? `p:${preset.lon},${preset.lat},${preset.k}` : explorerMapPresets ? "fit" : "loading",
     ].join("|");
-  }, [roundPlan, roundSeq, size.w, size.h, explorerMapPresets]);
+  }, [roundPlan, roundSeq, size.w, size.h, isMobileLayout, explorerMapPresets]);
 
   useEffect(() => {
     if (!regionModel || !roundPlan || size.w < 16 || size.h < 16) return;
@@ -1048,35 +1050,36 @@ export function FlagGuesserPlayfield({
     const preset = explorerMapPresetForIsoRow(explorerMapPresets, roundPlan.targetRow);
     let fromPreset: ZoomPlain | null = null;
     if (preset != null) {
-      let effectiveK = preset.k;
-      if (size.w < MOBILE_NARROW_WIDTH) {
+      if (isMobileLayout) {
         try {
           const path = geoPath(regionModel.projection);
           const b = path.bounds(regionModel.regionCollection);
           if (b && b[0] && b[1]) {
-            effectiveK = presetKToFitHorizontally(
-              preset.k,
+            fromPreset = zoomPlainToFitPoolWidth(
               regionModel.projection,
               size.w,
               size.h,
               preset.lon,
               preset.lat,
+              preset.k,
               b as [[number, number], [number, number]],
               12
             );
           }
         } catch {
-          /* bounds 取得不能なら preset.k のまま */
+          /* fall through */
         }
       }
-      fromPreset = zoomPlainFromCenterLonLatK(
-        regionModel.projection,
-        size.w,
-        size.h,
-        preset.lon,
-        preset.lat,
-        effectiveK
-      );
+      if (fromPreset == null) {
+        fromPreset = zoomPlainFromCenterLonLatK(
+          regionModel.projection,
+          size.w,
+          size.h,
+          preset.lon,
+          preset.lat,
+          preset.k
+        );
+      }
     }
     const fitted = fromPreset ?? fitTransformForRegion(regionModel, size.w, size.h);
     applyZoomTransform(fitted, false);
@@ -1088,8 +1091,18 @@ export function FlagGuesserPlayfield({
     mapViewResetKey,
     size.w,
     size.h,
+    isMobileLayout,
     applyZoomTransform,
   ]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia(`(max-width: ${MOBILE_VIEWPORT_MAX_PX}px)`);
+    const sync = () => setIsMobileLayout(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -1233,8 +1246,18 @@ export function FlagGuesserPlayfield({
         if (host) {
           rect = intersectFlagFloatRects(rect, flagFloatRectFromStageElement(host));
         }
-        if (w < MOBILE_NARROW_WIDTH) {
+        if (isMobileLayout) {
           rect = insetFlagFloatRect(rect, FLOAT_HALF_W + 2, FLOAT_HALF_H + 2);
+        }
+        /* 計測幅を超えないようクランプ（viewport 交差の取りこぼし対策） */
+        rect = {
+          minX: Math.max(0, Math.min(rect.minX, w - FLOAT_HALF_W * 2 - 4)),
+          minY: rect.minY,
+          maxX: Math.min(w, Math.max(rect.maxX, FLOAT_HALF_W * 2 + 4)),
+          maxY: rect.maxY,
+        };
+        if (rect.maxX - rect.minX < FLOAT_HALF_W * 2 + 8) {
+          rect = { minX: FLOAT_HALF_W + 2, minY: FLOAT_HALF_H + 2, maxX: w - FLOAT_HALF_W - 2, maxY: h - FLOAT_HALF_H - 2 };
         }
         setFloatRect(rect);
       }
@@ -1250,12 +1273,12 @@ export function FlagGuesserPlayfield({
       vv?.removeEventListener("resize", measure);
       vv?.removeEventListener("scroll", measure);
     };
-  }, []);
+  }, [isMobileLayout]);
 
   useEffect(() => {
     if (!cards.length || answered) return;
     const rect = floatRectRef.current;
-    const spawnInside = size.w < MOBILE_NARROW_WIDTH;
+    const spawnInside = isMobileLayout;
     setFloatByCard(() => {
       const next: Record<string, FloatingBubbleLike> = {};
       for (const c of cards) {
@@ -1270,7 +1293,7 @@ export function FlagGuesserPlayfield({
       }
       return next;
     });
-  }, [roundSeq, size.w, size.h, floatRect, answered, cards.length]);
+  }, [roundSeq, size.w, size.h, floatRect, isMobileLayout, answered, cards.length]);
 
   useEffect(() => {
     if (!cards.length || answered) return;
@@ -1600,7 +1623,7 @@ export function FlagGuesserPlayfield({
             halfH: FLOAT_HALF_H,
             speedScale: 0.95,
             restitution: 0.88,
-            spawnInside: size.w < MOBILE_NARROW_WIDTH,
+            spawnInside: isMobileLayout,
           });
         }
         let px = lastMap.x * k + zt.x;

@@ -198,6 +198,48 @@ export function presetKToFitHorizontally(
 }
 
 /**
+ * モバイル: in-pool の横幅が viewport に収まる k に抑え、**プール重心 X** で
+ * 水平センタリングする（プリセット lon 中心だと k 縮小時に地図が片寄る）。
+ * 縦方向はプリセット lat を画面中央に維持。
+ */
+export function zoomPlainToFitPoolWidth(
+  projection: GeoProjection,
+  width: number,
+  height: number,
+  presetLon: number,
+  presetLat: number,
+  presetK: number,
+  inPoolBounds: [[number, number], [number, number]],
+  paddingPx = 12
+): ZoomPlain {
+  const [[x0, y0], [x1, y1]] = inPoolBounds;
+  if (![x0, y0, x1, y1].every((v) => Number.isFinite(v))) {
+    return (
+      zoomPlainFromCenterLonLatK(projection, width, height, presetLon, presetLat, presetK) ?? {
+        x: 0,
+        y: 0,
+        k: clampPresetK(presetK),
+      }
+    );
+  }
+
+  const poolW = Math.max(1e-6, x1 - x0);
+  const poolCx = (x0 + x1) / 2;
+  const presetPt = projection([presetLon, presetLat]);
+  const presetCy = presetPt?.[1] ?? (y0 + y1) / 2;
+
+  const availW = Math.max(1, width - paddingPx * 2);
+  const kFitW = availW / poolW;
+  const k = clampPresetK(Math.min(presetK, kFitW));
+
+  return {
+    x: width / 2 - k * poolCx,
+    y: height / 2 - k * presetCy,
+    k,
+  };
+}
+
+/**
  * JSON の `presets` に貼り付けやすい 1 エントリ（キーは現在の地域フィルタ相当）。
  */
 export function formatExplorerMapPresetClipboardEntry(
