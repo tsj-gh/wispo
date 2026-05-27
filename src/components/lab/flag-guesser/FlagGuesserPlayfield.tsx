@@ -2327,7 +2327,11 @@ export function FlagGuesserPlayfield({
 
   if (!regionModel || !roundPlan) {
     return (
-      <div className="flex min-h-[320px] w-full flex-col items-center justify-center gap-3 rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] p-6">
+      <div
+        ref={stageRef}
+        className="relative flex min-h-[320px] w-full min-w-0 flex-1 flex-col items-center justify-center gap-3 rounded-2xl border border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] p-6"
+      >
+        <div ref={zoomHostRef} className="pointer-events-none absolute inset-0 h-full w-full min-w-0" aria-hidden />
         <div className="h-40 w-full max-w-md animate-pulse rounded-xl bg-[color-mix(in_srgb,var(--color-text)_8%,transparent)]" />
         <p className="text-sm text-[var(--color-muted)]">地図と国旗データを読み込み中…</p>
       </div>
