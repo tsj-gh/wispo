@@ -73,7 +73,6 @@ import {
 } from "@/lib/flag-guesser/flagGuesserCurriculum";
 import type { FlagGuesserCurriculumMeta } from "@/components/lab/flag-guesser/FlagGuesserGradePicker";
 import {
-  presetKToFitInPool,
   type ExplorerMapPresetView,
   type ExplorerMapPresetsFile,
   zoomPlainFromCenterLonLatK,
@@ -434,7 +433,7 @@ export function FlagGuesserPlayfield({
   const [canvasMapInteracting, setCanvasMapInteracting] = useState(false);
   const canvasRefineTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const zoomBehaviorRef = useRef<ZoomBehavior<HTMLDivElement, unknown> | null>(null);
-  const lastFitRoundSeqRef = useRef(-1);
+  const lastMapViewResetKeyRef = useRef<string | null>(null);
   const [devicePixelRatioState, setDevicePixelRatioState] = useState(1);
   const [listedCountryLabelsJa, setListedCountryLabelsJa] = useState<string[]>([]);
   const [canvasMapFps, setCanvasMapFps] = useState<number | null>(null);
@@ -1019,55 +1018,53 @@ export function FlagGuesserPlayfield({
   const zoomSliderRatio = zoomKToRatio(zoomTransform.k);
   const zoomSliderAriaNow = Math.round(zoomSliderRatio * 100);
 
-  useEffect(() => {
-    if (!regionModel || !roundPlan || size.w < 16 || size.h < 16) return;
-    if (lastFitRoundSeqRef.current === roundSeq) return;
-    lastFitRoundSeqRef.current = roundSeq;
+  /**
+   * Explorer 地図タブと同じ reset キー。プリセット JSON の非同期ロード完了後にも
+   * 再適用できるよう roundSeq だけでガードしない（以前は fit が先に走り k がずれていた）。
+   */
+  const mapViewResetKey = useMemo(() => {
+    if (!roundPlan) return "none";
     const preset =
       explorerMapPresets != null
         ? explorerMapPresetForIsoRow(explorerMapPresets, roundPlan.targetRow)
         : null;
-    let fromPreset: ZoomPlain | null = null;
-    if (preset != null) {
-      /*
-       * モバイル等で画面が狭いとき、preset.k のまま適用すると in-pool 左右の国が
-       * 切れて見えなくなることがある。preset 中心に表示したまま in-pool が
-       * 完全に viewport に収まる最大 k を求め、preset.k と min を取る。
-       */
-      let effectiveK = preset.k;
-      /* PC 幅ではプリセット k をそのまま使う（全画面に in-pool を収める縮小はモバイル専用） */
-      if (size.w < MOBILE_NARROW_WIDTH) {
-        try {
-          const path = geoPath(regionModel.projection);
-          const b = path.bounds(regionModel.regionCollection);
-          if (b && b[0] && b[1]) {
-            effectiveK = presetKToFitInPool(
-              preset.k,
-              regionModel.projection,
-              size.w,
-              size.h,
-              preset.lon,
-              preset.lat,
-              b as [[number, number], [number, number]],
-              16
-            );
-          }
-        } catch {
-          /* bounds 取得不能なら preset.k のまま */
-        }
-      }
-      fromPreset = zoomPlainFromCenterLonLatK(
-        regionModel.projection,
-        size.w,
-        size.h,
-        preset.lon,
-        preset.lat,
-        effectiveK
-      );
-    }
+    return [
+      roundSeq,
+      `${size.w}x${size.h}`,
+      preset ? `p:${preset.lon},${preset.lat},${preset.k}` : explorerMapPresets ? "fit" : "loading",
+    ].join("|");
+  }, [roundPlan, roundSeq, size.w, size.h, explorerMapPresets]);
+
+  useEffect(() => {
+    if (!regionModel || !roundPlan || size.w < 16 || size.h < 16) return;
+    if (lastMapViewResetKeyRef.current === mapViewResetKey) return;
+    /* プリセット JSON 未到着の間は外接 fit を走らせない（到着後に explorer と同じ k を適用） */
+    if (!explorerMapPresets) return;
+
+    const preset = explorerMapPresetForIsoRow(explorerMapPresets, roundPlan.targetRow);
+    const fromPreset =
+      preset != null
+        ? zoomPlainFromCenterLonLatK(
+            regionModel.projection,
+            size.w,
+            size.h,
+            preset.lon,
+            preset.lat,
+            preset.k
+          )
+        : null;
     const fitted = fromPreset ?? fitTransformForRegion(regionModel, size.w, size.h);
     applyZoomTransform(fitted, false);
-  }, [regionModel, roundPlan, explorerMapPresets, size.w, size.h, roundSeq, applyZoomTransform]);
+    lastMapViewResetKeyRef.current = mapViewResetKey;
+  }, [
+    regionModel,
+    roundPlan,
+    explorerMapPresets,
+    mapViewResetKey,
+    size.w,
+    size.h,
+    applyZoomTransform,
+  ]);
 
   useEffect(() => {
     let cancelled = false;
@@ -1193,7 +1190,7 @@ export function FlagGuesserPlayfield({
     }
     if (!initRoundRef.current) return;
     setExcludeAlphas(new Set());
-    lastFitRoundSeqRef.current = -1;
+    lastMapViewResetKeyRef.current = null;
     resetRoundForCurriculum(new Set(), { bumpSeq: true });
   }, [curriculumLevel, resetRoundForCurriculum]);
 
