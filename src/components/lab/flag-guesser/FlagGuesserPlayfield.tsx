@@ -140,6 +140,10 @@ const MAP_FILL_DRAG_TARGET = "rgba(59, 130, 246, 0.2)";
 const MAP_FILL_PLACED = "rgba(139, 92, 246, 0.18)";
 const MAP_FILL_CORRECT = "color-mix(in srgb, #22c55e 42%, transparent)";
 const MAP_FILL_WRONG = "color-mix(in srgb, #ef4444 42%, transparent)";
+/** 正解国だがその国旗が別の場所に置かれた（本来ここに置くべきだった） */
+const MAP_FILL_MISSED = "color-mix(in srgb, #eab308 48%, transparent)";
+
+type MapJudgeVerdict = "correct" | "wrong" | "missed";
 
 const CARD_W = 72;
 const CARD_H = 54;
@@ -346,7 +350,7 @@ function countryMapPathClass(
     dragTargetCountryId: string | null;
     answered: boolean;
     placedCountryIds: Set<string>;
-    resultByCountryId: Record<string, "correct" | "wrong">;
+    resultByCountryId: Record<string, MapJudgeVerdict>;
   }
 ): string {
   const parts = ["fg-map-country"];
@@ -356,6 +360,7 @@ function countryMapPathClass(
     const r = opts.resultByCountryId[id];
     if (r === "correct") parts.push("is-judge-correct");
     if (r === "wrong") parts.push("is-judge-wrong");
+    if (r === "missed") parts.push("is-judge-missed");
   }
   return parts.join(" ");
 }
@@ -515,7 +520,7 @@ export function FlagGuesserPlayfield({
   /** ドラッグカードの慣性追従（毎フレームの補間率） */
   const [dragCardSpring, setDragCardSpring] = useState(DEFAULT_DRAG_CARD_SPRING);
   const [answered, setAnswered] = useState(false);
-  const [resultByCountryId, setResultByCountryId] = useState<Record<string, "correct" | "wrong">>({});
+  const [resultByCountryId, setResultByCountryId] = useState<Record<string, MapJudgeVerdict>>({});
   /** 「ここにはない」へドロップしたカードの正誤（cardId 別） */
   const [resultByNotOnMapCardId, setResultByNotOnMapCardId] = useState<
     Record<string, "correct" | "wrong">
@@ -1517,8 +1522,9 @@ export function FlagGuesserPlayfield({
     (id: string): string => {
       if (answered) {
         const m = resultByCountryId[id];
-        if (m === "correct") return MAP_FILL_CORRECT;
         if (m === "wrong") return MAP_FILL_WRONG;
+        if (m === "correct") return MAP_FILL_CORRECT;
+        if (m === "missed") return MAP_FILL_MISSED;
       }
       if (drag && dragTargetCountryId === id) return MAP_FILL_DRAG_TARGET;
       if (placedCountryIds.has(id)) return MAP_FILL_PLACED;
@@ -1880,7 +1886,7 @@ export function FlagGuesserPlayfield({
 
   const submitAnswer = () => {
     if (!roundPlan) return;
-    const byC: Record<string, "correct" | "wrong"> = {};
+    const byC: Record<string, MapJudgeVerdict> = {};
     const byZoneCard: Record<string, "correct" | "wrong"> = {};
     const mapCodes = roundPlan.mapCountryCodes ?? null;
     for (const c of cards) {
@@ -1899,6 +1905,30 @@ export function FlagGuesserPlayfield({
       const row = byCountryCode.get(cid);
       const ok = row?.["alpha-2"].toUpperCase() === c.alpha2.toUpperCase();
       byC[cid] = ok ? "correct" : "wrong";
+    }
+    /* 国旗が別の場所に置かれたとき、本来の正解国を黄色で示す */
+    for (const c of cards) {
+      const isoRow = isoRows.find(
+        (r) => r["alpha-2"]?.trim().toUpperCase() === c.alpha2.toUpperCase()
+      );
+      const targetCc = isoRow?.["country-code"]?.trim() ?? "";
+      if (!targetCc) continue;
+      const onMap = mapCodes ? mapCodes.has(targetCc) : true;
+      if (!onMap) continue;
+
+      const cid = placedByCard[c.id];
+      let placementOk = false;
+      if (cid === NOT_ON_MAP_ID) {
+        placementOk = false;
+      } else if (cid) {
+        const row = byCountryCode.get(cid);
+        placementOk = row?.["alpha-2"].toUpperCase() === c.alpha2.toUpperCase();
+      }
+      if (placementOk) continue;
+
+      const existing = byC[targetCc];
+      if (existing === "correct" || existing === "wrong") continue;
+      byC[targetCc] = "missed";
     }
     setResultByCountryId(byC);
     setResultByNotOnMapCardId(byZoneCard);
@@ -1962,6 +1992,25 @@ export function FlagGuesserPlayfield({
                       fill: MAP_FILL_WRONG,
                       stroke: "#ef4444",
                       strokeWidth: borderStrokeWidth * 2.8,
+                      strokeLinecap: "round",
+                      strokeLinejoin: "round",
+                      vectorEffect: "non-scaling-stroke",
+                    }}
+                  />
+                </g>
+              );
+            }
+
+            if (verdict === "missed") {
+              return (
+                <g key={id}>
+                  <path
+                    d={d}
+                    className={`fg-map-country-outline is-judge-missed ${countryMapPathClass(id, mapPathClassOpts)}`}
+                    style={{
+                      fill: MAP_FILL_MISSED,
+                      stroke: "#ca8a04",
+                      strokeWidth: borderStrokeWidth * 2.4,
                       strokeLinecap: "round",
                       strokeLinejoin: "round",
                       vectorEffect: "non-scaling-stroke",

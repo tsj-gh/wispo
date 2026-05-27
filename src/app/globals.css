@@ -79,6 +79,10 @@ body.smart-guard-lock * {
   vector-effect: non-scaling-stroke;
 }
 
+.fg-map-country-outline.is-judge-missed {
+  filter: drop-shadow(0 0 5px rgba(234, 179, 8, 0.85));
+}
+
 .fg-flag-card {
   transition: left 0.38s cubic-bezier(0.22, 0.85, 0.36, 1), top 0.38s cubic-bezier(0.22, 0.85, 0.36, 1);
 }
