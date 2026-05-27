@@ -79,7 +79,14 @@ import {
   zoomPlainFromCenterLonLatK,
 } from "@/lib/flag-guesser/explorerMapPresets";
 import type { FlagDifficultyJsonRow } from "@/lib/flag-guesser/flagExplorerDataset";
-import { spawnBubbleLike, spawnBubbleLikeAtPanelXY, stepBubbleLikeInBox, type FloatingBubbleLike } from "@/lib/flag-guesser/floatingFlagPhysics";
+import {
+  flagFloatRectFromStageElement,
+  spawnBubbleLike,
+  spawnBubbleLikeAtPanelXY,
+  stepBubbleLikeInRect,
+  type FlagFloatRect,
+  type FloatingBubbleLike,
+} from "@/lib/flag-guesser/floatingFlagPhysics";
 import { useI18n } from "@/lib/i18n-context";
 import {
   getCountryDisplayName,
@@ -137,6 +144,11 @@ const CARD_W = 72;
 const CARD_H = 54;
 /** ドラッグ中の円形カード直径（4:3 矩形に内接する正円＝短辺） */
 const CARD_DIAM = Math.min(CARD_W, CARD_H);
+/** 浮遊国旗の translate(-50%) 付き矩形の半幅・半高（壁反射に使用） */
+const FLOAT_HALF_W = CARD_W / 2;
+const FLOAT_HALF_H = CARD_H / 2;
+/** この幅未満で in-pool フィット縮小・内側スポーンを有効化 */
+const MOBILE_NARROW_WIDTH = 540;
 const ZOOM_MIN = 0.12;
 const ZOOM_MAX = 80;
 const ZOOM_STEP = 1.3;
@@ -380,6 +392,14 @@ export function FlagGuesserPlayfield({
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [size, setSize] = useState({ w: 520, h: 390 });
+  const [floatRect, setFloatRect] = useState<FlagFloatRect>({
+    minX: 0,
+    minY: 0,
+    maxX: 520,
+    maxY: 390,
+  });
+  const floatRectRef = useRef(floatRect);
+  floatRectRef.current = floatRect;
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isoRows, setIsoRows] = useState<Iso3166Row[]>([]);
   const [diffRows, setDiffRows] = useState<FlagDifficultyJsonRow[] | null>(null);
@@ -1015,23 +1035,26 @@ export function FlagGuesserPlayfield({
        * 完全に viewport に収まる最大 k を求め、preset.k と min を取る。
        */
       let effectiveK = preset.k;
-      try {
-        const path = geoPath(regionModel.projection);
-        const b = path.bounds(regionModel.regionCollection);
-        if (b && b[0] && b[1]) {
-          effectiveK = presetKToFitInPool(
-            preset.k,
-            regionModel.projection,
-            size.w,
-            size.h,
-            preset.lon,
-            preset.lat,
-            b as [[number, number], [number, number]],
-            16
-          );
+      /* PC 幅ではプリセット k をそのまま使う（全画面に in-pool を収める縮小はモバイル専用） */
+      if (size.w < MOBILE_NARROW_WIDTH) {
+        try {
+          const path = geoPath(regionModel.projection);
+          const b = path.bounds(regionModel.regionCollection);
+          if (b && b[0] && b[1]) {
+            effectiveK = presetKToFitInPool(
+              preset.k,
+              regionModel.projection,
+              size.w,
+              size.h,
+              preset.lon,
+              preset.lat,
+              b as [[number, number], [number, number]],
+              16
+            );
+          }
+        } catch {
+          /* bounds 取得不能なら preset.k のまま */
         }
-      } catch {
-        /* bounds 取得不能なら preset.k のまま */
       }
       fromPreset = zoomPlainFromCenterLonLatK(
         regionModel.projection,
@@ -1181,31 +1204,35 @@ export function FlagGuesserPlayfield({
       const r = el.getBoundingClientRect();
       const w = Math.max(280, Math.floor(r.width));
       const h = Math.max(280, Math.floor(r.height));
-      if (w > 0 && h > 0) setSize({ w, h });
+      if (w > 0 && h > 0) {
+        setSize({ w, h });
+        setFloatRect(flagFloatRectFromStageElement(el));
+      }
     };
     const ro = new ResizeObserver(() => measure());
     ro.observe(el);
     measure();
-    return () => ro.disconnect();
+    const vv = typeof window !== "undefined" ? window.visualViewport : null;
+    vv?.addEventListener("resize", measure);
+    vv?.addEventListener("scroll", measure);
+    return () => {
+      ro.disconnect();
+      vv?.removeEventListener("resize", measure);
+      vv?.removeEventListener("scroll", measure);
+    };
   }, []);
 
   useEffect(() => {
     if (!cards.length || answered) return;
-    const r = CARD_W * 0.45;
-    /*
-     * モバイル等で stage が画面いっぱい幅のとき、ステージ外（外側）から
-     * 飛び込む既定スポーンはオフスクリーンに隠れて見えなくなる。狭い viewport
-     * では内側ランダムスポーンへ切り替えることで「国旗アイコンが画面外に
-     * 行ってしまう」現象を防ぐ。
-     */
-    const spawnInside = size.w < 540;
+    const rect = floatRectRef.current;
+    const spawnInside = size.w < MOBILE_NARROW_WIDTH;
     setFloatByCard(() => {
       const next: Record<string, FloatingBubbleLike> = {};
       for (const c of cards) {
         next[c.id] = spawnBubbleLike({
-          width: size.w,
-          height: size.h,
-          radius: r,
+          rect,
+          halfW: FLOAT_HALF_W,
+          halfH: FLOAT_HALF_H,
           speedScale: 0.95,
           restitution: 0.88,
           spawnInside,
@@ -1213,7 +1240,7 @@ export function FlagGuesserPlayfield({
       }
       return next;
     });
-  }, [roundSeq, size.w, size.h, answered, cards.length]);
+  }, [roundSeq, size.w, size.h, floatRect, answered, cards.length]);
 
   useEffect(() => {
     if (!cards.length || answered) return;
@@ -1227,7 +1254,7 @@ export function FlagGuesserPlayfield({
           if (placedByCard[c.id] || drag?.cardId === c.id) continue;
           const b = next[c.id];
           if (!b) continue;
-          stepBubbleLikeInBox(b, size.w, size.h, dt);
+          stepBubbleLikeInRect(b, floatRectRef.current, dt, FLOAT_HALF_W, FLOAT_HALF_H);
         }
         return next;
       });
@@ -1235,7 +1262,7 @@ export function FlagGuesserPlayfield({
     };
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [cards, placedByCard, drag, answered, size.w, size.h, roundSeq]);
+  }, [cards, placedByCard, drag, answered, size.w, size.h, floatRect, roundSeq]);
 
   const getMapRect = useCallback((): DOMRect | null => {
     const mapEl = mapRenderBackend === "canvas" ? canvasRef.current : svgRef.current;
@@ -1517,28 +1544,29 @@ export function FlagGuesserPlayfield({
       const lastMap = dragCardDisplayRef.current;
       const zt = zoomTransformRef.current;
       const k = Math.max(zt.k, 0.06);
-      const radius = CARD_W * 0.45;
+      const rect = floatRectRef.current;
 
       const floatFromLastCardVisual = (): FloatingBubbleLike => {
         if (!lastMap) {
           return spawnBubbleLike({
-            width: size.w,
-            height: size.h,
-            radius,
+            rect,
+            halfW: FLOAT_HALF_W,
+            halfH: FLOAT_HALF_H,
             speedScale: 0.95,
             restitution: 0.88,
+            spawnInside: size.w < MOBILE_NARROW_WIDTH,
           });
         }
         let px = lastMap.x * k + zt.x;
         let py = lastMap.y * k + zt.y;
-        px = Math.min(size.w - radius, Math.max(radius, px));
-        py = Math.min(size.h - radius, Math.max(radius, py));
+        px = Math.min(rect.maxX - FLOAT_HALF_W, Math.max(rect.minX + FLOAT_HALF_W, px));
+        py = Math.min(rect.maxY - FLOAT_HALF_H, Math.max(rect.minY + FLOAT_HALF_H, py));
         return spawnBubbleLikeAtPanelXY({
           x: px,
           y: py,
-          width: size.w,
-          height: size.h,
-          radius,
+          rect,
+          halfW: FLOAT_HALF_W,
+          halfH: FLOAT_HALF_H,
           speedScale: 0.95,
           restitution: 0.88,
         });
