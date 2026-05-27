@@ -14,8 +14,6 @@ export type FlagGuesserDebugPanelProps = {
   /** ドラッグカードの追従（毎フレームの補間率 0〜1） */
   dragCardSpring: number;
   setDragCardSpring: (n: number) => void;
-  mobilePresetKScale: number;
-  setMobilePresetKScale: (n: number) => void;
   onEnumerateVisible: () => void;
   listedCountryLabelsJa: string[];
   mapDebugSnippet: string | null;
@@ -66,8 +64,6 @@ export function FlagGuesserDebugPanel({
   setDragCardScreenOffsetPx,
   dragCardSpring,
   setDragCardSpring,
-  mobilePresetKScale,
-  setMobilePresetKScale,
   onEnumerateVisible,
   listedCountryLabelsJa,
   mapDebugSnippet,
@@ -302,25 +298,6 @@ export function FlagGuesserDebugPanel({
                     className="w-full accent-[var(--color-primary)]"
                   />
                   <div className="tabular-nums">{flagBubbleDistanceSteps}</div>
-                </label>
-              </div>
-
-              <div className="rounded-lg border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] p-2">
-                <div className="mb-2 font-semibold text-[var(--color-text)]">モバイル初期カメラ</div>
-                <label className="block">
-                  <div className="mb-0.5 font-semibold text-[var(--color-text)]">
-                    初期ズーム係数（プリセット k 乗算）
-                  </div>
-                  <input
-                    type="range"
-                    min={50}
-                    max={150}
-                    step={1}
-                    value={Math.round(mobilePresetKScale * 100)}
-                    onChange={(e) => setMobilePresetKScale(Number(e.target.value) / 100)}
-                    className="w-full accent-[var(--color-primary)]"
-                  />
-                  <div className="tabular-nums">{mobilePresetKScale.toFixed(2)}（0.50〜1.50）</div>
                 </label>
               </div>
 

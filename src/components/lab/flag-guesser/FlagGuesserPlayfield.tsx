@@ -150,8 +150,8 @@ const FLOAT_HALF_W = CARD_W / 2;
 const FLOAT_HALF_H = CARD_H / 2;
 /** 盤面 px 幅ではなく viewport 幅でモバイル判定（列 max 520px の PC では false） */
 const MOBILE_VIEWPORT_MAX_PX = 539;
-/** モバイル初期ズーム係数（devtj デバッグパネルで調整可能） */
-const DEFAULT_MOBILE_PRESET_K_SCALE = 0.9;
+/** モバイル初期ズーム係数（iPhone SE 実測値） */
+const MOBILE_PRESET_K_SCALE = 0.7;
 const ZOOM_MIN = 0.12;
 const ZOOM_MAX = 80;
 const ZOOM_STEP = 1.3;
@@ -180,6 +180,8 @@ const NOT_ON_MAP_ID = "__not_on_map__";
 const NOT_ON_MAP_ZONE_RX = 72;
 const NOT_ON_MAP_ZONE_RY = 50;
 const NOT_ON_MAP_ZONE_MARGIN = 10;
+const NOT_ON_MAP_ZONE_WIDTH_BASELINE = 520;
+const NOT_ON_MAP_ZONE_SCALE_MIN = 0.58;
 /** 角の判定で「他の国の重心と被らない」とみなす最小距離（地図短辺に対する比） */
 const NOT_ON_MAP_ZONE_MIN_CENTROID_DIST_RATIO = 0.18;
 /** 重心採用の最小面積（小さすぎる島嶼を除外） */
@@ -430,7 +432,6 @@ export function FlagGuesserPlayfield({
 
   const [isDebugMode, setIsDebugMode] = useState(false);
   const [isDebugPanelExpanded, setIsDebugPanelExpanded] = useState(true);
-  const [mobilePresetKScale, setMobilePresetKScale] = useState(DEFAULT_MOBILE_PRESET_K_SCALE);
   const [mapRenderBackend, setMapRenderBackend] = useState<MapRenderBackend>("canvas");
   const [zoomTransform, setZoomTransform] = useState<ZoomPlain>(ZOOM_IDENTITY);
   const zoomTransformRef = useRef<ZoomPlain>(ZOOM_IDENTITY);
@@ -721,9 +722,13 @@ export function FlagGuesserPlayfield({
     if (!regionModel?.projection || !regionModel.allFeatures?.length) return null;
     if (size.w < 220 || size.h < 220) return null;
 
-    const rx = NOT_ON_MAP_ZONE_RX;
-    const ry = NOT_ON_MAP_ZONE_RY;
-    const m = NOT_ON_MAP_ZONE_MARGIN;
+    const zoneScale = Math.max(
+      NOT_ON_MAP_ZONE_SCALE_MIN,
+      Math.min(1, size.w / NOT_ON_MAP_ZONE_WIDTH_BASELINE)
+    );
+    const rx = NOT_ON_MAP_ZONE_RX * zoneScale;
+    const ry = NOT_ON_MAP_ZONE_RY * zoneScale;
+    const m = Math.max(6, NOT_ON_MAP_ZONE_MARGIN * zoneScale);
     const corners: Array<{ key: NotOnMapCorner; cx: number; cy: number }> = [
       { key: "TL", cx: rx + m, cy: ry + m },
       { key: "BL", cx: rx + m, cy: size.h - ry - m },
@@ -1058,7 +1063,7 @@ export function FlagGuesserPlayfield({
         size.h,
         preset.lon,
         preset.lat,
-        isMobileLayout ? preset.k * mobilePresetKScale : preset.k
+        isMobileLayout ? preset.k * MOBILE_PRESET_K_SCALE : preset.k
       );
     }
     const fitted = fromPreset ?? fitTransformForRegion(regionModel, size.w, size.h);
@@ -1072,7 +1077,6 @@ export function FlagGuesserPlayfield({
     size.w,
     size.h,
     isMobileLayout,
-    mobilePresetKScale,
     applyZoomTransform,
   ]);
 
@@ -2224,8 +2228,6 @@ export function FlagGuesserPlayfield({
       setDragCardScreenOffsetPx,
       dragCardSpring,
       setDragCardSpring,
-      mobilePresetKScale,
-      setMobilePresetKScale,
       onEnumerateVisible,
       listedCountryLabelsJa,
       mapDebugSnippet: mapDebugCenterScale?.snippet ?? null,
@@ -2265,7 +2267,6 @@ export function FlagGuesserPlayfield({
     isDebugPanelExpanded,
     dragCardScreenOffsetPx,
     dragCardSpring,
-    mobilePresetKScale,
     flagBubbleAreaThresholdPct,
     flagBubbleDirectionCount,
     flagBubbleSampleCols,
