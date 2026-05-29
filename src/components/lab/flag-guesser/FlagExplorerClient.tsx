@@ -36,6 +36,10 @@ import {
   type FlagDifficultyJsonRow,
 } from "@/lib/flag-guesser/flagExplorerDataset";
 import {
+  colorFilterMultisetEqual,
+  countryHasFilterColor,
+} from "@/lib/flag-guesser/flagColorTags";
+import {
   type ExplorerMapPresetsFile,
   explorerMapPresetKey,
   formatExplorerMapPresetClipboardEntry,
@@ -59,12 +63,9 @@ const MAP_PRESETS_URL = "/assets/flag-guesser/explorer_map_presets.json";
 const springPanel = { type: "spring" as const, stiffness: 370, damping: 32 };
 const springItem = { type: "spring" as const, stiffness: 400, damping: 32 };
 
-/** カラータグ配列が同一か（順不同・重複数も一致） */
+/** カラータグ配列が同一か（Explorer 絞り込みタグ基準・順不同） */
 function colorTagMultisetsEqual(a: readonly string[], b: readonly string[]): boolean {
-  if (a.length !== b.length) return false;
-  const sa = [...a].sort();
-  const sb = [...b].sort();
-  return sa.every((c, i) => c === sb[i]);
+  return colorFilterMultisetEqual(a, b);
 }
 
 type ClampDiffFn = (a: number, b: number) => { lo: number; hi: number };
@@ -406,9 +407,9 @@ export function FlagExplorerClient() {
       if (colorExactMatch) {
         list = list.filter((r) => colorTagMultisetsEqual(colorFilter, r.colors));
       } else if (colorCombineMode === "and") {
-        list = list.filter((r) => colorFilter.every((c) => r.colors.includes(c)));
+        list = list.filter((r) => colorFilter.every((c) => countryHasFilterColor(r.colors, c)));
       } else {
-        list = list.filter((r) => colorFilter.some((c) => r.colors.includes(c)));
+        list = list.filter((r) => colorFilter.some((c) => countryHasFilterColor(r.colors, c)));
       }
     }
     if (isDevTj && isDebugMode && designFilter) {

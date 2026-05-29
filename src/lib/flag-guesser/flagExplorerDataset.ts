@@ -1,4 +1,8 @@
 import type { Iso3166Row } from "./types";
+import {
+  canonicalColorToFilterTag,
+  EXPLORER_COLOR_FILTER_TAGS,
+} from "./flagColorTags";
 
 /** `flag_difficulty.json` の1行 */
 export type FlagDifficultyJsonRow = {
@@ -77,7 +81,7 @@ export function mergeExplorerCountries(
     const rawColors = d?.tags?.colors ?? [];
     const colors = rawColors
       .map((c) => String(c).trim().toLowerCase())
-      .filter((c) => c.length > 0);
+      .filter((c) => c.length > 0 && c !== "red_brown" && c !== "maroon");
     const designRaw = d?.tags?.design;
     const designLabel =
       typeof designRaw === "string" && designRaw.trim() !== ""
@@ -128,29 +132,15 @@ export function buildRegionHierarchy(isoRows: readonly Iso3166Row[]): RegionHier
   return m;
 }
 
-/** タグ出現集合（ソート済み。`unknown` は末尾） */
+/** タグ出現集合（Explorer 絞り込み用。red/brown は red_brown にまとめる） */
 export function collectColorTagOptions(rows: readonly ExplorerCountryRow[]): string[] {
   const s = new Set<string>();
   for (const row of rows) {
-    for (const c of row.colors) s.add(c);
+    for (const c of row.colors) s.add(canonicalColorToFilterTag(c));
   }
-  const preferredOrder = [
-    "red_brown",
-    "blue",
-    "yellow_orange",
-    "white",
-    "black",
-    "green",
-    "purple",
-    "brown",
-    "silver",
-    "pink",
-    "emblem_colors",
-    "other",
-  ];
-  const ordered = preferredOrder.filter((c) => s.has(c));
+  const ordered = EXPLORER_COLOR_FILTER_TAGS.filter((c) => s.has(c));
   const extra = Array.from(s)
-    .filter((c) => c !== "unknown" && !preferredOrder.includes(c))
+    .filter((c) => c !== "unknown" && !EXPLORER_COLOR_FILTER_TAGS.includes(c as (typeof EXPLORER_COLOR_FILTER_TAGS)[number]))
     .sort((a, b) => a.localeCompare(b));
   const out = [...ordered, ...extra];
   if (s.has("unknown")) out.push("unknown");
@@ -160,18 +150,17 @@ export function collectColorTagOptions(rows: readonly ExplorerCountryRow[]): str
 export function displayColorTag(c: string): string {
   const m: Record<string, string> = {
     red_brown: "赤/茶",
+    red: "赤",
     blue: "青/水",
     yellow_orange: "黄/橙",
     white: "白",
     black: "黒",
     green: "緑",
-    // backward compatibility for pre-migration tags
-    red: "赤/茶",
-    maroon: "赤/茶",
     yellow: "黄/橙",
     orange: "黄/橙",
     purple: "紫",
     brown: "茶",
+    maroon: "茶",
     silver: "銀",
     pink: "桃",
     emblem_colors: "紋章色",
