@@ -9,6 +9,10 @@ import { I18nProvider } from "@/lib/i18n-context";
 import { UserSyncProvider } from "@/components/UserSyncProvider";
 import { buildWispoSoftwareApplicationJsonLd } from "@/lib/wispoSoftwareApplicationJsonLd";
 
+/** Pages CDN で壊れた webpack チャンクを避ける（docs/CLOUDFLARE_PAGES_DEPLOY.md） */
+const PAGES_DEPLOY_ASSET_BUST = 12;
+void PAGES_DEPLOY_ASSET_BUST;
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://wispo.pages.dev";
 const wispoSoftwareApplicationJsonLd = buildWispoSoftwareApplicationJsonLd(SITE_URL);
 

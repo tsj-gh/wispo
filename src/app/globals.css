@@ -6,7 +6,7 @@
 
 /* 初期表示（SSR）: Botanical Sport（デフォルト）。クライアントの SiteThemeProvider が上書き */
 :root {
-  --deploy-asset-bust: 10;
+  --deploy-asset-bust: 11;
   --color-bg: #edf2ee;
   --color-surface: #ffffff;
   --color-primary: #2d5a27;
