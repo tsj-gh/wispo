@@ -50,7 +50,7 @@ countries.registerLocale(enLocale);
 countries.registerLocale(jaLocale);
 
 /** Pages CDN で壊れた explorer チャンクが「already uploaded」されるのを避ける */
-const PAGES_DEPLOY_ASSET_BUST = 2;
+const PAGES_DEPLOY_ASSET_BUST = 3;
 void PAGES_DEPLOY_ASSET_BUST;
 
 const ISO_URL = "/assets/flag-guesser/iso-3166.json";
