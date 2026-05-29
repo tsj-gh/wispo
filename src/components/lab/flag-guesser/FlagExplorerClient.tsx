@@ -49,6 +49,10 @@ import { useI18n } from "@/lib/i18n-context";
 countries.registerLocale(enLocale);
 countries.registerLocale(jaLocale);
 
+/** Pages CDN で壊れた explorer チャンクが「already uploaded」されるのを避ける */
+const PAGES_DEPLOY_ASSET_BUST = 1;
+void PAGES_DEPLOY_ASSET_BUST;
+
 const ISO_URL = "/assets/flag-guesser/iso-3166.json";
 const DIFF_URL = "/assets/flag-guesser/flag_difficulty.json";
 const ASPECT_URL = "/assets/flag-guesser/flag_aspect_ratio.json";
