@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build:reflect-worker": "node scripts/build-reflect-shot-worker.mjs",
     "build": "npm run build:reflect-worker && next build",
-    "deploy:pages": "npm run build && npx wrangler pages deploy out --project-name=wispo --branch=main",
+    "verify:pages-out": "node scripts/verify-pages-out.mjs",
+    "smoke:pages-production": "node scripts/smoke-pages-production.mjs",
+    "deploy:pages": "npm run build && npm run verify:pages-out && npx wrangler pages deploy out --project-name=wispo --branch=main --commit-dirty=true && npm run smoke:pages-production",
     "start": "next start",
     "lint": "next lint",
     "sim:pairlink-scores": "node scripts/run-pairlink-score-simulation.mjs",
@@ -60,6 +62,7 @@
     "esbuild": "^0.25.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.15",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "wrangler": "^4.95.0"
   }
 }

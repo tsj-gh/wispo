@@ -1,0 +1,51 @@
+# Cloudflare Pages 本番デプロイ（唯一の経路）
+# Dashboard の Git 連携ビルドと二重化しないこと（docs/CLOUDFLARE_PAGES_DEPLOY.md）
+
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: pages-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build static export
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          CF_PAGES_COMMIT_SHA: ${{ github.sha }}
+          NEXT_PUBLIC_ASSET_BUST: ${{ github.sha }}
+        run: npm run build
+
+      - name: Verify out/ asset references
+        run: npm run verify:pages-out
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy out --project-name=wispo --branch=main --commit-dirty=true
+
+      - name: Smoke test production assets
+        env:
+          SITE_URL: https://wispo.pages.dev
+        run: npm run smoke:pages-production

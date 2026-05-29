@@ -18,16 +18,15 @@ import {
 import type { FlagGuesserCurriculumLevel } from "@/lib/flag-guesser/flagGuesserCurriculum";
 import { getCurriculumStage } from "@/lib/flag-guesser/flagGuesserCurriculum";
 import { GAME_AD_GAP_BEFORE_SLOT_2_PX, GAME_COLUMN_CLASS, GAME_NO_TOP_AD_LAYOUT_OFFSET_PX, GAME_AD_SLOT_MIN_HEIGHT_PX } from "@/lib/gameLayout";
+import { PAGES_ASSET_BUST } from "@/lib/pagesAssetBust";
+
+void PAGES_ASSET_BUST;
 
 const INITIAL_CURRICULUM_META: FlagGuesserCurriculumMeta = {
   poolLength: 0,
   stageNameJa: getCurriculumStage(1).nameJa,
   decoyCount: 0,
 };
-
-/** Pages CDN で壊れた JS が「already uploaded」されるのを避ける（docs/CLOUDFLARE_PAGES_DEPLOY.md） */
-const PAGES_DEPLOY_ASSET_BUST = 13;
-void PAGES_DEPLOY_ASSET_BUST;
 
 export function FlagGuesserLabShell() {
   const searchParams = useSearchParams();

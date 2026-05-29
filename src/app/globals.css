@@ -2,11 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* deploy: bust Pages asset hash if CDN stored a corrupt copy (see docs/CLOUDFLARE_PAGES_DEPLOY.md) */
-
 /* 初期表示（SSR）: Botanical Sport（デフォルト）。クライアントの SiteThemeProvider が上書き */
 :root {
-  --deploy-asset-bust: 12;
   --color-bg: #edf2ee;
   --color-surface: #ffffff;
   --color-primary: #2d5a27;

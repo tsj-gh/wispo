@@ -44,14 +44,13 @@ import {
 import { flagUrlForAlpha2 } from "@/lib/flag-guesser/selectRound";
 import type { Iso3166Row } from "@/lib/flag-guesser/types";
 import { GAME_AD_GAP_BEFORE_SLOT_2_PX, GAME_AD_SLOT_MIN_HEIGHT_PX } from "@/lib/gameLayout";
+import { PAGES_ASSET_BUST } from "@/lib/pagesAssetBust";
 import { useI18n } from "@/lib/i18n-context";
 
 countries.registerLocale(enLocale);
 countries.registerLocale(jaLocale);
 
-/** Pages CDN で壊れた explorer チャンクが「already uploaded」されるのを避ける */
-const PAGES_DEPLOY_ASSET_BUST = 3;
-void PAGES_DEPLOY_ASSET_BUST;
+void PAGES_ASSET_BUST;
 
 const ISO_URL = "/assets/flag-guesser/iso-3166.json";
 const DIFF_URL = "/assets/flag-guesser/flag_difficulty.json";
