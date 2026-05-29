@@ -1,7 +1,7 @@
 /** Explorer 絞り込み用の仮想タグ（UI ではまとめて表示） */
 export const EXPLORER_COLOR_FILTER_TAGS = [
   "red_brown",
-  "blue",
+  "blue_water",
   "yellow_orange",
   "white",
   "black",
@@ -14,19 +14,23 @@ export const EXPLORER_COLOR_FILTER_TAGS = [
 ] as const;
 
 const RED_BROWN_CANONICAL = new Set(["red", "brown"]);
+const BLUE_WATER_CANONICAL = new Set(["blue", "water"]);
+const YELLOW_ORANGE_CANONICAL = new Set(["yellow", "orange"]);
 
 /** 難易度 JSON の正規色 → Explorer 絞り込みタグ */
 export function canonicalColorToFilterTag(c: string): string {
   const k = c.trim().toLowerCase();
   if (RED_BROWN_CANONICAL.has(k) || k === "maroon" || k === "red_brown") return "red_brown";
-  if (k === "yellow" || k === "orange") return "yellow_orange";
+  if (BLUE_WATER_CANONICAL.has(k)) return "blue_water";
+  if (YELLOW_ORANGE_CANONICAL.has(k) || k === "yellow_orange") return "yellow_orange";
   return k;
 }
 
 /** 絞り込みタグ → 難易度 JSON 上の色（OR 一致用） */
 export function filterTagExpandsToCanonical(filterTag: string): string[] {
   if (filterTag === "red_brown") return ["red", "brown"];
-  if (filterTag === "yellow_orange") return ["yellow_orange", "yellow", "orange"];
+  if (filterTag === "blue_water" || filterTag === "blue") return ["blue", "water"];
+  if (filterTag === "yellow_orange") return ["yellow", "orange"];
   return [filterTag];
 }
 
@@ -47,13 +51,13 @@ export function colorFilterMultisetEqual(filterTags: readonly string[], countryC
   return a.every((c, i) => c === b[i]);
 }
 
-/** confusable_colors スコア計算用（red / brown は別タグとして扱う） */
+/** confusable_colors スコア計算用（各色タグは個別に扱う） */
 export function colorsForConfusableScore(colors: readonly string[]): string[] {
   return colors
     .map((c) => {
       const k = c.trim().toLowerCase();
       if (k === "maroon" || k === "red_brown") return "brown";
-      if (k === "yellow" || k === "orange") return "yellow_orange";
+      if (k === "yellow_orange") return k;
       return k;
     })
     .filter((c) => c !== "unknown" && c !== "emblem_colors" && c !== "other");
@@ -106,7 +110,7 @@ export function rebuildConfusableColors(
   return Array.from(new Set(colorCandidates.map((x) => x.a3))).slice(0, limit);
 }
 
-/** `red_brown` / `maroon` を正規の `red` | `brown` に正規化 */
+/** 旧統合タグを正規色に正規化 */
 export function normalizeCanonicalColors(colors: readonly string[]): string[] {
   const out: string[] = [];
   for (const raw of colors) {
@@ -115,6 +119,14 @@ export function normalizeCanonicalColors(colors: readonly string[]): string[] {
       if (!out.includes("red")) out.push("red");
     } else if (k === "maroon" || k === "brown") {
       if (!out.includes("brown")) out.push("brown");
+    } else if (k === "blue") {
+      if (!out.includes("blue")) out.push("blue");
+    } else if (k === "water") {
+      if (!out.includes("water")) out.push("water");
+    } else if (k === "yellow_orange" || k === "yellow") {
+      if (!out.includes("yellow")) out.push("yellow");
+    } else if (k === "orange") {
+      if (!out.includes("orange")) out.push("orange");
     } else if (k && !out.includes(k)) {
       out.push(k);
     }

@@ -81,7 +81,13 @@ export function mergeExplorerCountries(
     const rawColors = d?.tags?.colors ?? [];
     const colors = rawColors
       .map((c) => String(c).trim().toLowerCase())
-      .filter((c) => c.length > 0 && c !== "red_brown" && c !== "maroon");
+      .filter(
+        (c) =>
+          c.length > 0 &&
+          c !== "red_brown" &&
+          c !== "maroon" &&
+          c !== "yellow_orange"
+      );
     const designRaw = d?.tags?.design;
     const designLabel =
       typeof designRaw === "string" && designRaw.trim() !== ""
@@ -151,13 +157,15 @@ export function displayColorTag(c: string): string {
   const m: Record<string, string> = {
     red_brown: "赤/茶",
     red: "赤",
-    blue: "青/水",
+    blue_water: "青/水",
+    blue: "青",
+    water: "水",
     yellow_orange: "黄/橙",
+    yellow: "黄",
+    orange: "橙",
     white: "白",
     black: "黒",
     green: "緑",
-    yellow: "黄/橙",
-    orange: "黄/橙",
     purple: "紫",
     brown: "茶",
     maroon: "茶",
