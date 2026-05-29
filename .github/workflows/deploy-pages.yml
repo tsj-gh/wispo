@@ -39,13 +39,23 @@ jobs:
         run: npm run verify:pages-out
 
       - name: Deploy to Cloudflare Pages
+        id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy out --project-name=wispo --branch=main --commit-dirty=true
 
-      - name: Smoke test production assets
+      # デプロイ直後の固有 URL（HTML と JS が必ず同じデプロイメント）
+      - name: Smoke test deployment URL
+        env:
+          SITE_URL: ${{ steps.deploy.outputs.deployment-url }}
+        run: npm run smoke:pages-production
+
+      # wispo.pages.dev はエイリアス反映に数十秒かかることがある
+      - name: Smoke test production alias
         env:
           SITE_URL: https://wispo.pages.dev
+          SMOKE_RETRIES: "12"
+          SMOKE_RETRY_DELAY_MS: "10000"
         run: npm run smoke:pages-production

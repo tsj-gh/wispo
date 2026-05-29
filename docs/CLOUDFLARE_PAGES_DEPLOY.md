@@ -39,7 +39,12 @@ Workers & Pages → プロジェクト `wispo` → **Settings** → **Builds**
 
 ### 3. 動作確認
 
-`main` に push すると workflow が走り、最後に本番 URL の JS/CSS がすべて 200 か smoke する。
+`main` に push すると workflow が走る。
+
+1. Wrangler が返す **deployment URL**（`https://<hash>.wispo.pages.dev`）で smoke
+2. 続けて **https://wispo.pages.dev** を最大 12 回・10 秒間隔で再試行
+
+CI の smoke が 404 で落ちた場合、デプロイ自体は成功していることが多い（本番エイリアスの反映待ち）。Actions を **Re-run** するか、数分後にブラウザで確認する。
 
 ## ビルドごとのアセットハッシュ（自動バスト）
 
@@ -74,6 +79,10 @@ npx wrangler login
 ### CSS が無スタイル
 
 `/_next/static/css/*.css` が 500 のときも同様。`deploy:pages` で復旧。
+
+### CI の smoke が 404（デプロイ直後）
+
+`wispo.pages.dev` の HTML が新しい `page-*.js` を指しているのに JS だけ 404、という状態。デプロイ完了から本番エイリアスへ反映されるまで数十秒〜2 分かかることがある。workflow は deployment URL を先に検証し、本番は再試行する。それでも失敗したら **Re-run failed jobs** でよい。
 
 ## スクリプト一覧
 
