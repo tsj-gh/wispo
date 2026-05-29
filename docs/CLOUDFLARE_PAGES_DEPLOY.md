@@ -80,7 +80,11 @@ npx wrangler login
 
 `/_next/static/css/*.css` が 500 のときも同様。`deploy:pages` で復旧。
 
-### CI の smoke が 404（デプロイ直後）
+### エクスプローラー「データの取得に失敗しました」
+
+`/assets/flag-guesser/iso-3166.json` または `flag_difficulty.json` が **404** のとき。HTML/JS はあるが `public/assets/` が CDN に載っていない不完全デプロイ。`deploy:pages` で復旧。smoke は上記 JSON の存在も検証する。
+
+### CI の smoke が 404（デプロイ直後・JS/CSS）
 
 `wispo.pages.dev` の HTML が新しい `page-*.js` を指しているのに JS だけ 404、という状態。デプロイ完了から本番エイリアスへ反映されるまで数十秒〜2 分かかることがある。workflow は deployment URL を先に検証し、本番は再試行する。それでも失敗したら **Re-run failed jobs** でよい。
 
@@ -88,8 +92,8 @@ npx wrangler login
 
 | コマンド | 用途 |
 |----------|------|
-| `npm run verify:pages-out` | `out/` 内 HTML が参照する静的ファイルの存在・サイズ検証（デプロイ前） |
-| `npm run smoke:pages-production` | 本番 URL の HTML が参照する JS/CSS が 200 か検証（デプロイ後） |
+| `npm run verify:pages-out` | `out/` 内 HTML が参照する静的ファイルとフラッグゲッサー JSON の存在・サイズ検証（デプロイ前） |
+| `npm run smoke:pages-production` | 本番 URL の JS/CSS とフラッグゲッサー JSON（`iso-3166` / `flag_difficulty` 等）が 200 か検証（デプロイ後） |
 | `npm run deploy:pages` | 上記を含むフルデプロイ |
 
 `SITE_URL` を変えれば smoke の対象をプレビュー URL にできる。

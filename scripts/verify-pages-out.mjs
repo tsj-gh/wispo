@@ -1,14 +1,16 @@
 /**
- * `out/` 内の HTML が参照する /_next/static 資産が存在し、空でないことを検証する。
+ * `out/` 内の HTML が参照する /_next/static 資産と、
+ * クライアント fetch 用の静的 JSON が存在し、空でないことを検証する。
  * デプロイ前に実行（CI・ローカル deploy:pages 共通）。
  */
 import { readFileSync, statSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { CRITICAL_DATA_ASSETS, MIN_DATA_ASSET_BYTES } from "./pages-critical-data-assets.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = join(root, "out");
-const MIN_BYTES = 32;
+const MIN_BYTES = MIN_DATA_ASSET_BYTES;
 
 const ASSET_RE = /\/_next\/static\/[^"'\s)]+\.(?:js|css)/g;
 
@@ -68,6 +70,11 @@ for (const asset of assets) {
   if (!r.ok) failures.push({ asset, reason: r.reason });
 }
 
+for (const asset of CRITICAL_DATA_ASSETS) {
+  const r = checkAsset(asset);
+  if (!r.ok) failures.push({ asset, reason: r.reason });
+}
+
 if (failures.length) {
   console.error(`[verify-pages-out] ${failures.length} broken reference(s) in out/:`);
   for (const f of failures.slice(0, 30)) {
@@ -78,5 +85,5 @@ if (failures.length) {
 }
 
 console.log(
-  `[verify-pages-out] OK — ${htmlFiles.length} HTML file(s), ${assets.size} static asset reference(s)`
+  `[verify-pages-out] OK — ${htmlFiles.length} HTML file(s), ${assets.size} chunk reference(s), ${CRITICAL_DATA_ASSETS.length} data JSON`
 );
