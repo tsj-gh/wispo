@@ -162,6 +162,20 @@ function pickDecoysFromPool(
   return decoys;
 }
 
+function pickWeightedAlpha2(
+  entries: readonly { alpha2: string; weight: number }[]
+): string | null {
+  if (!entries.length) return null;
+  const total = entries.reduce((s, e) => s + e.weight, 0);
+  if (total <= 0) return entries[Math.floor(Math.random() * entries.length)]!.alpha2;
+  let r = Math.random() * total;
+  for (const e of entries) {
+    r -= e.weight;
+    if (r <= 0) return e.alpha2;
+  }
+  return entries[entries.length - 1]!.alpha2;
+}
+
 function pickConfusableDecoyAlpha2(
   targetRow: Iso3166Row,
   poolRows: readonly Iso3166Row[],
@@ -177,32 +191,49 @@ function pickConfusableDecoyAlpha2(
   const diffRow = difficultyByAlpha3.get(targetA3);
   if (!diffRow) return null;
 
-  const candidates = new Set(
-    (field === "confusable_colors" ? diffRow.confusable_colors : diffRow.confusable_region).map((x) =>
-      x.trim().toUpperCase()
-    )
-  );
-  if (!candidates.size) return null;
+  const orderedA3 =
+    field === "confusable_colors"
+      ? (diffRow.confusable_colors ?? [])
+      : (diffRow.confusable_region ?? []);
+
+  if (!orderedA3.length) return null;
+
+  const candidateRank = new Map<string, number>();
+  orderedA3.forEach((a3, i) => {
+    const k = a3.trim().toUpperCase();
+    if (k) candidateRank.set(k, i);
+  });
 
   const poolA3 = new Set(poolRows.map((r) => r["alpha-3"]?.trim().toUpperCase()).filter(Boolean));
   const tryRows = poolRows.length > 0 ? poolRows : isoRows;
 
-  const matches: string[] = [];
+  const weighted: { alpha2: string; weight: number }[] = [];
+  const uniform: string[] = [];
+
   for (const row of tryRows) {
     const a3 = row["alpha-3"]?.trim().toUpperCase();
     const a2 = alpha2FromPoolRow(row);
     const code = row["country-code"]?.trim();
     if (!a3 || !a2 || !code || !topoIds.has(code)) continue;
-    if (!candidates.has(a3)) continue;
+    const rank = candidateRank.get(a3);
+    if (rank === undefined) continue;
     if (exclude.has(a2)) continue;
     if (poolA3.size > 0 && !poolA3.has(a3)) continue;
     const dr = difficultyByAlpha3.get(a3);
     if (!decoyDifficultyOk(dr, stage)) continue;
-    matches.push(a2);
+
+    if (field === "confusable_colors") {
+      weighted.push({ alpha2: a2, weight: Math.max(1, 10 - rank) });
+    } else {
+      uniform.push(a2);
+    }
   }
 
-  if (!matches.length) return null;
-  return matches[Math.floor(Math.random() * matches.length)]!;
+  if (field === "confusable_colors") {
+    return pickWeightedAlpha2(weighted);
+  }
+  if (!uniform.length) return null;
+  return uniform[Math.floor(Math.random() * uniform.length)]!;
 }
 
 function pickDecoysWithConfusable(
