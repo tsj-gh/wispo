@@ -587,8 +587,8 @@
       "KHM",
       "LAO",
       "LIE",
-      "LUX",
-      "NLD"
+      "NLD",
+      "PRK"
     ],
     "confusable_design": [
       "HTI",
@@ -599,8 +599,8 @@
       "KHM",
       "LAO",
       "LIE",
-      "LUX",
-      "NLD"
+      "NLD",
+      "PRK"
     ]
   },
   {
@@ -1556,11 +1556,11 @@
       "LSO",
       "ARG",
       "EST",
+      "LUX",
       "YEM",
       "KEN",
       "SWZ",
-      "AZE",
-      "EGY"
+      "AZE"
     ],
     "confusable_design": [
       "HND",
@@ -1568,11 +1568,11 @@
       "LSO",
       "ARG",
       "EST",
+      "LUX",
       "YEM",
       "KEN",
       "SWZ",
-      "AZE",
-      "EGY"
+      "AZE"
     ]
   },
   {
@@ -2051,24 +2051,24 @@
       "THA",
       "CRI",
       "HRV",
-      "LUX",
       "NLD",
       "PRK",
       "PRY",
       "RUS",
-      "SRB"
+      "SRB",
+      "SVK"
     ],
     "confusable_design": [
       "LAO",
       "THA",
       "CRI",
       "HRV",
-      "LUX",
       "NLD",
       "PRK",
       "PRY",
       "RUS",
-      "SRB"
+      "SRB",
+      "SVK"
     ]
   },
   {
@@ -2870,9 +2870,9 @@
       "GNQ",
       "KHM",
       "LAO",
-      "LUX",
       "NLD",
-      "RUS"
+      "RUS",
+      "SRB"
     ],
     "confusable_design": [
       "PRY",
@@ -2881,10 +2881,10 @@
       "HRV",
       "KHM",
       "LAO",
-      "LUX",
       "NLD",
       "RUS",
-      "SRB"
+      "SRB",
+      "SVK"
     ]
   },
   {
@@ -2984,9 +2984,9 @@
       "CRI",
       "KHM",
       "LAO",
-      "LUX",
       "NLD",
-      "RUS"
+      "RUS",
+      "SVK"
     ],
     "confusable_design": [
       "SRB",
@@ -2996,9 +2996,9 @@
       "CRI",
       "KHM",
       "LAO",
-      "LUX",
       "NLD",
-      "RUS"
+      "RUS",
+      "SVK"
     ]
   },
   {
@@ -4146,7 +4146,6 @@
     ],
     "confusable_colors": [
       "MAF",
-      "LUX",
       "NLD",
       "ASM",
       "ATF",
@@ -4154,7 +4153,8 @@
       "BMU",
       "BVT",
       "CHL",
-      "COK"
+      "COK",
+      "CRI"
     ],
     "confusable_design": [
       "MAF",
@@ -4439,7 +4439,7 @@
       "KHM",
       "LAO",
       "LBN",
-      "LUX"
+      "NLD"
     ]
   },
   {
@@ -4899,6 +4899,7 @@
       "PLW"
     ],
     "confusable_colors": [
+      "LUX",
       "ABW",
       "FSM",
       "CHE",
@@ -4907,8 +4908,7 @@
       "SOM",
       "TUN",
       "TUR",
-      "BLR",
-      "IMN"
+      "BLR"
     ],
     "confusable_design": [
       "ABW",
@@ -6613,24 +6613,24 @@
       "THA",
       "CRI",
       "HRV",
-      "LUX",
       "NLD",
       "PRK",
       "PRY",
       "RUS",
-      "SRB"
+      "SRB",
+      "SVK"
     ],
     "confusable_design": [
       "KHM",
       "THA",
       "CRI",
       "HRV",
-      "LUX",
       "NLD",
       "PRK",
       "PRY",
       "RUS",
-      "SRB"
+      "SRB",
+      "SVK"
     ]
   },
   {
@@ -7025,7 +7025,7 @@
       "colors": [
         "red",
         "white",
-        "blue"
+        "water"
       ],
       "design": "横分割",
       "symbol": [
@@ -7043,28 +7043,28 @@
       "CHE"
     ],
     "confusable_colors": [
-      "NLD",
-      "CRI",
-      "HRV",
-      "KHM",
-      "LAO",
-      "PRK",
-      "PRY",
-      "RUS",
-      "SRB",
-      "SVK"
+      "GUM",
+      "AZE",
+      "UZB",
+      "AUT",
+      "MCO",
+      "GRL",
+      "HND",
+      "IDN",
+      "POL",
+      "PYF"
     ],
     "confusable_design": [
-      "NLD",
-      "CRI",
-      "HRV",
-      "KHM",
-      "LAO",
-      "PRK",
-      "PRY",
-      "RUS",
-      "SRB",
-      "SVK"
+      "AZE",
+      "UZB",
+      "AUT",
+      "MCO",
+      "GRL",
+      "HND",
+      "IDN",
+      "POL",
+      "PYF",
+      "SGP"
     ]
   },
   {
@@ -8501,7 +8501,6 @@
       "CHE"
     ],
     "confusable_colors": [
-      "LUX",
       "CRI",
       "HRV",
       "KHM",
@@ -8510,10 +8509,10 @@
       "PRY",
       "RUS",
       "SRB",
-      "SVK"
+      "SVK",
+      "SVN"
     ],
     "confusable_design": [
-      "LUX",
       "CRI",
       "HRV",
       "KHM",
@@ -8522,7 +8521,8 @@
       "PRY",
       "RUS",
       "SRB",
-      "SVK"
+      "SVK",
+      "SVN"
     ]
   },
   {
@@ -9353,10 +9353,10 @@
       "HRV",
       "KHM",
       "LAO",
-      "LUX",
       "NLD",
       "RUS",
-      "SRB"
+      "SRB",
+      "SVK"
     ],
     "confusable_design": [
       "CRI",
@@ -9365,10 +9365,10 @@
       "HRV",
       "KHM",
       "LAO",
-      "LUX",
       "NLD",
       "RUS",
-      "SRB"
+      "SRB",
+      "SVK"
     ]
   },
   {
@@ -9886,11 +9886,11 @@
       "HRV",
       "KHM",
       "LAO",
-      "LUX",
       "NLD",
       "PRK",
       "PRY",
-      "SRB"
+      "SRB",
+      "SVN"
     ],
     "confusable_design": [
       "SVK",
@@ -9898,11 +9898,11 @@
       "HRV",
       "KHM",
       "LAO",
-      "LUX",
       "NLD",
       "PRK",
       "PRY",
-      "SRB"
+      "SRB",
+      "SVN"
     ]
   },
   {
@@ -10491,10 +10491,10 @@
       "CRI",
       "KHM",
       "LAO",
-      "LUX",
       "NLD",
       "PRK",
-      "PRY"
+      "PRY",
+      "RUS"
     ],
     "confusable_design": [
       "HRV",
@@ -10503,10 +10503,10 @@
       "CRI",
       "KHM",
       "LAO",
-      "LUX",
       "NLD",
       "PRK",
-      "PRY"
+      "PRY",
+      "RUS"
     ]
   },
   {
@@ -10720,11 +10720,11 @@
       "HRV",
       "KHM",
       "LAO",
-      "LUX",
       "NLD",
       "PRK",
       "PRY",
-      "SRB"
+      "SRB",
+      "SVN"
     ]
   },
   {
@@ -10766,9 +10766,9 @@
       "SRB",
       "KHM",
       "LAO",
-      "LUX",
       "NLD",
-      "RUS"
+      "RUS",
+      "SVK"
     ],
     "confusable_design": [
       "CRI",
@@ -10778,9 +10778,9 @@
       "SRB",
       "KHM",
       "LAO",
-      "LUX",
       "NLD",
-      "RUS"
+      "RUS",
+      "SVK"
     ]
   },
   {
@@ -11474,24 +11474,24 @@
       "LAO",
       "CRI",
       "HRV",
-      "LUX",
       "NLD",
       "PRK",
       "PRY",
       "RUS",
-      "SRB"
+      "SRB",
+      "SVK"
     ],
     "confusable_design": [
       "KHM",
       "LAO",
       "CRI",
       "HRV",
-      "LUX",
       "NLD",
       "PRK",
       "PRY",
       "RUS",
-      "SRB"
+      "SRB",
+      "SVK"
     ]
   },
   {
