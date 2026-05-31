@@ -91,7 +91,8 @@ export function featureIdString(f: CountryFeature): string | null {
 /** geoPath が出力した `d` から Path2D をキャッシュ（ヒットテストのピーク負荷軽減） */
 const path2dFromDCache = new Map<string, Path2D>();
 
-function path2DFromPathString(d: string): Path2D | null {
+/** geoPath の SVG path `d` から Path2D を返す（文字列ごとにキャッシュ） */
+export function path2DFromPathString(d: string): Path2D | null {
   let p = path2dFromDCache.get(d);
   if (p) return p;
   try {

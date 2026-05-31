@@ -1,5 +1,6 @@
-import { geoPath, type GeoProjection } from "d3-geo";
+import { geoPath, type GeoPath, type GeoProjection } from "d3-geo";
 import type { Feature, GeoJsonProperties, Geometry } from "geojson";
+import { featureIdString, path2DFromPathString } from "@/lib/flag-guesser/mapProjections";
 import type { CountryFeature } from "@/lib/flag-guesser/types";
 
 export type MapRenderBackend = "svg" | "canvas";
@@ -33,19 +34,16 @@ export type DrawRegionMapCanvasParams = {
   logicalW: number;
   logicalH: number;
   dpr: number;
+  /** pathDById が欠けた feature 用のフォールバック（通常は未使用） */
   projection: GeoProjection;
   features: readonly CountryFeature[];
-  /**
-   * プール外で「世界地図の文脈」用に背面描画する周辺国（任意）。
-   * features より先に同じ投影・ズームで描く。ヒットテスト・判定の対象ではない。
-   */
+  /** モデル構築時に計算済みの path `d`（ズームは ctx transform のみ） */
+  pathDById?: ReadonlyMap<string, string>;
   contextFeatures?: readonly CountryFeature[];
-  /** contextFeatures の fill（解決済み RGB）。指定なら全件まとめて 1 色で塗る */
+  contextPathDById?: ReadonlyMap<string, string>;
   contextFillResolved?: string;
-  /** contextFeatures の border stroke（解決済み RGB） */
   contextBorderStrokeResolved?: string;
   zoom: { x: number; y: number; k: number };
-  /** 解決済み RGB の fillStyle 文字列を返す（同一色バッチ用） */
   fillForId: (id: string) => string;
   seaFillResolved: string;
   borderStrokeResolved: string;
@@ -56,20 +54,43 @@ export type DrawRegionMapCanvasParams = {
   hoverCountryId: string | null;
   dragTargetCountryId: string | null;
   drag: boolean;
-  /** 描画完了ごとに呼ぶ（FPS 計測用） */
   onDrawComplete?: () => void;
 };
 
-function safePath2D(d: string): Path2D | null {
-  try {
-    return new Path2D(d);
-  } catch {
-    return null;
+function pathDForFeature(
+  f: CountryFeature,
+  pathDById: ReadonlyMap<string, string> | undefined,
+  fallback: GeoPath | null
+): string | null {
+  const id = featureIdString(f);
+  if (id && pathDById?.has(id)) {
+    const d = pathDById.get(id);
+    if (d) return d;
   }
+  if (!fallback) return null;
+  return fallback(f as Feature<Geometry, GeoJsonProperties>) ?? null;
+}
+
+function combinedPathD(
+  features: readonly CountryFeature[],
+  pathDById: ReadonlyMap<string, string> | undefined,
+  fallback: GeoPath | null
+): string | null {
+  let combined = "";
+  for (const f of features) {
+    const d = pathDForFeature(f, pathDById, fallback);
+    if (d) combined += d;
+  }
+  return combined || null;
+}
+
+function path2DFromCombinedD(d: string | null): Path2D | null {
+  if (!d) return null;
+  return path2DFromPathString(d);
 }
 
 /**
- * d3.geoPath + Canvas 2D。同色 fill／共通国境ストロークをバッチ化。
+ * Canvas 2D。pathDById を優先し、毎フレームの geoPath 再投影を避ける。
  */
 export function drawRegionMapCanvas(p: DrawRegionMapCanvasParams): void {
   const {
@@ -79,7 +100,9 @@ export function drawRegionMapCanvas(p: DrawRegionMapCanvasParams): void {
     dpr,
     projection,
     features,
+    pathDById,
     contextFeatures,
+    contextPathDById,
     contextFillResolved,
     contextBorderStrokeResolved,
     zoom,
@@ -96,6 +119,14 @@ export function drawRegionMapCanvas(p: DrawRegionMapCanvasParams): void {
     onDrawComplete,
   } = p;
 
+  const needsGeoPathFallback =
+    (contextFeatures?.length && !contextPathDById?.size) ||
+    features.some((f) => {
+      const id = featureIdString(f);
+      return !id || !pathDById?.has(id);
+    });
+  const pathStringGen = needsGeoPathFallback ? geoPath(projection) : null;
+
   ctx.save();
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, logicalW, logicalH);
@@ -103,7 +134,6 @@ export function drawRegionMapCanvas(p: DrawRegionMapCanvasParams): void {
   ctx.fillStyle = seaFillResolved;
   ctx.fillRect(0, 0, logicalW, logicalH);
 
-  const pathStringGen = geoPath(projection);
   ctx.save();
   ctx.translate(zoom.x, zoom.y);
   ctx.scale(zoom.k, zoom.k);
@@ -111,26 +141,19 @@ export function drawRegionMapCanvas(p: DrawRegionMapCanvasParams): void {
   const k = Math.max(zoom.k, 0.08);
   const normalLineW = borderStrokeWidth / k;
 
-  /* プール外の文脈用ポリゴンを先に背面描画（ヒットテスト無し） */
   if (contextFeatures && contextFeatures.length > 0 && contextFillResolved) {
-    let combined = "";
-    for (const f of contextFeatures) {
-      const d = pathStringGen(f as Feature<Geometry, GeoJsonProperties>);
-      if (d) combined += d;
-    }
-    if (combined) {
-      const path = safePath2D(combined);
-      if (path) {
-        ctx.fillStyle = contextFillResolved;
-        ctx.fill(path);
-        if (contextBorderStrokeResolved) {
-          ctx.strokeStyle = contextBorderStrokeResolved;
-          ctx.lineWidth = normalLineW * 0.75;
-          ctx.lineJoin = "round";
-          ctx.lineCap = "round";
-          ctx.setLineDash([]);
-          ctx.stroke(path);
-        }
+    const contextCombined = combinedPathD(contextFeatures, contextPathDById, pathStringGen);
+    const contextPath = path2DFromCombinedD(contextCombined);
+    if (contextPath) {
+      ctx.fillStyle = contextFillResolved;
+      ctx.fill(contextPath);
+      if (contextBorderStrokeResolved) {
+        ctx.strokeStyle = contextBorderStrokeResolved;
+        ctx.lineWidth = normalLineW * 0.75;
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+        ctx.setLineDash([]);
+        ctx.stroke(contextPath);
       }
     }
   }
@@ -148,40 +171,29 @@ export function drawRegionMapCanvas(p: DrawRegionMapCanvasParams): void {
   }
 
   for (const [fillStyle, feats] of Array.from(byFill.entries())) {
-    let combined = "";
-    for (const f of feats) {
-      const d = pathStringGen(f as Feature<Geometry, GeoJsonProperties>);
-      if (d) combined += d;
-    }
-    if (!combined) continue;
-    const path = safePath2D(combined);
+    const combined = combinedPathD(feats, pathDById, pathStringGen);
+    const path = path2DFromCombinedD(combined);
     if (!path) continue;
     ctx.fillStyle = fillStyle;
     ctx.fill(path);
   }
 
-  let borderCombined = "";
-  for (const f of features) {
-    const d = pathStringGen(f as Feature<Geometry, GeoJsonProperties>);
-    if (d) borderCombined += d;
-  }
-  if (borderCombined) {
-    const borderPath = safePath2D(borderCombined);
-    if (borderPath) {
-      ctx.strokeStyle = borderStrokeResolved;
-      ctx.lineWidth = normalLineW;
-      ctx.lineJoin = "round";
-      ctx.lineCap = "round";
-      ctx.setLineDash([]);
-      ctx.stroke(borderPath);
-    }
+  const borderCombined = combinedPathD(features, pathDById, pathStringGen);
+  const borderPath = path2DFromCombinedD(borderCombined);
+  if (borderPath) {
+    ctx.strokeStyle = borderStrokeResolved;
+    ctx.lineWidth = normalLineW;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    ctx.setLineDash([]);
+    ctx.stroke(borderPath);
   }
 
   if (drag && dragTargetCountryId) {
     const f = features.find((x) => String(x.id ?? "") === dragTargetCountryId);
     if (f) {
-      const d = pathStringGen(f as Feature<Geometry, GeoJsonProperties>);
-      const ep = d ? safePath2D(d) : null;
+      const d = pathDForFeature(f, pathDById, pathStringGen);
+      const ep = path2DFromCombinedD(d);
       if (ep) {
         ctx.strokeStyle = dragTargetStrokeResolved;
         ctx.lineWidth = hoverLineWidth * 1.05;
@@ -193,8 +205,8 @@ export function drawRegionMapCanvas(p: DrawRegionMapCanvasParams): void {
   if (!drag && hoverCountryId) {
     const f = features.find((x) => String(x.id ?? "") === hoverCountryId);
     if (f) {
-      const d = pathStringGen(f as Feature<Geometry, GeoJsonProperties>);
-      const ep = d ? safePath2D(d) : null;
+      const d = pathDForFeature(f, pathDById, pathStringGen);
+      const ep = path2DFromCombinedD(d);
       if (ep) {
         ctx.strokeStyle = hoverStrokeResolved;
         ctx.lineWidth = hoverLineWidth;
