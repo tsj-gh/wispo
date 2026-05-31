@@ -63,7 +63,9 @@ export function colorsForConfusableScore(colors: readonly string[]): string[] {
     .filter((c) => c !== "unknown" && c !== "emblem_colors" && c !== "other");
 }
 
-export function colorOverlapScore(aColors: readonly string[], bColors: readonly string[]): number {
+const CANTON_COLOR_WEIGHT = 0.3;
+
+function colorSetOverlapScore(aColors: readonly string[], bColors: readonly string[]): number {
   const as = new Set(colorsForConfusableScore(aColors));
   const bs = new Set(colorsForConfusableScore(bColors));
   if (as.size === 0 || bs.size === 0) return 0;
@@ -72,11 +74,28 @@ export function colorOverlapScore(aColors: readonly string[], bColors: readonly 
   return inter;
 }
 
+/** field 色同士はフル重み、canton 色は CANTON_COLOR_WEIGHT（rebuild-confusable-lists と同じ） */
+export function colorOverlapScore(
+  aColors: readonly string[],
+  bColors: readonly string[],
+  aCantonColors?: readonly string[],
+  bCantonColors?: readonly string[]
+): number {
+  let score = colorSetOverlapScore(aColors, bColors);
+  const ca = aCantonColors ?? [];
+  const cb = bCantonColors ?? [];
+  if (!ca.length && !cb.length) return score;
+  score += colorSetOverlapScore(aColors, cb) * CANTON_COLOR_WEIGHT;
+  score += colorSetOverlapScore(ca, bColors) * CANTON_COLOR_WEIGHT;
+  score += colorSetOverlapScore(ca, cb) * CANTON_COLOR_WEIGHT;
+  return score;
+}
+
 export type FlagDifficultyColorRow = {
   alpha3: string;
   sub_region: string;
   intermediate_region: string;
-  tags: { colors: string[] };
+  tags: { colors: string[]; canton_colors?: string[] };
 };
 
 export function rebuildConfusableColors(
@@ -89,7 +108,12 @@ export function rebuildConfusableColors(
     .filter((x) => x.alpha3.trim().toUpperCase() !== a3)
     .map((x) => ({
       a3: x.alpha3.trim().toUpperCase(),
-      s: colorOverlapScore(row.tags.colors, x.tags.colors),
+      s: colorOverlapScore(
+        row.tags.colors,
+        x.tags.colors,
+        row.tags.canton_colors,
+        x.tags.canton_colors
+      ),
       sameIR:
         Boolean(row.intermediate_region?.trim()) &&
         Boolean(x.intermediate_region?.trim()) &&

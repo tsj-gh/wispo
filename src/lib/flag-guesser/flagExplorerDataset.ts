@@ -12,7 +12,7 @@ export type FlagDifficultyJsonRow = {
   region: string;
   sub_region: string;
   intermediate_region: string;
-  tags: { colors: string[]; design: string; symbol?: string[] };
+  tags: { colors: string[]; canton_colors?: string[]; design: string; symbol?: string[] };
   confusable_region: string[];
   confusable_colors: string[];
   confusable_design: string[];
