@@ -440,10 +440,13 @@ export function FlagGuesserPlayfield({
   const [mapRenderBackend, setMapRenderBackend] = useState<MapRenderBackend>("canvas");
   const [zoomTransform, setZoomTransform] = useState<ZoomPlain>(ZOOM_IDENTITY);
   const zoomTransformRef = useRef<ZoomPlain>(ZOOM_IDENTITY);
-  zoomTransformRef.current = zoomTransform;
+  /** d3-zoom 中は true（この間 setZoomTransform せず ref のみ更新） */
+  const canvasMapZoomInteractingRef = useRef(false);
   /** マップ操作のズーム／パン中は true（終了後 200ms で false → Canvas を高精細に戻す） */
   const [canvasMapInteracting, setCanvasMapInteracting] = useState(false);
   const canvasRefineTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const overlayZoomLayerRef = useRef<HTMLDivElement>(null);
+  const canvasMapRafIdRef = useRef(0);
   const zoomBehaviorRef = useRef<ZoomBehavior<HTMLDivElement, unknown> | null>(null);
   const lastMapViewResetKeyRef = useRef<string | null>(null);
   const [devicePixelRatioState, setDevicePixelRatioState] = useState(1);
@@ -863,50 +866,34 @@ export function FlagGuesserPlayfield({
         clearTimeout(canvasRefineTimerRef.current);
         canvasRefineTimerRef.current = null;
       }
+      if (canvasMapRafIdRef.current) {
+        cancelAnimationFrame(canvasMapRafIdRef.current);
+        canvasMapRafIdRef.current = 0;
+      }
     };
   }, []);
 
-  useEffect(() => {
-    const host = zoomHostRef.current;
-    if (!host) return;
-    const sel = select(host);
-    const z = d3zoom<HTMLDivElement, unknown>()
-      .scaleExtent([ZOOM_MIN, ZOOM_MAX])
-      .on("start", () => {
-        if (canvasRefineTimerRef.current) {
-          clearTimeout(canvasRefineTimerRef.current);
-          canvasRefineTimerRef.current = null;
-        }
-        setCanvasMapInteracting(true);
-      })
-      .on("zoom", (event) => {
-        setZoomTransform({ x: event.transform.x, y: event.transform.y, k: event.transform.k });
-      })
-      .on("end", () => {
-        if (canvasRefineTimerRef.current) clearTimeout(canvasRefineTimerRef.current);
-        canvasRefineTimerRef.current = setTimeout(() => {
-          setCanvasMapInteracting(false);
-          canvasRefineTimerRef.current = null;
-        }, 200);
-      });
-    zoomBehaviorRef.current = z;
-    sel.call(z);
-    sel.call(z.transform, zoomIdentity.translate(zoomTransform.x, zoomTransform.y).scale(zoomTransform.k));
-    return () => {
-      zoomBehaviorRef.current = null;
-      sel.on(".zoom", null);
-      if (canvasRefineTimerRef.current) {
-        clearTimeout(canvasRefineTimerRef.current);
-        canvasRefineTimerRef.current = null;
-      }
-    };
-  }, [size.w, size.h, mapStageMounted]);
+  const applyOverlayZoomTransform = useCallback((z: ZoomPlain) => {
+    const el = overlayZoomLayerRef.current;
+    if (!el) return;
+    el.style.transform = `translate(${z.x}px, ${z.y}px) scale(${z.k})`;
+    el.style.transformOrigin = "0 0";
+  }, []);
+
+  const commitZoomTransform = useCallback(
+    (z: ZoomPlain) => {
+      zoomTransformRef.current = z;
+      setZoomTransform(z);
+      applyOverlayZoomTransform(z);
+    },
+    [applyOverlayZoomTransform]
+  );
 
   const applyZoomTransform = useCallback((next: ZoomPlain, smooth: boolean) => {
     const host = zoomHostRef.current;
     const behavior = zoomBehaviorRef.current;
     if (!host || !behavior) {
-      setZoomTransform(next);
+      commitZoomTransform(next);
       return;
     }
     const sel = select(host);
@@ -921,7 +908,7 @@ export function FlagGuesserPlayfield({
     } else {
       sel.call(behavior.transform, t);
     }
-  }, []);
+  }, [commitZoomTransform]);
 
   const zoomByFactor = useCallback(
     (factor: number) => {
@@ -1378,9 +1365,9 @@ export function FlagGuesserPlayfield({
       const rect = getMapRect();
       if (!rect || rect.width <= 0 || rect.height <= 0) return null;
       const local = clientToLocalSvg(clientX, clientY, rect, size.w, size.h);
-      return localToMap(local, zoomTransform);
+      return localToMap(local, zoomTransformRef.current);
     },
-    [getMapRect, size.w, size.h, zoomTransform]
+    [getMapRect, size.w, size.h]
   );
 
   const handleMapPointerMove = useCallback(
@@ -1543,9 +1530,10 @@ export function FlagGuesserPlayfield({
       let cy = y;
       const fl = floatRef.current[cardId];
       if (fl) {
-        const k = Math.max(zoomTransform.k, 0.06);
-        cx = (fl.x - zoomTransform.x) / k;
-        cy = (fl.y - zoomTransform.y) / k;
+        const zt = zoomTransformRef.current;
+        const k = Math.max(zt.k, 0.06);
+        cx = (fl.x - zt.x) / k;
+        cy = (fl.y - zt.y) / k;
       }
       dragPointerRef.current = { x, y };
       setDragPointerMap({ x, y });
@@ -1562,7 +1550,7 @@ export function FlagGuesserPlayfield({
       }
       setDragTargetCountryId(resolveDragTargetAtMapPoint(x, y));
     },
-    [projection, pointerToMapCoords, zoomTransform, resolveDragTargetAtMapPoint]
+    [projection, pointerToMapCoords, resolveDragTargetAtMapPoint]
   );
 
   const moveDrag = useCallback(
@@ -2174,88 +2162,146 @@ export function FlagGuesserPlayfield({
     }
   }, []);
 
-  /** Canvas: 常時 rAF で描画し、ズームバー操作や d3 トランジション中もフレームを落とさない */
-  useEffect(() => {
+  const performCanvasMapDraw = useCallback(() => {
     if (mapRenderBackend !== "canvas") return;
     const probeMount = stageRef.current;
-    if (!probeMount) return;
+    const canvas = canvasRef.current;
+    const snap = canvasDrawSnapshotRef.current;
+    if (!probeMount || !canvas || !snap?.projection || !snap.rm) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-    let cancelled = false;
-    let rafId = 0;
-
-    const tick = () => {
-      if (cancelled) return;
-      const canvas = canvasRef.current;
-      const snap = canvasDrawSnapshotRef.current;
-      if (!canvas || !snap?.projection || !snap.rm) {
-        rafId = requestAnimationFrame(tick);
-        return;
+    const sea = resolveCssColorForCanvas(MAP_SEA_FILL, probeMount);
+    const border = resolveCssColorForCanvas(MAP_BORDER_STROKE, probeMount);
+    const hoverS = resolveCssColorForCanvas(MAP_HOVER_STROKE, probeMount);
+    const dragS = resolveCssColorForCanvas(MAP_DRAG_STROKE, probeMount);
+    const contextFill = resolveCssColorForCanvas(MAP_LAND_CONTEXT_QUIET, probeMount);
+    const contextBorder = resolveCssColorForCanvas(MAP_BORDER_CONTEXT_STROKE, probeMount);
+    const fillResolvedCache = new Map<string, string>();
+    const fillForId = (id: string) => {
+      const css = snap.countryFill(id);
+      let r = fillResolvedCache.get(css);
+      if (!r) {
+        r = resolveCssColorForCanvas(css, probeMount);
+        fillResolvedCache.set(css, r);
       }
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        rafId = requestAnimationFrame(tick);
-        return;
-      }
-
-      const sea = resolveCssColorForCanvas(MAP_SEA_FILL, probeMount);
-      const border = resolveCssColorForCanvas(MAP_BORDER_STROKE, probeMount);
-      const hoverS = resolveCssColorForCanvas(MAP_HOVER_STROKE, probeMount);
-      const dragS = resolveCssColorForCanvas(MAP_DRAG_STROKE, probeMount);
-      const contextFill = resolveCssColorForCanvas(MAP_LAND_CONTEXT_QUIET, probeMount);
-      const contextBorder = resolveCssColorForCanvas(MAP_BORDER_CONTEXT_STROKE, probeMount);
-      const fillResolvedCache = new Map<string, string>();
-      const fillForId = (id: string) => {
-        const css = snap.countryFill(id);
-        let r = fillResolvedCache.get(css);
-        if (!r) {
-          r = resolveCssColorForCanvas(css, probeMount);
-          fillResolvedCache.set(css, r);
-        }
-        return r;
-      };
-
-      drawRegionMapCanvas({
-        ctx,
-        logicalW: snap.logicalW,
-        logicalH: snap.logicalH,
-        dpr: snap.dpr,
-        projection: snap.projection,
-        features: snap.rm.allFeatures,
-        pathDById: snap.rm.pathDById,
-        contextFeatures: snap.rm.contextFeatures,
-        contextPathDById: snap.rm.contextPathDById,
-        contextFillResolved: contextFill,
-        contextBorderStrokeResolved: contextBorder,
-        zoom: snap.zoomTransform,
-        fillForId,
-        seaFillResolved: sea,
-        borderStrokeResolved: border,
-        borderStrokeWidth: snap.borderStrokeWidth,
-        hoverStrokeResolved: hoverS,
-        hoverLineWidth: snap.hoverOutlineWidth,
-        dragTargetStrokeResolved: dragS,
-        hoverCountryId: snap.hoverCountryId,
-        dragTargetCountryId: snap.dragTargetCountryId,
-        drag: snap.drag,
-        onDrawComplete: recordCanvasDrawFrame,
-      });
-      rafId = requestAnimationFrame(tick);
+      return r;
     };
 
-    rafId = requestAnimationFrame(tick);
-    return () => {
-      cancelled = true;
-      cancelAnimationFrame(rafId);
-    };
+    drawRegionMapCanvas({
+      ctx,
+      logicalW: snap.logicalW,
+      logicalH: snap.logicalH,
+      dpr: snap.dpr,
+      projection: snap.projection,
+      features: snap.rm.allFeatures,
+      pathDById: snap.rm.pathDById,
+      contextFeatures: snap.rm.contextFeatures,
+      contextPathDById: snap.rm.contextPathDById,
+      contextFillResolved: contextFill,
+      contextBorderStrokeResolved: contextBorder,
+      zoom: zoomTransformRef.current,
+      fillForId,
+      seaFillResolved: sea,
+      borderStrokeResolved: border,
+      borderStrokeWidth: snap.borderStrokeWidth,
+      hoverStrokeResolved: hoverS,
+      hoverLineWidth: snap.hoverOutlineWidth,
+      dragTargetStrokeResolved: dragS,
+      hoverCountryId: snap.hoverCountryId,
+      dragTargetCountryId: snap.dragTargetCountryId,
+      drag: snap.drag,
+      onDrawComplete: recordCanvasDrawFrame,
+    });
+  }, [mapRenderBackend, recordCanvasDrawFrame]);
+
+  const requestCanvasMapRedraw = useCallback(() => {
+    if (mapRenderBackend !== "canvas") return;
+    if (canvasMapRafIdRef.current) return;
+    canvasMapRafIdRef.current = requestAnimationFrame(() => {
+      canvasMapRafIdRef.current = 0;
+      performCanvasMapDraw();
+    });
+  }, [mapRenderBackend, performCanvasMapDraw]);
+
+  /** Canvas: 表示内容が変わったときだけ 1 フレーム描画（A2） */
+  useEffect(() => {
+    requestCanvasMapRedraw();
   }, [
+    requestCanvasMapRedraw,
     mapRenderBackend,
     regionModelForCanvas,
     projection,
     size.w,
     size.h,
     devicePixelRatioState,
-    recordCanvasDrawFrame,
+    hoverCountryId,
+    dragTargetCountryId,
+    drag,
+    answered,
+    resultByCountryId,
+    placedByCard,
+    canvasPaintLod,
   ]);
+
+  useEffect(() => {
+    const host = zoomHostRef.current;
+    if (!host) return;
+    const sel = select(host);
+    const z = d3zoom<HTMLDivElement, unknown>()
+      .scaleExtent([ZOOM_MIN, ZOOM_MAX])
+      .on("start", () => {
+        if (canvasRefineTimerRef.current) {
+          clearTimeout(canvasRefineTimerRef.current);
+          canvasRefineTimerRef.current = null;
+        }
+        canvasMapZoomInteractingRef.current = true;
+        setCanvasMapInteracting(true);
+      })
+      .on("zoom", (event) => {
+        const next: ZoomPlain = {
+          x: event.transform.x,
+          y: event.transform.y,
+          k: event.transform.k,
+        };
+        zoomTransformRef.current = next;
+        applyOverlayZoomTransform(next);
+        requestCanvasMapRedraw();
+      })
+      .on("end", () => {
+        canvasMapZoomInteractingRef.current = false;
+        commitZoomTransform(zoomTransformRef.current);
+        requestCanvasMapRedraw();
+        if (canvasRefineTimerRef.current) clearTimeout(canvasRefineTimerRef.current);
+        canvasRefineTimerRef.current = setTimeout(() => {
+          setCanvasMapInteracting(false);
+          canvasRefineTimerRef.current = null;
+        }, 200);
+      });
+    zoomBehaviorRef.current = z;
+    sel.call(z);
+    sel.call(z.transform, zoomIdentity.translate(zoomTransform.x, zoomTransform.y).scale(zoomTransform.k));
+    return () => {
+      zoomBehaviorRef.current = null;
+      sel.on(".zoom", null);
+      if (canvasRefineTimerRef.current) {
+        clearTimeout(canvasRefineTimerRef.current);
+        canvasRefineTimerRef.current = null;
+      }
+    };
+  }, [
+    size.w,
+    size.h,
+    mapStageMounted,
+    zoomTransform,
+    applyOverlayZoomTransform,
+    commitZoomTransform,
+    requestCanvasMapRedraw,
+  ]);
+
+  useLayoutEffect(() => {
+    applyOverlayZoomTransform(zoomTransform);
+  }, [zoomTransform, applyOverlayZoomTransform]);
 
   useEffect(() => {
     if (mapRenderBackend !== "canvas") {
@@ -2627,6 +2673,7 @@ export function FlagGuesserPlayfield({
             {/* 全面を pointer-events:auto にしない（SVG のホバー検出が届かなくなる）。国旗ボタンのみ auto */}
             <div className="pointer-events-none absolute inset-0">
               <div
+                ref={overlayZoomLayerRef}
                 className="absolute left-0 top-0"
                 style={{
                   ...overlayParentTransform,
