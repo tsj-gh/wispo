@@ -154,9 +154,9 @@
       "BLZ",
       "KIR",
       "KOR",
+      "ATA",
       "CYP",
-      "KAZ",
-      "MAC"
+      "KAZ"
     ]
   },
   {
@@ -659,7 +659,7 @@
       "MYT",
       "CAF",
       "SYC",
-      "ATA"
+      "CHE"
     ]
   },
   {
@@ -1191,6 +1191,7 @@
     ],
     "confusable_design": [
       "KIR",
+      "ATA",
       "CYP",
       "ALB",
       "HKG",
@@ -1198,8 +1199,7 @@
       "MNE",
       "NPL",
       "SPM",
-      "BRA",
-      "ZMB"
+      "BRA"
     ]
   },
   {
@@ -1565,11 +1565,11 @@
       "HND",
       "SMR",
       "AFG",
-      "ATA",
       "FSM",
       "GTM",
       "SOM",
-      "ARG"
+      "ARG",
+      "EST"
     ],
     "confusable_design": [
       "HND",
@@ -3176,6 +3176,7 @@
       "MAC"
     ],
     "confusable_design": [
+      "ATA",
       "KIR",
       "MAC",
       "LKA",
@@ -3184,8 +3185,7 @@
       "SAU",
       "HKG",
       "TKM",
-      "BLR",
-      "MDV"
+      "BLR"
     ]
   },
   {
@@ -3613,6 +3613,7 @@
     ],
     "confusable_colors": [
       "ISR",
+      "ATA",
       "FIN",
       "GRC",
       "URY",
@@ -3620,8 +3621,7 @@
       "PRY",
       "CRI",
       "CUW",
-      "EST",
-      "HRV"
+      "EST"
     ],
     "confusable_design": [
       "NIC",
@@ -3792,7 +3792,7 @@
       "ISR",
       "SLV",
       "AFG",
-      "FIN"
+      "ATA"
     ],
     "confusable_design": [
       "LSO",
@@ -4118,6 +4118,7 @@
       "LVA"
     ],
     "confusable_colors": [
+      "ATA",
       "ISR",
       "SLV",
       "GRC",
@@ -4126,8 +4127,7 @@
       "FRO",
       "ISL",
       "NOR",
-      "SJM",
-      "DOM"
+      "SJM"
     ],
     "confusable_design": [
       "FRO",
@@ -4938,21 +4938,21 @@
       "SXM",
       "UZB",
       "SSD",
-      "ATA",
       "CHE",
-      "FSM"
+      "FSM",
+      "HKG"
     ],
     "confusable_design": [
       "ABW",
       "FSM",
-      "ATA",
       "CHE",
       "HKG",
       "JPN",
       "SOM",
       "TUN",
       "TUR",
-      "BLR"
+      "BLR",
+      "IMN"
     ]
   },
   {
@@ -4989,7 +4989,6 @@
     ],
     "confusable_colors": [
       "SMR",
-      "ATA",
       "FSM",
       "HND",
       "SOM",
@@ -4997,7 +4996,8 @@
       "BWA",
       "GUM",
       "LUX",
-      "REU"
+      "REU",
+      "ABW"
     ],
     "confusable_design": [
       "AND",
@@ -5427,13 +5427,13 @@
       "SMR",
       "FSM",
       "SOM",
-      "ATA",
       "GTM",
       "ARG",
       "BWA",
       "LUX",
       "GUM",
-      "REU"
+      "REU",
+      "AZE"
     ],
     "confusable_design": [
       "SMR",
@@ -5495,8 +5495,8 @@
       "ZMB",
       "LKA",
       "KIR",
-      "MNE",
-      "MAC"
+      "ATA",
+      "MNE"
     ]
   },
   {
@@ -5956,6 +5956,7 @@
     ],
     "confusable_colors": [
       "SLV",
+      "ATA",
       "FIN",
       "GRC",
       "URY",
@@ -5963,8 +5964,7 @@
       "NRU",
       "PRK",
       "PRY",
-      "SVN",
-      "CRI"
+      "SVN"
     ],
     "confusable_design": [
       "CUW",
@@ -6284,14 +6284,14 @@
     "confusable_design": [
       "PLW",
       "KIR",
+      "ATA",
       "MNE",
       "BLZ",
       "LKA",
       "BIH",
       "TKL",
       "MAC",
-      "CCK",
-      "BLM"
+      "CCK"
     ]
   },
   {
@@ -6394,14 +6394,14 @@
     "confusable_design": [
       "BLM",
       "MYT",
+      "ATA",
       "KAZ",
       "BLZ",
       "CAF",
       "SYC",
       "VIR",
       "CYP",
-      "HKG",
-      "MNE"
+      "HKG"
     ]
   },
   {
@@ -7564,14 +7564,14 @@
     "confusable_colors": [
       "IND",
       "ISR",
+      "ATA",
       "FIN",
       "SLV",
       "BIH",
       "CUB",
       "CUW",
       "NRU",
-      "PAN",
-      "PRI"
+      "PAN"
     ],
     "confusable_design": [
       "SLB",
@@ -7893,7 +7893,6 @@
     ],
     "confusable_colors": [
       "SOM",
-      "ATA",
       "HND",
       "GTM",
       "SMR",
@@ -7901,11 +7900,11 @@
       "ARG",
       "BWA",
       "LUX",
-      "REU"
+      "REU",
+      "ABW"
     ],
     "confusable_design": [
       "SOM",
-      "ATA",
       "BIH",
       "TKL",
       "CAF",
@@ -7913,7 +7912,8 @@
       "MAR",
       "VNM",
       "TKM",
-      "TUN"
+      "TUN",
+      "TUR"
     ]
   },
   {
@@ -8513,7 +8513,7 @@
       "CAF",
       "SYC",
       "VIR",
-      "BLZ"
+      "ATA"
     ]
   },
   {
@@ -8707,14 +8707,14 @@
     "confusable_colors": [
       "SLV",
       "ISR",
+      "ATA",
       "FIN",
       "PRY",
       "CRI",
       "CUW",
       "EST",
       "HRV",
-      "KHM",
-      "LAO"
+      "KHM"
     ],
     "confusable_design": [
       "SLV",
@@ -9842,8 +9842,8 @@
       "SGS",
       "AIA",
       "TUV",
-      "ATA",
-      "FSM"
+      "FSM",
+      "GTM"
     ],
     "confusable_design": [
       "JEY",
@@ -10116,14 +10116,14 @@
     "confusable_design": [
       "ABW",
       "AFG",
-      "ATA",
       "FSM",
       "SOM",
       "BLM",
       "BRA",
       "VIR",
       "BIH",
-      "GUM"
+      "GUM",
+      "IMN"
     ]
   },
   {
@@ -10173,7 +10173,7 @@
       "CAF",
       "SYC",
       "VIR",
-      "BLZ"
+      "ATA"
     ]
   },
   {
@@ -10320,14 +10320,14 @@
     "confusable_colors": [
       "HND",
       "GTM",
-      "ATA",
       "FSM",
       "SOM",
       "ARG",
       "BWA",
       "LUX",
       "GUM",
-      "REU"
+      "REU",
+      "AZE"
     ],
     "confusable_design": [
       "HND",
@@ -10870,7 +10870,6 @@
     ],
     "confusable_colors": [
       "FSM",
-      "ATA",
       "HND",
       "GTM",
       "SMR",
@@ -10878,11 +10877,11 @@
       "ARG",
       "BWA",
       "LUX",
-      "REU"
+      "REU",
+      "ABW"
     ],
     "confusable_design": [
       "FSM",
-      "ATA",
       "BIH",
       "TKL",
       "CAF",
@@ -10890,7 +10889,8 @@
       "MAR",
       "VNM",
       "TKM",
-      "TUN"
+      "TUN",
+      "TUR"
     ]
   },
   {
@@ -12690,38 +12690,39 @@
     "intermediate_region": "",
     "tags": {
       "colors": [
-        "water",
+        "blue",
         "white"
       ],
       "design": "その他",
       "symbol": [
-        "なし"
+        "生物",
+        "景色/建物"
       ]
     },
     "confusable_region": [],
     "confusable_colors": [
-      "FSM",
-      "SOM",
-      "GTM",
-      "HND",
-      "SMR",
-      "GUM",
-      "ARG",
-      "BWA",
-      "LUX",
-      "REU"
+      "FIN",
+      "ISR",
+      "SLV",
+      "GRC",
+      "URY",
+      "BIH",
+      "NPL",
+      "SPM",
+      "TKL",
+      "SRB"
     ],
     "confusable_design": [
-      "FSM",
-      "SOM",
-      "GUM",
-      "ABW",
-      "LCA",
-      "AFG",
-      "CHE",
+      "CYP",
+      "KIR",
+      "BLZ",
       "HKG",
-      "JPN",
-      "SAU"
+      "KAZ",
+      "BIH",
+      "NPL",
+      "SPM",
+      "TKL",
+      "MAC"
     ]
   },
   {
