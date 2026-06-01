@@ -1921,8 +1921,7 @@ export function FlagGuesserPlayfield({
         height={size.h}
         aria-hidden
       >
-        <g transform={gTransform}>
-          {judgedIds.map((id) => {
+        {judgedIds.map((id) => {
             const verdict = resultByCountryId[id];
             const d = rm.pathDById.get(id);
             const feat = rm.allFeatures.find((f) => String(f.id) === id);
@@ -1991,7 +1990,6 @@ export function FlagGuesserPlayfield({
               </g>
             );
           })}
-        </g>
       </svg>
     );
   }, [
@@ -2002,7 +2000,6 @@ export function FlagGuesserPlayfield({
     resultByCountryId,
     size.w,
     size.h,
-    gTransform,
     mapPathClassOpts,
     borderStrokeWidth,
   ]);
@@ -2012,16 +2009,14 @@ export function FlagGuesserPlayfield({
     const rm = regionModelForCanvas ?? regionModel;
     const proj = projection;
     if (!rm || !proj || !answered) return [];
-    const k = zoomTransform.k;
-    const { x: zx, y: zy } = zoomTransform;
-    const out: { id: string; screenX: number; screenY: number }[] = [];
+    const out: { id: string; mapX: number; mapY: number }[] = [];
     for (const [id, verdict] of Object.entries(resultByCountryId)) {
       if (verdict !== "correct") continue;
       const feat = rm.allFeatures.find((f) => String(f.id) === id);
       if (!feat) continue;
       const p = projectMainlandCentroid(proj, feat as CountryFeature);
       if (!p) continue;
-      out.push({ id, screenX: p[0] * k + zx, screenY: p[1] * k + zy });
+      out.push({ id, mapX: p[0], mapY: p[1] });
     }
     return out;
   }, [
@@ -2030,7 +2025,6 @@ export function FlagGuesserPlayfield({
     projection,
     answered,
     resultByCountryId,
-    zoomTransform,
   ]);
 
   const hoverCountryAlpha2 = useMemo(() => {
@@ -2651,17 +2645,6 @@ export function FlagGuesserPlayfield({
               </div>
             )}
 
-            {mapJudgeOverlay}
-
-            {judgeBurstRipples.map((r) => (
-              <FlagGuesserPopBurstRipple
-                key={`burst-${r.id}-${roundSeq}`}
-                screenX={r.screenX}
-                screenY={r.screenY}
-                flagRadiusPx={CARD_DIAM / 2}
-              />
-            ))}
-
             {loadingHighDetail && (
               <div className="pointer-events-none absolute bottom-1 left-1 z-[11] rounded border border-[color-mix(in_srgb,var(--color-primary)_25%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_90%,transparent)] px-1.5 py-0.5 text-[9px] text-[var(--color-muted)] backdrop-blur-sm">
                 高精細データ読み込み中…
@@ -2688,6 +2671,22 @@ export function FlagGuesserPlayfield({
                   pointerEvents: "none",
                 }}
               >
+                {mapJudgeOverlay}
+
+                {judgeBurstRipples.map((r) => (
+                  <span
+                    key={`burst-${r.id}-${roundSeq}`}
+                    className="pointer-events-none absolute left-0 top-0 z-[25]"
+                    style={{
+                      left: r.mapX,
+                      top: r.mapY,
+                      transform: `translate(-50%, -50%) scale(${flagVisualScale})`,
+                    }}
+                  >
+                    <FlagGuesserPopBurstRipple screenX={0} screenY={0} flagRadiusPx={CARD_DIAM / 2} />
+                  </span>
+                ))}
+
                 {!drag && !answered && mapHoverCrossMap && (() => {
                   const k = Math.max(zoomTransform.k, 0.08);
                   const px = mapHoverCrossMap.x;
