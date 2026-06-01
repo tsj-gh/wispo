@@ -239,6 +239,45 @@ export function countryIdAtPixelWithSeaProximity(
   return null;
 }
 
+export type CountryDragSnapOptions = {
+  /** d3-zoom の k（map 座標 1 単位 ≈ k screen px） */
+  zoomK: number;
+  /** 直前にヒットした国（海上ドラッグで維持・全重心走査はしない） */
+  stickyCountryId?: string | null;
+  stickyMaxScreenPx?: number;
+};
+
+/**
+ * ドラッグ中の着弾候補: ポリゴンヒット優先。海上は `stickyCountryId` が
+ * 重心の近傍にあるときだけ維持（`countryIdAtPixelWithSeaProximity` より軽い）。
+ */
+export function countryIdAtPixelForDrag(
+  projection: GeoProjection,
+  sortedFeatures: readonly CountryFeature[],
+  x: number,
+  y: number,
+  pathDById: ReadonlyMap<string, string> | undefined,
+  opts: CountryDragSnapOptions
+): string | null {
+  const hit = countryIdAtPixelOnSorted(projection, sortedFeatures, x, y, pathDById);
+  if (hit) return hit;
+
+  const sticky = opts.stickyCountryId;
+  if (!sticky) return null;
+
+  const k = Math.max(opts.zoomK, 0.06);
+  const maxDist = (opts.stickyMaxScreenPx ?? DEFAULT_SEA_PROXIMITY_MAX_SNAP_SCREEN_PX) / k;
+
+  for (const feat of sortedFeatures) {
+    const id = featureIdString(feat);
+    if (id !== sticky) continue;
+    const centroid = projectCentroid(projection, feat);
+    if (!centroid) return null;
+    return Math.hypot(centroid[0] - x, centroid[1] - y) <= maxDist ? sticky : null;
+  }
+  return null;
+}
+
 /**
  * フィルタ済み Feature の bounding を中央フィットする Mercator を構築。
  * `centralMeridian` を渡すと `rotate([-λ,0,0])` で縫い目をデータから逃がしてから fit する。

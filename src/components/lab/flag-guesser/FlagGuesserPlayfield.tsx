@@ -39,7 +39,7 @@ import {
   buildRegionRoundModel,
   buildRegionRoundModelSameProjection,
   countryIdAtPixel,
-  countryIdAtPixelWithSeaProximity,
+  countryIdAtPixelForDrag,
   projectMainlandCentroid,
   sortFeaturesForHitTest,
 } from "@/lib/flag-guesser/mapProjections";
@@ -297,6 +297,86 @@ function dragConnectorPathD(px: number, py: number, tx: number, ty: number): str
   return `M ${px} ${py} C ${c1x} ${c1y} ${c2x} ${c2y} ${tx} ${ty}`;
 }
 
+type DragOverlayDom = {
+  connectorPath: SVGPathElement | null;
+  crossLines: [
+    SVGLineElement | null,
+    SVGLineElement | null,
+    SVGLineElement | null,
+    SVGLineElement | null,
+  ];
+  cardEl: HTMLDivElement | null;
+};
+
+/** ドラッグ中コネクタ・十字・カードを React state なしで更新（A） */
+function updateDragOverlayDom(
+  dom: DragOverlayDom,
+  px: number,
+  py: number,
+  cx: number,
+  cy: number,
+  inCountry: boolean,
+  zoomK: number,
+  cardR: number
+): void {
+  const [tx, ty] = circleEdgeNearestPointer(px, py, cx, cy, cardR);
+  const pathEl = dom.connectorPath;
+  if (pathEl) {
+    pathEl.setAttribute("d", dragConnectorPathD(px, py, tx, ty));
+    pathEl.setAttribute(
+      "stroke-width",
+      String(
+        mapOverlayStrokeWidth(
+          inCountry ? MAP_CONNECTOR_STROKE_PX : MAP_CONNECTOR_STROKE_DRAG_SEA_PX,
+          zoomK
+        )
+      )
+    );
+  }
+
+  const gap = MAP_CROSS_GAP_SCREEN_PX * mapUnitsPerScreenPx(zoomK);
+  const arm = MAP_CROSS_ARM_SCREEN_PX * mapUnitsPerScreenPx(zoomK);
+  const crossStroke = inCountry ? "var(--color-primary)" : "rgba(42,42,48,0.92)";
+  const crossW = String(
+    mapOverlayStrokeWidth(inCountry ? MAP_CROSS_STROKE_LAND_PX : MAP_CROSS_STROKE_SEA_PX, zoomK)
+  );
+  const [hNeg, hPos, vNeg, vPos] = dom.crossLines;
+  if (hNeg) {
+    hNeg.setAttribute("x1", String(-(gap + arm)));
+    hNeg.setAttribute("x2", String(-gap));
+    hNeg.setAttribute("stroke", crossStroke);
+    hNeg.setAttribute("stroke-width", crossW);
+  }
+  if (hPos) {
+    hPos.setAttribute("x1", String(gap));
+    hPos.setAttribute("x2", String(gap + arm));
+    hPos.setAttribute("stroke", crossStroke);
+    hPos.setAttribute("stroke-width", crossW);
+  }
+  if (vNeg) {
+    vNeg.setAttribute("y1", String(-(gap + arm)));
+    vNeg.setAttribute("y2", String(-gap));
+    vNeg.setAttribute("stroke", crossStroke);
+    vNeg.setAttribute("stroke-width", crossW);
+  }
+  if (vPos) {
+    vPos.setAttribute("y1", String(gap));
+    vPos.setAttribute("y2", String(gap + arm));
+    vPos.setAttribute("stroke", crossStroke);
+    vPos.setAttribute("stroke-width", crossW);
+  }
+  const crossG = hNeg?.parentElement;
+  if (crossG) {
+    crossG.setAttribute("transform", `translate(${px},${py})`);
+  }
+
+  const cardEl = dom.cardEl;
+  if (cardEl) {
+    cardEl.style.left = `${cx}px`;
+    cardEl.style.top = `${cy}px`;
+  }
+}
+
 function clampZoomK(k: number): number {
   return Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, k));
 }
@@ -506,13 +586,20 @@ export function FlagGuesserPlayfield({
   floatRef.current = floatByCard;
 
   const [drag, setDrag] = useState<DragState | null>(null);
-  /** ドロップ判定・十字の中心（地図座標） */
-  const [dragPointerMap, setDragPointerMap] = useState<{ x: number; y: number } | null>(null);
-  /** カード中心（地図座標・慣性追従） */
-  const [dragCardDisplay, setDragCardDisplay] = useState<{ x: number; y: number } | null>(null);
-  /** `endDrag` で最新の表示位置を参照するため（state は 1 フレーム遅れうる） */
+  /** `endDrag` / rAF で最新のカード中心（地図座標・慣性追従） */
   const dragCardDisplayRef = useRef<{ x: number; y: number } | null>(null);
   const dragPointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  /** pointermove を rAF に合流（B） */
+  const dragPendingClientRef = useRef<{ clientX: number; clientY: number } | null>(null);
+  const dragRafIdRef = useRef(0);
+  const dragTargetStickyRef = useRef<string | null>(null);
+  const dragTargetCountryIdRef = useRef<string | null>(null);
+  const dragOverNotOnMapRef = useRef(false);
+  const dragOverlayDomRef = useRef<DragOverlayDom>({
+    connectorPath: null,
+    crossLines: [null, null, null, null],
+    cardEl: null,
+  });
 
   const [hoverCountryId, setHoverCountryId] = useState<string | null>(null);
   /** 正誤判定後のマップホバー用（カーソル付近に国旗＋国名） */
@@ -797,22 +884,6 @@ export function FlagGuesserPlayfield({
   }, [roundPlan, roundSeq]);
 
   const projection = regionModel?.projection;
-
-  /** ドラッグ着弾候補（領土外の海上は重心近傍＋最近傍との距離差で補正） */
-  const resolveDragTargetAtMapPoint = useCallback(
-    (x: number, y: number): string | null => {
-      if (!projection || !pointerRegionModel) return null;
-      return countryIdAtPixelWithSeaProximity(
-        projection,
-        hitFeaturesForPointer,
-        x,
-        y,
-        pointerRegionModel.pathDById,
-        { zoomK: zoomTransformRef.current.k }
-      );
-    },
-    [projection, pointerRegionModel, hitFeaturesForPointer]
-  );
 
   /** ロード完了前は盤面 DOM が無く zoomHostRef が null のため、これが true になったタイミングで d3-zoom を付け直す */
   const mapStageMounted = regionModel != null;
@@ -1110,9 +1181,11 @@ export function FlagGuesserPlayfield({
       setDragTargetCountryId(null);
       setDragOverNotOnMap(false);
       setDrag(null);
-      setDragPointerMap(null);
-      setDragCardDisplay(null);
       dragCardDisplayRef.current = null;
+      dragPendingClientRef.current = null;
+      dragTargetStickyRef.current = null;
+      dragTargetCountryIdRef.current = null;
+      dragOverNotOnMapRef.current = false;
     },
     [isoRows, topoIds, featuresForGame, curriculumPool, curriculumLevel, difficultyByAlpha3]
   );
@@ -1492,7 +1565,7 @@ export function FlagGuesserPlayfield({
 
   const beginDrag = useCallback(
     (cardId: string, clientX: number, clientY: number) => {
-      if (!projection) return;
+      if (!projection || !pointerRegionModel) return;
       const pt = pointerToMapCoords(clientX, clientY);
       if (!pt) return;
       const [x, y] = pt;
@@ -1506,10 +1579,23 @@ export function FlagGuesserPlayfield({
         cy = (fl.y - zt.y) / k;
       }
       dragPointerRef.current = { x, y };
-      setDragPointerMap({ x, y });
-      setDragCardDisplay({ x: cx, y: cy });
       dragCardDisplayRef.current = { x: cx, y: cy };
+      dragPendingClientRef.current = { clientX, clientY };
+      dragTargetStickyRef.current = null;
+      dragOverNotOnMapRef.current = false;
       setMapHoverCrossMap(null);
+      setDragOverNotOnMap(false);
+      const initialTarget = countryIdAtPixelForDrag(
+        projection,
+        hitFeaturesForPointer,
+        x,
+        y,
+        pointerRegionModel.pathDById,
+        { zoomK: zoomTransformRef.current.k, stickyCountryId: null }
+      );
+      dragTargetStickyRef.current = initialTarget;
+      dragTargetCountryIdRef.current = initialTarget;
+      setDragTargetCountryId(initialTarget);
       setDrag({ cardId });
       if (fl) {
         setFloatByCard((prev) => {
@@ -1518,51 +1604,19 @@ export function FlagGuesserPlayfield({
           return next;
         });
       }
-      setDragTargetCountryId(resolveDragTargetAtMapPoint(x, y));
     },
-    [projection, pointerToMapCoords, resolveDragTargetAtMapPoint]
+    [projection, pointerRegionModel, pointerToMapCoords, hitFeaturesForPointer]
   );
 
-  const moveDrag = useCallback(
-    (clientX: number, clientY: number) => {
-      if (!projection || !drag || !pointerRegionModel) return;
-      const pt = pointerToMapCoords(clientX, clientY);
-      if (!pt) return;
-      const [x, y] = pt;
-      dragPointerRef.current = { x, y };
-      setDragPointerMap({ x, y });
-
-      // 「ここにはない」ゾーン（地図領域 screen 座標）への着弾を優先判定
-      if (notOnMapZone) {
-        const rect = getMapRect();
-        if (rect) {
-          const sx = clientX - rect.left;
-          const sy = clientY - rect.top;
-          if (isPointInNotOnMapZone(sx, sy, notOnMapZone)) {
-            setDragOverNotOnMap(true);
-            setDragTargetCountryId(null);
-            return;
-          }
-        }
-      }
-      setDragOverNotOnMap(false);
-      setDragTargetCountryId(resolveDragTargetAtMapPoint(x, y));
-    },
-    [
-      projection,
-      drag,
-      pointerToMapCoords,
-      pointerRegionModel,
-      resolveDragTargetAtMapPoint,
-      notOnMapZone,
-      getMapRect,
-    ]
-  );
+  const moveDrag = useCallback((clientX: number, clientY: number) => {
+    if (!drag) return;
+    dragPendingClientRef.current = { clientX, clientY };
+  }, [drag]);
 
   const endDrag = useCallback(
     (cardId: string) => {
-      const countryId = dragTargetCountryId;
-      const wasOverNotOnMap = dragOverNotOnMap;
+      const countryId = dragTargetCountryIdRef.current;
+      const wasOverNotOnMap = dragOverNotOnMapRef.current;
       const lastMap = dragCardDisplayRef.current;
       const zt = zoomTransformRef.current;
       const k = Math.max(zt.k, 0.06);
@@ -1596,11 +1650,17 @@ export function FlagGuesserPlayfield({
 
       const floater = floatFromLastCardVisual();
 
+      if (dragRafIdRef.current) {
+        cancelAnimationFrame(dragRafIdRef.current);
+        dragRafIdRef.current = 0;
+      }
+      dragPendingClientRef.current = null;
+      dragTargetStickyRef.current = null;
+      dragTargetCountryIdRef.current = null;
+      dragOverNotOnMapRef.current = false;
       setDrag(null);
       setDragTargetCountryId(null);
       setDragOverNotOnMap(false);
-      setDragPointerMap(null);
-      setDragCardDisplay(null);
       dragCardDisplayRef.current = null;
 
       // 「ここにはない」ゾーンへのドロップ（複数枚許容）
@@ -1792,6 +1852,92 @@ export function FlagGuesserPlayfield({
     beginDrag(cardId, e.clientX, e.clientY);
   };
 
+  /** ドラッグ中: ヒットテスト・慣性追従・オーバーレイ DOM を 1 rAF に統合（A+B+C） */
+  const runDragFrame = useCallback(() => {
+    if (!projection || !pointerRegionModel) return;
+
+    const pending = dragPendingClientRef.current;
+    if (pending) {
+      const pt = pointerToMapCoords(pending.clientX, pending.clientY);
+      if (pt) {
+        const [x, y] = pt;
+        dragPointerRef.current = { x, y };
+
+        let overNotOnMap = false;
+        if (notOnMapZone) {
+          const rect = getMapRect();
+          if (rect) {
+            const sx = pending.clientX - rect.left;
+            const sy = pending.clientY - rect.top;
+            overNotOnMap = isPointInNotOnMapZone(sx, sy, notOnMapZone);
+          }
+        }
+        if (overNotOnMap !== dragOverNotOnMapRef.current) {
+          dragOverNotOnMapRef.current = overNotOnMap;
+          setDragOverNotOnMap(overNotOnMap);
+        }
+
+        if (!overNotOnMap) {
+          const id = countryIdAtPixelForDrag(
+            projection,
+            hitFeaturesForPointer,
+            x,
+            y,
+            pointerRegionModel.pathDById,
+            {
+              zoomK: zoomTransformRef.current.k,
+              stickyCountryId: dragTargetStickyRef.current,
+            }
+          );
+          dragTargetStickyRef.current = id;
+          if (id !== dragTargetCountryIdRef.current) {
+            dragTargetCountryIdRef.current = id;
+            setDragTargetCountryId(id);
+          }
+        } else {
+          dragTargetStickyRef.current = null;
+          if (dragTargetCountryIdRef.current !== null) {
+            dragTargetCountryIdRef.current = null;
+            setDragTargetCountryId(null);
+          }
+        }
+      }
+    }
+
+    const pt = dragPointerRef.current;
+    const k = Math.max(zoomTransformRef.current.k, 0.08);
+    const target = dragCardTargetFromPointer(pt.x, pt.y, k, dragCardScreenOffsetPx);
+    let display = dragCardDisplayRef.current ?? target;
+    const s = dragCardSpring;
+    const nx = display.x + (target.x - display.x) * s;
+    const ny = display.y + (target.y - display.y) * s;
+    if (
+      Math.abs(nx - display.x) < 0.03 &&
+      Math.abs(ny - display.y) < 0.03 &&
+      Math.abs(target.x - display.x) < 0.12 &&
+      Math.abs(target.y - display.y) < 0.12
+    ) {
+      display = dragCardDisplayRef.current ?? display;
+    } else {
+      display = { x: nx, y: ny };
+      dragCardDisplayRef.current = display;
+    }
+
+    const inCountry = !dragOverNotOnMapRef.current && dragTargetCountryIdRef.current !== null;
+    const cardR = (CARD_DIAM / 2) * flagVisualScale;
+    updateDragOverlayDom(dragOverlayDomRef.current, pt.x, pt.y, display.x, display.y, inCountry, k, cardR);
+  }, [
+    projection,
+    pointerRegionModel,
+    pointerToMapCoords,
+    hitFeaturesForPointer,
+    notOnMapZone,
+    getMapRect,
+    dragCardScreenOffsetPx,
+    dragCardSpring,
+    flagVisualScale,
+  ]);
+
   useEffect(() => {
     if (!drag) return;
     const cardId = drag.cardId;
@@ -1807,40 +1953,23 @@ export function FlagGuesserPlayfield({
     };
   }, [drag, moveDrag, endDrag]);
 
-  /** ドラッグ中カードをポインタ＋オフセット目標へ慣性追従 */
   useEffect(() => {
     if (!drag) return;
-    let frameId = 0;
-    const tick = () => {
-      const pt = dragPointerRef.current;
-      const k = Math.max(zoomTransform.k, 0.08);
-      const target = dragCardTargetFromPointer(pt.x, pt.y, k, dragCardScreenOffsetPx);
-      setDragCardDisplay((prev) => {
-        if (!prev) {
-          dragCardDisplayRef.current = target;
-          return target;
-        }
-        const s = dragCardSpring;
-        const nx = prev.x + (target.x - prev.x) * s;
-        const ny = prev.y + (target.y - prev.y) * s;
-        if (
-          Math.abs(nx - prev.x) < 0.03 &&
-          Math.abs(ny - prev.y) < 0.03 &&
-          Math.abs(target.x - prev.x) < 0.12 &&
-          Math.abs(target.y - prev.y) < 0.12
-        ) {
-          dragCardDisplayRef.current = prev;
-          return prev;
-        }
-        const next = { x: nx, y: ny };
-        dragCardDisplayRef.current = next;
-        return next;
-      });
-      frameId = requestAnimationFrame(tick);
+    const loop = () => {
+      runDragFrame();
+      dragRafIdRef.current = requestAnimationFrame(loop);
     };
-    frameId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frameId);
-  }, [drag, zoomTransform.k, dragCardScreenOffsetPx, dragCardSpring]);
+    dragRafIdRef.current = requestAnimationFrame(loop);
+    return () => {
+      cancelAnimationFrame(dragRafIdRef.current);
+      dragRafIdRef.current = 0;
+    };
+  }, [drag, runDragFrame]);
+
+  useLayoutEffect(() => {
+    if (!drag) return;
+    runDragFrame();
+  }, [drag, runDragFrame, size.w, size.h]);
 
   const submitAnswer = () => {
     if (!roundPlan) return;
@@ -2840,30 +2969,18 @@ export function FlagGuesserPlayfield({
                   })}
 
                 {drag &&
-                  dragPointerMap &&
-                  dragCardDisplay &&
                   (() => {
                     const c = cards.find((x) => x.id === drag.cardId);
                     if (!c) return null;
-                    const k = Math.max(zoomTransform.k, 0.08);
-                    const px = dragPointerMap.x;
-                    const py = dragPointerMap.y;
-                    const cx = dragCardDisplay.x;
-                    const cy = dragCardDisplay.y;
-                    const cardR = (CARD_DIAM / 2) * flagVisualScale;
-                    const [tx, ty] = circleEdgeNearestPointer(px, py, cx, cy, cardR);
-                    const inCountry = dragTargetCountryId !== null;
-                    const gap = MAP_CROSS_GAP_SCREEN_PX * mapUnitsPerScreenPx(k);
-                    const arm = MAP_CROSS_ARM_SCREEN_PX * mapUnitsPerScreenPx(k);
-                    const crossStroke = inCountry ? "var(--color-primary)" : "rgba(42,42,48,0.92)";
-                    const crossW = mapOverlayStrokeWidth(
-                      inCountry ? MAP_CROSS_STROKE_LAND_PX : MAP_CROSS_STROKE_SEA_PX,
-                      k
-                    );
-                    const connStroke = mapOverlayStrokeWidth(
-                      inCountry ? MAP_CONNECTOR_STROKE_PX : MAP_CONNECTOR_STROKE_DRAG_SEA_PX,
-                      k
-                    );
+                    const dom = dragOverlayDomRef.current;
+                    const bindCrossLine =
+                      (index: 0 | 1 | 2 | 3) =>
+                      (el: SVGLineElement | null) => {
+                        dom.crossLines[index] = el;
+                      };
+                    const k = Math.max(zoomTransformRef.current.k, 0.08);
+                    const connStroke = mapOverlayStrokeWidth(MAP_CONNECTOR_STROKE_DRAG_SEA_PX, k);
+                    const crossW = mapOverlayStrokeWidth(MAP_CROSS_STROKE_SEA_PX, k);
                     return (
                       <>
                         <svg
@@ -2873,57 +2990,59 @@ export function FlagGuesserPlayfield({
                           aria-hidden
                         >
                           <path
-                            d={dragConnectorPathD(px, py, tx, ty)}
+                            ref={(el) => {
+                              dom.connectorPath = el;
+                            }}
+                            d=""
                             fill="none"
                             stroke="rgba(100,100,108,0.42)"
                             strokeWidth={connStroke}
                             strokeLinecap="round"
                             vectorEffect="non-scaling-stroke"
                           />
-                          <g transform={`translate(${px},${py})`}>
+                          <g>
                             <line
-                              x1={-(gap + arm)}
+                              ref={bindCrossLine(0)}
                               y1={0}
-                              x2={-gap}
                               y2={0}
-                              stroke={crossStroke}
+                              stroke="rgba(42,42,48,0.92)"
                               strokeWidth={crossW}
                               vectorEffect="non-scaling-stroke"
                             />
                             <line
-                              x1={gap}
+                              ref={bindCrossLine(1)}
                               y1={0}
-                              x2={gap + arm}
                               y2={0}
-                              stroke={crossStroke}
+                              stroke="rgba(42,42,48,0.92)"
                               strokeWidth={crossW}
                               vectorEffect="non-scaling-stroke"
                             />
                             <line
+                              ref={bindCrossLine(2)}
                               x1={0}
-                              y1={-(gap + arm)}
                               x2={0}
-                              y2={-gap}
-                              stroke={crossStroke}
+                              stroke="rgba(42,42,48,0.92)"
                               strokeWidth={crossW}
                               vectorEffect="non-scaling-stroke"
                             />
                             <line
+                              ref={bindCrossLine(3)}
                               x1={0}
-                              y1={gap}
                               x2={0}
-                              y2={gap + arm}
-                              stroke={crossStroke}
+                              stroke="rgba(42,42,48,0.92)"
                               strokeWidth={crossW}
                               vectorEffect="non-scaling-stroke"
                             />
                           </g>
                         </svg>
                         <div
+                          ref={(el) => {
+                            dom.cardEl = el;
+                          }}
                           className="pointer-events-none absolute z-40 flex items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-primary)] bg-white/90 shadow-xl"
                           style={{
-                            left: cx,
-                            top: cy,
+                            left: 0,
+                            top: 0,
                             width: CARD_DIAM,
                             height: CARD_DIAM,
                             transform: `translate(-50%, -50%) scale(${flagVisualScale})`,
