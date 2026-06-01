@@ -44,6 +44,38 @@ export const DEFAULT_FLAG_BUBBLE_SEARCH_TUNING: FlagBubbleSearchTuning = {
   distanceStepCount: 3,
 };
 
+/** 国プールが大きいとき（G13 ヨーロッパ等）に使う探索パラメータ（D） */
+export const COMPACT_FLAG_BUBBLE_SEARCH_TUNING: FlagBubbleSearchTuning = {
+  directionCount: 8,
+  sampleCols: 2,
+  sampleRows: 2,
+  distanceStepCount: 2,
+};
+
+/** この件数以上の in-pool 国では compact チューニングを適用 */
+export const FLAG_BUBBLE_COMPACT_HIT_POOL_THRESHOLD = 20;
+
+/** 閾値の何倍以上なら極小国とみなし探索をスキップ（E） */
+export const FLAG_BUBBLE_MICROSTATE_SKIP_SEARCH_FACTOR = 3;
+
+/** 面積比がこの % 以上なら閾値に関係なく探索スキップ */
+export const FLAG_BUBBLE_MICROSTATE_MIN_AREA_RATIO_PERCENT = 100;
+
+export function mergeFlagBubbleSearchTuning(
+  base: FlagBubbleSearchTuning,
+  hitFeatureCount: number,
+  compactThreshold = FLAG_BUBBLE_COMPACT_HIT_POOL_THRESHOLD
+): FlagBubbleSearchTuning {
+  if (hitFeatureCount < compactThreshold) return base;
+  const compact = COMPACT_FLAG_BUBBLE_SEARCH_TUNING;
+  return {
+    directionCount: Math.min(base.directionCount, compact.directionCount),
+    sampleCols: Math.min(base.sampleCols, compact.sampleCols),
+    sampleRows: Math.min(base.sampleRows, compact.sampleRows),
+    distanceStepCount: Math.min(base.distanceStepCount, compact.distanceStepCount),
+  };
+}
+
 export function flagBubbleSearchCandidateCount(tuning: FlagBubbleSearchTuning): number {
   const steps = Math.max(1, Math.min(FLAG_BUBBLE_DISTANCE_MULTIPLIERS.length, tuning.distanceStepCount));
   return tuning.directionCount * steps;
@@ -150,6 +182,84 @@ function sampleOverlapScore(
   return { other, target, sea };
 }
 
+function bubbleCandidateInMap(
+  fx: number,
+  fy: number,
+  mapWidth: number,
+  mapHeight: number,
+  margin: number
+): boolean {
+  return fx >= margin && fy >= margin && fx <= mapWidth - margin && fy <= mapHeight - margin;
+}
+
+function computeBubbleMinDist(
+  piece: Feature<Geometry, GeoJsonProperties> | null,
+  projection: GeoProjection,
+  cardW: number,
+  cardH: number,
+  flagVisualScale: number
+): number {
+  let minDist = Math.max(cardW, cardH) * flagVisualScale * 0.85;
+  if (!piece) return minDist;
+  const path = geoPath(projection);
+  try {
+    const [[x0, y0], [x1, y1]] = path.bounds(piece as Parameters<typeof path.bounds>[0]);
+    const bw = Math.max(1, x1 - x0);
+    const bh = Math.max(1, y1 - y0);
+    minDist = Math.max(minDist, Math.max(bw, bh) * 0.42 + Math.max(cardW, cardH) * flagVisualScale * 0.35);
+  } catch {
+    /* keep default */
+  }
+  return minDist;
+}
+
+function bubbleSearchStartAngle(
+  anchorX: number,
+  anchorY: number,
+  hintMapPoint?: [number, number]
+): number {
+  if (!hintMapPoint) return 0;
+  const dx = hintMapPoint[0] - anchorX;
+  const dy = hintMapPoint[1] - anchorY;
+  return Math.hypot(dx, dy) > 1e-6 ? Math.atan2(dy, dx) : 0;
+}
+
+function shouldSkipBubbleSearch(areaRatioPercent: number, thresholdPercent: number): boolean {
+  return (
+    areaRatioPercent >= thresholdPercent * FLAG_BUBBLE_MICROSTATE_SKIP_SEARCH_FACTOR ||
+    areaRatioPercent >= FLAG_BUBBLE_MICROSTATE_MIN_AREA_RATIO_PERCENT
+  );
+}
+
+/** 極小国: ヒットテストなしで hint 方向（または 8 方位）へ 1 段だけオフセット（E） */
+function pickBubbleDirectionMicrostate(
+  anchorX: number,
+  anchorY: number,
+  piece: Feature<Geometry, GeoJsonProperties> | null,
+  projection: GeoProjection,
+  cardW: number,
+  cardH: number,
+  flagVisualScale: number,
+  mapWidth: number,
+  mapHeight: number,
+  hintMapPoint?: [number, number]
+): { flagX: number; flagY: number } {
+  const minDist = computeBubbleMinDist(piece, projection, cardW, cardH, flagVisualScale);
+  const margin = Math.max(cardW, cardH) * flagVisualScale * 0.6;
+  const startAngle = bubbleSearchStartAngle(anchorX, anchorY, hintMapPoint);
+
+  for (let i = 0; i < 8; i++) {
+    const angle = startAngle + (i / 8) * Math.PI * 2;
+    const fx = anchorX + Math.cos(angle) * minDist;
+    const fy = anchorY + Math.sin(angle) * minDist;
+    if (bubbleCandidateInMap(fx, fy, mapWidth, mapHeight, margin)) {
+      return { flagX: fx, flagY: fy };
+    }
+  }
+
+  return { flagX: anchorX + minDist, flagY: anchorY };
+}
+
 function pickBubbleDirection(
   anchorX: number,
   anchorY: number,
@@ -163,19 +273,10 @@ function pickBubbleDirection(
   flagVisualScale: number,
   mapWidth: number,
   mapHeight: number,
-  tuning: FlagBubbleSearchTuning
+  tuning: FlagBubbleSearchTuning,
+  hintMapPoint?: [number, number]
 ): { flagX: number; flagY: number } {
-  const path = geoPath(projection);
-  let minDist = Math.max(cardW, cardH) * flagVisualScale * 0.85;
-  try {
-    const [[x0, y0], [x1, y1]] = path.bounds(piece as Parameters<typeof path.bounds>[0]);
-    const bw = Math.max(1, x1 - x0);
-    const bh = Math.max(1, y1 - y0);
-    minDist = Math.max(minDist, Math.max(bw, bh) * 0.42 + Math.max(cardW, cardH) * flagVisualScale * 0.35);
-  } catch {
-    /* keep default */
-  }
-
+  const minDist = computeBubbleMinDist(piece, projection, cardW, cardH, flagVisualScale);
   const margin = Math.max(cardW, cardH) * flagVisualScale * 0.6;
   const directionCount = Math.max(4, Math.min(64, Math.round(tuning.directionCount)));
   const sampleCols = Math.max(2, Math.min(10, Math.round(tuning.sampleCols)));
@@ -184,13 +285,14 @@ function pickBubbleDirection(
     1,
     Math.min(FLAG_BUBBLE_DISTANCE_MULTIPLIERS.length, Math.round(tuning.distanceStepCount))
   );
+  const startAngle = bubbleSearchStartAngle(anchorX, anchorY, hintMapPoint);
 
   let bestScore = Infinity;
   let bestX = anchorX + minDist;
   let bestY = anchorY;
 
   for (let i = 0; i < directionCount; i++) {
-    const angle = (i / directionCount) * Math.PI * 2;
+    const angle = startAngle + (i / directionCount) * Math.PI * 2;
     const cos = Math.cos(angle);
     const sin = Math.sin(angle);
     for (let di = 0; di < distSteps; di++) {
@@ -299,7 +401,10 @@ export function refreshFlagLayoutForViewport(
  * 国旗が最大陸塊に対して大きいとき、周囲で他国との重なりが少ない方向へ吹き出す。
  */
 export function computeFlagBubbleLayout(input: ComputeFlagBubbleLayoutInput): FlagBubbleLayout | null {
-  const tuning = input.searchTuning ?? DEFAULT_FLAG_BUBBLE_SEARCH_TUNING;
+  const tuning = mergeFlagBubbleSearchTuning(
+    input.searchTuning ?? DEFAULT_FLAG_BUBBLE_SEARCH_TUNING,
+    input.hitFeatures.length
+  );
   const anchor = projectMainlandCentroid(input.projection, input.targetFeature);
   if (!anchor) return null;
   const [anchorX, anchorY] = anchor;
@@ -354,21 +459,36 @@ export function computeFlagBubbleLayout(input: ComputeFlagBubbleLayoutInput): Fl
 
   const sortedHits = sortFeaturesForHitTest(input.hitFeatures);
   const pieceFeat = piece ?? input.targetFeature;
-  const picked = pickBubbleDirection(
-    baseX,
-    baseY,
-    input.targetCountryId,
-    pieceFeat as Feature<Geometry, GeoJsonProperties>,
-    input.projection,
-    sortedHits,
-    input.pathDById,
-    input.cardW,
-    input.cardH,
-    input.flagVisualScale,
-    input.mapWidth,
-    input.mapHeight,
-    tuning
-  );
+  const pieceGeom = pieceFeat as Feature<Geometry, GeoJsonProperties>;
+  const picked = shouldSkipBubbleSearch(areaRatioPercent, input.thresholdPercent)
+    ? pickBubbleDirectionMicrostate(
+        baseX,
+        baseY,
+        pieceGeom,
+        input.projection,
+        input.cardW,
+        input.cardH,
+        input.flagVisualScale,
+        input.mapWidth,
+        input.mapHeight,
+        input.hintMapPoint
+      )
+    : pickBubbleDirection(
+        baseX,
+        baseY,
+        input.targetCountryId,
+        pieceGeom,
+        input.projection,
+        sortedHits,
+        input.pathDById,
+        input.cardW,
+        input.cardH,
+        input.flagVisualScale,
+        input.mapWidth,
+        input.mapHeight,
+        tuning,
+        input.hintMapPoint
+      );
   const [flagX, flagY] = insetFlagCenterInVisibleMap(
     picked.flagX,
     picked.flagY,

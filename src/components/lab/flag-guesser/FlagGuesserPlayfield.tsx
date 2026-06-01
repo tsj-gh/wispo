@@ -50,6 +50,7 @@ import {
   flagBubbleHitTestSampleCount,
   flagBubbleSearchCandidateCount,
   flagCardEdgeTowardAnchor,
+  mergeFlagBubbleSearchTuning,
   refreshFlagLayoutForViewport,
   type FlagBubbleLayout,
   type FlagBubbleSearchTuning,
@@ -379,6 +380,15 @@ function updateDragOverlayDom(
 
 function clampZoomK(k: number): number {
   return Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, k));
+}
+
+/** ドロップ後の吹き出し本探索をアイドル／次フレームへ逃がす（D） */
+function scheduleBubbleLayoutRefinement(run: () => void): void {
+  if (typeof requestIdleCallback === "function") {
+    requestIdleCallback(() => startTransition(run), { timeout: 150 });
+    return;
+  }
+  requestAnimationFrame(() => startTransition(run));
 }
 
 function zoomRatioToK(ratio: number): number {
@@ -804,6 +814,15 @@ export function FlagGuesserPlayfield({
   ]);
 
   const pointerRegionModel = mapRenderBackend === "canvas" ? (regionModelForCanvas ?? regionModel) : regionModel;
+
+  const effectiveFlagBubbleSearchTuning = useMemo(
+    () =>
+      mergeFlagBubbleSearchTuning(
+        flagBubbleSearchTuning,
+        pointerRegionModel?.allFeatures.length ?? 0
+      ),
+    [flagBubbleSearchTuning, pointerRegionModel]
+  );
 
   const hitFeaturesForPointer = useMemo(() => {
     if (!pointerRegionModel) return [];
@@ -1713,19 +1732,17 @@ export function FlagGuesserPlayfield({
         if (preview) {
           setPlacedLayoutByCard((prev) => ({ ...prev, [cardId]: preview }));
         }
-        requestAnimationFrame(() => {
-          startTransition(() => {
-            if (placedRef.current[cardId] !== countryId) return;
-            const layout = buildPlacementLayout(countryId, { hintMapPoint: dropHint });
-            if (!layout) return;
-            setPlacedLayoutByCard((prev) => ({ ...prev, [cardId]: layout }));
-            if (layout.useBubble) {
-              setPlacedLayoutAnimKeyByCard((prev) => ({
-                ...prev,
-                [cardId]: (prev[cardId] ?? 0) + 1,
-              }));
-            }
-          });
+        scheduleBubbleLayoutRefinement(() => {
+          if (placedRef.current[cardId] !== countryId) return;
+          const layout = buildPlacementLayout(countryId, { hintMapPoint: dropHint });
+          if (!layout) return;
+          setPlacedLayoutByCard((prev) => ({ ...prev, [cardId]: layout }));
+          if (layout.useBubble) {
+            setPlacedLayoutAnimKeyByCard((prev) => ({
+              ...prev,
+              [cardId]: (prev[cardId] ?? 0) + 1,
+            }));
+          }
         });
         return;
       }
@@ -2492,8 +2509,8 @@ export function FlagGuesserPlayfield({
       setFlagBubbleSampleRows,
       flagBubbleDistanceSteps,
       setFlagBubbleDistanceSteps,
-      flagBubbleSearchCandidateCount: flagBubbleSearchCandidateCount(flagBubbleSearchTuning),
-      flagBubbleHitTestSampleCount: flagBubbleHitTestSampleCount(flagBubbleSearchTuning),
+      flagBubbleSearchCandidateCount: flagBubbleSearchCandidateCount(effectiveFlagBubbleSearchTuning),
+      flagBubbleHitTestSampleCount: flagBubbleHitTestSampleCount(effectiveFlagBubbleSearchTuning),
     });
     return () => onDebugPanelPropsChange(null);
   }, [
@@ -2509,6 +2526,7 @@ export function FlagGuesserPlayfield({
     flagBubbleSampleRows,
     flagBubbleDistanceSteps,
     flagBubbleSearchTuning,
+    effectiveFlagBubbleSearchTuning,
     listedCountryLabelsJa,
     mapDebugCenterScale,
     onEnumerateVisible,
