@@ -1039,40 +1039,6 @@ export function FlagGuesserPlayfield({
   }, [roundPlan, roundSeq, size.w, size.h, explorerMapPresets]);
 
   useEffect(() => {
-    if (!regionModel || !roundPlan || size.w < 16 || size.h < 16) return;
-    if (lastMapViewResetKeyRef.current === mapViewResetKey) return;
-    /* プリセット JSON 未到着の間は外接 fit を走らせない（到着後に explorer と同じ k を適用） */
-    if (!explorerMapPresets) return;
-
-    const preset = explorerMapPresetForIsoRow(explorerMapPresets, roundPlan.targetRow);
-    let fromPreset: ZoomPlain | null = null;
-    if (preset != null) {
-      /* PC と同じ: プリセット lon/lat/k のみ（モバイルで pool 全 bbox に横フィットすると
-       * 仏領ギアナ・アラスカ切れ目など海外領が視野に入りカメラが不自然に引き寄る） */
-      fromPreset = zoomPlainFromCenterLonLatK(
-        regionModel.projection,
-        size.w,
-        size.h,
-        preset.lon,
-        preset.lat,
-        isMobileLayout ? preset.k * MOBILE_PRESET_K_SCALE : preset.k
-      );
-    }
-    const fitted = fromPreset ?? fitTransformForRegion(regionModel, size.w, size.h);
-    applyZoomTransform(fitted, false);
-    lastMapViewResetKeyRef.current = mapViewResetKey;
-  }, [
-    regionModel,
-    roundPlan,
-    explorerMapPresets,
-    mapViewResetKey,
-    size.w,
-    size.h,
-    isMobileLayout,
-    applyZoomTransform,
-  ]);
-
-  useEffect(() => {
     if (typeof window === "undefined") return;
     const mq = window.matchMedia(`(max-width: ${MOBILE_VIEWPORT_MAX_PX}px)`);
     const sync = () => setIsMobileLayout(mq.matches);
@@ -2224,6 +2190,43 @@ export function FlagGuesserPlayfield({
     });
   }, [mapRenderBackend, performCanvasMapDraw]);
 
+  /** ラウンド／サイズ／プリセット変更時に地域フィットの初期ズームを適用 */
+  useEffect(() => {
+    if (!regionModel || !roundPlan || size.w < 16 || size.h < 16) return;
+    if (lastMapViewResetKeyRef.current === mapViewResetKey) return;
+    if (!explorerMapPresets) return;
+
+    const preset = explorerMapPresetForIsoRow(explorerMapPresets, roundPlan.targetRow);
+    let fromPreset: ZoomPlain | null = null;
+    if (preset != null) {
+      fromPreset = zoomPlainFromCenterLonLatK(
+        regionModel.projection,
+        size.w,
+        size.h,
+        preset.lon,
+        preset.lat,
+        isMobileLayout ? preset.k * MOBILE_PRESET_K_SCALE : preset.k
+      );
+    }
+    const fitted = fromPreset ?? fitTransformForRegion(regionModel, size.w, size.h);
+    zoomTransformRef.current = fitted;
+    applyOverlayZoomTransform(fitted);
+    applyZoomTransform(fitted, false);
+    requestCanvasMapRedraw();
+    lastMapViewResetKeyRef.current = mapViewResetKey;
+  }, [
+    regionModel,
+    roundPlan,
+    explorerMapPresets,
+    mapViewResetKey,
+    size.w,
+    size.h,
+    isMobileLayout,
+    applyZoomTransform,
+    applyOverlayZoomTransform,
+    requestCanvasMapRedraw,
+  ]);
+
   /** Canvas: 表示内容が変わったときだけ 1 フレーム描画（A2） */
   useEffect(() => {
     requestCanvasMapRedraw();
@@ -2280,7 +2283,10 @@ export function FlagGuesserPlayfield({
       });
     zoomBehaviorRef.current = z;
     sel.call(z);
-    sel.call(z.transform, zoomIdentity.translate(zoomTransform.x, zoomTransform.y).scale(zoomTransform.k));
+    const zt = zoomTransformRef.current;
+    sel.call(z.transform, zoomIdentity.translate(zt.x, zt.y).scale(zt.k));
+    applyOverlayZoomTransform(zt);
+    requestCanvasMapRedraw();
     return () => {
       zoomBehaviorRef.current = null;
       sel.on(".zoom", null);
@@ -2293,14 +2299,14 @@ export function FlagGuesserPlayfield({
     size.w,
     size.h,
     mapStageMounted,
-    zoomTransform,
     applyOverlayZoomTransform,
     commitZoomTransform,
     requestCanvasMapRedraw,
   ]);
 
   useLayoutEffect(() => {
-    applyOverlayZoomTransform(zoomTransform);
+    if (canvasMapZoomInteractingRef.current) return;
+    applyOverlayZoomTransform(zoomTransformRef.current);
   }, [zoomTransform, applyOverlayZoomTransform]);
 
   useEffect(() => {
