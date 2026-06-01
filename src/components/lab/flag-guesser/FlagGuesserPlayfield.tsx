@@ -262,6 +262,10 @@ const MAP_CROSS_ARM_SCREEN_PX = 14;
 const MAP_CROSS_STROKE_LAND_PX = 1.65;
 const MAP_CROSS_STROKE_SEA_PX = 1.05;
 const MAP_CONNECTOR_STROKE_PX = 2.2;
+/** 正誤オーバーレイ（overlayZoomLayer の CSS scale(k) 内＝画面上ピクセル基準） */
+const JUDGE_STROKE_WRONG_PX = 2.8;
+const JUDGE_STROKE_MISSED_PX = 2.4;
+const JUDGE_STROKE_CORRECT_PX = 2.6;
 const MAP_CONNECTOR_STROKE_DRAG_SEA_PX = 1.2;
 
 function dragCardTargetFromPointer(
@@ -1911,8 +1915,13 @@ export function FlagGuesserPlayfield({
     const rm = regionModelForCanvas ?? regionModel;
     const proj = projection;
     if (!rm || !proj || !answered) return null;
+    if (canvasMapInteracting) return null;
     const judgedIds = Object.keys(resultByCountryId);
     if (!judgedIds.length) return null;
+    const k = Math.max(zoomTransform.k, 0.08);
+    const strokeWrong = mapOverlayStrokeWidth(JUDGE_STROKE_WRONG_PX, k);
+    const strokeMissed = mapOverlayStrokeWidth(JUDGE_STROKE_MISSED_PX, k);
+    const strokeCorrect = mapOverlayStrokeWidth(JUDGE_STROKE_CORRECT_PX, k);
 
     return (
       <svg
@@ -1942,9 +1951,9 @@ export function FlagGuesserPlayfield({
                     transform={`translate(${-cx},${-cy})`}
                     className="fg-map-country-outline is-judge-wrong"
                     style={{
-                      fill: MAP_FILL_WRONG,
+                      fill: "none",
                       stroke: "#ef4444",
-                      strokeWidth: borderStrokeWidth * 2.8,
+                      strokeWidth: strokeWrong,
                       strokeLinecap: "round",
                       strokeLinejoin: "round",
                       vectorEffect: "non-scaling-stroke",
@@ -1961,9 +1970,9 @@ export function FlagGuesserPlayfield({
                     d={d}
                     className={`fg-map-country-outline is-judge-missed ${countryMapPathClass(id, mapPathClassOpts)}`}
                     style={{
-                      fill: MAP_FILL_MISSED,
+                      fill: "none",
                       stroke: "#ca8a04",
-                      strokeWidth: borderStrokeWidth * 2.4,
+                      strokeWidth: strokeMissed,
                       strokeLinecap: "round",
                       strokeLinejoin: "round",
                       vectorEffect: "non-scaling-stroke",
@@ -1981,7 +1990,7 @@ export function FlagGuesserPlayfield({
                   style={{
                     fill: "none",
                     stroke: "#4ade80",
-                    strokeWidth: borderStrokeWidth * 2.6,
+                    strokeWidth: strokeCorrect,
                     strokeLinecap: "round",
                     strokeLinejoin: "round",
                     vectorEffect: "non-scaling-stroke",
@@ -1997,11 +2006,12 @@ export function FlagGuesserPlayfield({
     regionModel,
     projection,
     answered,
+    canvasMapInteracting,
     resultByCountryId,
     size.w,
     size.h,
+    zoomTransform.k,
     mapPathClassOpts,
-    borderStrokeWidth,
   ]);
 
   /** 正解時バーストリング（画面 px・国旗直径基準。PopPopBubbles と同系） */
