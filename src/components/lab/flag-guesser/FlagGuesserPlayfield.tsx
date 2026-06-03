@@ -40,6 +40,7 @@ import {
   buildRegionRoundModelSameProjection,
   countryIdAtPixel,
   countryIdAtPixelForDrag,
+  countryIdAtPixelWithSeaProximity,
   projectMainlandCentroid,
   sortFeaturesForHitTest,
 } from "@/lib/flag-guesser/mapProjections";
@@ -157,6 +158,10 @@ const FLOAT_HALF_H = CARD_H / 2;
 const MOBILE_VIEWPORT_MAX_PX = 539;
 /** モバイル初期ズーム係数（iPhone SE 実測値） */
 const MOBILE_PRESET_K_SCALE = 0.7;
+/** タップとドラッグの判別（px） */
+const MOBILE_TAP_MOVE_THRESHOLD_PX = 12;
+/** モバイルドラッグ時、十字を指の上方に表示（px・画面座標） */
+const MOBILE_DRAG_CROSSHAIR_OFFSET_Y_PX = -112;
 const ZOOM_MIN = 0.12;
 const ZOOM_MAX = 80;
 const ZOOM_STEP = 1.3;
@@ -389,6 +394,16 @@ function scheduleBubbleLayoutRefinement(run: () => void): void {
     return;
   }
   requestAnimationFrame(() => startTransition(run));
+}
+
+/** モバイルでは指で地図が隠れないよう、ヒット判定用十字を指の上方へずらす */
+function dragCrosshairClientFromFinger(
+  clientX: number,
+  clientY: number,
+  isMobileLayout: boolean
+): { clientX: number; clientY: number } {
+  if (!isMobileLayout) return { clientX, clientY };
+  return { clientX, clientY: clientY + MOBILE_DRAG_CROSSHAIR_OFFSET_Y_PX };
 }
 
 function zoomRatioToK(ratio: number): number {
@@ -631,6 +646,13 @@ export function FlagGuesserPlayfield({
   >({});
   /** 現在のドラッグが「ここにはない」ゾーンの真上にあるか */
   const [dragOverNotOnMap, setDragOverNotOnMap] = useState(false);
+  /** モバイル: タップ選択中の国旗カード（国タップで配置） */
+  const [tapSelectedCardId, setTapSelectedCardId] = useState<string | null>(null);
+  /** モバイル: タップ選択中に「ここにはない」ゾーン上を指している */
+  const [tapOverNotOnMap, setTapOverNotOnMap] = useState(false);
+  const isMobileLayoutRef = useRef(isMobileLayout);
+  isMobileLayoutRef.current = isMobileLayout;
+  const mapTapStartRef = useRef<{ x: number; y: number } | null>(null);
 
   const lastTsRef = useRef(0);
   const rafRef = useRef(0);
@@ -1205,6 +1227,9 @@ export function FlagGuesserPlayfield({
       dragTargetStickyRef.current = null;
       dragTargetCountryIdRef.current = null;
       dragOverNotOnMapRef.current = false;
+      setTapSelectedCardId(null);
+      setTapOverNotOnMap(false);
+      mapTapStartRef.current = null;
     },
     [isoRows, topoIds, featuresForGame, curriculumPool, curriculumLevel, difficultyByAlpha3]
   );
@@ -1441,6 +1466,19 @@ export function FlagGuesserPlayfield({
         setMapHoverCrossMap(null);
       }
 
+      if (isMobileLayoutRef.current && tapSelectedCardId && notOnMapZone) {
+        const rect = getMapRect();
+        if (rect) {
+          const sx = event.clientX - rect.left;
+          const sy = event.clientY - rect.top;
+          setTapOverNotOnMap(isPointInNotOnMapZone(sx, sy, notOnMapZone));
+        } else {
+          setTapOverNotOnMap(false);
+        }
+      } else if (tapOverNotOnMap) {
+        setTapOverNotOnMap(false);
+      }
+
       if (!projection || !pointerRegionModel || drag) {
         return;
       }
@@ -1463,13 +1501,14 @@ export function FlagGuesserPlayfield({
         setJudgmentHoverScreenPos(null);
       }
     },
-    [projection, pointerRegionModel, hitFeaturesForPointer, answered, drag, pointerToMapCoords]
+    [projection, pointerRegionModel, hitFeaturesForPointer, answered, drag, tapSelectedCardId, tapOverNotOnMap, notOnMapZone, getMapRect, pointerToMapCoords]
   );
 
   const handleMapLeave = useCallback(() => {
     if (!drag) setHoverCountryId(null);
     setMapHoverCrossMap(null);
     setJudgmentHoverScreenPos(null);
+    setTapOverNotOnMap(false);
   }, [drag]);
 
   /** 正誤判定中: ページを離れずに Explorer の国詳細パネルをオーバーレイ表示 */
@@ -1576,26 +1615,242 @@ export function FlagGuesserPlayfield({
         if (m === "missed") return MAP_FILL_MISSED;
       }
       if (drag && dragTargetCountryId === id) return MAP_FILL_DRAG_TARGET;
+      if (tapSelectedCardId && hoverCountryId === id) return MAP_FILL_DRAG_TARGET;
       if (placedCountryIds.has(id)) return MAP_FILL_PLACED;
       return MAP_LAND_REGION_QUIET;
     },
-    [answered, resultByCountryId, drag, dragTargetCountryId, placedCountryIds]
+    [answered, resultByCountryId, drag, dragTargetCountryId, tapSelectedCardId, hoverCountryId, placedCountryIds]
+  );
+
+  const unpickCardFromPlacement = useCallback(
+    (cardId: string) => {
+      const placed = placedRef.current[cardId];
+      if (!placed) return;
+      const wasInZone = placed === NOT_ON_MAP_ID;
+      setPlacedByCard((prev) => {
+        const next = { ...prev };
+        delete next[cardId];
+        if (wasInZone && notOnMapZone) {
+          const remaining = Object.entries(next)
+            .filter(([, v]) => v === NOT_ON_MAP_ID)
+            .map(([k]) => k);
+          setPlacedLayoutByCard((prevLayout) => {
+            const nextLayout: Record<string, FlagBubbleLayout> = { ...prevLayout };
+            delete nextLayout[cardId];
+            remaining.forEach((id, idx) => {
+              nextLayout[id] = notOnMapBubbleLayoutFor(
+                notOnMapZone,
+                idx,
+                remaining.length,
+                CARD_W
+              );
+            });
+            return nextLayout;
+          });
+          return next;
+        }
+        return next;
+      });
+      if (!wasInZone) {
+        setPlacedLayoutByCard((prev) => {
+          const next = { ...prev };
+          delete next[cardId];
+          return next;
+        });
+      }
+    },
+    [notOnMapZone]
+  );
+
+  const placeCardOnCountry = useCallback(
+    (cardId: string, countryId: string, hintMapPoint?: [number, number]): boolean => {
+      const prevPlaced = placedRef.current;
+      const occupied = Object.entries(prevPlaced).find(
+        ([other, cid]) => cid === countryId && other !== cardId
+      );
+      if (occupied) return false;
+
+      setTapSelectedCardId(null);
+      setTapOverNotOnMap(false);
+      setFloatByCard((prev) => {
+        const next = { ...prev };
+        delete next[cardId];
+        return next;
+      });
+      setPlacedByCard((prev) => ({ ...prev, [cardId]: countryId }));
+      const preview = buildPlacementLayout(countryId, {
+        anchorPreviewOnly: true,
+        hintMapPoint,
+      });
+      if (preview) {
+        setPlacedLayoutByCard((prev) => ({ ...prev, [cardId]: preview }));
+      }
+      scheduleBubbleLayoutRefinement(() => {
+        if (placedRef.current[cardId] !== countryId) return;
+        const layout = buildPlacementLayout(countryId, { hintMapPoint });
+        if (!layout) return;
+        setPlacedLayoutByCard((prev) => ({ ...prev, [cardId]: layout }));
+        if (layout.useBubble) {
+          setPlacedLayoutAnimKeyByCard((prev) => ({
+            ...prev,
+            [cardId]: (prev[cardId] ?? 0) + 1,
+          }));
+        }
+      });
+      return true;
+    },
+    [buildPlacementLayout]
+  );
+
+  const placeCardOnNotOnMap = useCallback(
+    (cardId: string): boolean => {
+      if (!notOnMapZone) return false;
+      setTapSelectedCardId(null);
+      setTapOverNotOnMap(false);
+      setFloatByCard((prev) => {
+        const next = { ...prev };
+        delete next[cardId];
+        return next;
+      });
+      setPlacedByCard((prev) => {
+        const next = { ...prev, [cardId]: NOT_ON_MAP_ID };
+        const zoneCardIds = Object.entries(next)
+          .filter(([, v]) => v === NOT_ON_MAP_ID)
+          .map(([k]) => k);
+        setPlacedLayoutByCard((prevLayout) => {
+          const nextLayout: Record<string, FlagBubbleLayout> = { ...prevLayout };
+          zoneCardIds.forEach((id, idx) => {
+            nextLayout[id] = notOnMapBubbleLayoutFor(
+              notOnMapZone,
+              idx,
+              zoneCardIds.length,
+              CARD_W
+            );
+          });
+          return nextLayout;
+        });
+        setPlacedLayoutAnimKeyByCard((prevK) => ({
+          ...prevK,
+          [cardId]: (prevK[cardId] ?? 0) + 1,
+        }));
+        return next;
+      });
+      return true;
+    },
+    [notOnMapZone]
+  );
+
+  const handleCardTapSelect = useCallback((cardId: string) => {
+    setTapSelectedCardId((prev) => (prev === cardId ? null : cardId));
+    setTapOverNotOnMap(false);
+    setMapHoverCrossMap(null);
+  }, []);
+
+  const handleMapPointerDownForTap = useCallback(
+    (event: React.PointerEvent<HTMLCanvasElement | SVGSVGElement>) => {
+      if (!isMobileLayoutRef.current || answered || drag) return;
+      mapTapStartRef.current = { x: event.clientX, y: event.clientY };
+    },
+    [answered, drag]
+  );
+
+  const handleMapPointerUpForTap = useCallback(
+    (event: React.PointerEvent<HTMLCanvasElement | SVGSVGElement>) => {
+      if (!isMobileLayoutRef.current || answered || drag || !tapSelectedCardId) {
+        mapTapStartRef.current = null;
+        return;
+      }
+      if (!projection || !pointerRegionModel) {
+        mapTapStartRef.current = null;
+        return;
+      }
+      const start = mapTapStartRef.current;
+      mapTapStartRef.current = null;
+      if (!start) return;
+      if (
+        Math.hypot(event.clientX - start.x, event.clientY - start.y) >
+        MOBILE_TAP_MOVE_THRESHOLD_PX
+      ) {
+        return;
+      }
+
+      const cardId = tapSelectedCardId;
+
+      if (notOnMapZone) {
+        const rect = getMapRect();
+        if (rect) {
+          const sx = event.clientX - rect.left;
+          const sy = event.clientY - rect.top;
+          if (isPointInNotOnMapZone(sx, sy, notOnMapZone)) {
+            placeCardOnNotOnMap(cardId);
+            return;
+          }
+        }
+      }
+
+      const pt = pointerToMapCoords(event.clientX, event.clientY);
+      if (!pt) {
+        setTapSelectedCardId(null);
+        setTapOverNotOnMap(false);
+        return;
+      }
+      const [x, y] = pt;
+      const countryId = countryIdAtPixelWithSeaProximity(
+        projection,
+        hitFeaturesForPointer,
+        x,
+        y,
+        pointerRegionModel.pathDById,
+        { zoomK: zoomTransformRef.current.k }
+      );
+      if (!countryId) {
+        setTapSelectedCardId(null);
+        setTapOverNotOnMap(false);
+        return;
+      }
+      placeCardOnCountry(cardId, countryId, [x, y]);
+    },
+    [
+      answered,
+      drag,
+      tapSelectedCardId,
+      projection,
+      pointerRegionModel,
+      hitFeaturesForPointer,
+      notOnMapZone,
+      getMapRect,
+      pointerToMapCoords,
+      placeCardOnCountry,
+      placeCardOnNotOnMap,
+    ]
   );
 
   const beginDrag = useCallback(
     (cardId: string, clientX: number, clientY: number) => {
       if (!projection || !pointerRegionModel) return;
-      const pt = pointerToMapCoords(clientX, clientY);
-      if (!pt) return;
-      const [x, y] = pt;
+      setTapSelectedCardId(null);
+      setTapOverNotOnMap(false);
+      const crossClient = dragCrosshairClientFromFinger(
+        clientX,
+        clientY,
+        isMobileLayoutRef.current
+      );
+      const crossPt = pointerToMapCoords(crossClient.clientX, crossClient.clientY);
+      const fingerPt = pointerToMapCoords(clientX, clientY);
+      if (!crossPt) return;
+      const [x, y] = crossPt;
+      const zt = zoomTransformRef.current;
+      const k = Math.max(zt.k, 0.06);
       let cx = x;
       let cy = y;
       const fl = floatRef.current[cardId];
       if (fl) {
-        const zt = zoomTransformRef.current;
-        const k = Math.max(zt.k, 0.06);
         cx = (fl.x - zt.x) / k;
         cy = (fl.y - zt.y) / k;
+      } else if (fingerPt) {
+        const target = dragCardTargetFromPointer(fingerPt[0], fingerPt[1], k, dragCardScreenOffsetPx);
+        cx = target.x;
+        cy = target.y;
       }
       dragPointerRef.current = { x, y };
       dragCardDisplayRef.current = { x: cx, y: cy };
@@ -1624,7 +1879,7 @@ export function FlagGuesserPlayfield({
         });
       }
     },
-    [projection, pointerRegionModel, pointerToMapCoords, hitFeaturesForPointer]
+    [projection, pointerRegionModel, pointerToMapCoords, hitFeaturesForPointer, dragCardScreenOffsetPx]
   );
 
   const moveDrag = useCallback((clientX: number, clientY: number) => {
@@ -1684,66 +1939,18 @@ export function FlagGuesserPlayfield({
 
       // 「ここにはない」ゾーンへのドロップ（複数枚許容）
       if (wasOverNotOnMap && notOnMapZone) {
-        setPlacedByCard((prev) => {
-          const next = { ...prev, [cardId]: NOT_ON_MAP_ID };
-          // ゾーン内の全カードについて、線の方角・長さを再配分して重なりを抑える
-          const zoneCardIds = Object.entries(next)
-            .filter(([, v]) => v === NOT_ON_MAP_ID)
-            .map(([k]) => k);
-          // 既存の placedLayout を維持しつつ、ゾーン内分は再計算
-          setPlacedLayoutByCard((prevLayout) => {
-            const nextLayout: Record<string, FlagBubbleLayout> = { ...prevLayout };
-            zoneCardIds.forEach((id, idx) => {
-              nextLayout[id] = notOnMapBubbleLayoutFor(
-                notOnMapZone,
-                idx,
-                zoneCardIds.length,
-                CARD_W
-              );
-            });
-            return nextLayout;
-          });
-          // pop アニメを新規カードだけトリガー
-          setPlacedLayoutAnimKeyByCard((prevK) => ({
-            ...prevK,
-            [cardId]: (prevK[cardId] ?? 0) + 1,
-          }));
-          return next;
-        });
+        placeCardOnNotOnMap(cardId);
         return;
       }
 
       if (countryId) {
-        const prevPlaced = placedRef.current;
-        const occupied = Object.entries(prevPlaced).find(([other, cid]) => cid === countryId && other !== cardId);
-        if (occupied) {
+        const dropHint: [number, number] | undefined = lastMap ? [lastMap.x, lastMap.y] : undefined;
+        if (!placeCardOnCountry(cardId, countryId, dropHint)) {
           setFloatByCard((prev) => ({
             ...prev,
             [cardId]: floater,
           }));
-          return;
         }
-        setPlacedByCard((prev) => ({ ...prev, [cardId]: countryId }));
-        const dropHint: [number, number] | undefined = lastMap ? [lastMap.x, lastMap.y] : undefined;
-        const preview = buildPlacementLayout(countryId, {
-          anchorPreviewOnly: true,
-          hintMapPoint: dropHint,
-        });
-        if (preview) {
-          setPlacedLayoutByCard((prev) => ({ ...prev, [cardId]: preview }));
-        }
-        scheduleBubbleLayoutRefinement(() => {
-          if (placedRef.current[cardId] !== countryId) return;
-          const layout = buildPlacementLayout(countryId, { hintMapPoint: dropHint });
-          if (!layout) return;
-          setPlacedLayoutByCard((prev) => ({ ...prev, [cardId]: layout }));
-          if (layout.useBubble) {
-            setPlacedLayoutAnimKeyByCard((prev) => ({
-              ...prev,
-              [cardId]: (prev[cardId] ?? 0) + 1,
-            }));
-          }
-        });
         return;
       }
 
@@ -1752,7 +1959,12 @@ export function FlagGuesserPlayfield({
         [cardId]: floater,
       }));
     },
-    [dragTargetCountryId, dragOverNotOnMap, notOnMapZone, size.w, size.h, buildPlacementLayout]
+    [
+      isMobileLayout,
+      notOnMapZone,
+      placeCardOnCountry,
+      placeCardOnNotOnMap,
+    ]
   );
 
   /** パン・ズームで見えているポリゴン内へ国旗表示位置を追従（探索は再実行しない） */
@@ -1830,43 +2042,54 @@ export function FlagGuesserPlayfield({
   const handleCardPointerDown = (cardId: string, e: ReactPointerEvent) => {
     if (answered) return;
     e.preventDefault();
-    if (placedByCard[cardId]) {
-      const wasInZone = placedByCard[cardId] === NOT_ON_MAP_ID;
-      setPlacedByCard((prev) => {
-        const next = { ...prev };
-        delete next[cardId];
-        // ゾーンから抜けたら、残ったゾーン内カードの線を再配分
-        if (wasInZone && notOnMapZone) {
-          const remaining = Object.entries(next)
-            .filter(([, v]) => v === NOT_ON_MAP_ID)
-            .map(([k]) => k);
-          setPlacedLayoutByCard((prevLayout) => {
-            const nextLayout: Record<string, FlagBubbleLayout> = { ...prevLayout };
-            delete nextLayout[cardId];
-            remaining.forEach((id, idx) => {
-              nextLayout[id] = notOnMapBubbleLayoutFor(
-                notOnMapZone,
-                idx,
-                remaining.length,
-                CARD_W
-              );
-            });
-            return nextLayout;
-          });
-          return next;
-        }
-        return next;
-      });
-      if (!wasInZone) {
-        setPlacedLayoutByCard((prev) => {
-          const next = { ...prev };
-          delete next[cardId];
-          return next;
-        });
+
+    const startDragFromPlaced = () => {
+      if (placedRef.current[cardId]) {
+        unpickCardFromPlacement(cardId);
       }
+      beginDrag(cardId, e.clientX, e.clientY);
+    };
+
+    if (isMobileLayoutRef.current) {
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const pointerId = e.pointerId;
+      let dragStarted = false;
+
+      const cleanup = () => {
+        window.removeEventListener("pointermove", onMove);
+        window.removeEventListener("pointerup", onUp);
+        window.removeEventListener("pointercancel", onUp);
+      };
+
+      const onMove = (ev: PointerEvent) => {
+        if (ev.pointerId !== pointerId || dragStarted) return;
+        if (
+          Math.hypot(ev.clientX - startX, ev.clientY - startY) >
+          MOBILE_TAP_MOVE_THRESHOLD_PX
+        ) {
+          dragStarted = true;
+          cleanup();
+          startDragFromPlaced();
+        }
+      };
+
+      const onUp = (ev: PointerEvent) => {
+        if (ev.pointerId !== pointerId) return;
+        cleanup();
+        if (!dragStarted && !drag) {
+          handleCardTapSelect(cardId);
+        }
+      };
+
+      window.addEventListener("pointermove", onMove);
+      window.addEventListener("pointerup", onUp);
+      window.addEventListener("pointercancel", onUp);
+      return;
     }
+
+    startDragFromPlaced();
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    beginDrag(cardId, e.clientX, e.clientY);
   };
 
   /** ドラッグ中: ヒットテスト・慣性追従・オーバーレイ DOM を 1 rAF に統合（A+B+C） */
@@ -1874,10 +2097,17 @@ export function FlagGuesserPlayfield({
     if (!projection || !pointerRegionModel) return;
 
     const pending = dragPendingClientRef.current;
+    let fingerPt: [number, number] | null = null;
     if (pending) {
-      const pt = pointerToMapCoords(pending.clientX, pending.clientY);
-      if (pt) {
-        const [x, y] = pt;
+      const crossClient = dragCrosshairClientFromFinger(
+        pending.clientX,
+        pending.clientY,
+        isMobileLayoutRef.current
+      );
+      const crossPt = pointerToMapCoords(crossClient.clientX, crossClient.clientY);
+      fingerPt = pointerToMapCoords(pending.clientX, pending.clientY);
+      if (crossPt) {
+        const [x, y] = crossPt;
         dragPointerRef.current = { x, y };
 
         let overNotOnMap = false;
@@ -1923,7 +2153,13 @@ export function FlagGuesserPlayfield({
 
     const pt = dragPointerRef.current;
     const k = Math.max(zoomTransformRef.current.k, 0.08);
-    const target = dragCardTargetFromPointer(pt.x, pt.y, k, dragCardScreenOffsetPx);
+    const fingerMap = fingerPt ?? [pt.x, pt.y];
+    const target = dragCardTargetFromPointer(
+      fingerMap[0],
+      fingerMap[1],
+      k,
+      dragCardScreenOffsetPx
+    );
     let display = dragCardDisplayRef.current ?? target;
     const s = dragCardSpring;
     const nx = display.x + (target.x - display.x) * s;
@@ -2036,6 +2272,8 @@ export function FlagGuesserPlayfield({
     }
     setResultByCountryId(byC);
     setResultByNotOnMapCardId(byZoneCard);
+    setTapSelectedCardId(null);
+    setTapOverNotOnMap(false);
     setAnswered(true);
     const a2 = roundPlan.targetRow["alpha-2"]?.toUpperCase();
     if (a2) setExcludeAlphas((prev) => new Set([...Array.from(prev), a2]));
@@ -2695,7 +2933,9 @@ export function FlagGuesserPlayfield({
                 className={`block select-none ${answered ? "cursor-pointer" : ""}`}
                 role="img"
                 aria-label="地域マップ"
+                onPointerDown={handleMapPointerDownForTap}
                 onPointerMove={handleMapPointerMove}
+                onPointerUp={handleMapPointerUpForTap}
                 onPointerLeave={handleMapLeave}
                 onClick={handleMapClick}
               >
@@ -2733,8 +2973,10 @@ export function FlagGuesserPlayfield({
                     const d = regionModel.pathDById.get(id);
                     if (!d) return null;
                     const emphasisDrag = drag && dragTargetCountryId === id;
-                    const emphasisHover = !drag && hoverCountryId === id;
-                    const emphasis = emphasisDrag || emphasisHover;
+                    const emphasisTap =
+                      !drag && Boolean(tapSelectedCardId) && hoverCountryId === id;
+                    const emphasisHover = !drag && !tapSelectedCardId && hoverCountryId === id;
+                    const emphasis = emphasisDrag || emphasisTap || emphasisHover;
                     return (
                       <path
                         key={id}
@@ -2743,7 +2985,7 @@ export function FlagGuesserPlayfield({
                         className={countryMapPathClass(id, mapPathClassOpts)}
                         style={{
                           fill: countryFill(id),
-                          stroke: emphasisDrag ? MAP_DRAG_STROKE : emphasisHover ? MAP_HOVER_STROKE : MAP_BORDER_STROKE,
+                          stroke: emphasisDrag || emphasisTap ? MAP_DRAG_STROKE : emphasisHover ? MAP_HOVER_STROKE : MAP_BORDER_STROKE,
                           strokeWidth: emphasis ? borderStrokeWidth * 3.6 : borderStrokeWidth,
                           strokeLinecap: "round",
                           strokeLinejoin: "round",
@@ -2763,7 +3005,9 @@ export function FlagGuesserPlayfield({
                 role="img"
                 aria-label="地域マップ"
                 style={{ width: size.w, height: size.h }}
+                onPointerDown={handleMapPointerDownForTap}
                 onPointerMove={handleMapPointerMove}
+                onPointerUp={handleMapPointerUpForTap}
                 onPointerLeave={handleMapLeave}
                 onClick={handleMapClick}
               />
@@ -2782,14 +3026,14 @@ export function FlagGuesserPlayfield({
               >
                 <div
                   className={`flex h-full w-full items-center justify-center rounded-full border-2 transition-colors duration-150 ${
-                    dragOverNotOnMap
+                    dragOverNotOnMap || tapOverNotOnMap
                       ? "border-[var(--color-primary)] bg-[color-mix(in_srgb,var(--color-primary)_22%,transparent)] shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-primary)_18%,transparent)]"
                       : "border-dashed border-[color-mix(in_srgb,var(--color-text)_30%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_82%,transparent)]"
                   }`}
                 >
                   <span
                     className={`text-center text-[11px] font-semibold leading-tight ${
-                      dragOverNotOnMap
+                      dragOverNotOnMap || tapOverNotOnMap
                         ? "text-[var(--color-primary)]"
                         : "text-[color-mix(in_srgb,var(--color-text)_72%,transparent)]"
                     }`}
@@ -2949,9 +3193,13 @@ export function FlagGuesserPlayfield({
                         <button
                           key={`stuck-btn-${c.id}-${layoutAnimKey}`}
                           type="button"
-                          className={`fg-flag-card pointer-events-auto absolute flex items-center justify-center overflow-hidden rounded-md border-2 border-white/40 bg-white/90 p-1 shadow-md backdrop-blur-sm ${
+                          className={`fg-flag-card pointer-events-auto absolute flex items-center justify-center overflow-hidden rounded-md border-2 bg-white/90 p-1 shadow-md backdrop-blur-sm ${
                             answered ? "cursor-pointer" : "cursor-default"
-                          } ${useBubble ? "fg-flag-bubble-pop" : ""}`}
+                          } ${useBubble ? "fg-flag-bubble-pop" : ""} ${
+                            tapSelectedCardId === c.id
+                              ? "border-[var(--color-primary)] ring-2 ring-[var(--color-primary)] ring-offset-1"
+                              : "border-white/40"
+                          }`}
                           style={{
                             left: flagX,
                             top: flagY,
@@ -3201,7 +3449,11 @@ export function FlagGuesserPlayfield({
                   <button
                     key={c.id}
                     type="button"
-                    className="pointer-events-auto absolute z-20 flex cursor-default items-center justify-center overflow-hidden rounded-md border border-[color-mix(in_srgb,var(--color-text)_15%,transparent)] bg-[color-mix(in_srgb,var(--color-surface)_88%,transparent)] p-1 shadow-md"
+                    className={`pointer-events-auto absolute z-20 flex cursor-default items-center justify-center overflow-hidden rounded-md border bg-[color-mix(in_srgb,var(--color-surface)_88%,transparent)] p-1 shadow-md ${
+                      tapSelectedCardId === c.id
+                        ? "border-[var(--color-primary)] ring-2 ring-[var(--color-primary)] ring-offset-1"
+                        : "border-[color-mix(in_srgb,var(--color-text)_15%,transparent)]"
+                    }`}
                     style={{
                       left: fl.x,
                       top: fl.y,
@@ -3230,7 +3482,19 @@ export function FlagGuesserPlayfield({
 
       {hoverCountryId && projection && !drag && !answered && (
         <div className="pointer-events-none absolute bottom-2 left-2 right-2 z-10 rounded-lg bg-[color-mix(in_srgb,var(--color-bg)_88%,transparent)] px-2 py-1 text-center text-[11px] text-[var(--color-text)] backdrop-blur-sm md:text-xs">
-          {hoverCountryLabel ?? (locale === "ja" ? "国を選択中" : "Select a country")}
+          {tapSelectedCardId
+            ? locale === "ja"
+              ? "タップしてこの国に配置"
+              : "Tap to place on this country"
+            : hoverCountryLabel ?? (locale === "ja" ? "国を選択中" : "Select a country")}
+        </div>
+      )}
+
+      {isMobileLayout && tapSelectedCardId && !drag && !answered && !hoverCountryId && (
+        <div className="pointer-events-none absolute bottom-2 left-2 right-2 z-10 rounded-lg bg-[color-mix(in_srgb,var(--color-bg)_88%,transparent)] px-2 py-1 text-center text-[11px] text-[var(--color-text)] backdrop-blur-sm">
+          {locale === "ja"
+            ? "国旗を選びました。地図の国をタップして配置"
+            : "Flag selected. Tap a country on the map."}
         </div>
       )}
 
