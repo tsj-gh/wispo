@@ -95,6 +95,28 @@ body.smart-guard-lock * {
   vector-effect: non-scaling-stroke;
 }
 
+/** モバイルドラッグ: 指位置と着弾十字を結ぶ補助線 */
+.fg-drag-touch-tether {
+  stroke-dasharray: 4 3;
+  vector-effect: non-scaling-stroke;
+}
+
+/** モバイルドラッグ: タッチ位置のゴーストリング */
+.fg-drag-touch-ring {
+  vector-effect: non-scaling-stroke;
+  animation: fg-drag-touch-ring-pulse 1.15s ease-in-out infinite;
+}
+
+@keyframes fg-drag-touch-ring-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.88;
+  }
+}
+
 @keyframes fg-flag-bubble-pop {
   from {
     transform: translate(calc(-50% + var(--fg-bubble-from-dx, 0px)), calc(-50% + var(--fg-bubble-from-dy, 0px)))
@@ -143,6 +165,10 @@ body.smart-guard-lock * {
   }
   .fg-flag-bubble-pop {
     animation: none !important;
+  }
+  .fg-drag-touch-ring {
+    animation: none !important;
+    opacity: 0.65;
   }
 }
 

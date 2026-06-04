@@ -162,6 +162,11 @@ const MOBILE_PRESET_K_SCALE = 0.7;
 const MOBILE_TAP_MOVE_THRESHOLD_PX = 12;
 /** モバイルドラッグ時、十字を指の上方に表示（px・画面座標） */
 const MOBILE_DRAG_CROSSHAIR_OFFSET_Y_PX = -112;
+/** タッチ位置リングの半径（画面上の px） */
+const MOBILE_TOUCH_RING_RADIUS_SCREEN_PX = 11;
+/** 指と十字がこの距離（地図座標）未満ならテザーを非表示 */
+const MOBILE_DRAG_TETHER_MIN_GAP_MAP = 10;
+const MOBILE_DRAG_TETHER_STROKE_SCREEN_PX = 1.15;
 const ZOOM_MIN = 0.12;
 const ZOOM_MAX = 80;
 const ZOOM_STEP = 1.3;
@@ -305,6 +310,10 @@ function dragConnectorPathD(px: number, py: number, tx: number, ty: number): str
 
 type DragOverlayDom = {
   connectorPath: SVGPathElement | null;
+  /** モバイル: 指位置 → 十字の点線テザー */
+  tetherLine: SVGLineElement | null;
+  /** モバイル: 指位置のゴーストリング */
+  touchRing: SVGCircleElement | null;
   crossLines: [
     SVGLineElement | null,
     SVGLineElement | null,
@@ -312,6 +321,12 @@ type DragOverlayDom = {
     SVGLineElement | null,
   ];
   cardEl: HTMLDivElement | null;
+};
+
+type DragOverlayMobileLink = {
+  show: boolean;
+  fingerX: number;
+  fingerY: number;
 };
 
 /** ドラッグ中コネクタ・十字・カードを React state なしで更新（A） */
@@ -323,7 +338,8 @@ function updateDragOverlayDom(
   cy: number,
   inCountry: boolean,
   zoomK: number,
-  cardR: number
+  cardR: number,
+  mobileLink?: DragOverlayMobileLink
 ): void {
   const [tx, ty] = circleEdgeNearestPointer(px, py, cx, cy, cardR);
   const pathEl = dom.connectorPath;
@@ -374,6 +390,40 @@ function updateDragOverlayDom(
   const crossG = hNeg?.parentElement;
   if (crossG) {
     crossG.setAttribute("transform", `translate(${px},${py})`);
+  }
+
+  const tetherEl = dom.tetherLine;
+  const ringEl = dom.touchRing;
+  const showLink =
+    mobileLink?.show &&
+    tetherEl &&
+    ringEl &&
+    Math.hypot(px - mobileLink.fingerX, py - mobileLink.fingerY) >= MOBILE_DRAG_TETHER_MIN_GAP_MAP;
+  if (tetherEl && ringEl) {
+    if (showLink) {
+      const linkStroke = inCountry ? "var(--color-primary)" : "rgba(42,42,48,0.88)";
+      const linkW = String(mapOverlayStrokeWidth(MOBILE_DRAG_TETHER_STROKE_SCREEN_PX, zoomK));
+      const ringR = MOBILE_TOUCH_RING_RADIUS_SCREEN_PX * mapUnitsPerScreenPx(zoomK);
+      const ringW = String(mapOverlayStrokeWidth(1.65, zoomK));
+      tetherEl.setAttribute("visibility", "visible");
+      tetherEl.setAttribute("x1", String(mobileLink!.fingerX));
+      tetherEl.setAttribute("y1", String(mobileLink!.fingerY));
+      tetherEl.setAttribute("x2", String(px));
+      tetherEl.setAttribute("y2", String(py));
+      tetherEl.setAttribute("stroke", linkStroke);
+      tetherEl.setAttribute("stroke-width", linkW);
+      tetherEl.setAttribute("stroke-opacity", inCountry ? "0.55" : "0.42");
+      ringEl.setAttribute("visibility", "visible");
+      ringEl.setAttribute("cx", String(mobileLink!.fingerX));
+      ringEl.setAttribute("cy", String(mobileLink!.fingerY));
+      ringEl.setAttribute("r", String(ringR));
+      ringEl.setAttribute("stroke", linkStroke);
+      ringEl.setAttribute("stroke-width", ringW);
+      ringEl.setAttribute("stroke-opacity", inCountry ? "0.7" : "0.5");
+    } else {
+      tetherEl.setAttribute("visibility", "hidden");
+      ringEl.setAttribute("visibility", "hidden");
+    }
   }
 
   const cardEl = dom.cardEl;
@@ -614,6 +664,8 @@ export function FlagGuesserPlayfield({
   /** `endDrag` / rAF で最新のカード中心（地図座標・慣性追従） */
   const dragCardDisplayRef = useRef<{ x: number; y: number } | null>(null);
   const dragPointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  /** モバイルテザー描画用の直近タッチ位置（地図座標） */
+  const dragFingerMapRef = useRef<{ x: number; y: number } | null>(null);
   /** pointermove を rAF に合流（B） */
   const dragPendingClientRef = useRef<{ clientX: number; clientY: number } | null>(null);
   const dragRafIdRef = useRef(0);
@@ -622,6 +674,8 @@ export function FlagGuesserPlayfield({
   const dragOverNotOnMapRef = useRef(false);
   const dragOverlayDomRef = useRef<DragOverlayDom>({
     connectorPath: null,
+    tetherLine: null,
+    touchRing: null,
     crossLines: [null, null, null, null],
     cardEl: null,
   });
@@ -1227,6 +1281,7 @@ export function FlagGuesserPlayfield({
       dragTargetStickyRef.current = null;
       dragTargetCountryIdRef.current = null;
       dragOverNotOnMapRef.current = false;
+      dragFingerMapRef.current = null;
       setTapSelectedCardId(null);
       setTapOverNotOnMap(false);
       mapTapStartRef.current = null;
@@ -1839,6 +1894,9 @@ export function FlagGuesserPlayfield({
       const fingerPt = pointerToMapCoords(clientX, clientY);
       if (!crossPt) return;
       const [x, y] = crossPt;
+      if (fingerPt) {
+        dragFingerMapRef.current = { x: fingerPt[0], y: fingerPt[1] };
+      }
       const zt = zoomTransformRef.current;
       const k = Math.max(zt.k, 0.06);
       let cx = x;
@@ -1932,6 +1990,7 @@ export function FlagGuesserPlayfield({
       dragTargetStickyRef.current = null;
       dragTargetCountryIdRef.current = null;
       dragOverNotOnMapRef.current = false;
+      dragFingerMapRef.current = null;
       setDrag(null);
       setDragTargetCountryId(null);
       setDragOverNotOnMap(false);
@@ -2106,6 +2165,9 @@ export function FlagGuesserPlayfield({
       );
       const crossPt = pointerToMapCoords(crossClient.clientX, crossClient.clientY);
       fingerPt = pointerToMapCoords(pending.clientX, pending.clientY);
+      if (fingerPt) {
+        dragFingerMapRef.current = { x: fingerPt[0], y: fingerPt[1] };
+      }
       if (crossPt) {
         const [x, y] = crossPt;
         dragPointerRef.current = { x, y };
@@ -2178,7 +2240,24 @@ export function FlagGuesserPlayfield({
 
     const inCountry = !dragOverNotOnMapRef.current && dragTargetCountryIdRef.current !== null;
     const cardR = (CARD_DIAM / 2) * flagVisualScale;
-    updateDragOverlayDom(dragOverlayDomRef.current, pt.x, pt.y, display.x, display.y, inCountry, k, cardR);
+    const fingerLink = fingerPt
+      ? { x: fingerPt[0], y: fingerPt[1] }
+      : dragFingerMapRef.current;
+    const mobileLink: DragOverlayMobileLink | undefined =
+      isMobileLayoutRef.current && fingerLink
+        ? { show: true, fingerX: fingerLink.x, fingerY: fingerLink.y }
+        : undefined;
+    updateDragOverlayDom(
+      dragOverlayDomRef.current,
+      pt.x,
+      pt.y,
+      display.x,
+      display.y,
+      inCountry,
+      k,
+      cardR,
+      mobileLink
+    );
   }, [
     projection,
     pointerRegionModel,
@@ -3255,6 +3334,15 @@ export function FlagGuesserPlayfield({
                           height={size.h}
                           aria-hidden
                         >
+                          <line
+                            ref={(el) => {
+                              dom.tetherLine = el;
+                            }}
+                            className="fg-drag-touch-tether"
+                            visibility="hidden"
+                            strokeLinecap="round"
+                            vectorEffect="non-scaling-stroke"
+                          />
                           <path
                             ref={(el) => {
                               dom.connectorPath = el;
@@ -3264,6 +3352,15 @@ export function FlagGuesserPlayfield({
                             stroke="rgba(100,100,108,0.42)"
                             strokeWidth={connStroke}
                             strokeLinecap="round"
+                            vectorEffect="non-scaling-stroke"
+                          />
+                          <circle
+                            ref={(el) => {
+                              dom.touchRing = el;
+                            }}
+                            className="fg-drag-touch-ring"
+                            visibility="hidden"
+                            fill="none"
                             vectorEffect="non-scaling-stroke"
                           />
                           <g>
