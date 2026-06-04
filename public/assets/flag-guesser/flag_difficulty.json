@@ -83,14 +83,14 @@
     "confusable_colors": [
       "MDA",
       "AND",
-      "COD",
       "COL",
       "ECU",
       "LIE",
       "MNG",
       "ROU",
       "TCD",
-      "BLM"
+      "BLM",
+      "CPV"
     ],
     "confusable_design": [
       "SWE",
@@ -304,10 +304,10 @@
       "TCD",
       "ECU",
       "ALA",
-      "COD",
       "COL",
       "LIE",
-      "KIR"
+      "KIR",
+      "BLM"
     ],
     "confusable_design": [
       "MDA",
@@ -643,11 +643,11 @@
       "GUM",
       "IMN",
       "ARG",
+      "COD",
       "GGY",
       "JEY",
       "LUX",
-      "REU",
-      "BLM"
+      "REU"
     ],
     "confusable_design": [
       "GUM",
@@ -1463,8 +1463,8 @@
     ],
     "confusable_design": [
       "KNA",
-      "COD",
       "SLB",
+      "COD",
       "MHL",
       "PNG",
       "BRN",
@@ -2340,11 +2340,11 @@
       "MNG",
       "ROU",
       "ALA",
-      "COD",
       "COL",
       "ECU",
       "LIE",
-      "BLM"
+      "BLM",
+      "CPV"
     ],
     "confusable_design": [
       "AND",
@@ -2512,11 +2512,11 @@
       "TZA",
       "BES",
       "KNA",
-      "COD",
       "COG",
       "GUF",
       "MHL",
-      "BRN"
+      "BRN",
+      "BTN"
     ]
   },
   {
@@ -2606,12 +2606,12 @@
       "LIE",
       "ALA",
       "AND",
-      "COD",
       "MDA",
       "MNG",
       "ROU",
       "TCD",
-      "CPV"
+      "CPV",
+      "ETH"
     ],
     "confusable_design": [
       "ECU",
@@ -2748,7 +2748,7 @@
     "intermediate_region": "Middle Africa",
     "tags": {
       "colors": [
-        "blue",
+        "water",
         "yellow",
         "red"
       ],
@@ -2770,28 +2770,28 @@
       "BWA"
     ],
     "confusable_colors": [
-      "MDA",
-      "ALA",
-      "AND",
-      "COL",
-      "ECU",
-      "LIE",
-      "MNG",
-      "ROU",
-      "TCD",
-      "CPV"
+      "ABW",
+      "ERI",
+      "SXM",
+      "SSD",
+      "SGS",
+      "TUV",
+      "AIA",
+      "CHN",
+      "VNM",
+      "ESP"
     ],
     "confusable_design": [
       "BES",
-      "SLB",
       "KNA",
+      "SLB",
       "MHL",
       "PNG",
-      "NAM",
       "COG",
       "GUF",
-      "TZA",
-      "BRN"
+      "NAM",
+      "BRN",
+      "TZA"
     ]
   },
   {
@@ -3508,11 +3508,11 @@
       "AND",
       "MDA",
       "ALA",
-      "COD",
       "MNG",
       "ROU",
       "TCD",
-      "CPV"
+      "CPV",
+      "ETH"
     ],
     "confusable_design": [
       "COL",
@@ -3734,10 +3734,10 @@
       "BFA",
       "BOL",
       "CMR",
+      "COD",
       "COG",
       "GIN",
-      "GRD",
-      "GUF"
+      "GRD"
     ],
     "confusable_design": [
       "SSD",
@@ -6977,12 +6977,12 @@
       "ECU",
       "ALA",
       "AND",
-      "COD",
       "MDA",
       "MNG",
       "ROU",
       "TCD",
-      "CPV"
+      "CPV",
+      "ETH"
     ],
     "confusable_design": [
       "COL",
@@ -7576,8 +7576,8 @@
     "confusable_design": [
       "SLB",
       "BES",
-      "COD",
       "KNA",
+      "COD",
       "PNG",
       "BTN",
       "CXR",
@@ -7953,11 +7953,11 @@
       "ROU",
       "TCD",
       "ALA",
-      "COD",
       "ECU",
       "COL",
       "LIE",
-      "CPV"
+      "CPV",
+      "ETH"
     ],
     "confusable_design": [
       "AND",
@@ -8057,11 +8057,11 @@
       "ROU",
       "TCD",
       "ALA",
-      "COD",
       "COL",
       "ECU",
       "LIE",
-      "BLM"
+      "BLM",
+      "CPV"
     ],
     "confusable_design": [
       "AND",
@@ -8406,11 +8406,11 @@
       "SLB",
       "BES",
       "KNA",
-      "COD",
       "COG",
       "GUF",
       "TZA",
-      "PNG"
+      "PNG",
+      "COD"
     ]
   },
   {
@@ -9887,11 +9887,11 @@
       "MNG",
       "TCD",
       "ALA",
-      "COD",
       "COL",
       "ECU",
       "LIE",
-      "BLM"
+      "BLM",
+      "CPV"
     ],
     "confusable_design": [
       "MDA",
@@ -11492,11 +11492,11 @@
       "NAM",
       "BES",
       "KNA",
-      "COD",
       "COG",
       "GUF",
       "BRN",
-      "BTN"
+      "BTN",
+      "PNG"
     ]
   },
   {
@@ -12934,13 +12934,13 @@
       "ABW",
       "SSD",
       "ARG",
+      "COD",
       "GGY",
       "GUM",
       "IMN",
       "JEY",
       "LUX",
-      "REU",
-      "DJI"
+      "REU"
     ],
     "confusable_design": [
       "SSD",
@@ -12996,8 +12996,8 @@
       "BES",
       "KNA",
       "CXR",
-      "COD",
       "MHL",
+      "COD",
       "NAM",
       "PNG",
       "TZA",
