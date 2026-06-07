@@ -161,11 +161,11 @@ const MOBILE_PRESET_K_SCALE = 0.7;
 /** タップとドラッグの判別（px） */
 const MOBILE_TAP_MOVE_THRESHOLD_PX = 12;
 /** モバイルドラッグ時、十字を指の上方に表示（px・画面座標） */
-const MOBILE_DRAG_CROSSHAIR_OFFSET_Y_PX = -112;
+const MOBILE_DRAG_CROSSHAIR_OFFSET_Y_PX = -56;
 /** タッチ位置リングの半径（画面上の px） */
 const MOBILE_TOUCH_RING_RADIUS_SCREEN_PX = 11;
-/** 指と十字がこの距離（地図座標）未満ならテザーを非表示 */
-const MOBILE_DRAG_TETHER_MIN_GAP_MAP = 10;
+/** テザー表示の最小距離（画面上の px・地図座標ではなく screen 基準） */
+const MOBILE_DRAG_TETHER_MIN_GAP_SCREEN_PX = 6;
 const MOBILE_DRAG_TETHER_STROKE_SCREEN_PX = 1.15;
 const ZOOM_MIN = 0.12;
 const ZOOM_MAX = 80;
@@ -394,11 +394,16 @@ function updateDragOverlayDom(
 
   const tetherEl = dom.tetherLine;
   const ringEl = dom.touchRing;
+  const mapGap =
+    mobileLink?.show === true
+      ? Math.hypot(px - mobileLink.fingerX, py - mobileLink.fingerY)
+      : 0;
+  const screenGap = mapGap * Math.max(zoomK, 0.08);
   const showLink =
     mobileLink?.show &&
     tetherEl &&
     ringEl &&
-    Math.hypot(px - mobileLink.fingerX, py - mobileLink.fingerY) >= MOBILE_DRAG_TETHER_MIN_GAP_MAP;
+    screenGap >= MOBILE_DRAG_TETHER_MIN_GAP_SCREEN_PX;
   if (tetherEl && ringEl) {
     if (showLink) {
       const linkStroke = inCountry ? "var(--color-primary)" : "rgba(42,42,48,0.88)";
@@ -446,14 +451,16 @@ function scheduleBubbleLayoutRefinement(run: () => void): void {
   requestAnimationFrame(() => startTransition(run));
 }
 
-/** モバイルでは指で地図が隠れないよう、ヒット判定用十字を指の上方へずらす */
-function dragCrosshairClientFromFinger(
-  clientX: number,
-  clientY: number,
+/** 指の地図座標から十字の地図座標へ（screen px オフセットを map 空間へ変換） */
+function crossMapPointFromFingerMap(
+  fingerX: number,
+  fingerY: number,
+  zoomK: number,
   isMobileLayout: boolean
-): { clientX: number; clientY: number } {
-  if (!isMobileLayout) return { clientX, clientY };
-  return { clientX, clientY: clientY + MOBILE_DRAG_CROSSHAIR_OFFSET_Y_PX };
+): [number, number] {
+  if (!isMobileLayout) return [fingerX, fingerY];
+  const dy = MOBILE_DRAG_CROSSHAIR_OFFSET_Y_PX * mapUnitsPerScreenPx(zoomK);
+  return [fingerX, fingerY + dy];
 }
 
 function zoomRatioToK(ratio: number): number {
@@ -1885,27 +1892,24 @@ export function FlagGuesserPlayfield({
       if (!projection || !pointerRegionModel) return;
       setTapSelectedCardId(null);
       setTapOverNotOnMap(false);
-      const crossClient = dragCrosshairClientFromFinger(
-        clientX,
-        clientY,
-        isMobileLayoutRef.current
-      );
-      const crossPt = pointerToMapCoords(crossClient.clientX, crossClient.clientY);
       const fingerPt = pointerToMapCoords(clientX, clientY);
-      if (!crossPt) return;
-      const [x, y] = crossPt;
-      if (fingerPt) {
-        dragFingerMapRef.current = { x: fingerPt[0], y: fingerPt[1] };
-      }
+      if (!fingerPt) return;
       const zt = zoomTransformRef.current;
       const k = Math.max(zt.k, 0.06);
+      dragFingerMapRef.current = { x: fingerPt[0], y: fingerPt[1] };
+      const [x, y] = crossMapPointFromFingerMap(
+        fingerPt[0],
+        fingerPt[1],
+        k,
+        isMobileLayoutRef.current
+      );
       let cx = x;
       let cy = y;
       const fl = floatRef.current[cardId];
       if (fl) {
         cx = (fl.x - zt.x) / k;
         cy = (fl.y - zt.y) / k;
-      } else if (fingerPt) {
+      } else {
         const target = dragCardTargetFromPointer(fingerPt[0], fingerPt[1], k, dragCardScreenOffsetPx);
         cx = target.x;
         cy = target.y;
@@ -2158,18 +2162,16 @@ export function FlagGuesserPlayfield({
     const pending = dragPendingClientRef.current;
     let fingerPt: [number, number] | null = null;
     if (pending) {
-      const crossClient = dragCrosshairClientFromFinger(
-        pending.clientX,
-        pending.clientY,
-        isMobileLayoutRef.current
-      );
-      const crossPt = pointerToMapCoords(crossClient.clientX, crossClient.clientY);
       fingerPt = pointerToMapCoords(pending.clientX, pending.clientY);
       if (fingerPt) {
         dragFingerMapRef.current = { x: fingerPt[0], y: fingerPt[1] };
-      }
-      if (crossPt) {
-        const [x, y] = crossPt;
+        const kHit = Math.max(zoomTransformRef.current.k, 0.06);
+        const [x, y] = crossMapPointFromFingerMap(
+          fingerPt[0],
+          fingerPt[1],
+          kHit,
+          isMobileLayoutRef.current
+        );
         dragPointerRef.current = { x, y };
 
         let overNotOnMap = false;
