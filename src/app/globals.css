@@ -95,11 +95,9 @@ body.smart-guard-lock * {
   vector-effect: non-scaling-stroke;
 }
 
-/** モバイルドラッグ: 指下を拡大表示するルーペ */
+/** モバイルドラッグ: 指下を拡大表示するルーペ（screen 1:1・サイズは JS で設定） */
 .fg-drag-loupe {
   transform: translate(-50%, -50%);
-  width: 120px;
-  height: 120px;
   border-radius: 50%;
   overflow: hidden;
   border: 2px solid color-mix(in srgb, var(--color-text) 22%, transparent);

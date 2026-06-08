@@ -101,8 +101,10 @@ import {
 } from "@/components/lab/flag-guesser/MapCanvas";
 import {
   drawDragLoupeCanvas,
+  DEFAULT_MOBILE_DRAG_LOUPE_OFFSET_X_PX,
+  DEFAULT_MOBILE_DRAG_LOUPE_OFFSET_Y_PX,
+  DEFAULT_MOBILE_DRAG_LOUPE_RADIUS_PX,
   loupeCenterScreenFromFinger,
-  MOBILE_DRAG_LOUPE_DIAM_PX,
   MOBILE_DRAG_LOUPE_MAG,
 } from "@/lib/flag-guesser/drawDragLoupe";
 import {
@@ -426,10 +428,10 @@ type LoupeCrossLines = [
   SVGLineElement | null,
 ];
 
-function updateLoupeCrossDom(lines: LoupeCrossLines, inCountry: boolean): void {
+function updateLoupeCrossDom(lines: LoupeCrossLines, inCountry: boolean, diam: number): void {
   const stroke = inCountry ? "var(--color-primary)" : "rgba(42,42,48,0.92)";
-  const cx = MOBILE_DRAG_LOUPE_DIAM_PX / 2;
-  const cy = MOBILE_DRAG_LOUPE_DIAM_PX / 2;
+  const cx = diam / 2;
+  const cy = diam / 2;
   const gap = LOUPE_CROSS_GAP_PX;
   const arm = LOUPE_CROSS_ARM_PX;
   const w = String(LOUPE_CROSS_STROKE_PX);
@@ -478,21 +480,34 @@ function paintMobileDragLoupeFrame(
   fingerMapY: number,
   baseZoom: ZoomPlain,
   mapW: number,
-  mapH: number
+  mapH: number,
+  offsetXPx: number,
+  offsetYPx: number,
+  radiusPx: number
 ): void {
+  const diam = radiusPx * 2;
   const [fingerSx, fingerSy] = mapSpaceToScreen(fingerMapX, fingerMapY, baseZoom);
   const center = loupeCenterScreenFromFinger(
     fingerSx,
     fingerSy,
     mapW,
     mapH,
-    MOBILE_DRAG_LOUPE_DIAM_PX
+    radiusPx,
+    offsetXPx,
+    offsetYPx
   );
   wrap.style.visibility = "visible";
   wrap.style.left = `${center.x}px`;
   wrap.style.top = `${center.y}px`;
+  wrap.style.width = `${diam}px`;
+  wrap.style.height = `${diam}px`;
 
-  const diam = MOBILE_DRAG_LOUPE_DIAM_PX;
+  const svg = wrap.querySelector("svg.fg-drag-loupe-cross");
+  if (svg instanceof SVGSVGElement) {
+    svg.setAttribute("width", String(diam));
+    svg.setAttribute("height", String(diam));
+  }
+
   const dpr = window.devicePixelRatio || 1;
   const pxW = Math.round(diam * dpr);
   const pxH = Math.round(diam * dpr);
@@ -800,6 +815,9 @@ export function FlagGuesserPlayfield({
   const [dragCardScreenOffsetPx, setDragCardScreenOffsetPx] = useState(DEFAULT_DRAG_CARD_SCREEN_OFFSET_PX);
   /** ドラッグカードの慣性追従（毎フレームの補間率） */
   const [dragCardSpring, setDragCardSpring] = useState(DEFAULT_DRAG_CARD_SPRING);
+  const [mobileLoupeOffsetXPx, setMobileLoupeOffsetXPx] = useState(DEFAULT_MOBILE_DRAG_LOUPE_OFFSET_X_PX);
+  const [mobileLoupeOffsetYPx, setMobileLoupeOffsetYPx] = useState(DEFAULT_MOBILE_DRAG_LOUPE_OFFSET_Y_PX);
+  const [mobileLoupeRadiusPx, setMobileLoupeRadiusPx] = useState(DEFAULT_MOBILE_DRAG_LOUPE_RADIUS_PX);
   const [answered, setAnswered] = useState(false);
   const [resultByCountryId, setResultByCountryId] = useState<Record<string, MapJudgeVerdict>>({});
   /** 「ここにはない」へドロップしたカードの正誤（cardId 別） */
@@ -2369,9 +2387,12 @@ export function FlagGuesserPlayfield({
           fingerPt[1],
           zoomTransformRef.current,
           size.w,
-          size.h
+          size.h,
+          mobileLoupeOffsetXPx,
+          mobileLoupeOffsetYPx,
+          mobileLoupeRadiusPx
         );
-        updateLoupeCrossDom(loupeCrossLinesRef.current, inCountry);
+        updateLoupeCrossDom(loupeCrossLinesRef.current, inCountry, mobileLoupeRadiusPx * 2);
       }
     }
   }, [
@@ -2386,6 +2407,9 @@ export function FlagGuesserPlayfield({
     flagVisualScale,
     size.w,
     size.h,
+    mobileLoupeOffsetXPx,
+    mobileLoupeOffsetYPx,
+    mobileLoupeRadiusPx,
   ]);
 
   useEffect(() => {
@@ -2916,6 +2940,12 @@ export function FlagGuesserPlayfield({
       setDragCardScreenOffsetPx,
       dragCardSpring,
       setDragCardSpring,
+      mobileLoupeOffsetXPx,
+      setMobileLoupeOffsetXPx,
+      mobileLoupeOffsetYPx,
+      setMobileLoupeOffsetYPx,
+      mobileLoupeRadiusPx,
+      setMobileLoupeRadiusPx,
       onEnumerateVisible,
       listedCountryLabelsJa,
       mapDebugSnippet: mapDebugCenterScale?.snippet ?? null,
@@ -2955,6 +2985,9 @@ export function FlagGuesserPlayfield({
     isDebugPanelExpanded,
     dragCardScreenOffsetPx,
     dragCardSpring,
+    mobileLoupeOffsetXPx,
+    mobileLoupeOffsetYPx,
+    mobileLoupeRadiusPx,
     flagBubbleAreaThresholdPct,
     flagBubbleDirectionCount,
     flagBubbleSampleCols,
@@ -3436,16 +3469,10 @@ export function FlagGuesserPlayfield({
                     const c = cards.find((x) => x.id === drag.cardId);
                     if (!c) return null;
                     const dom = dragOverlayDomRef.current;
-                    const loupeDom = loupeCrossLinesRef.current;
                     const bindCrossLine =
                       (index: 0 | 1 | 2 | 3) =>
                       (el: SVGLineElement | null) => {
                         dom.crossLines[index] = el;
-                      };
-                    const bindLoupeCrossLine =
-                      (index: 0 | 1 | 2 | 3) =>
-                      (el: SVGLineElement | null) => {
-                        loupeDom[index] = el;
                       };
                     const k = Math.max(zoomTransformRef.current.k, 0.08);
                     const connStroke = mapOverlayStrokeWidth(MAP_CONNECTOR_STROKE_DRAG_SEA_PX, k);
@@ -3534,33 +3561,54 @@ export function FlagGuesserPlayfield({
                             unoptimized
                           />
                         </div>
-                        {isMobileLayout && mapRenderBackend === "canvas" ? (
-                          <div
-                            ref={loupeWrapRef}
-                            className="fg-drag-loupe pointer-events-none absolute z-[39]"
-                            style={{ visibility: "hidden" }}
-                            aria-hidden
-                          >
-                            <canvas ref={loupeCanvasRef} className="fg-drag-loupe-canvas" />
-                            <svg
-                              className="fg-drag-loupe-cross pointer-events-none absolute left-0 top-0 overflow-visible"
-                              width={MOBILE_DRAG_LOUPE_DIAM_PX}
-                              height={MOBILE_DRAG_LOUPE_DIAM_PX}
-                              aria-hidden
-                            >
-                              <line ref={bindLoupeCrossLine(0)} strokeLinecap="round" />
-                              <line ref={bindLoupeCrossLine(1)} strokeLinecap="round" />
-                              <line ref={bindLoupeCrossLine(2)} strokeLinecap="round" />
-                              <line ref={bindLoupeCrossLine(3)} strokeLinecap="round" />
-                            </svg>
-                          </div>
-                        ) : null}
                       </>
                     );
                   })()}
 
               </div>
             </div>
+
+            {isMobileLayout && mapRenderBackend === "canvas" ? (
+              <div
+                ref={loupeWrapRef}
+                className="fg-drag-loupe pointer-events-none absolute z-[39]"
+                style={{ visibility: "hidden" }}
+                aria-hidden
+              >
+                <canvas ref={loupeCanvasRef} className="fg-drag-loupe-canvas" />
+                <svg
+                  className="fg-drag-loupe-cross pointer-events-none absolute left-0 top-0 overflow-visible"
+                  width={mobileLoupeRadiusPx * 2}
+                  height={mobileLoupeRadiusPx * 2}
+                  aria-hidden
+                >
+                  <line
+                    ref={(el) => {
+                      loupeCrossLinesRef.current[0] = el;
+                    }}
+                    strokeLinecap="round"
+                  />
+                  <line
+                    ref={(el) => {
+                      loupeCrossLinesRef.current[1] = el;
+                    }}
+                    strokeLinecap="round"
+                  />
+                  <line
+                    ref={(el) => {
+                      loupeCrossLinesRef.current[2] = el;
+                    }}
+                    strokeLinecap="round"
+                  />
+                  <line
+                    ref={(el) => {
+                      loupeCrossLinesRef.current[3] = el;
+                    }}
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+            ) : null}
 
             {/*
              * 「ここにはない」ゾーン内のカードはズーム変換の外側に「画面 1:1」で描画する。

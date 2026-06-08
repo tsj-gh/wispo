@@ -3,11 +3,11 @@ import { drawRegionMapCanvas } from "@/lib/flag-guesser/drawRegionMapCanvas";
 import type { RegionRoundModel } from "@/lib/flag-guesser/types";
 import type { ZoomPlain } from "@/lib/flag-guesser/viewportGeo";
 
-export const MOBILE_DRAG_LOUPE_DIAM_PX = 120;
 export const MOBILE_DRAG_LOUPE_MAG = 2.5;
-/** 指位置（screen）からルーペ中心へのオフセット */
-export const MOBILE_DRAG_LOUPE_OFFSET_X_PX = 36;
-export const MOBILE_DRAG_LOUPE_OFFSET_Y_PX = -96;
+/** 指位置（screen）からルーペ中心へのオフセット（デフォルト＝旧値の半分） */
+export const DEFAULT_MOBILE_DRAG_LOUPE_OFFSET_X_PX = 18;
+export const DEFAULT_MOBILE_DRAG_LOUPE_OFFSET_Y_PX = -48;
+export const DEFAULT_MOBILE_DRAG_LOUPE_RADIUS_PX = 60;
 
 /** 地図座標 mapX,mapY がルーペ円の中心に来るズーム */
 export function zoomForLoupeCenteredOnMapPoint(
@@ -25,19 +25,21 @@ export function zoomForLoupeCenteredOnMapPoint(
   };
 }
 
+/** 指の screen 座標からルーペ中心（screen 座標）へ。ズーム変換の外側で 1:1 配置する */
 export function loupeCenterScreenFromFinger(
   fingerSx: number,
   fingerSy: number,
   mapW: number,
   mapH: number,
-  diam: number
+  radiusPx: number,
+  offsetXPx: number,
+  offsetYPx: number
 ): { x: number; y: number } {
-  let x = fingerSx + MOBILE_DRAG_LOUPE_OFFSET_X_PX;
-  let y = fingerSy + MOBILE_DRAG_LOUPE_OFFSET_Y_PX;
-  const r = diam / 2;
+  let x = fingerSx + offsetXPx;
+  let y = fingerSy + offsetYPx;
   const pad = 6;
-  x = Math.max(r + pad, Math.min(mapW - r - pad, x));
-  y = Math.max(r + pad, Math.min(mapH - r - pad, y));
+  x = Math.max(radiusPx + pad, Math.min(mapW - radiusPx - pad, x));
+  y = Math.max(radiusPx + pad, Math.min(mapH - radiusPx - pad, y));
   return { x, y };
 }
 

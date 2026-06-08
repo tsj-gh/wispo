@@ -14,6 +14,15 @@ export type FlagGuesserDebugPanelProps = {
   /** ドラッグカードの追従（毎フレームの補間率 0〜1） */
   dragCardSpring: number;
   setDragCardSpring: (n: number) => void;
+  /** モバイルルーペ: 指からの左右オフセット（screen px） */
+  mobileLoupeOffsetXPx: number;
+  setMobileLoupeOffsetXPx: (n: number) => void;
+  /** モバイルルーペ: 指からの上下オフセット（screen px） */
+  mobileLoupeOffsetYPx: number;
+  setMobileLoupeOffsetYPx: (n: number) => void;
+  /** モバイルルーペ半径（screen px） */
+  mobileLoupeRadiusPx: number;
+  setMobileLoupeRadiusPx: (n: number) => void;
   onEnumerateVisible: () => void;
   listedCountryLabelsJa: string[];
   mapDebugSnippet: string | null;
@@ -64,6 +73,12 @@ export function FlagGuesserDebugPanel({
   setDragCardScreenOffsetPx,
   dragCardSpring,
   setDragCardSpring,
+  mobileLoupeOffsetXPx,
+  setMobileLoupeOffsetXPx,
+  mobileLoupeOffsetYPx,
+  setMobileLoupeOffsetYPx,
+  mobileLoupeRadiusPx,
+  setMobileLoupeRadiusPx,
   onEnumerateVisible,
   listedCountryLabelsJa,
   mapDebugSnippet,
@@ -328,6 +343,52 @@ export function FlagGuesserDebugPanel({
                     className="w-full accent-[var(--color-primary)]"
                   />
                   <div className="tabular-nums">{dragCardSpring.toFixed(2)}</div>
+                </label>
+              </div>
+
+              <div className="rounded-lg border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] bg-[color-mix(in_srgb,var(--color-text)_5%,transparent)] p-2">
+                <div className="mb-2 font-semibold text-[var(--color-text)]">モバイルルーペ</div>
+                <p className="mb-2 text-[9px] leading-snug">
+                  ドラッグ中のみ表示。指位置からの screen px オフセットと半径。ズームに関係なく画面上の大きさは一定です。
+                </p>
+                <label className="mb-2 block">
+                  <div className="mb-0.5 font-semibold text-[var(--color-text)]">左右オフセット（px）</div>
+                  <input
+                    type="range"
+                    min={-80}
+                    max={80}
+                    step={1}
+                    value={mobileLoupeOffsetXPx}
+                    onChange={(e) => setMobileLoupeOffsetXPx(Number(e.target.value))}
+                    className="w-full accent-[var(--color-primary)]"
+                  />
+                  <div className="tabular-nums">{mobileLoupeOffsetXPx}px</div>
+                </label>
+                <label className="mb-2 block">
+                  <div className="mb-0.5 font-semibold text-[var(--color-text)]">上下オフセット（px）</div>
+                  <input
+                    type="range"
+                    min={-160}
+                    max={40}
+                    step={1}
+                    value={mobileLoupeOffsetYPx}
+                    onChange={(e) => setMobileLoupeOffsetYPx(Number(e.target.value))}
+                    className="w-full accent-[var(--color-primary)]"
+                  />
+                  <div className="tabular-nums">{mobileLoupeOffsetYPx}px</div>
+                </label>
+                <label className="block">
+                  <div className="mb-0.5 font-semibold text-[var(--color-text)]">半径（px）</div>
+                  <input
+                    type="range"
+                    min={30}
+                    max={90}
+                    step={1}
+                    value={mobileLoupeRadiusPx}
+                    onChange={(e) => setMobileLoupeRadiusPx(Number(e.target.value))}
+                    className="w-full accent-[var(--color-primary)]"
+                  />
+                  <div className="tabular-nums">{mobileLoupeRadiusPx}px（直径 {mobileLoupeRadiusPx * 2}px）</div>
                 </label>
               </div>
 
