@@ -94,10 +94,17 @@ import { useI18n } from "@/lib/i18n-context";
 import {
   getCountryDisplayName,
   formatMapDebugSnippet,
+  mapSpaceToScreen,
   screenToMapSpace,
   ZOOM_IDENTITY,
   type ZoomPlain,
 } from "@/components/lab/flag-guesser/MapCanvas";
+import {
+  drawDragLoupeCanvas,
+  loupeCenterScreenFromFinger,
+  MOBILE_DRAG_LOUPE_DIAM_PX,
+  MOBILE_DRAG_LOUPE_MAG,
+} from "@/lib/flag-guesser/drawDragLoupe";
 import {
   featuresOverlappingViewport,
   viewportLonLatBounds,
@@ -160,13 +167,7 @@ const MOBILE_VIEWPORT_MAX_PX = 539;
 const MOBILE_PRESET_K_SCALE = 0.7;
 /** タップとドラッグの判別（px） */
 const MOBILE_TAP_MOVE_THRESHOLD_PX = 12;
-/** モバイルドラッグ時、十字を指の上方に表示（px・画面座標） */
-const MOBILE_DRAG_CROSSHAIR_OFFSET_Y_PX = -56;
-/** タッチ位置リングの半径（画面上の px） */
-const MOBILE_TOUCH_RING_RADIUS_SCREEN_PX = 11;
-/** テザー表示の最小距離（画面上の px・地図座標ではなく screen 基準） */
-const MOBILE_DRAG_TETHER_MIN_GAP_SCREEN_PX = 6;
-const MOBILE_DRAG_TETHER_STROKE_SCREEN_PX = 1.15;
+const MOBILE_DRAG_FINGER_DOT_SCREEN_PX = 5;
 const ZOOM_MIN = 0.12;
 const ZOOM_MAX = 80;
 const ZOOM_STEP = 1.3;
@@ -310,10 +311,8 @@ function dragConnectorPathD(px: number, py: number, tx: number, ty: number): str
 
 type DragOverlayDom = {
   connectorPath: SVGPathElement | null;
-  /** モバイル: 指位置 → 十字の点線テザー */
-  tetherLine: SVGLineElement | null;
-  /** モバイル: 指位置のゴーストリング */
-  touchRing: SVGCircleElement | null;
+  /** モバイル: 地図上の指位置マーカー */
+  fingerDot: SVGCircleElement | null;
   crossLines: [
     SVGLineElement | null,
     SVGLineElement | null,
@@ -323,10 +322,10 @@ type DragOverlayDom = {
   cardEl: HTMLDivElement | null;
 };
 
-type DragOverlayMobileLink = {
-  show: boolean;
-  fingerX: number;
-  fingerY: number;
+type DragOverlayViewOpts = {
+  /** デスクトップは地図上に十字。モバイルはルーペ内のみ */
+  showMainCross: boolean;
+  showFingerDot: boolean;
 };
 
 /** ドラッグ中コネクタ・十字・カードを React state なしで更新（A） */
@@ -339,7 +338,7 @@ function updateDragOverlayDom(
   inCountry: boolean,
   zoomK: number,
   cardR: number,
-  mobileLink?: DragOverlayMobileLink
+  view: DragOverlayViewOpts
 ): void {
   const [tx, ty] = circleEdgeNearestPointer(px, py, cx, cy, cardR);
   const pathEl = dom.connectorPath;
@@ -390,44 +389,22 @@ function updateDragOverlayDom(
   const crossG = hNeg?.parentElement;
   if (crossG) {
     crossG.setAttribute("transform", `translate(${px},${py})`);
+    crossG.setAttribute("visibility", view.showMainCross ? "visible" : "hidden");
   }
 
-  const tetherEl = dom.tetherLine;
-  const ringEl = dom.touchRing;
-  const mapGap =
-    mobileLink?.show === true
-      ? Math.hypot(px - mobileLink.fingerX, py - mobileLink.fingerY)
-      : 0;
-  const screenGap = mapGap * Math.max(zoomK, 0.08);
-  const showLink =
-    mobileLink?.show &&
-    tetherEl &&
-    ringEl &&
-    screenGap >= MOBILE_DRAG_TETHER_MIN_GAP_SCREEN_PX;
-  if (tetherEl && ringEl) {
-    if (showLink) {
-      const linkStroke = inCountry ? "var(--color-primary)" : "rgba(42,42,48,0.88)";
-      const linkW = String(mapOverlayStrokeWidth(MOBILE_DRAG_TETHER_STROKE_SCREEN_PX, zoomK));
-      const ringR = MOBILE_TOUCH_RING_RADIUS_SCREEN_PX * mapUnitsPerScreenPx(zoomK);
-      const ringW = String(mapOverlayStrokeWidth(1.65, zoomK));
-      tetherEl.setAttribute("visibility", "visible");
-      tetherEl.setAttribute("x1", String(mobileLink!.fingerX));
-      tetherEl.setAttribute("y1", String(mobileLink!.fingerY));
-      tetherEl.setAttribute("x2", String(px));
-      tetherEl.setAttribute("y2", String(py));
-      tetherEl.setAttribute("stroke", linkStroke);
-      tetherEl.setAttribute("stroke-width", linkW);
-      tetherEl.setAttribute("stroke-opacity", inCountry ? "0.55" : "0.42");
-      ringEl.setAttribute("visibility", "visible");
-      ringEl.setAttribute("cx", String(mobileLink!.fingerX));
-      ringEl.setAttribute("cy", String(mobileLink!.fingerY));
-      ringEl.setAttribute("r", String(ringR));
-      ringEl.setAttribute("stroke", linkStroke);
-      ringEl.setAttribute("stroke-width", ringW);
-      ringEl.setAttribute("stroke-opacity", inCountry ? "0.7" : "0.5");
+  const dotEl = dom.fingerDot;
+  if (dotEl) {
+    if (view.showFingerDot) {
+      const dotR = MOBILE_DRAG_FINGER_DOT_SCREEN_PX * mapUnitsPerScreenPx(zoomK);
+      dotEl.setAttribute("visibility", "visible");
+      dotEl.setAttribute("cx", String(px));
+      dotEl.setAttribute("cy", String(py));
+      dotEl.setAttribute("r", String(dotR));
+      dotEl.setAttribute("fill", inCountry ? "var(--color-primary)" : "rgba(42,42,48,0.72)");
+      dotEl.setAttribute("stroke", "white");
+      dotEl.setAttribute("stroke-width", String(mapOverlayStrokeWidth(1.25, zoomK)));
     } else {
-      tetherEl.setAttribute("visibility", "hidden");
-      ringEl.setAttribute("visibility", "hidden");
+      dotEl.setAttribute("visibility", "hidden");
     }
   }
 
@@ -436,6 +413,138 @@ function updateDragOverlayDom(
     cardEl.style.left = `${cx}px`;
     cardEl.style.top = `${cy}px`;
   }
+}
+
+const LOUPE_CROSS_GAP_PX = 1;
+const LOUPE_CROSS_ARM_PX = 10;
+const LOUPE_CROSS_STROKE_PX = 1.5;
+
+type LoupeCrossLines = [
+  SVGLineElement | null,
+  SVGLineElement | null,
+  SVGLineElement | null,
+  SVGLineElement | null,
+];
+
+function updateLoupeCrossDom(lines: LoupeCrossLines, inCountry: boolean): void {
+  const stroke = inCountry ? "var(--color-primary)" : "rgba(42,42,48,0.92)";
+  const cx = MOBILE_DRAG_LOUPE_DIAM_PX / 2;
+  const cy = MOBILE_DRAG_LOUPE_DIAM_PX / 2;
+  const gap = LOUPE_CROSS_GAP_PX;
+  const arm = LOUPE_CROSS_ARM_PX;
+  const w = String(LOUPE_CROSS_STROKE_PX);
+  const [hNeg, hPos, vNeg, vPos] = lines;
+  if (hNeg) {
+    hNeg.setAttribute("x1", String(cx - gap - arm));
+    hNeg.setAttribute("x2", String(cx - gap));
+    hNeg.setAttribute("y1", String(cy));
+    hNeg.setAttribute("y2", String(cy));
+    hNeg.setAttribute("stroke", stroke);
+    hNeg.setAttribute("stroke-width", w);
+  }
+  if (hPos) {
+    hPos.setAttribute("x1", String(cx + gap));
+    hPos.setAttribute("x2", String(cx + gap + arm));
+    hPos.setAttribute("y1", String(cy));
+    hPos.setAttribute("y2", String(cy));
+    hPos.setAttribute("stroke", stroke);
+    hPos.setAttribute("stroke-width", w);
+  }
+  if (vNeg) {
+    vNeg.setAttribute("x1", String(cx));
+    vNeg.setAttribute("x2", String(cx));
+    vNeg.setAttribute("y1", String(cy - gap - arm));
+    vNeg.setAttribute("y2", String(cy - gap));
+    vNeg.setAttribute("stroke", stroke);
+    vNeg.setAttribute("stroke-width", w);
+  }
+  if (vPos) {
+    vPos.setAttribute("x1", String(cx));
+    vPos.setAttribute("x2", String(cx));
+    vPos.setAttribute("y1", String(cy + gap));
+    vPos.setAttribute("y2", String(cy + gap + arm));
+    vPos.setAttribute("stroke", stroke);
+    vPos.setAttribute("stroke-width", w);
+  }
+}
+
+/** モバイルドラッグ中: 指下を拡大したルーペ canvas を描画 */
+function paintMobileDragLoupeFrame(
+  wrap: HTMLDivElement,
+  canvas: HTMLCanvasElement,
+  probeMount: HTMLElement,
+  snap: CanvasDrawSnapshot,
+  fingerMapX: number,
+  fingerMapY: number,
+  baseZoom: ZoomPlain,
+  mapW: number,
+  mapH: number
+): void {
+  const [fingerSx, fingerSy] = mapSpaceToScreen(fingerMapX, fingerMapY, baseZoom);
+  const center = loupeCenterScreenFromFinger(
+    fingerSx,
+    fingerSy,
+    mapW,
+    mapH,
+    MOBILE_DRAG_LOUPE_DIAM_PX
+  );
+  wrap.style.visibility = "visible";
+  wrap.style.left = `${center.x}px`;
+  wrap.style.top = `${center.y}px`;
+
+  const diam = MOBILE_DRAG_LOUPE_DIAM_PX;
+  const dpr = window.devicePixelRatio || 1;
+  const pxW = Math.round(diam * dpr);
+  const pxH = Math.round(diam * dpr);
+  if (canvas.width !== pxW || canvas.height !== pxH) {
+    canvas.width = pxW;
+    canvas.height = pxH;
+    canvas.style.width = `${diam}px`;
+    canvas.style.height = `${diam}px`;
+  }
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx || !snap.projection || !snap.rm) return;
+
+  const sea = resolveCssColorForCanvas(MAP_SEA_FILL, probeMount);
+  const border = resolveCssColorForCanvas(MAP_BORDER_STROKE, probeMount);
+  const hoverS = resolveCssColorForCanvas(MAP_HOVER_STROKE, probeMount);
+  const dragS = resolveCssColorForCanvas(MAP_DRAG_STROKE, probeMount);
+  const contextFill = resolveCssColorForCanvas(MAP_LAND_CONTEXT_QUIET, probeMount);
+  const contextBorder = resolveCssColorForCanvas(MAP_BORDER_CONTEXT_STROKE, probeMount);
+  const fillResolvedCache = new Map<string, string>();
+  const fillForId = (id: string) => {
+    const css = snap.countryFill(id);
+    let r = fillResolvedCache.get(css);
+    if (!r) {
+      r = resolveCssColorForCanvas(css, probeMount);
+      fillResolvedCache.set(css, r);
+    }
+    return r;
+  };
+
+  drawDragLoupeCanvas({
+    ctx,
+    diam,
+    dpr,
+    projection: snap.projection,
+    rm: snap.rm,
+    baseZoom,
+    centerMapX: fingerMapX,
+    centerMapY: fingerMapY,
+    magnify: MOBILE_DRAG_LOUPE_MAG,
+    fillForId,
+    seaFillResolved: sea,
+    contextFillResolved: contextFill,
+    contextBorderStrokeResolved: contextBorder,
+    borderStrokeResolved: border,
+    borderStrokeWidth: snap.borderStrokeWidth,
+    hoverStrokeResolved: hoverS,
+    hoverLineWidth: snap.hoverOutlineWidth,
+    dragTargetStrokeResolved: dragS,
+    hoverCountryId: snap.hoverCountryId,
+    dragTargetCountryId: snap.dragTargetCountryId,
+  });
 }
 
 function clampZoomK(k: number): number {
@@ -449,18 +558,6 @@ function scheduleBubbleLayoutRefinement(run: () => void): void {
     return;
   }
   requestAnimationFrame(() => startTransition(run));
-}
-
-/** 指の地図座標から十字の地図座標へ（screen px オフセットを map 空間へ変換） */
-function crossMapPointFromFingerMap(
-  fingerX: number,
-  fingerY: number,
-  zoomK: number,
-  isMobileLayout: boolean
-): [number, number] {
-  if (!isMobileLayout) return [fingerX, fingerY];
-  const dy = MOBILE_DRAG_CROSSHAIR_OFFSET_Y_PX * mapUnitsPerScreenPx(zoomK);
-  return [fingerX, fingerY + dy];
 }
 
 function zoomRatioToK(ratio: number): number {
@@ -671,7 +768,7 @@ export function FlagGuesserPlayfield({
   /** `endDrag` / rAF で最新のカード中心（地図座標・慣性追従） */
   const dragCardDisplayRef = useRef<{ x: number; y: number } | null>(null);
   const dragPointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-  /** モバイルテザー描画用の直近タッチ位置（地図座標） */
+  /** モバイルルーペ・指位置マーカー用の直近タッチ位置（地図座標） */
   const dragFingerMapRef = useRef<{ x: number; y: number } | null>(null);
   /** pointermove を rAF に合流（B） */
   const dragPendingClientRef = useRef<{ clientX: number; clientY: number } | null>(null);
@@ -681,11 +778,15 @@ export function FlagGuesserPlayfield({
   const dragOverNotOnMapRef = useRef(false);
   const dragOverlayDomRef = useRef<DragOverlayDom>({
     connectorPath: null,
-    tetherLine: null,
-    touchRing: null,
+    fingerDot: null,
     crossLines: [null, null, null, null],
     cardEl: null,
   });
+  const loupeWrapRef = useRef<HTMLDivElement>(null);
+  const loupeCanvasRef = useRef<HTMLCanvasElement>(null);
+  const loupeCrossLinesRef = useRef<LoupeCrossLines>([null, null, null, null]);
+  const mapRenderBackendRef = useRef(mapRenderBackend);
+  mapRenderBackendRef.current = mapRenderBackend;
 
   const [hoverCountryId, setHoverCountryId] = useState<string | null>(null);
   /** 正誤判定後のマップホバー用（カーソル付近に国旗＋国名） */
@@ -1289,6 +1390,7 @@ export function FlagGuesserPlayfield({
       dragTargetCountryIdRef.current = null;
       dragOverNotOnMapRef.current = false;
       dragFingerMapRef.current = null;
+      if (loupeWrapRef.current) loupeWrapRef.current.style.visibility = "hidden";
       setTapSelectedCardId(null);
       setTapOverNotOnMap(false);
       mapTapStartRef.current = null;
@@ -1897,12 +1999,8 @@ export function FlagGuesserPlayfield({
       const zt = zoomTransformRef.current;
       const k = Math.max(zt.k, 0.06);
       dragFingerMapRef.current = { x: fingerPt[0], y: fingerPt[1] };
-      const [x, y] = crossMapPointFromFingerMap(
-        fingerPt[0],
-        fingerPt[1],
-        k,
-        isMobileLayoutRef.current
-      );
+      const x = fingerPt[0];
+      const y = fingerPt[1];
       let cx = x;
       let cy = y;
       const fl = floatRef.current[cardId];
@@ -1995,6 +2093,7 @@ export function FlagGuesserPlayfield({
       dragTargetCountryIdRef.current = null;
       dragOverNotOnMapRef.current = false;
       dragFingerMapRef.current = null;
+      if (loupeWrapRef.current) loupeWrapRef.current.style.visibility = "hidden";
       setDrag(null);
       setDragTargetCountryId(null);
       setDragOverNotOnMap(false);
@@ -2165,13 +2264,8 @@ export function FlagGuesserPlayfield({
       fingerPt = pointerToMapCoords(pending.clientX, pending.clientY);
       if (fingerPt) {
         dragFingerMapRef.current = { x: fingerPt[0], y: fingerPt[1] };
-        const kHit = Math.max(zoomTransformRef.current.k, 0.06);
-        const [x, y] = crossMapPointFromFingerMap(
-          fingerPt[0],
-          fingerPt[1],
-          kHit,
-          isMobileLayoutRef.current
-        );
+        const x = fingerPt[0];
+        const y = fingerPt[1];
         dragPointerRef.current = { x, y };
 
         let overNotOnMap = false;
@@ -2242,13 +2336,8 @@ export function FlagGuesserPlayfield({
 
     const inCountry = !dragOverNotOnMapRef.current && dragTargetCountryIdRef.current !== null;
     const cardR = (CARD_DIAM / 2) * flagVisualScale;
-    const fingerLink = fingerPt
-      ? { x: fingerPt[0], y: fingerPt[1] }
-      : dragFingerMapRef.current;
-    const mobileLink: DragOverlayMobileLink | undefined =
-      isMobileLayoutRef.current && fingerLink
-        ? { show: true, fingerX: fingerLink.x, fingerY: fingerLink.y }
-        : undefined;
+    const mobile = isMobileLayoutRef.current;
+    const useLoupe = mobile && mapRenderBackendRef.current === "canvas";
     updateDragOverlayDom(
       dragOverlayDomRef.current,
       pt.x,
@@ -2258,8 +2347,33 @@ export function FlagGuesserPlayfield({
       inCountry,
       k,
       cardR,
-      mobileLink
+      {
+        showMainCross: !useLoupe,
+        showFingerDot: mobile,
+      }
     );
+
+    const loupeWrap = loupeWrapRef.current;
+    if (!useLoupe) {
+      if (loupeWrap) loupeWrap.style.visibility = "hidden";
+    } else if (loupeWrap && loupeCanvasRef.current && fingerPt) {
+      const probeMount = stageRef.current;
+      const snap = canvasDrawSnapshotRef.current;
+      if (probeMount && snap?.projection && snap.rm) {
+        paintMobileDragLoupeFrame(
+          loupeWrap,
+          loupeCanvasRef.current,
+          probeMount,
+          snap,
+          fingerPt[0],
+          fingerPt[1],
+          zoomTransformRef.current,
+          size.w,
+          size.h
+        );
+        updateLoupeCrossDom(loupeCrossLinesRef.current, inCountry);
+      }
+    }
   }, [
     projection,
     pointerRegionModel,
@@ -2270,6 +2384,8 @@ export function FlagGuesserPlayfield({
     dragCardScreenOffsetPx,
     dragCardSpring,
     flagVisualScale,
+    size.w,
+    size.h,
   ]);
 
   useEffect(() => {
@@ -3320,10 +3436,16 @@ export function FlagGuesserPlayfield({
                     const c = cards.find((x) => x.id === drag.cardId);
                     if (!c) return null;
                     const dom = dragOverlayDomRef.current;
+                    const loupeDom = loupeCrossLinesRef.current;
                     const bindCrossLine =
                       (index: 0 | 1 | 2 | 3) =>
                       (el: SVGLineElement | null) => {
                         dom.crossLines[index] = el;
+                      };
+                    const bindLoupeCrossLine =
+                      (index: 0 | 1 | 2 | 3) =>
+                      (el: SVGLineElement | null) => {
+                        loupeDom[index] = el;
                       };
                     const k = Math.max(zoomTransformRef.current.k, 0.08);
                     const connStroke = mapOverlayStrokeWidth(MAP_CONNECTOR_STROKE_DRAG_SEA_PX, k);
@@ -3336,15 +3458,6 @@ export function FlagGuesserPlayfield({
                           height={size.h}
                           aria-hidden
                         >
-                          <line
-                            ref={(el) => {
-                              dom.tetherLine = el;
-                            }}
-                            className="fg-drag-touch-tether"
-                            visibility="hidden"
-                            strokeLinecap="round"
-                            vectorEffect="non-scaling-stroke"
-                          />
                           <path
                             ref={(el) => {
                               dom.connectorPath = el;
@@ -3358,11 +3471,9 @@ export function FlagGuesserPlayfield({
                           />
                           <circle
                             ref={(el) => {
-                              dom.touchRing = el;
+                              dom.fingerDot = el;
                             }}
-                            className="fg-drag-touch-ring"
                             visibility="hidden"
-                            fill="none"
                             vectorEffect="non-scaling-stroke"
                           />
                           <g>
@@ -3423,6 +3534,27 @@ export function FlagGuesserPlayfield({
                             unoptimized
                           />
                         </div>
+                        {isMobileLayout && mapRenderBackend === "canvas" ? (
+                          <div
+                            ref={loupeWrapRef}
+                            className="fg-drag-loupe pointer-events-none absolute z-[39]"
+                            style={{ visibility: "hidden" }}
+                            aria-hidden
+                          >
+                            <canvas ref={loupeCanvasRef} className="fg-drag-loupe-canvas" />
+                            <svg
+                              className="fg-drag-loupe-cross pointer-events-none absolute left-0 top-0 overflow-visible"
+                              width={MOBILE_DRAG_LOUPE_DIAM_PX}
+                              height={MOBILE_DRAG_LOUPE_DIAM_PX}
+                              aria-hidden
+                            >
+                              <line ref={bindLoupeCrossLine(0)} strokeLinecap="round" />
+                              <line ref={bindLoupeCrossLine(1)} strokeLinecap="round" />
+                              <line ref={bindLoupeCrossLine(2)} strokeLinecap="round" />
+                              <line ref={bindLoupeCrossLine(3)} strokeLinecap="round" />
+                            </svg>
+                          </div>
+                        ) : null}
                       </>
                     );
                   })()}
